@@ -1,0 +1,25 @@
+### Core Dependencies ###
+docling[vlm]
+pydantic
+networkx
+
+### Visualization Libraries ###
+plotly
+matplotlib
+
+
+### Notebook & Utility Libraries ###
+notebook
+ipython
+rich
+
+
+### Hierarchical Graph Layouts ###
+pygraphviz
+
+# Note: Requires system-level installation of Graphviz
+# On Debian/Ubuntu: sudo apt-get install graphviz graphviz-dev
+# On MacOS: brew install graphviz
+
+# You can also use conda to install graphviz:
+# conda install -c conda-forge graphviz
