@@ -2,6 +2,7 @@
 docling[vlm]
 pydantic
 networkx
+pymupdf
 
 ### Visualization Libraries ###
 plotly
