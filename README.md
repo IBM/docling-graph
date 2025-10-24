@@ -237,5 +237,6 @@ Parameters:
 
 ## Upcoming Features
 
-- Interactive Pydantic Model Generation: Introduce prompts to help users generate Pydantic templates directly from documents.
 - Expanded LLM Provider Support: Add compatibility for additional LLM providers beyond the current Ollama and Mistral integrations.
+- Add Graph Database Connectivity: Enable direct loading of generated graphs into graph databases like Neo4j.
+- Interactive Pydantic Model Generation: Introduce prompts to help users generate Pydantic templates directly from documents.
