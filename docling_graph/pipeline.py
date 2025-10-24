@@ -71,6 +71,7 @@ def run_pipeline(config: Dict[str, Any]):
     processing_mode = config.get("processing_mode")
     model_type = config.get("model_type")
     inference = config.get("inference")
+    docling_config = config.get("docling_config", "default")
     
     # 1. Load Template
     try:
@@ -98,14 +99,16 @@ def run_pipeline(config: Dict[str, Any]):
             extractor = ExtractorFactory.create_extractor(
                 processing_mode=processing_mode,
                 model_type=model_type,
-                model_name=model_config['model']
+                model_name=model_config['model'],
+                docling_config=docling_config
             )
         elif model_type == "llm":
             llm_client = _initialize_llm_client(model_config['provider'], model_config['model'])
             extractor = ExtractorFactory.create_extractor(
                 processing_mode=processing_mode,
                 model_type=model_type,
-                llm_client=llm_client
+                llm_client=llm_client,
+                docling_config=docling_config
             )
         else:
             print(f"[red]Error:[/red] Invalid model_type: {model_type}")

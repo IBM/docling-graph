@@ -18,7 +18,7 @@ class ManyToOneStrategy(BaseExtractor):
     Extracts one consolidated model from entire document.
     """
 
-    def __init__(self, backend):
+    def __init__(self, backend, docling_config: str = "default"):
         """
         Initialize with a backend (VlmBackend or LlmBackend).
 
@@ -26,7 +26,7 @@ class ManyToOneStrategy(BaseExtractor):
             backend: Extraction backend instance (VlmBackend or LlmBackend).
         """
         self.backend = backend
-        self.doc_processor = DocumentProcessor()
+        self.doc_processor = DocumentProcessor(docling_config=docling_config)
         print(f"[ManyToOneStrategy] Initialized with backend: [cyan]{backend.__class__.__name__}[/cyan]")
 
     def extract(self, source: str, template: Type[BaseModel]) -> List[BaseModel]:

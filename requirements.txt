@@ -17,11 +17,16 @@ typer[all]
 notebook
 ipython
 
+
+### Local LLM Providers ###
+ollama
+vllm
+
 ### API Providers ###
+ibm-watson-machine-learning
+google-generativeai
 mistralai
 openai
-google-generativeai
-ibm-watson-machine-learning
 
 ### Hierarchical Graph Layouts ###
 #pygraphviz

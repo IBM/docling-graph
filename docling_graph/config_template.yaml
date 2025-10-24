@@ -8,6 +8,13 @@ defaults:
   inference: local              # local | api
   export_format: csv            # csv | cypher
 
+# Docling pipeline configuration
+docling:
+  # Choose pipeline type for document conversion
+  # - "default": Classic OCR pipeline (most accurate for standard documents)
+  # - "vlm": Vision-Language Model pipeline based on Granite-Docling (best for complex layouts)
+  pipeline: default  # default | vlm
+
 # Model configurations organized by type and inference location
 models:
   # Vision-Language Models (VLM)

@@ -91,6 +91,11 @@ def convert_command(
         "--inference", "-i",
         help="Inference location: 'local' or 'api'."
     )] = "local",
+
+    docling_config: Annotated[str, typer.Option(
+        "--docling-config", "-d",
+        help="Docling pipeline configuration: 'default' (OCR) or 'vlm' (Vision-Language Model)."
+    )] = None,
     
     # --- Optional Overrides ---
     output_dir: Annotated[Path, typer.Option(
@@ -119,13 +124,21 @@ def convert_command(
     Main CLI command to convert a document to a knowledge graph.
     """
     print("--- [blue]Initiating Docling-Graph Conversion[/blue] ---")
+
+    # Load config
+    config_data = _load_config()
+
+    # Update the config loading section
+    defaults = config_data.get('defaults', {})
+
+    # Use CLI values if provided, otherwise fall back to config defaults
+    processing_mode = (processing_mode or defaults.get('processing_mode', 'many-to-one')).lower()
+    model_type = (model_type or defaults.get('model_type', 'llm')).lower()
+    inference = (inference or defaults.get('inference', 'local')).lower()
+    export_format = (export_format or defaults.get('export_format', 'csv')).lower()
+    docling_config = (docling_config or config_data.get('docling', {}).get('pipeline', 'default')).lower()
     
-    # Validate inputs
-    processing_mode = processing_mode.lower()
-    model_type = model_type.lower()
-    inference = inference.lower()
-    export_format = export_format.lower()
-    
+    # Arguments validation
     if processing_mode not in ["one-to-one", "many-to-one"]:
         print(f"[red]Error:[/red] Invalid processing mode '{processing_mode}'. Must be 'one-to-one' or 'many-to-one'.")
         raise typer.Exit(code=1)
@@ -136,6 +149,10 @@ def convert_command(
     
     if inference not in ["local", "api"]:
         print(f"[red]Error:[/red] Invalid inference location '{inference}'. Must be 'local' or 'api'.")
+        raise typer.Exit(code=1)
+    
+    if docling_config not in ["default", "vlm"]:
+        print(f"[red]Error:[/red] Invalid docling config '{docling_config}'. Must be 'default' or 'vlm'.")
         raise typer.Exit(code=1)
         
     if export_format not in ["csv", "cypher"]:
@@ -148,14 +165,12 @@ def convert_command(
         print("Please use '--inference local' or switch to '--model-type llm' for API inference.")
         raise typer.Exit(code=1)
     
-    # Load config
-    config_data = _load_config()
-    
     # Display configuration
     print(f"Configuration:")
     print(f"  Processing mode: [cyan]{processing_mode}[/cyan]")
     print(f"  Model type:      [cyan]{model_type.upper()}[/cyan]")
     print(f"  Inference:       [cyan]{inference}[/cyan]")
+    print(f"  Docling config: [cyan]{docling_config}[/cyan]")
     print(f"  Export format:   [cyan]{export_format.upper()}[/cyan]")
     
     # Bundle settings for the pipeline
@@ -167,9 +182,8 @@ def convert_command(
         "model_type": model_type,
         "inference": inference,
         "export_format": export_format,
-        # Pass full config for model lookups
+        "docling_config": docling_config,
         "config": config_data,
-        # Overrides
         "model_override": model,
         "provider_override": provider
     }

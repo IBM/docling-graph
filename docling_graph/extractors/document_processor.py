@@ -17,16 +17,16 @@ from typing import List
 class DocumentProcessor:
     """Handles document conversion to Markdown format."""
     
-    def __init__(self, pipeline_type: str = "default"):
+    def __init__(self, docling_config: str = "default"):
         """
         Initialize document processor with specified pipeline.
         
         Args:
-            pipeline_type (str): Either "vlm" or "default"
+            docling_config (str): Either "vlm" or "default"
         """
-        self.pipeline_type = pipeline_type
+        self.docling_config = docling_config
         
-        if pipeline_type == "vlm":
+        if docling_config == "vlm":
             # VLM Pipeline - Best for complex layouts and images            
             self.converter = DocumentConverter(
                 format_options={

@@ -24,6 +24,8 @@ dependencies = [
     "matplotlib",
     "rich",
     "typer[all]",
+    "ollama",
+    # "vllm",
     "mistralai",
     # "openai", 
     # "google-generativeai",
