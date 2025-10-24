@@ -8,7 +8,6 @@ The schema is designed to be converted into a knowledge graph.
 
 from pydantic import BaseModel, Field
 from typing import Optional, List, Any
-from datetime import date # Added for potential date validation
 
 # A special object to define graph edges
 def Edge(label: str, **kwargs: Any) -> Any:

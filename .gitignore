@@ -75,3 +75,6 @@ venv.bak/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Project specific directories
+outputs

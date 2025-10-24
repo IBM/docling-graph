@@ -1,12 +1,22 @@
 """
-Pydantic templates for ID Card extraction.
+Pydantic templates for French ID Card extraction.
 
-This file is self-contained and has no external template dependencies.
-It includes all necessary sub-models and provides examples for each field.
+These models include descriptions and concrete examples in each field to guide
+the language model, improving the accuracy and consistency of the extracted data.
+The schema is designed to be converted into a knowledge graph.
 """
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional, List
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from typing import Optional, Any, List
 from datetime import date
+
+# --- Edge Helper Function ---
+def Edge(label: str, **kwargs: Any) -> Any:
+    """
+    Helper function to create a Pydantic Field with edge metadata.
+    The 'edge_label' defines the type of relationship in the graph.
+    """
+    return Field(..., json_schema_extra={'edge_label': label}, **kwargs)
 
 # --- Reusable Component: Address ---
 class Address(BaseModel):
@@ -51,17 +61,22 @@ class Person(BaseModel):
     A generic model for a person.
     A person is uniquely identified by their full name and date of birth.
     """
-    model_config = ConfigDict(graph_id_fields=['first_name', 'last_name', 'date_of_birth'])
+    model_config = ConfigDict(graph_id_fields=['given_names', 'last_name', 'date_of_birth'])
     
-    first_name: Optional[str] = Field(
-        None,
-        description="The person's given name(s)",
-        examples=["Marie", "Pierre", "Jean-Jacques"]
+    given_names: Optional[List[str]] = Field(
+        default=None,
+        description="List of given names (first names usually seperated with a comma) of the person, in order",
+        examples=[["Pierre"], ["Pierre", "Louis"], ["Pierre", "Louis", "André"]]
     )
     last_name: Optional[str] = Field(
         None,
         description="The person's family name (surname)",
         examples=["Dupont", "Martin"]
+    )
+    alternate_name: Optional[str] = Field(
+        None,
+        description="The person's alterante name",
+        examples=["Doe", "MJ"]
     )
     date_of_birth: Optional[date] = Field(
         None,
@@ -78,27 +93,20 @@ class Person(BaseModel):
         description="Gender or sex of the person",
         examples=["F", "M", "Female", "Male"]
     )
-    nationality: Optional[str] = Field(
-        None,
-        description="Nationality of the person",
-        examples=["Française", "French"]
-    )
-    phone: Optional[str] = Field(
-        None,
-        description="Contact phone number",
-        examples=["+33 6 12 34 56 78"]
-    )
-    email: Optional[str] = Field(
-        None,
-        description="Contact email address",
-        examples=["marie.dupont@email.fr"]
-    )
     
-    # A person can have one or more addresses
-    addresses: List[Address] = Field(
-        default_factory=list,
-        description="List of physical addresses (e.g., home, work)"
+    # --- Edge Definition ---
+    lives_at: Optional[Address] = Edge(
+        label="LIVES_AT",
+        description="Physical address (e.g., home address)"
     )
+
+    # --- Validator ---
+    @field_validator('given_names', mode='before')
+    def ensure_list(cls, v):
+        """Ensure given_names is always a list."""
+        if isinstance(v, str):
+            return [v]
+        return v
     
     def __str__(self):
         parts = [self.first_name, self.last_name]
@@ -129,21 +137,26 @@ class IDCard(BaseModel):
     )
     issue_date: Optional[date] = Field(
         None,
-        description="Date the document was issued, in YYYY-MM-DD format",
-        examples=["2023-01-20"]
+        description=(
+            "Date the document was issued, in DD-MM-YYYY format",
+            "Look for text like 'Date of Issue', 'Issued on', 'Délivré le', or similar"
+        ),
+        examples=["20-01-2023", "23.12.2019", "05 07 2031"]
     )
     expiry_date: Optional[date] = Field(
         None,
-        description="Date the document expires, in YYYY-MM-DD format",
-        examples=["2033-01-19"]
+        description=(
+            "Date the document expires, in DD-MM-YYYY format",
+            "Look for text like 'Expiry Date', 'Expires on', 'Valable jusqu’au', or similar"
+        ),
+        examples=["19-01-2033", "22.12.2029", "04 07 2041"]
     )
-    
-    # This creates a graph edge "holder" to a "Person" node.
-    holder: Optional[Person] = Field(
-        None,
-        description="The person this card belongs to"
+
+    # --- Edge Definition ---
+    holder: Person = Edge(
+        label="BELONGS_TO",
+        description="The person this ID card belongs to"
     )
 
     def __str__(self):
         return f"{self.document_type} {self.document_number}"
-

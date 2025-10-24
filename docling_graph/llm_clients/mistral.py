@@ -31,12 +31,12 @@ class MistralClient(BaseLlmClient):
 
     def get_json_response(self, prompt: str, schema_json: str) -> Dict[str, Any]:
         """Executes the Mistral chat.complete call."""
-        # This is the corrected API call based on your snippet from the docs
-        res = self.client.chat(
+        # Use chat.complete() instead of chat()
+        res = self.client.chat.complete(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
-        )
+        )        
         return json.loads(res.choices[0].message.content)
 
     @property
