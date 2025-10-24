@@ -9,6 +9,7 @@ from .extractors.one_to_one_local import OneToOneLocalExtractor
 # Import the refactored OneToOneApiExtractor
 from .extractors.one_to_one_api import OneToOneApiExtractor
 from .extractors.many_to_one import ManyToOneExtractor
+from .graph_exporter import to_csv, to_cypher
 
 # --- Import LLM Clients ---
 from .llm_clients.base import BaseLlmClient
@@ -60,6 +61,7 @@ def run_pipeline(config: Dict[str, Any]):
     # 2. Initialize Extractor
     mode = config.get("pipeline_mode", "one_to_one")
     etype = config.get("extractor_type", "local_vlm")
+    export_format = config.get("export_format", "csv")
     
     extractor = None
     try:
@@ -118,6 +120,13 @@ def run_pipeline(config: Dict[str, Any]):
     base_name = Path(config["source"]).stem
     output_filename = f"{base_name}_graph"
     output_path = output_dir / output_filename
+
+    if export_format == "csv":        
+        # Creates nodes.csv and relationships.csv
+        to_csv(knowledge_graph, output_dir)
+    elif export_format == "cypher":
+        cypher_path = output_dir / f"{base_name}_graph.cypher"
+        to_cypher(knowledge_graph, cypher_path)
 
     print(f"Saving markdown graph report to [green]{output_dir}[/green]")
     create_markdown_report(knowledge_graph, output_path)

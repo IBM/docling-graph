@@ -18,7 +18,7 @@ app = typer.Typer(
     add_completion=False
 )
 
-CONFIG_FILE_NAME = "docling_graph_config.yaml"
+CONFIG_FILE_NAME = "config.yaml"
 
 @app.command(
     name="init",
@@ -85,11 +85,16 @@ def convert_command(
     )],
     
     output_dir: Annotated[Path, typer.Option(
-        "--output", "-o",
+        "--output-dir", "-o",
         help="Directory to save the output graph image and JSON.",
         file_okay=False,
         writable=True
     )] = Path("outputs"),
+
+    export_format: Annotated[str, typer.Option(
+        "--export-format", "-e",
+        help="Format to export the graph data (csv or cypher)."
+    )] = "csv",
 
     # --- Optional Overrides ---
     model: Annotated[str, typer.Option(
@@ -126,6 +131,7 @@ def convert_command(
         "source": str(source),
         "template": template,
         "output_dir": str(output_dir),
+        "export_format": export_format,
         
         # Pass the whole pipeline config
         "pipeline": pipeline_config,
