@@ -67,7 +67,8 @@ The toolkit supports two extraction families: **local VLM** via Docling and **LL
 Requirements:
 
 - **Python >= 3.10** 
-- Clone and install:
+
+Clone and install:
 ```bash
 git clone https://github.com/ayoub-ibm/docling-graph
 cd docling-graph
