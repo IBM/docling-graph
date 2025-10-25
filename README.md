@@ -83,12 +83,12 @@ docling-graph convert <SOURCE> --template "<TEMPLATE_PATH>" [OPTIONS]
 ```yaml
 defaults:
   processing_mode: many-to-one    # one-to-one | many-to-one
-  backend_type: llm                 # llm | vlm
+  backend_type: llm               # llm | vlm
   inference: local                # local | remote
   export_format: csv              # csv | cypher
 
 docling:
-  pipeline: default               # default | vlm
+  pipeline: ocr                   # ocr | vision
 
 models:
   vlm:
@@ -100,7 +100,7 @@ models:
     local:
       default_model: "llama3:8b-instruct"
       provider: "ollama"
-    api:
+    remote:
       default_model: "mistral-small-latest"
       provider: "mistral"
 
@@ -109,8 +109,8 @@ models:
       default_model: "mistral-small-latest"
     openai:
       default_model: "gpt-4-turbo"
-    anthropic:
-      default_model: "claude-3-opus-20240229"
+    gemini:
+      default_model: "gemini-2.5-flash"
 
 output:
   default_directory: "outputs"
