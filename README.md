@@ -13,8 +13,9 @@
 [![NetworkX](https://img.shields.io/badge/NetworkX-3.0+-orange)](https://networkx.org/)
 [![Typer](https://img.shields.io/badge/Typer-CLI-purple)](https://typer.tiangolo.com/)
 [![Rich](https://img.shields.io/badge/Rich-terminal-cyan)](https://github.com/Textualize/rich)
-[![Ollama](https://img.shields.io/badge/Ollama-compatible-black)](https://ollama.ai/)
 [![Mistral AI](https://img.shields.io/badge/Mistral-API-ff7000)](https://mistral.ai/)
+[![Ollama](https://img.shields.io/badge/Ollama-compatible-black)](https://ollama.ai/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![License MIT](https://img.shields.io/github/license/ayoub-ibm/docling-graph)](https://opensource.org/licenses/MIT)
 
 
