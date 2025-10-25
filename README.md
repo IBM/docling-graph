@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="docs/logo.png" alt="Docling Graph" width="300">
-</p>
+<br><p align="center"><img src="docs/logo.png" alt="Docling Graph" width="250"></p>
 
 # Docling-Graph
 
