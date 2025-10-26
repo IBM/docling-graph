@@ -1,4 +1,0 @@
-id:ID,label:LABEL,document_type,document_number,issuing_country,issue_date,expiry_date,given_names,last_name,alternate_name,date_of_birth,place_of_birth,gender,street_address,city,state_or_province,postal_code,country
-IDCard_96cbcea0a563,IDCard,ID Card,X4RTBPFW4,FR,2020-02-12,2030-02-11,,,,,,,,,,,
-Person_ba6be95ea1c3,Person,,,,,,"['Maëlys-Gaëlle, Marie', 'MAELYS GAELLE MARIE']",Martin,,1990-07-13,Paris,F,,,,,
-Address_ed128eb04310,Address,,,,,,,,,,,,44 rue DÉSIRÉ SAINT CLÉMENT RÉSIDENCE DU PLEIN AIR BAT 4,BORDEAUX,,33000,FRANCE

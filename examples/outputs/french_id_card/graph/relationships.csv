@@ -1,3 +1,0 @@
-:START_ID,:END_ID,:TYPE,cardinality
-IDCard_96cbcea0a563,Person_ba6be95ea1c3,holder,one-to-one
-Person_ba6be95ea1c3,Address_ed128eb04310,lives_at,one-to-one

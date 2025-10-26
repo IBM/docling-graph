@@ -282,8 +282,8 @@ function highlightFilter(filter) {
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"borderWidth": 2, "borderWidthSelected": 4, "color": "#4A90E2", "font": {"color": "#2C3E50"}, "id": "IDCard_96cbcea0a563", "label": "IDCard", "shape": "dot", "title": "IDCard\n------------------------------\nDocument Type: ID Card\nDocument Number: X4RTBPFW4\nIssuing Country: FR\nIssue Date: 2020-02-12\nExpiry Date: 2030-02-11"}, {"borderWidth": 2, "borderWidthSelected": 4, "color": "#4A90E2", "font": {"color": "#2C3E50"}, "id": "Person_ba6be95ea1c3", "label": "Person", "shape": "dot", "title": "Person\n------------------------------\nGiven Names: [\u0027Ma\u00eblys-Ga\u00eblle, Marie\u0027, \u0027MAELYS GAELLE MARIE\u0027]\nLast Name: Martin\nDate Of Birth: 1990-07-13\nPlace Of Birth: Paris\nGender: F"}, {"borderWidth": 2, "borderWidthSelected": 4, "color": "#4A90E2", "font": {"color": "#2C3E50"}, "id": "Address_ed128eb04310", "label": "Address", "shape": "dot", "title": "Address\n------------------------------\nStreet Address: 44 rue D\u00c9SIR\u00c9 SAINT CL\u00c9MENT R\u00c9SIDENCE DU PLEIN AIR BAT 4\nCity: BORDEAUX\nPostal Code: 33000\nCountry: FRANCE"}]);
-                  edges = new vis.DataSet([{"arrows": "to", "color": "#B35045", "from": "IDCard_96cbcea0a563", "label": "holder", "title": "holder", "to": "Person_ba6be95ea1c3"}, {"arrows": "to", "color": "#B35045", "from": "Person_ba6be95ea1c3", "label": "lives_at", "title": "lives_at", "to": "Address_ed128eb04310"}]);
+                  nodes = new vis.DataSet([{"borderWidth": 2, "borderWidthSelected": 4, "color": "#4A90E2", "font": {"color": "#2C3E50"}, "id": "IDCard_9dbdc00795e3", "label": "IDCard", "shape": "dot", "title": "IDCard\n------------------------------\nType: entity\nDocument Number: X4RTBPFW4\nIssuing Country: FR\nIssue Date: 2020-02-12\nExpiry Date: 2030-02-11"}, {"borderWidth": 2, "borderWidthSelected": 4, "color": "#4A90E2", "font": {"color": "#2C3E50"}, "id": "Person_0a590e054c27", "label": "Person", "shape": "dot", "title": "Person\n------------------------------\nType: entity\nGiven Names: [\u0027Ma\u00eblys-Ga\u00eblle\u0027, \u0027Marie\u0027]\nLast Name: Martin\nDate Of Birth: 1990-07-13\nPlace Of Birth: Paris\nGender: F"}, {"borderWidth": 2, "borderWidthSelected": 4, "color": "#4A90E2", "font": {"color": "#2C3E50"}, "id": "Address_5c454f2c57a0", "label": "Address", "shape": "dot", "title": "Address\n------------------------------\nType: entity\nStreet Address: 44 rue D\u00e9sir\u00e9 Saint Cl\u00e9ment\nCity: Bordeaux\nPostal Code: 33000\nCountry: France"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#B35045", "from": "IDCard_9dbdc00795e3", "label": "holder", "title": "holder", "to": "Person_0a590e054c27"}, {"arrows": "to", "color": "#B35045", "from": "Person_0a590e054c27", "label": "lives_at", "title": "lives_at", "to": "Address_5c454f2c57a0"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -316,15 +316,13 @@ function highlightFilter(filter) {
 
               }
               drawGraph();
-        </script>
-    
-    <script type="text/javascript">
-        // Disable physics after the network stabilizes
-        network.once("stabilizationIterationsDone", function() {
-            network.setOptions({ physics: false });
-            console.log("Physics disabled - nodes will stay where you drag them");
-        });
-    </script>
-    
-</body>
+        
+
+            // Disable physics after stabilization to allow manual positioning
+            network.on("stabilizationIterationsDone", function () {
+                network.setOptions({ physics: false });
+                console.log("Physics disabled after stabilization");
+            });
+            </script>
+    </body>
 </html>

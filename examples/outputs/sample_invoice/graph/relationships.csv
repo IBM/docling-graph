@@ -1,7 +1,0 @@
-:START_ID,:END_ID,:TYPE,cardinality,index
-Invoice_836143eb823c,Issuer_613c8041a0ac,issued_by,one-to-one,
-Invoice_836143eb823c,Client_f794e61ca0e6,sent_to,one-to-one,
-Invoice_836143eb823c,LineItem_2efae2ae49dc,contains_items,one-to-many,0.0
-Invoice_836143eb823c,LineItem_fc8688cc2853,contains_items,one-to-many,1.0
-Issuer_613c8041a0ac,Address_40ad89089af3,located_at,one-to-one,
-Client_f794e61ca0e6,Address_b6f37a826a92,lives_at,one-to-one,

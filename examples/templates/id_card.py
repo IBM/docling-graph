@@ -163,7 +163,7 @@ class Person(BaseModel):
         # Handle given_names which is a list
         first_names = " ".join(self.given_names) if self.given_names else ""
         parts = [first_names, self.last_name]
-        return " ".join(p for p in parts if p) or "Unknown Person"
+        return " ".join(p for p in parts if p) or "Unknown"
 
 
 # --- Root Document Model: IDCard ---
