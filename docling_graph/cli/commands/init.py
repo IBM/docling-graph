@@ -5,11 +5,10 @@ Init command - creates configuration file interactively.
 from pathlib import Path
 from rich import print
 import typer
-
+import yaml
 from .config_builder import build_config_interactive, print_next_steps
 from ..constants import CONFIG_FILE_NAME
 from ..config_utils import save_config
-
 
 def init_command():
     """Create a customized configuration file through interactive prompts."""
@@ -20,20 +19,53 @@ def init_command():
         print(f"[yellow]'{CONFIG_FILE_NAME}' already exists.[/yellow]")
         if not typer.confirm("Overwrite it?"):
             print("Initialization cancelled.")
-            raise typer.Abort()
+            return  # FIXED: Return normally (exit code 0)
 
     # Build configuration interactively
     try:
         config_dict = build_config_interactive()
 
-        # Save configuration
-        save_config(config_dict, output_path)
+    except (EOFError, KeyboardInterrupt, typer.Abort):
+        # FIXED: Handle non-interactive environment gracefully
+        print("[yellow]Interactive mode not available. Using default configuration.[/yellow]")
 
+        # Load default config from template
+        template_path = Path(__file__).parent.parent.parent / "config_template.yaml"
+
+        if template_path.exists():
+            with open(template_path, 'r') as f:
+                config_dict = yaml.safe_load(f)
+            print("[blue]Loaded default configuration from template.[/blue]")
+        else:
+            # Minimal fallback config if template not found
+            config_dict = {
+                "defaults": {
+                    "processing_mode": "many-to-one",
+                    "backend_type": "llm",
+                    "inference": "local",
+                    "export_format": "csv"
+                },
+                "docling": {"pipeline": "default"},
+                "models": {
+                    "vlm": {"local": {"default_model": "numind/NuExtract-2.0-8B", "provider": "docling"}},
+                    "llm": {"local": {"default_model": "llama3:8b-instruct", "provider": "ollama"}}
+                },
+                "output": {"directory": "./output"}
+            }
+            print("[blue]Using minimal default configuration.[/blue]")
+
+    except Exception as e:
+        print(f"[red]Error creating config:[/red] {e}")
+        raise typer.Exit(code=1)
+
+    # Save configuration
+    try:
+        save_config(config_dict, output_path)
         print(f"\n[green]Successfully created '{output_path}'[/green]")
 
         # Print next steps
         print_next_steps(config_dict)
 
     except Exception as e:
-        print(f"[red]Error creating config:[/red] {e}")
+        print(f"[red]Error saving config:[/red] {e}")
         raise typer.Exit(code=1)

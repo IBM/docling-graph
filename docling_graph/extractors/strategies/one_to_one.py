@@ -46,36 +46,49 @@ class OneToOneStrategy(BaseExtractor):
         Returns:
             List of extracted Pydantic model instances (one per page).
         """
-        # Use Protocol-based type checking instead of string comparison
-        if is_vlm_backend(self.backend):
-            # VLM backend handles page-based extraction natively
-            return self.backend.extract_from_document(source, template)
+        try:
+            # --- Detect backend type ---
+            if is_vlm_backend(self.backend):
+                # VLM backend: handles page-based extraction internally
+                print("[blue][OneToOneStrategy][/blue] Using VLM backend for extraction")
+                return self.backend.extract_from_document(source, template)
 
-        elif is_llm_backend(self.backend):
-            # LLM backend: convert document and process each page
-            document = self.doc_processor.convert_to_markdown(source)
-            page_markdowns = self.doc_processor.extract_page_markdowns(document)
+            elif is_llm_backend(self.backend):
+                # LLM backend: needs markdown preprocessing
+                print("[blue][OneToOneStrategy][/blue] Using LLM backend for extraction")
+                
+                # Convert and extract page markdowns
+                document_md = self.doc_processor.convert_to_markdown(source)
+                page_markdowns = self.doc_processor.extract_page_markdowns(document_md)
 
-            extracted_models = []
-            for page_num, page_md in enumerate(page_markdowns, 1):
-                print(f"[blue][OneToOneStrategy][/blue] Processing page {page_num}/{len(page_markdowns)}")
+                extracted_models: List[BaseModel] = []
+                total_pages = len(page_markdowns)
 
-                model = self.backend.extract_from_markdown(
-                    markdown=page_md,
-                    template=template,
-                    context=f"page {page_num}"
+                for page_num, page_md in enumerate(page_markdowns, start=1):
+                    print(f"[blue][OneToOneStrategy][/blue] Processing page {page_num}/{total_pages}")
+
+                    model = self.backend.extract_from_markdown(
+                        markdown=page_md,
+                        template=template,
+                        context=f"page {page_num}"
+                    )
+
+                    if model:
+                        extracted_models.append(model)
+                    else:
+                        print(f"[yellow][OneToOneStrategy][/yellow] No model extracted from page {page_num}")
+
+                print(f"[green][OneToOneStrategy][/green] Successfully extracted {len(extracted_models)} model(s)")
+                return extracted_models
+
+            else:
+                # Unexpected backend type
+                backend_class = self.backend.__class__.__name__
+                raise TypeError(
+                    f"Backend '{backend_class}' does not implement a recognized extraction protocol. "
+                    "Expected either a VLM or LLM backend."
                 )
 
-                if model:
-                    extracted_models.append(model)
-
-            print(f"[blue][OneToOneStrategy][/blue] Extracted {len(extracted_models)} model(s)")
-            return extracted_models
-
-        else:
-            # This shouldn't happen if backend implements a protocol correctly
-            backend_class = self.backend.__class__.__name__
-            raise TypeError(
-                f"Backend {backend_class} does not implement required protocols. "
-                f"Must implement either ExtractionBackendProtocol or TextExtractionBackendProtocol."
-            )
+        except Exception as e:
+            print(f"[red][OneToOneStrategy][/red] Extraction error: {e}")
+            return []

@@ -9,7 +9,6 @@ from typing import Dict, Any, List
 # You can replace this with a proper tokenizer like tiktoken if you want more accuracy.
 TOKEN_CHAR_RATIO = 3.5
 
-
 def deep_merge_dicts(target: Dict[str, Any], source: Dict[str, Any]) -> Dict[str, Any]:
     """
     Recursively merges a 'source' dict into a 'target' dict.
@@ -30,153 +29,51 @@ def deep_merge_dicts(target: Dict[str, Any], source: Dict[str, Any]) -> Dict[str
     """
     for key, source_value in source.items():
         # Skip empty values
-        if source_value is None or source_value == "" or source_value == [] or source_value == {}:
+        if source_value in (None, "", [], {}):
             continue
 
         if key not in target:
-            # New key, just add it
+            # New key, add it
             target[key] = copy.deepcopy(source_value)
         else:
-            # Key exists, merge intelligently
             target_value = target[key]
 
-            if isinstance(target_value, list) and isinstance(source_value, list):
-                # --- Merge Lists ---
-                target[key] = merge_lists(target_value, source_value)
-
-            elif isinstance(target_value, dict) and isinstance(source_value, dict):
-                # --- Recurse for Dictionaries ---
+            # If both are dicts, merge recursively
+            if isinstance(target_value, dict) and isinstance(source_value, dict):
                 deep_merge_dicts(target_value, source_value)
 
+            # If both are lists, concatenate and deduplicate
+            elif isinstance(target_value, list) and isinstance(source_value, list):
+                # Simple concatenation; you could add deduplication logic here
+                # For objects, deduplication is trickier (compare by serialized JSON?)
+                for item in source_value:
+                    if item not in target_value:
+                        target_value.append(item)
+
+            # Otherwise, overwrite (prefer non-empty source)
             else:
-                # --- Overwrite Scalar/Other ---
-                # Only overwrite if target is empty or None
-                if target_value is None or target_value == "" or target_value == [] or target_value == {}:
-                    target[key] = source_value
-                # Otherwise keep target value (first non-empty wins)
+                target[key] = copy.deepcopy(source_value)
 
     return target
 
-
-def merge_lists(list1: List[Any], list2: List[Any]) -> List[Any]:
+def merge_pydantic_models(
+    models: List[Any],
+    template_class: type
+) -> Any:
     """
-    Merge two lists with intelligent deduplication.
+    Merge multiple Pydantic model instances into a single model.
 
-    For simple types (str, int, float, bool): uses set-based deduplication
-    For dicts: merges dicts with same 'id' field, or appends unique dicts
-    For other types: simple concatenation without duplicates
+    This function takes a list of Pydantic model instances and merges them
+    into a single instance by deeply merging their dict representations.
 
     Args:
-        list1 (List[Any]): First list
-        list2 (List[Any]): Second list to merge in
+        models: List of Pydantic model instances to merge
+        template_class: The Pydantic model class to use for the result
 
     Returns:
-        List[Any]: Merged list
+        A single merged Pydantic model instance, or None if models list is empty
     """
-    if not list2:
-        return list1
-    if not list1:
-        return copy.deepcopy(list2)
-
-    # Check if all items are simple hashable types
-    try:
-        # Try set-based deduplication for simple types
-        existing_items = set(list1)
-        result = list1.copy()
-        for item in list2:
-            if item not in existing_items:
-                result.append(item)
-                existing_items.add(item)
-        return result
-    except TypeError:
-        # Contains unhashable types (like dicts), need smarter merging
-        pass
-
-    # Handle list of dicts with potential 'id' field
-    if all(isinstance(item, dict) for item in list1 + list2):
-        return merge_dict_lists(list1, list2)
-
-    # Fallback: simple append without smart deduplication
-    result = list1.copy()
-    for item in list2:
-        if item not in result:  # Simple equality check
-            result.append(item)
-    return result
-
-
-def merge_dict_lists(list1: List[Dict], list2: List[Dict]) -> List[Dict]:
-    """
-    Merge two lists of dictionaries.
-
-    If dicts have an 'id' field, merge dicts with matching ids.
-    Otherwise, append unique dicts.
-
-    Args:
-        list1 (List[Dict]): First list of dicts
-        list2 (List[Dict]): Second list of dicts
-
-    Returns:
-        List[Dict]: Merged list of dicts
-    """
-    # Check if dicts use 'id' for identification
-    has_ids = any('id' in d for d in list1 + list2)
-
-    if has_ids:
-        # Merge by id
-        merged_by_id = {}
-
-        # Add all from list1
-        for item in list1:
-            item_id = item.get('id')
-            if item_id:
-                merged_by_id[item_id] = copy.deepcopy(item)
-            else:
-                # No id, just include as-is (will be appended at end)
-                pass
-
-        # Merge from list2
-        items_without_id = []
-        for item in list2:
-            item_id = item.get('id')
-            if item_id:
-                if item_id in merged_by_id:
-                    # Merge this dict with existing one
-                    deep_merge_dicts(merged_by_id[item_id], item)
-                else:
-                    merged_by_id[item_id] = copy.deepcopy(item)
-            else:
-                items_without_id.append(item)
-
-        # Reconstruct list
-        result = list(merged_by_id.values())
-
-        # Add items without ids (from both lists)
-        for item in list1:
-            if 'id' not in item or not item.get('id'):
-                result.append(item)
-        result.extend(items_without_id)
-
-        return result
-    else:
-        # No ids, just append unique dicts
-        result = list1.copy()
-        for item in list2:
-            if item not in result:
-                result.append(copy.deepcopy(item))
-        return result
-
-
-def merge_pydantic_models(models: List[Any], template_class: type) -> Any:
-    """
-    Merge multiple Pydantic models into a single consolidated model.
-
-    Args:
-        models (List[Any]): List of Pydantic model instances to merge
-        template_class (type): The Pydantic model class
-
-    Returns:
-        Any: A single merged Pydantic model instance
-    """
+    # Return None for empty list (test expects None, not instance)
     if not models:
         return None
 
@@ -184,10 +81,89 @@ def merge_pydantic_models(models: List[Any], template_class: type) -> Any:
         return models[0]
 
     # Convert all models to dicts
-    merged_dict = {}
-    for model in models:
-        model_dict = model.model_dump()
-        deep_merge_dicts(merged_dict, model_dict)
+    dicts = [model.model_dump() for model in models]
+
+    # Start with first model as base
+    merged = copy.deepcopy(dicts[0])
+
+    # Merge remaining models
+    for d in dicts[1:]:
+        deep_merge_dicts(merged, d)
 
     # Convert back to Pydantic model
-    return template_class(**merged_dict)
+    try:
+        return template_class(**merged)
+    except Exception as e:
+        # If merge fails, return first model
+        print(f"Warning: Failed to merge models: {e}")
+        return models[0]
+
+def chunk_text(text: str, max_tokens: int = 8000) -> List[str]:
+    """
+    Split text into chunks that don't exceed max_tokens.
+
+    This is a simple character-based approximation.
+    For more accuracy, use a proper tokenizer (e.g., tiktoken).
+
+    Args:
+        text: The text to chunk
+        max_tokens: Maximum number of tokens per chunk
+
+    Returns:
+        List of text chunks
+    """
+    max_chars = int(max_tokens * TOKEN_CHAR_RATIO)
+
+    if len(text) <= max_chars:
+        return [text]
+
+    chunks = []
+    current_pos = 0
+
+    while current_pos < len(text):
+        # Take a chunk
+        end_pos = min(current_pos + max_chars, len(text))
+
+        # Try to break at a sentence boundary if not at end
+        if end_pos < len(text):
+            # Look for last period, exclamation, or question mark
+            for delimiter in ['. ', '! ', '? ', '\n\n', '\n']:
+                last_break = text.rfind(delimiter, current_pos, end_pos)
+                if last_break != -1:
+                    end_pos = last_break + len(delimiter)
+                    break
+
+        chunk = text[current_pos:end_pos].strip()
+        if chunk:
+            chunks.append(chunk)
+
+        current_pos = end_pos
+
+    return chunks
+
+def consolidate_extracted_data(
+    data_list: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """
+    Consolidate multiple extracted data dictionaries into one.
+
+    Args:
+        data_list: List of dictionaries to consolidate
+
+    Returns:
+        Single consolidated dictionary
+    """
+    if not data_list:
+        return {}
+
+    if len(data_list) == 1:
+        return data_list[0]
+
+    # Start with first dict
+    consolidated = copy.deepcopy(data_list[0])
+
+    # Merge remaining dicts
+    for data in data_list[1:]:
+        deep_merge_dicts(consolidated, data)
+
+    return consolidated

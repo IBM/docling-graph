@@ -18,12 +18,18 @@ def calculate_graph_stats(graph: nx.DiGraph, source_model_count: int) -> GraphMe
     node_types = get_node_type_distribution(graph)
     edge_types = get_edge_type_distribution(graph)
 
+    # Calculate average degree
+    num_nodes = graph.number_of_nodes()
+    num_edges = graph.number_of_edges()
+    average_degree = (2 * num_edges) / num_nodes if num_nodes > 0 else 0.0
+    
     return GraphMetadata(
-        node_count=graph.number_of_nodes(),
-        edge_count=graph.number_of_edges(),
+        node_count=num_nodes,
+        edge_count=num_edges,
         node_types=node_types,
         edge_types=edge_types,
-        source_models=source_model_count
+        source_models=source_model_count,
+        average_degree=average_degree
     )
 
 
