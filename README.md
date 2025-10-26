@@ -67,6 +67,7 @@ config:
   theme: redux
   layout: elk
   look: classic
+  elk: {}
 ---
 flowchart TD
     A(["Source Document"]) --> n4["Docling Graph Pipeline"]
@@ -97,7 +98,7 @@ flowchart TD
     n31 --> n34
     n29 --> n34
     n34 --> n33
-    n4 --> n16
+    n5 --> n16
     n4@{ shape: procs}
     n5@{ shape: tag-proc}
     n6@{ shape: procs}
@@ -157,6 +158,7 @@ flowchart TD
     classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
     classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
 ```
+
 
 
 ## Installation
