@@ -59,7 +59,9 @@ The toolkit supports two extraction families: **local VLM** via Docling and **LL
 
 ## Docling Graph Workflow
 
-Docling Graph provides an automated pipeline that transforms unstructured documents into structured, validated data and graph representations. It integrates `document conversion`, data `extraction via LLMs & VLMs`, `schema validation`, and `graph construction`, enabling flexible export and interactive visualization of complex document relationships.
+Docling Graph provides an automated pipeline that transforms unstructured documents into structured, validated data and graph representations.
+
+It integrates `document conversion`, data `extraction via LLMs & VLMs`, `schema validation`, and `graph construction`, enabling flexible export and interactive visualization of complex document relationships.
 
 <p align="center">
   <img src="docs/assets/dg_workflow_light_edges.png" alt="Docling Graph Workflow" width="550">
