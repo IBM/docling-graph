@@ -5,7 +5,7 @@ import networkx as nx
 import json
 
 from typing import Optional, Dict, Any, List
-from ..core.config import ExportConfig
+from ..common.config import ExportConfig
 
 
 class JSONExporter:

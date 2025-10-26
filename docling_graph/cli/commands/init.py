@@ -29,7 +29,7 @@ def init_command():
         # Save configuration
         save_config(config_dict, output_path)
 
-        print(f"\n[green]✓ Successfully created '{output_path}'[/green]")
+        print(f"\n[green]Successfully created '{output_path}'[/green]")
 
         # Print next steps
         print_next_steps(config_dict)

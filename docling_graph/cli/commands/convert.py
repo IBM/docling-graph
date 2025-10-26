@@ -71,7 +71,7 @@ def convert_command(
     )] = None,
     export_format: Annotated[Optional[str], typer.Option(
         "--export-format", "-e",
-        help="Export format: 'csv' or 'cypher'."
+        help="Export format: 'csv', 'json' or 'cypher'."
     )] = None,
     reverse_edges: Annotated[bool, typer.Option(
         "--reverse-edges", "-r",
@@ -80,7 +80,7 @@ def convert_command(
 ):
     """Convert a document to a knowledge graph."""
 
-    print("[blue]━━━ Docling-Graph Conversion ━━━[/blue]")
+    print("[blue]--- Docling-Graph Conversion ---[/blue]")
 
     # Load configuration
     config_data = load_config()
@@ -133,7 +133,7 @@ def convert_command(
     # Run pipeline
     try:
         run_pipeline(run_config)
-        print("\n[green]✓ Conversion completed successfully![/green]")
+        print("\n[green]Conversion completed successfully![/green]")
     except Exception as e:
         print(f"\n[bold red]Error:[/bold red] {e}")
         import traceback

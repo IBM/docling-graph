@@ -102,7 +102,7 @@ class ManyToOneStrategy(BaseExtractor):
             full_markdown = self.doc_processor.extract_full_markdown(document)
             estimated_tokens = len(full_markdown) / 3.5  # Rough estimate
 
-            if estimated_tokens < (context_limit * 0.8):  # Use 80% as safe threshold
+            if estimated_tokens < (context_limit * 0.9):  # Use 90% as safe threshold
                 # Try full document extraction
                 print(f"[blue][ManyToOneStrategy][/blue] Document fits context "
                       f"({int(estimated_tokens)} tokens), processing as whole")

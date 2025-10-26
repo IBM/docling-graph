@@ -6,7 +6,7 @@ import networkx as nx
 
 from ..utils.formatting import format_property_key, format_property_value
 from ..utils.graph_stats import calculate_graph_stats
-from ..core.models import GraphMetadata
+from ..common.models import GraphMetadata
 
 
 class ReportGenerator:

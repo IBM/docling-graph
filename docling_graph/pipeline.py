@@ -1,11 +1,11 @@
 # File: pipeline.py
 # Location: docling_graph/pipeline.py
-# Description: Main extraction and graph conversion pipeline (REFACTORED)
+# Description: Main extraction and graph conversion pipeline
 """
 Main extraction and graph conversion pipeline.
 
 This module orchestrates the complete workflow from document extraction
-to graph generation, export, and visualization using the refactored graph module.
+to graph generation, export, and visualization using the graph module.
 """
 from typing import Dict, Any, Optional
 from pathlib import Path
@@ -20,8 +20,8 @@ from .llm_clients.llm_base import BaseLlmClient
 # Import Extractors
 from .extractors.factory import ExtractorFactory
 
-# Import REFACTORED graph module - ALL components
-from .graph import (
+# Import graph module - ALL components
+from .core import (
     GraphConverter,
     GraphConfig,
     VisualizationConfig,
@@ -147,7 +147,7 @@ def run_pipeline(config: Dict[str, Any]) -> None:
             - model_override: Optional model override
             - provider_override: Optional provider override
     """
-    print("--- [blue]Starting Docling-Graph Pipeline (Refactored)[/blue] ---")
+    print("--- [blue]Starting Docling-Graph Pipeline[/blue] ---")
 
     processing_mode = config.get("processing_mode")
     backend_type = config.get("backend_type")
@@ -217,7 +217,7 @@ def run_pipeline(config: Dict[str, Any]) -> None:
 
         print(f"Successfully extracted {len(extracted_data)} item(s).")
 
-        # 5. Convert to Graph using REFACTORED module
+        # 5. Convert to Graph
         print("Converting Pydantic model(s) to Knowledge Graph...")
 
         # Create graph config with custom settings
@@ -245,7 +245,7 @@ def run_pipeline(config: Dict[str, Any]) -> None:
         base_name = Path(config["source"]).stem
         output_path = output_dir / f"{base_name}_graph"
 
-        # 7. Export graph using REFACTORED exporters
+        # 7. Export graph
         export_format = config.get("export_format", "csv")
         print(f"Exporting graph data in [cyan]{export_format.upper()}[/cyan] format...")
 
@@ -266,7 +266,7 @@ def run_pipeline(config: Dict[str, Any]) -> None:
             exporter.export(knowledge_graph, json_path)
             print(f"[green]->[/green] Saved JSON to [green]{json_path}[/green]")
 
-        # 8. Generate visualizations using REFACTORED visualizers
+        # 8. Generate visualizations using visualizers
         print(f"[green]->[/green] Generating visualizations...")
 
         # Markdown report using NEW ReportGenerator
@@ -289,16 +289,8 @@ def run_pipeline(config: Dict[str, Any]) -> None:
         # Generate PNG
         static_viz.visualize(knowledge_graph, output_path, format='png')
         print(f"[green]->[/green] Generated static PNG")
-
-        # Generate SVG (optional, good for presentations)
-        static_viz.visualize(
-            knowledge_graph,
-            Path(str(output_path) + '_vector'),
-            format='svg'
-        )
-        print(f"[green]->[/green] Generated static SVG")
-
         print(f"[green]->[/green] All outputs saved to [green]{output_dir}[/green]")
+
         print("--- [blue]Pipeline Finished Successfully![/blue] ---")
 
     finally:
