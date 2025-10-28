@@ -7,17 +7,22 @@ from pathlib import Path
 
 @dataclass(frozen=True)
 class GraphConfig:
-    """Configuration for graph conversion."""
+    """Internal Constants."""
 
     # Node ID generation
     NODE_ID_HASH_LENGTH: Final[int] = 12
 
-    # Edge options
-    add_reverse_edges: bool = False
-
     # Serialization
     MAX_STRING_LENGTH: Final[int] = 1000
     TRUNCATE_SUFFIX: Final[str] = "..."
+
+    """Configuration Options."""
+
+    # Edge options
+    add_reverse_edges: bool = False
+
+    # Trigger graph validation
+    validate_graph: bool = True
 
 
 @dataclass(frozen=True)

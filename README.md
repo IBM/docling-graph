@@ -430,7 +430,7 @@ vlm:
 
 - **High**: Set up continuous integration and deployment pipelines via GitHub Actions
 - **High**: Expand test coverage to the entire codebase
-- **Medium**: Add input validation and security measures (file paths validation, rate limiting)
+- **Medium**: Add input validation and security measures (file paths validation, model size limit, recursion depth limit, rate limiting)
 - **Medium**: Performance optimizations (caching, async, batching)
 
 ### 2. Upcoming Features

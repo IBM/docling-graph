@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class Edge(BaseModel):
@@ -18,7 +18,7 @@ class Edge(BaseModel):
 
     class Config:
         """Pydantic model configuration."""
-        frozen = False
+        frozen = True
 
 
 class GraphMetadata(BaseModel):
@@ -35,7 +35,7 @@ class GraphMetadata(BaseModel):
         description="Count of edges by type/label"
     )
     created_at: datetime = Field(
-        default_factory=datetime.now,
+        default_factory=lambda: datetime.now(timezone.utc),
         description="Graph creation timestamp"
     )
     source_models: int = Field(
@@ -50,4 +50,4 @@ class GraphMetadata(BaseModel):
 
     class Config:
         """Pydantic model configuration."""
-        frozen = False
+        frozen = True

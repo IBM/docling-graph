@@ -42,7 +42,6 @@ def format_property_key(key: str) -> str:
         return ' '.join(word.capitalize() for word in key.split('_'))
 
     # Handle camelCase
-    import re
     return re.sub(r'([A-Z])', r' \1', key).strip().title()
 
 

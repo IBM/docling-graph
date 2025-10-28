@@ -93,10 +93,6 @@ class MistralClient(BaseLlmClient):
                 "content": prompt,
             })
 
-        for i, msg in enumerate(messages):
-            content_preview = msg["content"][:100] if msg["content"] else "EMPTY"
-            print(f"  Message {i+1} ({msg['role']}): {content_preview}...")
-
         try:
             # Call Mistral API
             res = self.client.chat.complete(
