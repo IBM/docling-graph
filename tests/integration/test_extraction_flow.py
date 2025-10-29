@@ -4,7 +4,7 @@ Integration tests for extraction workflows.
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from docling_graph.extractors import OneToOneStrategy, ManyToOneStrategy
+from docling_graph.core.extractors import OneToOneStrategy, ManyToOneStrategy
 
 
 @pytest.mark.integration
