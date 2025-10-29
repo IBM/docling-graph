@@ -201,7 +201,8 @@ class CosmoGraphVisualizer:
             point_label_by='id',
             simulation_repulsion=2,
             simulation_friction=1,
-            point_include_columns=node_columns
+            point_include_columns=node_columns,
+            fit_view_delay=2000
         )
         
         # Handle default output path
