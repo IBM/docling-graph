@@ -1,4 +1,9 @@
-from .static_visualizer import StaticVisualizer
-from .interactive_visualizer import InteractiveVisualizer
+"""Graph visualization tools."""
 
-__all__ = ["StaticVisualizer", "InteractiveVisualizer"]
+from .cosmo_visualizer import CosmoGraphVisualizer
+from .static_visualizer import StaticVisualizer
+
+__all__ = [
+    "CosmoGraphVisualizer",
+    "StaticVisualizer",
+]

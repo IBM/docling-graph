@@ -24,13 +24,11 @@ from .extractors.factory import ExtractorFactory
 from .core import (
     GraphConverter,
     GraphConfig,
-    VisualizationConfig,
     CSVExporter,
     CypherExporter,
     JSONExporter,
-    StaticVisualizer,
-    InteractiveVisualizer,
     ReportGenerator,
+    CosmoGraphVisualizer
 )
 
 
@@ -278,18 +276,14 @@ def run_pipeline(config: Dict[str, Any]) -> None:
         )
         print(f"[green]->[/green] Generated markdown report")
 
-        # Interactive visualization
-        interactive_viz = InteractiveVisualizer()
-        interactive_viz.visualize(knowledge_graph, output_path)
-        print(f"[green]->[/green] Generated interactive HTML visualization")
-
-        # Static visualizations
-        static_viz = StaticVisualizer()
-
-        # Generate PNG
-        static_viz.visualize(knowledge_graph, output_path, format='png')
-        print(f"[green]->[/green] Generated static PNG")
-        print(f"[green]->[/green] All outputs saved to [green]{output_dir}[/green]")
+        # CosmoGraph interactive visualization
+        cosmo_viz = CosmoGraphVisualizer()
+        cosmo_viz.save_cosmo_graph(
+            knowledge_graph, 
+            output_path,
+            open_browser=False  # Set to True to auto-open in browser
+        )
+        print(f"[green]->[/green] Generated CosmoGraph interactive visualization")
 
         print("--- [blue]Pipeline Finished Successfully![/blue] ---")
 

@@ -65,7 +65,7 @@ module = [
     "pandas.*",
     "networkx.*",
     "matplotlib.*",
-    "pyvis.*",
+    "cosmograph.*",
     "ollama.*",
     "mistralai.*",
     "openai.*",

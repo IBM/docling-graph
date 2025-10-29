@@ -7,8 +7,8 @@ pandas
 mypy
 
 ### Visualization Libraries ###
-matplotlib>=3.7.0,
-pyvis>=0.3.2,
+matplotlib
+cosmograph
 
 ### CLI Libraries ###
 typer[all]

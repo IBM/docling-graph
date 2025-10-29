@@ -15,11 +15,11 @@ models:
       default_model: llama3:8b-instruct
       provider: ollama
     remote:
-      default_model: mistral-small-latest
+      default_model: mistral-medium-latest
       provider: mistral
     providers:
       mistral:
-        default_model: mistral-small-latest
+        default_model: mistral-medium-latest
       openai:
         default_model: gpt-4-turbo
       gemini:

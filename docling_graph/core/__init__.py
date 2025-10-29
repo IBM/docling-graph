@@ -5,14 +5,15 @@ This module handles conversion of Pydantic models to NetworkX graphs,
 and provides export and visualization capabilities.
 """
 
-from .base.converter import GraphConverter
 from .base.config import GraphConfig, VisualizationConfig, ExportConfig
 from .base.models import Edge, GraphMetadata
-from .exporters.csv_exporter import CSVExporter
+from .base.converter import GraphConverter
+
 from .exporters.cypher_exporter import CypherExporter
+from .exporters.csv_exporter import CSVExporter
 from .exporters.json_exporter import JSONExporter
-from .visualizers.static_visualizer import StaticVisualizer
-from .visualizers.interactive_visualizer import InteractiveVisualizer
+
+from .visualizers.cosmo_visualizer import CosmoGraphVisualizer
 from .visualizers.report_generator import ReportGenerator
 
 __all__ = [
@@ -28,7 +29,6 @@ __all__ = [
     "CypherExporter",
     "JSONExporter",
     # Visualizers
-    "StaticVisualizer",
-    "InteractiveVisualizer",
+    "CosmoGraphVisualizer",
     "ReportGenerator",
 ]
