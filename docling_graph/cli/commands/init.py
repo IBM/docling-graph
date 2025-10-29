@@ -19,14 +19,14 @@ def init_command():
         print(f"[yellow]'{CONFIG_FILE_NAME}' already exists.[/yellow]")
         if not typer.confirm("Overwrite it?"):
             print("Initialization cancelled.")
-            return  # FIXED: Return normally (exit code 0)
+            return  # Return normally (exit code 0)
 
     # Build configuration interactively
     try:
         config_dict = build_config_interactive()
 
     except (EOFError, KeyboardInterrupt, typer.Abort):
-        # FIXED: Handle non-interactive environment gracefully
+        # Handle non-interactive environment gracefully
         print("[yellow]Interactive mode not available. Using default configuration.[/yellow]")
 
         # Load default config from template

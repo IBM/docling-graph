@@ -72,7 +72,7 @@ class MockVLMBackend:
         self.last_image = None
 
     def extract_from_document(self, doc_path, template):
-        """FIXED: Return proper list, not Mock object.
+        """Return proper list, not Mock object.
 
         Args:
             doc_path: Path to document file.
@@ -89,7 +89,7 @@ class MockVLMBackend:
         ]  # NOT just Mock()
 
     def extract_from_images(self, images, template):
-        """FIXED: Return proper list for image extraction.
+        """Return proper list for image extraction.
 
         Args:
             images: List of image paths.
