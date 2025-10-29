@@ -213,9 +213,9 @@ class CosmoGraphVisualizer:
         
         # Handle default output path
         if output_path is None:
-            output_path = Path("cosmo_graph.html")
+            output_path = Path("outputs/temp_cosmo_graph.html")
         elif not str(output_path).endswith(".html"):
-            output_path = Path(str(output_path) + "_interactive.html")
+            output_path = Path(str(output_path) + ".html")
         
         return self._export_and_open(widget, output_path, open_browser)
 
