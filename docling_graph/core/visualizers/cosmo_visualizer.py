@@ -111,15 +111,8 @@ class CosmoGraphVisualizer:
             else:
                 prepared_nodes["id"] = range(len(prepared_nodes))
         
-        # Ensure 'label' exists
-        if "label" not in prepared_nodes.columns:
-            if "name" in prepared_nodes.columns:
-                prepared_nodes["label"] = prepared_nodes["name"]
-            else:
-                prepared_nodes["label"] = prepared_nodes["id"].astype(str)
-        
         # Sort columns: essential first, then by non-null count (descending)
-        essential_cols = ['id', 'idx', 'label', 'type']
+        essential_cols = ['id', 'idx', 'label', 'type', 'name']
         existing_essential = [c for c in essential_cols if c in prepared_nodes.columns]
         
         other_cols = [c for c in prepared_nodes.columns if c not in existing_essential]
@@ -195,8 +188,8 @@ class CosmoGraphVisualizer:
         print(f"  Nodes: [cyan]{len(prepared_nodes)}[/cyan]")
         print(f"  Edges: [cyan]{len(prepared_edges)}[/cyan]")
         
-        # Include all columns in point metadata except id and label
-        node_columns = [c for c in prepared_nodes.columns if c not in ['id', 'label']]
+        # Include all columns in point metadata except id and name
+        node_columns = [c for c in prepared_nodes.columns if c not in ['id']]
         
         print("Creating CosmoGraph visualization...")
         widget = cosmo(
@@ -205,7 +198,7 @@ class CosmoGraphVisualizer:
             point_id_by='id',
             link_source_by='source',
             link_target_by='target',
-            point_label_by='label',
+            point_label_by='id',
             simulation_repulsion=2,
             simulation_friction=1,
             point_include_columns=node_columns
