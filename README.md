@@ -48,7 +48,7 @@ The toolkit supports two extraction families: **local VLM** via Docling and **LL
   - `Cypher` script generation for bulk ingestion
   - `JSON` export for general-purpose graph data
 - **Visualization**:
-  - Interactive `CosmoGraph HTML` visualization in full-page browser view with enhanced node/edge exploration
+  - Interactive `HTML` visualization in full-page browser view with enhanced node/edge exploration
   - Publication-grade static images (`PNG`, `SVG`, `PDF`)
   - Detailed `MARKDOWN` report with graph nodes content and edges
 
@@ -79,7 +79,7 @@ pip install -e .
 
 Dependencies:
 
-- Core: `docling[vlm]`, `pydantic`, `networkx`, `matplotlib`, `cosmograph`, `ipywidgets`, `rich`, `typer`
+- Core: `docling[vlm]`, `pydantic`, `networkx`, `pyvis`, `matplotlib`, `cosmograph`, `ipywidgets`, `rich`, `typer`
 - Optional LLM clients: `vllm`, `ollama` (local), `mistralai`, `openai`, `google-generativeai` (remote)
 
 
@@ -520,7 +520,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 - Built upon [Docling](https://github.com/docling-project/docling) for advanced document processing.
 - Uses [Pydantic](https://pydantic.dev) for data validation.
 - Graph generation powered by [NetworkX](https://networkx.org/).
-- Visualizations with [Pyvis](https://cosmograph.app/) and [Matplotlib](https://matplotlib.org/).
+- Visualizations with [Pyvis](https://cosmograph.app/), [Matplotlib](https://matplotlib.org/) and [Cosmograph](https://cosmograph.app/).
 - CLI powered by [Typer](https://pyvis.readthedocs.io/en/latest/) and [Rich](https://github.com/Textualize/rich).
 
 
