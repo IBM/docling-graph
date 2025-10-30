@@ -1,10 +1,10 @@
 defaults:
-  processing_mode: many-to-one
-  backend_type: vlm
+  processing_mode: one-to-one
+  backend_type: llm
   inference: local
   export_format: csv
 docling:
-  pipeline: vision
+  pipeline: ocr
 models:
   vlm:
     local:
@@ -12,14 +12,18 @@ models:
       provider: docling
   llm:
     local:
-      default_model: llama3:8b-instruct
-      provider: ollama
+      default_model: ibm-granite/granite-4.0-1b
+      provider: vllm
     remote:
-      default_model: mistral-small-latest
+      default_model: mistral-medium-latest
       provider: mistral
     providers:
+      ollama:
+        default_model: llama3:8b-instruct
+      vllm:
+        default_model: llama-3.1-8b
       mistral:
-        default_model: mistral-small-latest
+        default_model: mistral-medium-latest
       openai:
         default_model: gpt-4-turbo
       gemini:

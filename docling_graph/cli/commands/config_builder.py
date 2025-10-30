@@ -121,22 +121,25 @@ def _prompt_docling() -> Dict[str, str]:
 def _prompt_models(backend_type: str, inference: str) -> Dict[str, Any]:
     """Prompt for model configuration."""
     print("\n[bold cyan]── Model Configuration ──[/bold cyan]")
-
+    
     if backend_type == "vlm":
-        vlm, llm_local, llm_remote, provider = _prompt_vlm_models()
+        vlm, llm_local, llm_remote, remote_provider, _ = _prompt_vlm_models()
+        local_provider = "docling"  # VLM uses docling
     elif inference == "local":
-        vlm, llm_local, llm_remote, provider = _prompt_llm_local_models()
+        vlm, llm_local, llm_remote, remote_provider, local_provider = _prompt_llm_local_models()
     else:
-        vlm, llm_local, llm_remote, provider = _prompt_llm_remote_models()
-
+        vlm, llm_local, llm_remote, remote_provider, local_provider = _prompt_llm_remote_models()
+    
     return {
         "vlm": {
             "local": {"default_model": vlm, "provider": "docling"}
         },
         "llm": {
-            "local": {"default_model": llm_local, "provider": "ollama"},
-            "remote": {"default_model": llm_remote, "provider": provider},
+            "local": {"default_model": llm_local, "provider": local_provider},
+            "remote": {"default_model": llm_remote, "provider": remote_provider},
             "providers": {
+                "ollama": {"default_model": "llama3:8b-instruct"},
+                "vllm": {"default_model": "llama-3.1-8b"},
                 "mistral": {"default_model": DEFAULT_MODELS["llm_remote"]["mistral"]},
                 "openai": {"default_model": DEFAULT_MODELS["llm_remote"]["openai"]},
                 "gemini": {"default_model": DEFAULT_MODELS["llm_remote"]["gemini"]}
@@ -145,49 +148,54 @@ def _prompt_models(backend_type: str, inference: str) -> Dict[str, Any]:
     }
 
 
-def _prompt_vlm_models() -> Tuple[str, str, str, str]:
+def _prompt_vlm_models() -> Tuple[str, str, str, str, str]:
     """Prompt for VLM model."""
-    print("\n[bold]6. VLM Local Model[/bold]")
+    print("[bold]6. VLM Local Model[/bold]")
     print(f" • [cyan]{DEFAULT_MODELS['vlm']}[/cyan]: Default")
-
     vlm = typer.prompt("Select VLM model", default=DEFAULT_MODELS["vlm"])
     if vlm == "custom":
         vlm = typer.prompt("Enter custom model path")
-
     return (vlm, DEFAULT_MODELS["llm_local"], 
-            DEFAULT_MODELS["llm_remote"]["mistral"], "mistral")
+            DEFAULT_MODELS["llm_remote"]["mistral"], "mistral", "docling")
 
 
 def _prompt_llm_local_models() -> Tuple[str, str, str, str]:
     """Prompt for local LLM model."""
-    print("\n[bold]6. LLM Local Model[/bold]")
+    print("\n[bold]6. Local LLM Provider[/bold]")
+    print(" • [cyan]ollama[/cyan]: Ollama (requires ollama serve)")
+    print(" • [cyan]vllm[/cyan]: vLLM (direct Python API, GPU required)")
+    
+    local_provider = typer.prompt(
+        "Select local provider",
+        type=click.Choice(["ollama", "vllm"], case_sensitive=False),
+        default="vllm"
+    )
+    
+    print(f"\n[bold]7. LLM Model for {local_provider}[/bold]")
     print(f" • [cyan]{DEFAULT_MODELS['llm_local']}[/cyan]: Default")
-
-    llm = typer.prompt("Select LLM model", default=DEFAULT_MODELS["llm_local"])
+    
+    llm = typer.prompt("Select LLM model", default=DEFAULT_MODELS)
     if llm == "custom":
-        llm = typer.prompt("Enter Ollama model name")
-
+        llm = typer.prompt(f"Enter {local_provider} model name")
+    
     return (DEFAULT_MODELS["vlm"], llm,
-            DEFAULT_MODELS["llm_remote"]["mistral"], "mistral")
+            DEFAULT_MODELS["llm_remote"]["mistral"], "mistral", local_provider)
 
 
-def _prompt_llm_remote_models() -> Tuple[str, str, str, str]:
+def _prompt_llm_remote_models() -> Tuple[str, str, str, str, str]:
     """Prompt for remote LLM model."""
-    print("\n[bold]6. API Provider[/bold]")
+    print("[bold]6. API Provider[/bold]")
     print(" • [cyan]mistral[/cyan], [cyan]openai[/cyan], [cyan]gemini[/cyan]")
-
     provider = typer.prompt(
         "Select API provider",
         type=click.Choice(API_PROVIDERS, case_sensitive=False),
         default="mistral"
     )
-
     model = typer.prompt(
         f"Model for {provider}",
         default=DEFAULT_MODELS["llm_remote"][provider]
     )
-
-    return (DEFAULT_MODELS["vlm"], DEFAULT_MODELS["llm_local"], model, provider)
+    return (DEFAULT_MODELS["vlm"], DEFAULT_MODELS["llm_local"], model, provider, "vllm")
 
 
 def _prompt_output() -> Dict[str, Any]:
@@ -199,7 +207,7 @@ def _prompt_output() -> Dict[str, Any]:
 
     print("\n[bold]8. Visualization Options[/bold]")
     visualizations = typer.confirm("Create interactive visualizations?", default=True)
-    markdown = typer.confirm("Create markdown documentation?", default=True)
+    markdown = typer.confirm("Create markdown report?", default=True)
 
     return {
         "default_directory": directory,
@@ -212,16 +220,21 @@ def print_next_steps(config: Dict[str, Any]) -> None:
     """Print next steps after config creation."""
     inference = config["defaults"]["inference"]
     backend = config["defaults"]["backend_type"]
-
+    
     print("\n[bold]Next steps:[/bold]")
-
     if inference == "local" and backend == "llm":
+        provider = config["models"]["llm"]["local"]["provider"]
         model = config["models"]["llm"]["local"]["default_model"]
-        print(f" 1. Start Ollama: [cyan]ollama serve[/cyan]")
-        print(f" 2. Pull model: [cyan]ollama pull {model}[/cyan]")
+        
+        if provider == "ollama":
+            print(f" 1. Start Ollama: [cyan]ollama serve[/cyan]")
+            print(f" 2. Pull model: [cyan]ollama pull {model}[/cyan]")
+        elif provider == "vllm":
+            print(f" 1. Start vLLM: [cyan]vllm serve {model} --host 0.0.0.0[/cyan]")
+            print(f" 2. Ensure GPU available with sufficient memory")
     elif inference == "remote":
         provider = config["models"]["llm"]["remote"]["provider"].upper()
         print(f" 1. Set API key: [cyan]export {provider}_API_KEY='...'[/cyan]")
-
+    
     print(f" 3. Convert: [cyan]docling-graph convert doc.pdf -t templates.Invoice[/cyan]")
     print(f"\n[dim]Edit config.yaml anytime to adjust settings.[/dim]")

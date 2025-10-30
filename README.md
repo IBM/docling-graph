@@ -6,21 +6,21 @@
 
 # Docling Graph
 
-[![Docs](https://img.shields.io/badge/docs-coming%20soon-brightgreen)](https://github.com/ayoub-ibm/docling-graph)
+[![Docs](https://img.shields.io/badge/Docs-coming%20soon-brightgreen)](https://github.com/ayoub-ibm/docling-graph)
 [![Docling](https://img.shields.io/badge/Docling-VLM-red)](https://github.com/docling-project/docling)
-[![Python 3.10 | 3.11 | 3.12](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/)
+[![Python 3.10 | 3.11 | 3.12](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/)
+[![NetworkX](https://img.shields.io/badge/NetworkX-3.0+-red)](https://networkx.org/)
 [![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://pydantic.dev)
-[![NetworkX](https://img.shields.io/badge/NetworkX-3.0+-orange)](https://networkx.org/)
-![Mypy](https://img.shields.io/badge/type--checked-mypy-blue?logo=python&logoColor=white)
+[![Mypy](https://img.shields.io/badge/Type--checked-mypy-blue?logo=python&logoColor=white)](https://mypy.readthedocs.io/en/stable)
 [![Typer](https://img.shields.io/badge/Typer-CLI-purple)](https://typer.tiangolo.com/)
-[![Pytest](https://img.shields.io/badge/pytest-passing-brightgreen?logo=pytest&logoColor=white)](https://docs.pytest.org/)
-[![Rich](https://img.shields.io/badge/Rich-terminal-cyan)](https://github.com/Textualize/rich)
-[![Ollama](https://img.shields.io/badge/Ollama-compatible-black)](https://ollama.ai/)
+[![Rich](https://img.shields.io/badge/Rich-terminal-purple)](https://github.com/Textualize/rich)
+[![vLLM](https://img.shields.io/badge/vLLM-compatible-brightgreen)](https://vllm.ai/)
+[![Ollama](https://img.shields.io/badge/Ollama-compatible-brightgreen)](https://ollama.ai/)
 [![License MIT](https://img.shields.io/github/license/ayoub-ibm/docling-graph)](https://opensource.org/licenses/MIT)
 
 Docling-Graph converts documents into validated **Pydantic** objects and then into a **directed knowledge graph**, with exports to CSV or Cypher and both static and interactive visualizations.  
 
-The toolkit supports two extraction families: **local VLM** via Docling and **LLM-based extraction** via local (Ollama) or API providers (Mistral, OpenAI, Gemini), all orchestrated by a flexible, config-driven pipeline.
+The toolkit supports two extraction families: **local VLM** via Docling and **LLM-based extraction** via local (vLLM, Ollama) or API providers (Mistral, OpenAI, Gemini), all orchestrated by a flexible, config-driven pipeline.
 
 
 
@@ -37,7 +37,7 @@ The toolkit supports two extraction families: **local VLM** via Docling and **LL
 
 - **Extraction**:
   - Local `VLM` (Docling's vision pipeline leveraging Granite-Docling)  
-  - `LLM` (local via Ollama or remote via Mistral/OpenAI/Gemini API)  
+  - `LLM` (local via vLLM/Ollama or remote via Mistral/OpenAI/Gemini API)  
   - Page-wise or whole-document conversion strategies
 - **Graph Construction**:
   - Markdown to Graph: Convert validated Pydantic instances to a `NetworkX DiGraph` with rich edge metadata and stable node IDs
@@ -80,7 +80,7 @@ pip install -e .
 Dependencies:
 
 - Core: `docling[vlm]`, `pydantic`, `networkx`, `pymupdf`, `matplotlib`, `cosmograph`, `ipywidgets`, `rich`, `typer`
-- Optional LLM clients: `ollama` (local), `mistralai`, `openai`, `google-generativeai` (remote)
+- Optional LLM clients: `vllm`, `ollama` (local), `mistralai`, `openai`, `google-generativeai` (remote)
 
 
 
@@ -143,12 +143,12 @@ docling-graph convert examples/data/invoice.pdf \
   -p one-to-one -b vlm -i local -d vision -o outputs
 ```
 
-**Local LLM via Ollama (many-to-one), default OCR pipeline:**
+**Local LLM via vLLM (many-to-one), default OCR pipeline:**
 ```bash
 docling-graph convert examples/data/policy.pdf \
   --template "examples.templates.insurance.InsuranceTerms" \
   -p many-to-one -b llm -i local \
-  --provider ollama --model "llama3:8b-instruct" \
+  --provider vllm --model "ibm-granite/granite-4.0-1b" \
   -d default -o outputs
 ```
 
@@ -411,7 +411,17 @@ For complete guidance, see: [Pydantic Templates for Knowledge Graph Extraction](
 
 ## Environment and Providers
 
-### Local LLM (Ollama)
+If you plan to run LLM inference locally, make sure the local LLM services are started beforehand.
+
+### Local LLM
+
+**vLLM:**
+```bash
+# Start vLLM service and pull model
+vllm serve ibm-granite/granite-4.0-1b
+```
+
+**Ollama:**
 ```bash
 # Start Ollama service
 ollama serve

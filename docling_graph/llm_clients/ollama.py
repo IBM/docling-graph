@@ -29,17 +29,11 @@ class OllamaClient(BaseLlmClient):
 
         self.model = model
 
-        # Context limits for different models (approximate)
+        # Context limits for different models
         model_context_limits = {
-            "llama3:8b": 8000,
-            "llama3:70b": 8000,
             "llama3.1:8b": 128000,
-            "llama3.1:70b": 128000,
             "llama3.2:3b": 128000,
-            "mistral:7b": 8000,
-            "mixtral:8x7b": 32000,
-            "phi3:mini": 4000,
-            "codellama:7b": 16000,
+            "mixtral:8x7b": 32000
         }
 
         # Extract base model name for lookup

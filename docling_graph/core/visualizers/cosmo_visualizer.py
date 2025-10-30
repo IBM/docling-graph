@@ -229,7 +229,7 @@ class CosmoGraphVisualizer:
 
         print("Exporting to HTML...")
         self._write_fullpage_widget_html(widget, output_html, title="CosmoGraph Visualization")
-        print(f"[green][GraphInspector] HTML file created: {output_html}[/green]")
+        print(f"[green][GraphInspector][/green] HTML file created: {output_html}")
 
         if open_browser:
             print("Opening in browser...")

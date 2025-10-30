@@ -28,11 +28,18 @@ models:
   # Language Models (LLM)
   llm:
     local:
-      default_model: "llama3:8b-instruct"
-      provider: "ollama"
-      # Make sure Ollama is running locally with: ollama serve
-      # Pull models with: ollama pull llama3:8b-instruct
-      
+      default_model: "ibm-granite/granite-4.0-1b"
+      provider: "vllm"
+
+      # Provider-specific configurations
+      providers:
+        vllm:
+          default_model: "ibm-granite/granite-4.0-1b"
+          base_url: "http://localhost:8000/v1"
+
+        ollama:
+          default_model: "llama-3.1-8b"
+        
     remote:
       default_model: "mistral-small-latest"
       provider: "mistral"

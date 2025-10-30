@@ -129,3 +129,16 @@ def validate_vlm_constraints(backend_type: str, inference: str) -> None:
         print(f"[red]Error:[/red] VLM (Vision-Language Model) is currently only supported with local inference.")
         print("Please use '--inference local' or switch to '--backend_type llm' for API inference.")
         raise typer.Exit(code=1)
+
+def validate_provider(provider: str, inference: str) -> str:
+    """Validate provider choice."""
+    from .constants import API_PROVIDERS, LOCAL_PROVIDERS
+    
+    valid_providers = LOCAL_PROVIDERS if inference == "local" else API_PROVIDERS
+    
+    if provider not in valid_providers:
+        raise ValueError(
+            f"Invalid provider '{provider}' for inference='{inference}'. "
+            f"Valid options: {', '.join(valid_providers)}"
+        )
+    return provider

@@ -21,14 +21,14 @@ dependencies = [
     "networkx>=3.0",
     "pymupdf",
     "matplotlib>=3.7.0",
-    "pyvis>=0.3.2",
+    "cosmograph",
     "rich",
     "typer[all]",
     "ollama",
-    # "vllm",
+    "openai",
     "mistralai",
     # "google",
-    # "openai",
+    # "google-genai",
     # "ibm-watson-machine-learning"
 ]
 
@@ -67,8 +67,8 @@ module = [
     "matplotlib.*",
     "cosmograph.*",
     "ollama.*",
-    "mistralai.*",
     "openai.*",
+    "mistralai.*",
     "google-genai.*",
     "google.*"
 ]

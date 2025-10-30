@@ -7,7 +7,7 @@ pandas
 mypy
 
 ### Visualization Libraries ###
-matplotlib
+matplotlib>=3.7..0
 cosmograph
 
 ### CLI Libraries ###
@@ -22,11 +22,10 @@ ipython
 
 ### Local LLM Providers ###
 ollama
-vllm
 
 ### API Providers ###
-ibm-watson-machine-learning
 mistralai
-google-genai
-google
 openai
+# ibm-watson-machine-learning
+# google-genai
+# google

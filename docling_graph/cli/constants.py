@@ -27,13 +27,16 @@ DOCLING_PIPELINES: Final[list[str]] = ["ocr", "vision"]
 # Default model configurations
 DEFAULT_MODELS = {
     "vlm": "numind/NuExtract-2.0-8B",
-    "llm_local": "llama3:8b-instruct",
+    "llm_local": "llama-3.1-8b",
     "llm_remote": {
         "mistral": "mistral-small-latest",
         "openai": "gpt-4-turbo",
         "gemini": "gemini-2.5-flash"
     }
 }
+
+# Local Providers
+LOCAL_PROVIDERS: Final[list[str]] = ["vllm", "ollama"]
 
 # API Providers
 API_PROVIDERS: Final[list[str]] = ["mistral", "openai", "gemini"]

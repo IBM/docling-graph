@@ -62,7 +62,7 @@ def convert_command(
         writable=True
     )] = Path("outputs"),
     model: Annotated[Optional[str], typer.Option(
-        "--model",
+        "--model", "-m",
         help="Override model name."
     )] = None,
     provider: Annotated[Optional[str], typer.Option(

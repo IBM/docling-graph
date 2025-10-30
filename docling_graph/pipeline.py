@@ -1,6 +1,3 @@
-# File: pipeline.py
-# Location: docling_graph/pipeline.py
-# Description: Main extraction and graph conversion pipeline
 """
 Main extraction and graph conversion pipeline.
 
@@ -12,12 +9,15 @@ from pathlib import Path
 from rich import print
 import importlib
 
-# Import LLM Clients
-from .llm_clients.mistral import MistralClient
-from .llm_clients.ollama import OllamaClient
-from .llm_clients.llm_base import BaseLlmClient
+# Import LLM clients
+from .llm_clients import (
+    BaseLlmClient,
+    MistralClient,
+    VllmClient,
+    OllamaClient
+)
 
-# Import graph module - ALL components
+# Import core components
 from .core import (
     ExtractorFactory,
     GraphConverter,
@@ -119,6 +119,8 @@ def _initialize_llm_client(provider: str, model: str) -> BaseLlmClient:
     """
     if provider == "mistral":
         return MistralClient(model=model)
+    elif provider == "vllm":
+        return VllmClient(model=model)
     elif provider == "ollama":
         return OllamaClient(model=model)
     else:
