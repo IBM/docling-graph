@@ -2,12 +2,12 @@
 networkx>=3.0
 docling[vlm]
 pydantic
-pymupdf
 pandas
 mypy
 
 ### Visualization Libraries ###
-matplotlib>=3.7..0
+matplotlib>=3.7.0
+pyvis>=0.3.2
 cosmograph
 
 ### CLI Libraries ###
