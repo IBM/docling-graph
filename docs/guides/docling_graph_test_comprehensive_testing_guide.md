@@ -644,8 +644,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -e .
-          pip install -r requirements-test.txt
+          pip install -e .[test]
 
       - name: Run tests
         run: |
@@ -761,7 +760,7 @@ pip install -e .
 
 **Solutions:**
 - Check Python version differences
-- Verify all dependencies are in `requirements-test.txt`
+- Verify all test dependencies are included in the `test` optional dependency group in `pyproject.toml` (install with `pip install -e .[test]`)
 - Look for hardcoded paths or OS-specific code
 - Ensure tests don't depend on local files/services
 

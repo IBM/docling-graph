@@ -24,6 +24,7 @@ dependencies = [
     "cosmograph",
     "rich",
     "typer[all]",
+    "python-dotenv",
     "ollama",
     "openai",
     "mistralai",
@@ -40,6 +41,40 @@ changelog = "https://github.com/ayoub-ibm/docling-graph/blob/main/CHANGELOG.md"
 
 [project.scripts]
 docling-graph = "docling_graph.cli.main:main"
+
+[project.optional-dependencies]
+# Development tools (linters, formatters, type-checkers) and common developer utilities
+dev = [
+    "mypy>=1.4.0",
+    "ruff>=0.0.280",
+    "black>=23.7.0",
+    "isort>=5.12.0",
+]
+
+# Test stack and utilities
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.11.0",
+    "pytest-xdist>=3.3.0",
+    "pytest-timeout>=2.1.0",
+    "hypothesis>=6.82.0",
+    "pytest-asyncio>=0.21.0",
+    "freezegun>=1.2.2",
+    "responses>=0.23.0",
+    "faker>=19.0.0",
+    "types-PyYAML",
+    "types-requests",
+    # Some teams also install type checkers via test extras
+    "mypy>=1.4.0",
+]
+
+# Notebook-related tools and data analysis helpers
+notebook = [
+    "notebook",
+    "ipython",
+    "pandas",
+]
 
 [tool.setuptools.packages.find]
 include = ["docling_graph*"]
