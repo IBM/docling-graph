@@ -17,10 +17,11 @@ classifiers = [
     "Programming Language :: Python :: 3.13",    
 ]
 readme = "README.md"
-authors = [ # FIXME: Please add the others
+authors = [ # In alphabetical order
   { name = "Ayoub El Bouchtili", email = "ayoub.elbouchtili@fr.ibm.com" },
-  { name = "Sophie Lang", email = "sophie.lang@de.ibm.com" },
+  { name = "Michele Dolfi", email = "dol@zurich.ibm.com" },
   { name = "Maxime Gillot", email = "Maxime.Gillot@ibm.com" },  
+  { name = "Sophie Lang", email = "sophie.lang@de.ibm.com" },
   { name = "Guilhaume Leroy Meline", email = "guilhaume@fr.ibm.com" },
   { name = "Peter Staar", email = "taa@zurich.ibm.com" },
 ]
@@ -30,8 +31,6 @@ dependencies = [
     "docling[vlm]>=2.0.0,<3.0.0",
     "pydantic>=2.0.0,<3.0.0",
     "networkx>=3.0.0,<4.0.0",
-    "matplotlib>=3.7.0,<4.0.0",
-    "pyvis>=0.3.2,<1.0.0",
     "rich>=13,<14",  # verify constraints you need
     "typer[all]>=0.12,<1.0.0",  # verify min version used in code
     "python-dotenv>=1.0,<2.0",
@@ -46,18 +45,8 @@ changelog = "https://github.com/ayoub-ibm/docling-graph/blob/main/CHANGELOG.md"
 [project.scripts]
 docling-graph = "docling_graph.cli.main:main"
 
-[project.optional-dependencies]
-# Cosmo related optional dependencies (FIXME: GPL3!)
-cosmo = [
-    "cosmograph"
-]
-
 # LLM-related optional dependencies
-llm = [
-    "ollama",
-    "openai",
-    "mistralai",
-]
+llm = "docling_graph.llm:main"
 
 [dependency-groups]
 # Development tools (linters, type-checkers) and utilities
@@ -78,7 +67,6 @@ dev = [
     "pytest-durations~=1.6.1",
     "pytest-xdist~=3.3",
     "ipykernel~=6.29",
-    "ipywidgets~=8.1",
     "nbqa~=1.9",
     "python-semantic-release~=7.32",
     "mypy>=1.4.0",
@@ -200,9 +188,6 @@ module = [
     "mypy.*",
     "pandas.*",
     "networkx.*",
-    "matplotlib.*",
-    "pyvis.*",
-    "cosmograph.*",
     "ollama.*",
     "openai.*",
     "mistralai.*",

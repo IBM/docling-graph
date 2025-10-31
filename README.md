@@ -16,6 +16,8 @@
 [![Rich](https://img.shields.io/badge/Rich-terminal-purple)](https://github.com/Textualize/rich)
 [![vLLM](https://img.shields.io/badge/vLLM-compatible-brightgreen)](https://vllm.ai/)
 [![Ollama](https://img.shields.io/badge/Ollama-compatible-brightgreen)](https://ollama.ai/)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License MIT](https://img.shields.io/github/license/ayoub-ibm/docling-graph)](https://opensource.org/licenses/MIT)
 
 Docling-Graph converts documents into validated **Pydantic** objects and then into a **directed knowledge graph**, with exports to CSV or Cypher and both static and interactive visualizations.  
@@ -74,15 +76,21 @@ Requirements:
 
 Clone and install:
 ```bash
+# Clone the repository
 git clone https://github.com/ayoub-ibm/docling-graph
 cd docling-graph
-pip install -e .
+
+# Create or update the lockfile
+uv lock
+
+# Create the virtual environment and install all dependencies
+uv sync
 ```
 
 Dependencies:
 
-- Core: `docling[vlm]`, `pydantic`, `networkx`, `pyvis`, `matplotlib`, `ipywidgets`, `rich`, `typer`
-- Optional LLM clients: `vllm`, `ollama` (local), `mistralai`, `openai`, `google-generativeai` (remote)
+- Core: `docling[vlm]`, `pydantic`, `networkx`, `rich`, `typer`
+- Optional LLM clients: `vllm`, `ollama` (local), `mistralai`, `openai` (remote)
 
 
 
@@ -209,7 +217,7 @@ docling-graph convert examples/data/invoice.pdf \
 ### 2. Inspect Command
 
 
-Visualizes existing graph data using Pyvis in an interactive browser interface. This command creates a self-contained HTML file that can be opened, shared, or saved for later viewing.
+Visualizes existing graph data in an interactive browser interface. This command creates a self-contained HTML file that can be opened, shared, or saved for later viewing.
 
 #### 2.1. Arguments
 
@@ -250,176 +258,6 @@ docling-graph inspect ./outputs --no-open --output viz.html
 # After running convert, inspect the output
 docling-graph convert invoice.pdf --template "examples.templates.invoice.Invoice" -o outputs
 docling-graph inspect outputs
-```
-
-
-
-## Python API Usage
-
-### 1. Basic Example
-
-```bash
-from pathlib import Path
-from docling_graph.pipeline import run_pipeline
-
-# Define configuration
-config = {
-    "source": "examples/data/invoice.pdf",
-    "template": "examples.templates.invoice.Invoice",
-    "processing_mode": "one-to-one",
-    "backend_type": "vlm",
-    "inference": "local",
-    "docling_config": "vision",
-    "output_dir": "outputs",
-    "export_format": "csv",
-    "reverse_edges": False,
-    # Docling export settings
-    "export_docling": True,
-    "export_docling_json": True,
-    "export_markdown": True,
-    "export_per_page_markdown": False,
-    "config": {
-        "models": {
-            "vlm": {
-                "local": {
-                    "default_model": "numind/NuExtract-2.0-8B",
-                    "provider": "docling"
-                }
-            }
-        }
-    }
-}
-
-# Run the pipeline
-run_pipeline(config)
-```
-
-### 2. Advanced: Direct Graph Module Usage
-
-```python
-from docling_graph.graph import (
-    GraphConverter,
-    GraphConfig,
-    CSVExporter,
-    CypherExporter,
-    JSONExporter
-)
-from docling_graph.core import DoclingExporter
-from examples.templates.invoice import Invoice
-from pathlib import Path
-
-# 1. Create and validate Pydantic model
-invoice = Invoice(
-    bill_no="INV-001",
-    date="2024-01-15",
-    total=1500.00,
-    # ... other fields
-)
-
-# 2. Convert to graph
-config = GraphConfig(
-    add_reverse_edges=True,
-    node_id_hash_length=12
-)
-converter = GraphConverter(config=config)
-graph = converter.convert([invoice])
-
-# 3. Export to different formats
-output_dir = Path("outputs")
-
-# CSV Export (Neo4j compatible)
-csv_exporter = CSVExporter()
-csv_exporter.export(graph, output_dir / "nodes.csv", output_dir / "edges.csv")
-
-# JSON Export
-json_exporter = JSONExporter()
-json_exporter.export(graph, output_dir / "graph.json")
-
-# Cypher Export
-cypher_exporter = CypherExporter()
-cypher_exporter.export(graph, output_dir / "graph.cypher")
-
-# Docling Document Export
-docling_exporter = DoclingExporter(output_dir=output_dir)
-docling_exporter.export_document(
-    document=docling_document,  # From document processor
-    base_name="invoice",
-    include_json=True,
-    include_markdown=True,
-    per_page=False
-)
-
-# 4. Create visualizations
-# Generate markdown report
-report_gen = ReportGenerator()
-report_gen.visualize(
-    graph,
-    output_path=output_dir / "graph_report.md",
-    source_model_count=1
-)
-
-# Interactive visualization (HTML)
-cosmo_viz = InteractiveVisualizer()
-cosmo_viz.visualize(
-    graph,
-    output_path=output_dir / "graph_interactive",
-    open_browser=True  # Opens visualization in browser
-)
-```
-
-### 3. Working with NetworkX Directly
-
-```python
-import networkx as nx
-from docling_graph.graph import GraphConverter
-
-# Convert to graph
-converter = GraphConverter()
-graph = converter.convert([invoice])
-
-# Access NetworkX graph
-print(f"Nodes: {graph.number_of_nodes()}")
-print(f"Edges: {graph.number_of_edges()}")
-
-# Query nodes
-for node_id, data in graph.nodes(data=True):
-    print(f"Node: {node_id}, Label: {data.get('label')}")
-
-# Query edges
-for source, target, data in graph.edges(data=True):
-    print(f"Edge: {source} -> {target}, Type: {data.get('label')}")
-
-# NetworkX analysis
-print(f"Average degree: {sum(dict(graph.degree()).values()) / graph.number_of_nodes()}")
-```
-
-### 4. Custom Configuration
-
-```python
-from docling_graph.graph import GraphConfig, VisualizationConfig
-
-# Graph configuration
-graph_config = GraphConfig(
-    add_reverse_edges=True,
-    node_id_hash_length=16,  # Longer hash for IDs
-    edge_metadata_fields=['source', 'target', 'label']
-)
-
-# Visualization configuration
-viz_config = VisualizationConfig(
-    # Static visualization
-    static_figure_size=(30, 24),
-    static_node_size=5000,
-    static_node_color='#FF6B6B',
-    
-    # Interactive visualization
-    interactive_height="900px",
-    interactive_width="100%"
-)
-
-# Use configurations
-converter = GraphConverter(config=graph_config)
-visualizer = StaticVisualizer(config=viz_config)
 ```
 
 
@@ -521,7 +359,6 @@ vlm:
 - **Ollama connection error**: Ensure service is running (`ollama serve`) and model is pulled
 - **API key not set**: Export API key environment variable or add to `.env` file
 - **Empty LLM responses**: Check prompt configuration and model compatibility
-- **Graph visualization issues**: Ensure matplotlib and pyvis are installed (`pip matplotlib pyvis`)
 - **Interactive Graph browser issues**: If visualization doesn't open, manually open the generated HTML file
 - **Node ID format issues**: Check that `graph_id_fields` values are properly set
 - **Missing Docling exports**: Verify export flags are enabled in config or CLI
@@ -569,11 +406,11 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Acknowledgments
 
-- Built upon [Docling](https://github.com/docling-project/docling) for advanced document processing.
+- Powered by [Docling](https://github.com/docling-project/docling) for advanced document processing.
 - Uses [Pydantic](https://pydantic.dev) for data validation.
 - Graph generation powered by [NetworkX](https://networkx.org/).
-- Visualizations with [Pyvis](https://pyvis.readthedocs.io/en/latest/) and [Matplotlib](https://matplotlib.org/).
-- CLI powered by [Typer](https://pyvis.readthedocs.io/en/latest/) and [Rich](https://github.com/Textualize/rich).
+- Visualizations with [Cytoscape.js](https://js.cytoscape.org/).
+- CLI powered by [Typer](https://typer.tiangolo.com/) and [Rich](https://github.com/Textualize/rich).
 
 
 

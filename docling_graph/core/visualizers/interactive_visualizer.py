@@ -1,171 +1,329 @@
-"""Interactive graph visualizer using Pyvis."""
+"""
+Cytoscape visualizer for interactive graph visualization in the browser.
+"""
 
-from pyvis.network import Network
-from typing import Optional
+from rich import print
+import webbrowser
+import json
+import os
+
+from typing import Optional, Literal, Tuple
+from collections import Counter
 from pathlib import Path
-import networkx as nx
 
-from ..utils.formatting import format_property_key, format_property_value
-from ..base.config import VisualizationConfig
+import networkx as nx
+import pandas as pd
+import numpy as np
 
 
 class InteractiveVisualizer:
-    """Create interactive HTML graph visualizations with Pyvis."""
+    """Visualize graphs using Cytoscape in the browser."""
 
-    def __init__(self, config: Optional[VisualizationConfig] = None):
-        """Initialize interactive visualizer.
+    def __init__(self) -> None:
+        """Initialize Cytoscape visualizer."""
+        pass
+
+    def load_csv(self, path: Path) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        Load graph data from CSV files.
 
         Args:
-            config: Visualization configuration. Uses defaults if None.
-        """
-        self.config = config or VisualizationConfig()
+            path: Directory containing nodes.csv and edges.csv
 
-    def visualize(
+        Returns:
+            Tuple of (nodes_df, edges_df)
+        """
+        nodes_path = path / "nodes.csv"
+        edges_path = path / "edges.csv"
+
+        print(f"Loading nodes from {nodes_path}...")
+        nodes_df = pd.read_csv(nodes_path)
+
+        print(f"Loading edges from {edges_path}...")
+        edges_df = pd.read_csv(edges_path)
+
+        return nodes_df, edges_df
+
+    def load_json(self, path: Path) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        Load graph data from a JSON file.
+
+        Args:
+            path: Path to JSON file
+
+        Returns:
+            Tuple of (nodes_df, edges_df)
+        """
+        print(f"Loading graph from {path}...")
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        nodes = data.get("nodes", [])
+        edges = data.get("edges", [])
+
+        nodes_df = pd.DataFrame(nodes)
+        edges_df = pd.DataFrame(edges)
+
+        return nodes_df, edges_df
+    
+    def _extract_labels_for_count(self, row: pd.Series) -> list[str]:
+        # 1) plural 'labels' column (array or delimited string)
+        if 'labels' in row and self._is_valid_value(row['labels']):
+            v = row['labels']
+            if isinstance(v, (list, tuple, set)):
+                return [str(x) for x in v if str(x)]
+            if isinstance(v, str):
+                # split common delimiters
+                if '|' in v:
+                    return [p.strip() for p in v.split('|') if p.strip()]
+                if ',' in v:
+                    return [p.strip() for p in v.split(',') if p.strip()]
+                # Neo4j-like ":Research:Entity"
+                if ':' in v and not v.strip().startswith('http'):
+                    return [p for p in v.split(':') if p]
+                return [v]
+        # 2) single label-like columns
+        for col in ['label', 'node_label', 'node_type', 'type', 'category', 'class', 'kind']:
+            if col in row and self._is_valid_value(row[col]):
+                return [str(row[col])]
+        return ['Unknown']
+
+    def _compute_node_type_counts(self, nodes_df: pd.DataFrame) -> dict:
+        counts = Counter()
+        for _, r in nodes_df.iterrows():
+            for lab in self._extract_labels_for_count(r):
+                counts[lab] += 1
+        return dict(counts)
+
+    def _is_valid_value(self, value) -> bool:
+        """
+        Check if a value is valid (not NaN, None, or empty).
+        Handles scalars, arrays, and lists properly.
+        """
+        # Handle None
+        if value is None:
+            return False
+
+        # Handle numpy arrays and lists
+        if isinstance(value, (list, np.ndarray)):
+            return len(value) > 0
+
+        # Handle pandas NA types
+        if pd.isna(value):
+            return False
+
+        # Handle empty strings
+        if isinstance(value, str) and value.strip() == '':
+            return False
+
+        return True
+
+    def _serialize_value(self, value):
+        """
+        Convert a value to a JSON-serializable format.
+        Handles numpy types, lists, and other complex types.
+        """
+        # Handle None and NaN
+        if value is None or (not isinstance(value, (list, np.ndarray)) and pd.isna(value)):
+            return None
+
+        # Handle numpy types
+        if hasattr(value, 'item'):
+            return value.item()
+
+        # Handle lists and arrays
+        if isinstance(value, (list, np.ndarray)):
+            return [self._serialize_value(v) for v in value]
+
+        # Handle dicts
+        if isinstance(value, dict):
+            return {k: self._serialize_value(v) for k, v in value.items()}
+
+        # Return as-is for basic types
+        return value
+
+    def prepare_data_for_cytoscape(
+        self,
+        nodes_df: pd.DataFrame,
+        edges_df: pd.DataFrame,
+    ) -> dict:
+        """
+        Prepare dataframes for Cytoscape visualization.
+
+        Returns a dict with 'nodes' and 'edges' in Cytoscape format.
+        """
+        # Prepare nodes
+        nodes_list = []
+        for _, row in nodes_df.iterrows():
+            node_data = {}
+            for key, value in row.items():
+                if self._is_valid_value(value):
+                    serialized = self._serialize_value(value)
+                    if serialized is not None:
+                        node_data[key] = serialized
+            if 'id' not in node_data:
+                node_data['id'] = str(row.name)
+            else:
+                node_data['id'] = str(node_data['id'])
+            # Preserve existing display label fallback for UI text
+            if 'label' not in node_data:
+                node_data['label'] = node_data.get('name', node_data.get('type', node_data['id']))
+            nodes_list.append({'data': node_data})
+
+        # Prepare edges
+        edges_list = []
+        for idx, row in edges_df.iterrows():
+            edge_data = {}
+            for key, value in row.items():
+                if self._is_valid_value(value):
+                    serialized = self._serialize_value(value)
+                    if serialized is not None:
+                        edge_data[key] = serialized
+            if 'source' not in edge_data or 'target' not in edge_data:
+                raise ValueError("Edges dataframe must have 'source' and 'target' columns")
+            edge_data['source'] = str(edge_data['source'])
+            edge_data['target'] = str(edge_data['target'])
+            if 'id' not in edge_data:
+                edge_data['id'] = f"{edge_data['source']}-{edge_data['target']}-{idx}"
+            edges_list.append({'data': edge_data})
+
+        meta = {
+            'node_types': self._compute_node_type_counts(nodes_df),
+            'node_count': int(len(nodes_list)),
+            'edge_count': int(len(edges_list)),
+        }
+
+        return {'nodes': nodes_list, 'edges': edges_list, 'meta': meta}
+
+    def display_cytoscape_graph(
+        self,
+        path: Path,
+        format: Literal["csv", "json"] = "csv",
+        output_path: Optional[Path] = None,
+        open_browser: bool = True,
+    ) -> Path:
+        """Load graph data from file and visualize with Cytoscape in the browser."""
+        # Load data
+        if format == "csv":
+            nodes_df, edges_df = self.load_csv(path)
+        elif format == "json":
+            nodes_df, edges_df = self.load_json(path)
+        else:
+            raise ValueError(f"Unsupported format: {format}")
+
+        return self._prepare_and_visualize(nodes_df, edges_df, output_path, open_browser)
+
+    def save_cytoscape_graph(
         self,
         graph: nx.DiGraph,
         output_path: Path,
-        notebook: bool = False,
-        tooltip_max_length: int = 60
-    ) -> None:
-        """Create interactive HTML visualization matching original graph_visualizer.py.
+        open_browser: bool = False,
+        **kwargs
+    ) -> Path:
+        """Visualize a NetworkX graph using Cytoscape."""
+        # Convert NetworkX graph to DataFrames
+        nodes_data = [{"id": str(n), **attrs} for n, attrs in graph.nodes(data=True)]
+        edges_data = [{"source": str(s), "target": str(t), **attrs} for s, t, attrs in graph.edges(data=True)]
 
-        Physics is disabled after initial stabilization to allow manual node positioning.
+        nodes_df = pd.DataFrame(nodes_data)
+        edges_df = pd.DataFrame(edges_data)
 
-        Args:
-            graph: NetworkX directed graph to visualize.
-            output_path: Path for output HTML file (without extension).
-            notebook: Whether to use notebook mode.
-            tooltip_max_length: Maximum character length for tooltip values.
+        return self._prepare_and_visualize(nodes_df, edges_df, output_path, open_browser)
 
-        Raises:
-            ValueError: If graph is empty.
+    def _prepare_and_visualize(
+        self,
+        nodes_df: pd.DataFrame,
+        edges_df: pd.DataFrame,
+        output_path: Optional[Path],
+        open_browser: bool
+    ) -> Path:
+        """Common logic to prepare data and create Cytoscape HTML."""
+        # Prepare data
+        cytoscape_elements = self.prepare_data_for_cytoscape(nodes_df, edges_df)
+
+        if output_path is None:
+            output_path = Path("outputs/temp_graph.html")
+        elif not str(output_path).endswith(".html"):
+            output_path = Path(str(output_path) + ".html")
+
+        return self._export_and_open(cytoscape_elements, output_path, open_browser)
+
+    def _export_and_open(
+        self,
+        elements: dict,
+        output_path: Path,
+        open_browser: bool
+    ) -> Path:
         """
-        if not self.validate_graph(graph):
-            raise ValueError("Cannot visualize empty graph")
+        Write the Cytoscape HTML and optionally open it in the default browser.
+        """
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Ensure .html extension (matches original: Path(filename).with_suffix(".html"))
-        output_file = Path(str(output_path)).with_suffix(".html")
-        output_file.parent.mkdir(parents=True, exist_ok=True)
+        self._write_cytoscape_html(elements, output_path)
 
-        # Create network with enhanced options
-        net = Network(
-            height=self.config.INTERACTIVE_HEIGHT,
-            width=self.config.INTERACTIVE_WIDTH,
-            directed=self.config.INTERACTIVE_DIRECTED,
-            bgcolor=self.config.INTERACTIVE_BGCOLOR,
-            font_color=self.config.INTERACTIVE_FONT_COLOR,
-            notebook=notebook,
-            cdn_resources=self.config.INTERACTIVE_CDN_RESOURCES
+        if open_browser:
+            webbrowser.open("file://" + os.path.abspath(str(output_path)))
+
+        return output_path
+
+    def _write_cytoscape_html(
+        self,
+        elements: dict,
+        path: Path,
+    ) -> None:
+        """
+        Export Cytoscape visualization to a standalone HTML file.
+        """
+        # Read the template
+        template_path = Path(__file__).parent / "assets/interactive_template.html"
+
+        if template_path.exists():
+            with open(template_path, "r", encoding="utf-8") as f:
+                html_template = f.read()
+        else:
+            # Fallback: use inline template (minimal version)
+            print(f"[yellow][InteractiveVisualizer][/yellow] HTML template missing - Falling back to minimal version instead")
+            html_template = self._get_default_template()
+
+        # Inject the graph data with proper JSON serialization
+        elements_json = json.dumps(elements, indent=2, ensure_ascii=False)
+
+        # Replace the placeholder with the actual JavaScript variable declaration
+        html_content = html_template.replace(
+            "/* ELEMENTS_DATA_PLACEHOLDER */",
+            f"const graphElements = {elements_json};"
         )
 
-        # Configure physics for better layout
-        net.set_options("""
-        {
-            "physics": {
-                "forceAtlas2Based": {
-                    "gravitationalConstant": -50,
-                    "centralGravity": 0.01,
-                    "springLength": 200,
-                    "springConstant": 0.08,
-                    "avoidOverlap": 1.0
-                },
-                "maxVelocity": 50,
-                "solver": "forceAtlas2Based",
-                "timestep": 0.35,
-                "stabilization": {
-                    "enabled": true,
-                    "iterations": 150
-                }
-            },
-            "nodes": {
-                "shape": "dot",
-                "size": 25,
-                "font": {"size": 16, "face": "arial"},
-                "borderWidth": 2
-            },
-            "edges": {
-                "width": 2,
-                "arrows": {"to": {"enabled": true, "scaleFactor": 1}},
-                "smooth": {"type": "continuous"}
-            },
-            "interaction": {
-                "hover": true,
-                "tooltipDelay": 100,
-                "navigationButtons": true,
-                "keyboard": true,
-                "dragNodes": true
-            }
-        }
-        """)
+        # Write to file
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(html_content)
 
-        # Add nodes with enhanced styling and proper tooltips
-        for node_id, data in graph.nodes(data=True):
-            label = data.get('label', str(node_id))
-
-            # Create plain text tooltip
-            tooltip_parts = [f"{label}"]
-            tooltip_parts.append("-" * 30)
-
-            # Filter properties
-            important_props = {k: v for k, v in data.items()
-                             if k not in ['label', 'pos', 'id'] and v is not None and str(v).strip()}
-
-            if important_props:
-                for k, v in important_props.items():
-                    formatted_key = format_property_key(k)
-                    formatted_value = format_property_value(v, tooltip_max_length)
-                    tooltip_parts.append(f"{formatted_key}: {formatted_value}")
-            else:
-                tooltip_parts.append("No additional properties")
-
-            # Join with newlines for plain text tooltip
-            tooltip_text = "\n".join(tooltip_parts)
-
-            net.add_node(
-                node_id,
-                label=label,
-                title=tooltip_text,  # Plain text, not HTML
-                color='#4A90E2',
-                borderWidth=2,
-                borderWidthSelected=4
-            )
-
-        # Add edges with labels
-        for source, target, data in graph.edges(data=True):
-            edge_label = data.get('label', '')
-
-            net.add_edge(
-                source,
-                target,
-                label=edge_label,
-                color="#B35045",
-                title=edge_label
-            )
-
-        # Save the graph first
-        net.save_graph(str(output_file))
-
-        # Read and inject custom JavaScript
-        # This disables physics after stabilization to allow manual positioning
-        with open(output_file, 'r', encoding='utf-8') as f:
-            html_content = f.read()
-
-        # Inject JavaScript before the closing </script> tag
-        injection_point = html_content.rfind('</script>')
-        if injection_point != -1:
-            custom_js = """
-
-            // Disable physics after stabilization to allow manual positioning
-            network.on("stabilizationIterationsDone", function () {
-                network.setOptions({ physics: false });
-                console.log("Physics disabled after stabilization");
-            });
-            """
-            html_content = html_content[:injection_point] + custom_js + html_content[injection_point:]
-
-            with open(output_file, 'w', encoding='utf-8') as f:
-                f.write(html_content)
-
-    def validate_graph(self, graph: nx.DiGraph) -> bool:
-        """Validate that graph is not empty."""
-        return graph.number_of_nodes() > 0
+    def _get_default_template(self) -> str:
+        """Get the default HTML template if external file is not found."""
+        return """<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>Knowledge Graph - Cytoscape</title>
+                <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+                <style>
+                    body { margin: 0; padding: 0; }
+                    #cy { width: 100%; height: 100vh; background: #1a1a2e; }
+                </style>
+            </head>
+            <body>
+                <div id="cy"></div>
+                <script>
+                    /* ELEMENTS_DATA_PLACEHOLDER */
+                    cytoscape({
+                        container: document.getElementById('cy'),
+                        elements: [...graphElements.nodes, ...graphElements.edges],
+                        style: [
+                            { selector: 'node', style: { 'background-color': '#667eea', 'label': 'data(label)' }},
+                            { selector: 'edge', style: { 'width': 2, 'line-color': '#718096', 'target-arrow-shape': 'triangle' }}
+                        ],
+                        layout: { name: 'cose', animate: true }
+                    });
+                </script>
+            </body>
+            </html>"""

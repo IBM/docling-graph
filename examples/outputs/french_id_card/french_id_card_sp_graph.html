@@ -1,328 +1,672 @@
-<html>
-    <head>
-        <meta charset="utf-8">
-        
-            <script>function neighbourhoodHighlight(params) {
-  // console.log("in nieghbourhoodhighlight");
-  allNodes = nodes.get({ returnType: "Object" });
-  // originalNodes = JSON.parse(JSON.stringify(allNodes));
-  // if something is selected:
-  if (params.nodes.length > 0) {
-    highlightActive = true;
-    var i, j;
-    var selectedNode = params.nodes[0];
-    var degrees = 2;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Graph Visualization - Cytoscape</title>
 
-    // mark all nodes as hard to read.
-    for (let nodeId in allNodes) {
-      // nodeColors[nodeId] = allNodes[nodeId].color;
-      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
-      if (allNodes[nodeId].hiddenLabel === undefined) {
-        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
-        allNodes[nodeId].label = undefined;
-      }
-    }
-    var connectedNodes = network.getConnectedNodes(selectedNode);
-    var allConnectedNodes = [];
+    <!-- Cytoscape core -->
+    <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 
-    // get the second degree nodes
-    for (i = 1; i < degrees; i++) {
-      for (j = 0; j < connectedNodes.length; j++) {
-        allConnectedNodes = allConnectedNodes.concat(
-          network.getConnectedNodes(connectedNodes[j])
-        );
-      }
-    }
+    <!-- Dagre layout extension (optional but more reliable) -->
+    <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+    <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
 
-    // all second degree nodes get a different color and their label back
-    for (i = 0; i < allConnectedNodes.length; i++) {
-      // allNodes[allConnectedNodes[i]].color = "pink";
-      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
-      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
-        allNodes[allConnectedNodes[i]].label =
-          allNodes[allConnectedNodes[i]].hiddenLabel;
-        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
-      }
-    }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    // all first degree nodes get their own color and their label back
-    for (i = 0; i < connectedNodes.length; i++) {
-      // allNodes[connectedNodes[i]].color = undefined;
-      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
-      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
-        allNodes[connectedNodes[i]].label =
-          allNodes[connectedNodes[i]].hiddenLabel;
-        allNodes[connectedNodes[i]].hiddenLabel = undefined;
-      }
-    }
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: #17191d;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
 
-    // the main node gets its own color and its label back.
-    // allNodes[selectedNode].color = undefined;
-    allNodes[selectedNode].color = nodeColors[selectedNode];
-    if (allNodes[selectedNode].hiddenLabel !== undefined) {
-      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
-      allNodes[selectedNode].hiddenLabel = undefined;
-    }
-  } else if (highlightActive === true) {
-    // console.log("highlightActive was true");
-    // reset all nodes
-    for (let nodeId in allNodes) {
-      // allNodes[nodeId].color = "purple";
-      allNodes[nodeId].color = nodeColors[nodeId];
-      // delete allNodes[nodeId].color;
-      if (allNodes[nodeId].hiddenLabel !== undefined) {
-        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
-        allNodes[nodeId].hiddenLabel = undefined;
-      }
-    }
-    highlightActive = false;
-  }
+        #cy {
+            width: 100%;
+            height: 100vh;
+            background: #343b46; /* --cosmos-background */
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+        }
 
-  // transform the object into an array
-  var updateArray = [];
-  if (params.nodes.length > 0) {
-    for (let nodeId in allNodes) {
-      if (allNodes.hasOwnProperty(nodeId)) {
-        // console.log(allNodes[nodeId]);
-        updateArray.push(allNodes[nodeId]);
-      }
-    }
-    nodes.update(updateArray);
-  } else {
-    // console.log("Nothing was selected");
-    for (let nodeId in allNodes) {
-      if (allNodes.hasOwnProperty(nodeId)) {
-        // console.log(allNodes[nodeId]);
-        // allNodes[nodeId].color = {};
-        updateArray.push(allNodes[nodeId]);
-      }
-    }
-    nodes.update(updateArray);
-  }
-}
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(34, 35, 37, 0.95); /* --sidebar-background */
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            min-width: 200px;
+            color: #ffffff;
+        }
 
-function filterHighlight(params) {
-  allNodes = nodes.get({ returnType: "Object" });
-  // if something is selected:
-  if (params.nodes.length > 0) {
-    filterActive = true;
-    let selectedNodes = params.nodes;
+        /* Combined rule for both titles */
+        .controls h3, .stats h3 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            border-bottom: 2px solid #76b7b2; /* Palette color */
+            padding-bottom: 8px;
+        }
 
-    // hiding all nodes and saving the label
-    for (let nodeId in allNodes) {
-      allNodes[nodeId].hidden = true;
-      if (allNodes[nodeId].savedLabel === undefined) {
-        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
-        allNodes[nodeId].label = undefined;
-      }
-    }
+        .control-group {
+            margin: 10px 0;
+        }
 
-    for (let i=0; i < selectedNodes.length; i++) {
-      allNodes[selectedNodes[i]].hidden = false;
-      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
-        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
-        allNodes[selectedNodes[i]].savedLabel = undefined;
-      }
-    }
+        .control-group label {
+            display: block;
+            font-size: 13px;
+            color: #e2e8f0;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
 
-  } else if (filterActive === true) {
-    // reset all nodes
-    for (let nodeId in allNodes) {
-      allNodes[nodeId].hidden = false;
-      if (allNodes[nodeId].savedLabel !== undefined) {
-        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
-        allNodes[nodeId].savedLabel = undefined;
-      }
-    }
-    filterActive = false;
-  }
+        select, button {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #4a5568;
+            border-radius: 6px;
+            font-size: 13px;
+            background: #2f3032; /* --table-background */
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-  // transform the object into an array
-  var updateArray = [];
-  if (params.nodes.length > 0) {
-    for (let nodeId in allNodes) {
-      if (allNodes.hasOwnProperty(nodeId)) {
-        updateArray.push(allNodes[nodeId]);
-      }
-    }
-    nodes.update(updateArray);
-  } else {
-    for (let nodeId in allNodes) {
-      if (allNodes.hasOwnProperty(nodeId)) {
-        updateArray.push(allNodes[nodeId]);
-      }
-    }
-    nodes.update(updateArray);
-  }
-}
+        select:hover, select:focus {
+            border-color: #76b7b2;
+            outline: none;
+        }
 
-function selectNode(nodes) {
-  network.selectNodes(nodes);
-  neighbourhoodHighlight({ nodes: nodes });
-  return nodes;
-}
+        .control-group button {
+            background: #76b7b2;
+            color: #17191d;
+            border: none;
+            font-weight: 600;
+            margin-top: 5px;
+        }
 
-function selectNodes(nodes) {
-  network.selectNodes(nodes);
-  filterHighlight({nodes: nodes});
-  return nodes;
-}
+        .control-group button:hover {
+            box-shadow: 0 4px 12px rgba(118, 183, 178, 0.3);
+        }
 
-function highlightFilter(filter) {
-  let selectedNodes = []
-  let selectedProp = filter['property']
-  if (filter['item'] === 'node') {
-    let allNodes = nodes.get({ returnType: "Object" });
-    for (let nodeId in allNodes) {
-      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
-        selectedNodes.push(nodeId)
-      }
-    }
-  }
-  else if (filter['item'] === 'edge'){
-    let allEdges = edges.get({returnType: 'object'});
-    // check if the selected property exists for selected edge and select the nodes connected to the edge
-    for (let edge in allEdges) {
-      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
-        selectedNodes.push(allEdges[edge]['from'])
-        selectedNodes.push(allEdges[edge]['to'])
-      }
-    }
-  }
-  selectNodes(selectedNodes)
-}</script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-            
-            
-            
-            
-            
-            
+        .control-group button:active {
+            transform: translateY(0);
+        }
+
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(34, 35, 37, 0.95); /* --sidebar-background */
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            min-width: 250px;
+            max-width: 400px;
+            display: none;
+            max-height: 60vh;
+            overflow-y: auto;
+            color: #ffffff;
+        }
+
+        .info-panel.active {
+            display: block;
+        }
+
+        .info-item {
+            margin: 6px 0;
+            font-size: 13px;
+            color: #e2e8f0;
+            word-wrap: break-word;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #76b7b2; /* Palette color */
+        }
+
+        .stats {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(34, 35, 37, 0.95); /* --sidebar-background */
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            font-size: 13px;
+            color: #ffffff;
+            max-width: 300px;
+        }
+
+        .stats strong {
+            color: #76b7b2; /* Palette color */
+        }
 
         
-<center>
-<h1></h1>
-</center>
+        .stats .info-label {
+            margin-bottom: 4px;
+        }
 
-<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
-<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
-        <link
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
-          crossorigin="anonymous"
-        />
-        <script
-          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
-          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
-          crossorigin="anonymous"
-        ></script>
+        .info-count {
+            font-size: 12px;
+            color: #e2e8f0;
+        }
 
+        .node-types {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #4a5568;
+            color: #76b7b2;
+        }
 
-        <center>
-          <h1></h1>
-        </center>
-        <style type="text/css">
+        .node-types-title {
+            color: #76b7b2;
+            margin-bottom: 8px;
+        }
 
-             #mynetwork {
-                 width: 100%;
-                 height: calc(100vh - 20px);
-                 background-color: #ffffff;
-                 border: 1px solid lightgray;
-                 position: relative;
-                 float: left;
-             }
+        .node-type-item {
+            margin-left: 10px;
+            font-size: 12px;
+            color: #e2e8f0;
+        }
 
-             
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(34, 35, 37, 0.95);
+            padding: 30px 50px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            color: #ffffff;
+            z-index: 2000;
+            display: none;
+        }
 
-             
+        .loading.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="cy"></div>
 
-             
-        </style>
-    </head>
+    <div class="loading" id="loading">
+        <div>⏳ Loading Graph...</div>
+    </div>
 
+    <div class="stats">
+        <!-- Title for the stats panel -->
+        <h3>🪧 Information</h3>
+        <div class="summary">
+            <div class="info-label"><strong>Nodes:</strong> <span class="info-count" id="node-count">0</span></div>
+            <div class="info-label"><strong>Edges:</strong> <span class="info-count" id="edge-count">0</span></div>
+        </div>
+        <div class="node-types">
+            <div class="node-types-title"><strong>Node types:</strong></div>
+            <div id="node-types-list"></div>
+        </div>
+    </div>
 
-    <body>
-        <div class="card" style="width: 100%">
-            
-            
-            <div id="mynetwork" class="card-body"></div>
+    <div class="info-panel" id="info-panel">
+        <div id="info-content"></div>
+    </div>
+
+    <div class="controls">
+        <h3>⚙️ Controls</h3>
+
+        <div class="control-group">
+            <label for="layout-select">Layout Algorithm</label>
+            <select id="layout-select">
+                <option value="dagre">Hierarchical (Dagre)</option>
+                <option value="cose">Force-directed (CoSE)</option>
+                <option value="circle">Circle</option>
+                <option value="grid">Grid</option>
+                <option value="breadthfirst">Breadth-first</option>
+                <option value="concentric">Concentric</option>
+            </select>
         </div>
 
+        <div class="control-group">
+            <button id="reset-btn">Reset View</button>
+        </div>
+    </div>
+
+    <script>
+        const graphElements = {
+  "nodes": [
+    {
+      "data": {
+        "id": "IDCard_9dbdc00795e3",
+        "label": "IDCard",
+        "type": "entity",
+        "document_number": "X4RTBPFW4",
+        "issuing_country": "FR",
+        "issue_date": "2020-02-12",
+        "expiry_date": "2030-02-11"
+      }
+    },
+    {
+      "data": {
+        "id": "Person_0a590e054c27",
+        "label": "Person",
+        "type": "entity",
+        "given_names": "['Maëlys-Gaëlle', 'Marie']",
+        "last_name": "Martin",
+        "date_of_birth": "1990-07-13",
+        "place_of_birth": "Paris",
+        "gender": "F"
+      }
+    },
+    {
+      "data": {
+        "id": "Address_5c454f2c57a0",
+        "label": "Address",
+        "type": "entity",
+        "street_address": "44 rue Désiré Saint Clément",
+        "city": "Bordeaux",
+        "postal_code": 33000.0,
+        "country": "France"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "data": {
+        "source": "IDCard_9dbdc00795e3",
+        "target": "Person_0a590e054c27",
+        "label": "holder",
+        "id": "IDCard_9dbdc00795e3-Person_0a590e054c27-0"
+      }
+    },
+    {
+      "data": {
+        "source": "Person_0a590e054c27",
+        "target": "Address_5c454f2c57a0",
+        "label": "lives_at",
+        "id": "Person_0a590e054c27-Address_5c454f2c57a0-1"
+      }
+    }
+  ],
+  "meta": {
+    "node_types": {
+      "IDCard": 1,
+      "Person": 1,
+      "Address": 1
+    },
+    "node_count": 3,
+    "edge_count": 2
+  }
+};
+        // The Python script will replace the placeholder line above with:
+        // const graphElements = { ... your data ... };
         
-        
-
-        <script type="text/javascript">
-
-              // initialize global variables.
-              var edges;
-              var nodes;
-              var allNodes;
-              var allEdges;
-              var nodeColors;
-              var originalNodes;
-              var network;
-              var container;
-              var options, data;
-              var filter = {
-                  item : '',
-                  property : '',
-                  value : []
-              };
-
-              
-
-              
-
-              // This method is responsible for drawing the graph, returns the drawn network
-              function drawGraph() {
-                  var container = document.getElementById('mynetwork');
-
-                  
-
-                  // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"borderWidth": 2, "borderWidthSelected": 4, "color": "#4A90E2", "font": {"color": "#2C3E50"}, "id": "IDCard_9dbdc00795e3", "label": "IDCard", "shape": "dot", "title": "IDCard\n------------------------------\nType: entity\nDocument Number: X4RTBPFW4\nIssuing Country: FR\nIssue Date: 2020-02-12\nExpiry Date: 2030-02-11"}, {"borderWidth": 2, "borderWidthSelected": 4, "color": "#4A90E2", "font": {"color": "#2C3E50"}, "id": "Person_0a590e054c27", "label": "Person", "shape": "dot", "title": "Person\n------------------------------\nType: entity\nGiven Names: [\u0027Ma\u00eblys-Ga\u00eblle\u0027, \u0027Marie\u0027]\nLast Name: Martin\nDate Of Birth: 1990-07-13\nPlace Of Birth: Paris\nGender: F"}, {"borderWidth": 2, "borderWidthSelected": 4, "color": "#4A90E2", "font": {"color": "#2C3E50"}, "id": "Address_5c454f2c57a0", "label": "Address", "shape": "dot", "title": "Address\n------------------------------\nType: entity\nStreet Address: 44 rue D\u00e9sir\u00e9 Saint Cl\u00e9ment\nCity: Bordeaux\nPostal Code: 33000\nCountry: France"}]);
-                  edges = new vis.DataSet([{"arrows": "to", "color": "#B35045", "from": "IDCard_9dbdc00795e3", "label": "holder", "title": "holder", "to": "Person_0a590e054c27"}, {"arrows": "to", "color": "#B35045", "from": "Person_0a590e054c27", "label": "lives_at", "title": "lives_at", "to": "Address_5c454f2c57a0"}]);
-
-                  nodeColors = {};
-                  allNodes = nodes.get({ returnType: "Object" });
-                  for (nodeId in allNodes) {
-                    nodeColors[nodeId] = allNodes[nodeId].color;
-                  }
-                  allEdges = edges.get({ returnType: "Object" });
-                  // adding nodes and edges to the graph
-                  data = {nodes: nodes, edges: edges};
-
-                  var options = {"physics": {"forceAtlas2Based": {"gravitationalConstant": -50, "centralGravity": 0.01, "springLength": 200, "springConstant": 0.08}, "maxVelocity": 50, "solver": "forceAtlas2Based", "timestep": 0.35, "stabilization": {"enabled": true, "iterations": 150}}, "nodes": {"shape": "dot", "size": 25, "font": {"size": 16, "face": "arial"}, "borderWidth": 2}, "edges": {"width": 2, "arrows": {"to": {"enabled": true, "scaleFactor": 1}}, "smooth": {"type": "continuous"}}, "interaction": {"hover": true, "tooltipDelay": 100, "navigationButtons": true, "keyboard": true, "dragNodes": true}};
-
-                  
-
-
-                  
-
-                  network = new vis.Network(container, data, options);
-
-                  
-
-                  
-
-                  
-
-
-                  
-
-                  return network;
-
+        // Fallback for standalone preview (if placeholder isn't replaced)
+        if (typeof graphElements === 'undefined') {
+          console.warn("graphElements not injected by Python. Using sample data.");
+          // Use window scope to make it available globally like the injected const
+          window.graphElements = {
+              "nodes": [
+                  { "data": { "id": "n1", "label": "Person", "name": "Alice" } },
+                  { "data": { "id": "n2", "label": "Person", "name": "Bob" } },
+                  { "data": { "id": "n3", "label": "Company", "name": "Innovate Inc." } }
+              ],
+              "edges": [
+                  { "data": { "id": "e1", "source": "n1", "target": "n2", "label": "KNOWS" } },
+                  { "data": { "id": "e2", "source": "n1", "target": "n3", "label": "WORKS_AT" } },
+                  { "data": { "id": "e3", "source": "n2", "target": "n3", "label": "WORKS_AT" } }
+              ],
+              "meta": {
+                  "node_types": { "Person": 2, "Company": 1 },
+                  "node_count": 3,
+                  "edge_count": 3
               }
-              drawGraph();
-        
+          };
+        }
+        /* END ELEMENTS_DATA_PLACEHOLDER */
 
-            // Disable physics after stabilization to allow manual positioning
-            network.on("stabilizationIterationsDone", function () {
-                network.setOptions({ physics: false });
-                console.log("Physics disabled after stabilization");
-            });
-            </script>
-    </body>
+
+        /* Generate color per node label */
+        const NODE_COLOR_PALETTE = [
+            '#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f', 
+            '#edc949', '#af7aa1', '#ff9da7', '#9c755f', '#bab0ab'
+        ];
+        const labelColorMap = new Map();
+        let colorIndex = 0;
+
+        function stringToColor(str) {
+          const key = String(str);
+          if (labelColorMap.has(key)) {
+            return labelColorMap.get(key);
+          }
+
+          // Assign the next color from the palette
+          const color = NODE_COLOR_PALETTE[colorIndex % NODE_COLOR_PALETTE.length];
+          labelColorMap.set(key, color);
+          colorIndex++;
+          return color;
+        }
+
+        /* Count by label, with fallbacks */
+        function calculateNodeTypeStats(elements) {
+          const counts = {};
+          (elements.nodes || []).forEach(node => {
+            const d = node.data || {};
+            let labels = [];
+            if (Array.isArray(d.labels)) {
+              labels = d.labels.map(String).filter(Boolean);
+            } else if (typeof d.labels === 'string') {
+              const parts = d.labels.split(/[|,]/).map(s => s.trim()).filter(Boolean);
+              if (parts.length) labels = parts;
+              else if (d.labels.includes(':') && !d.labels.trim().startsWith('http')) {
+                labels = d.labels.split(':').filter(Boolean);
+              } else {
+                labels = [d.labels];
+              }
+            }
+            if (labels.length) {
+              labels.forEach(l => { counts[l] = (counts[l] || 0) + 1; });
+              return;
+            }
+            const key = d.label || d.node_label || d.node_type || d.type || d.category || d.class || d.kind || 'Unknown';
+            counts[key] = (counts[key] || 0) + 1;
+          });
+          return counts;
+        }
+
+        // Display node type statistics
+        function displayNodeTypeStats(nodeTypes) {
+            const nodeTypesList = document.getElementById('node-types-list');
+            const sortedTypes = Object.entries(nodeTypes).sort((a, b) => b[1] - a[1]);
+
+            nodeTypesList.innerHTML = sortedTypes.map(([type, count]) => {
+                // Use the 'Unknown' key for the default color if type is null/undefined
+                const colorKey = type === 'null' || type === 'undefined' ? 'Unknown' : type;
+                const color = stringToColor(String(colorKey));
+                
+                // This is the part that creates the colored circle legend
+                return `<div class="node-type-item" style="display: flex; align-items: center; margin-bottom: 4px;">
+                            <span style="background-color: ${color}; width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; flex-shrink: 0;"></span>
+                            <span>${type} - ${count}</span>
+                        </div>`;
+            }).join('');
+        }
+
+        // Initialize Cytoscape
+        const cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: graphElements,
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        // --- Node Body Styling ---
+                        'background-color': function(ele) {
+                          const key = ele.data('label') || ele.data('type') || 'Unknown';
+                          return stringToColor(String(key));
+                        },
+                        'width': 60,
+                        'height': 60,
+                        'border-width': 0, // No border by default
+                        'border-color': 'rgba(255,255,255,0.7)',
+                        
+                        // --- Label Styling ---                        
+                        'label': 'data(label)',
+                        'color': function(ele) {
+                          const key = ele.data('label') || ele.data('type') || 'Unknown';
+                          return stringToColor(String(key));
+                        },
+                        'text-valign': 'top',
+                        'text-halign': 'center',
+                        'text-margin-y': -12, // Move label up a bit more to clear the node
+                        'font-size': '10px',
+                        'font-weight': 'bold',
+
+                        // --- Label Background Box ---
+                        'text-background-color': '#1e2428',
+                        'text-background-shape': 'round-rectangle', // Rounded edges
+                        'text-background-padding': '4px', // Padding inside the box
+                        'text-background-opacity': 0.75, // Make background solid
+                    }
+                },
+                {
+                    selector: 'node:selected',
+                    style: {
+                        'border-width': 6, // Larger border width
+                        'border-color': 'white', // White border
+                        'border-style': 'double' // Creates "padding" effect
+                    }
+                },
+                {
+                    selector: 'node:active',
+                    style: {
+                        'overlay-opacity': 0
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 1, // Thinner line
+                        'line-color': 'rgba(255, 255, 255, 0.2)', // Muted color
+                        'target-arrow-shape': 'none', // No arrows
+                        'curve-style': 'bezier',
+                        'opacity': 0.6,
+                        'transition-property': 'line-color, width, opacity',
+                        'transition-duration': '0.3s'
+                        // --- Edge Label Styling (REMOVED) ---
+                    }
+                },
+                {
+                    selector: 'edge:selected',
+                    style: {
+                        'line-color': '#76b7b2',
+                        'width': 3,
+                        'opacity': 1
+                    }
+                },
+                // Highlighted elements (when node is clicked)
+                {
+                    selector: '.highlighted',
+                    style: {
+                        'opacity': 1,
+                        'z-index': 997
+                    }
+                },
+                // Faded elements (when highlighting)
+                {
+                    selector: '.faded',
+                    style: {
+                        'opacity': 0.15
+                    }
+                }
+            ],
+            layout: {
+                name: 'dagre',
+                rankDir: 'TB',
+                nodeSep: 50,
+                rankSep: 100,
+                padding: 30
+            },
+            minZoom: 0.1,
+            maxZoom: 3,
+            wheelSensitivity: 0.2
+        });
+
+        // Add cursor pointer style to canvas when hovering nodes
+        cy.on('mouseover', 'node', function(evt) {
+            document.getElementById('cy').style.cursor = 'pointer';
+        });
+
+        cy.on('mouseout', 'node', function(evt) {
+            document.getElementById('cy').style.cursor = 'default';
+        });
+
+        // Add cursor pointer style to canvas when hovering edges
+        cy.on('mouseover', 'edge', function(evt) {
+            document.getElementById('cy').style.cursor = 'pointer';
+        });
+
+        cy.on('mouseout', 'edge', function(evt) {
+            document.getElementById('cy').style.cursor = 'default';
+        });
+
+        /* Update stats */
+        const meta = graphElements.meta || {};
+        document.getElementById('node-count').textContent = (meta.node_count != null) ? meta.node_count : cy.nodes().length;
+        document.getElementById('edge-count').textContent = (meta.edge_count != null) ? meta.edge_count : cy.edges().length;
+
+        /* Prefer Python-provided meta, fallback to client-side calc */
+        const nodeTypeStats = (meta.node_types && Object.keys(meta.node_types).length)
+          ? meta.node_types
+          : calculateNodeTypeStats(graphElements);
+
+        displayNodeTypeStats(nodeTypeStats);
+
+        // Hide loading
+        document.getElementById('loading').classList.remove('active');
+
+        // Layout selector
+        document.getElementById('layout-select').addEventListener('change', function(e) {
+            const layoutName = e.target.value;
+            let layoutOptions = { name: layoutName };
+
+            if (layoutName === 'dagre') {
+                layoutOptions = {
+                    name: 'dagre',
+                    rankDir: 'TB',
+                    nodeSep: 50,
+                    rankSep: 100,
+                    padding: 30
+                };
+            } else if (layoutName === 'cose') {
+                layoutOptions = {
+                    name: 'cose',
+                    animate: true,
+                    animationDuration: 1000,
+                    nodeRepulsion: 8000,
+                    idealEdgeLength: 100,
+                    edgeElasticity: 100,
+                    nestingFactor: 5,
+                    gravity: 80,
+                    numIter: 1000,
+                    padding: 30
+                };
+            } else if (layoutName === 'breadthfirst') {
+                layoutOptions = {
+                    name: 'breadthfirst',
+                    directed: true,
+                    spacingFactor: 1.5,
+                    padding: 30
+                };
+            } else {
+                layoutOptions = {
+                    name: layoutName,
+                    padding: 30
+                };
+            }
+
+            cy.layout(layoutOptions).run();
+        });
+
+        // Reset view button
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            cy.fit(undefined, 20);
+            cy.center();
+        });
+
+        // Node click handler - show details and highlight
+        cy.on('tap', 'node', function(evt) {
+            const node = evt.target;
+            const data = node.data();
+
+            // Highlight neighbors
+            cy.elements().removeClass('highlighted faded');
+            const neighborhood = node.neighborhood().add(node);
+            cy.elements().addClass('faded');
+            neighborhood.removeClass('faded').addClass('highlighted');
+
+            // Show info panel
+            const infoPanel = document.getElementById('info-panel');
+            const infoContent = document.getElementById('info-content');
+
+            let html = '<div style="margin-bottom: 8px; font-weight: 600; color: #e2e8f0;">📍 Node Details</div>';
+            for (const [key, value] of Object.entries(data)) {
+                if (value != null && value !== '') {
+                    const displayValue = String(value).length > 100 
+                        ? String(value).substring(0, 100) + '...' 
+                        : value;
+                    html += `<div class="info-item"><span class="info-label">${key}:</span> ${displayValue}</div>`;
+                }
+            }
+
+            infoContent.innerHTML = html;
+            infoPanel.classList.add('active');
+        });
+
+        // Edge click handler - show details and highlight
+        cy.on('tap', 'edge', function(evt) {
+            const edge = evt.target;
+            const data = edge.data();
+
+            cy.elements().removeClass('highlighted faded');
+            cy.elements().addClass('faded');
+
+            edge.removeClass('faded').addClass('highlighted');
+            edge.source().removeClass('faded').addClass('highlighted');
+            edge.target().removeClass('faded').addClass('highlighted');
+
+            // Show edge info
+            const infoPanel = document.getElementById('info-panel');
+            const infoContent = document.getElementById('info-content');
+
+            let html = '<div style="margin-bottom: 8px; font-weight: 600; color: #e2e8f0;">🔗 Edge Details</div>';
+            html += `<div class="info-item"><span class="info-label">From:</span> ${data.source}</div>`;
+            html += `<div class="info-item"><span class="info-label">To:</span> ${data.target}</div>`;
+
+            for (const [key, value] of Object.entries(data)) {
+                if (value != null && value !== '' && key !== 'source' && key !== 'target' && key !== 'id') {
+                    const displayValue = String(value).length > 100 
+                        ? String(value).substring(0, 100) + '...' 
+                        : value;
+                    html += `<div class="info-item"><span class="info-label">${key}:</span> ${displayValue}</div>`;
+                }
+            }
+
+            infoContent.innerHTML = html;
+            infoPanel.classList.add('active');
+        });
+
+        // Click on background - clear highlights
+        cy.on('tap', function(evt) {
+            if (evt.target === cy) {
+                cy.elements().removeClass('highlighted faded');
+                document.getElementById('info-panel').classList.remove('active');
+            }
+        });
+
+        // Fit graph to view on load
+        cy.ready(function() {
+            cy.fit(undefined, 20);
+            cy.center();
+        });
+    </script>
+</body>
 </html>
+

@@ -26,6 +26,7 @@ from .core import (
     CypherExporter,
     CSVExporter,
     JSONExporter,
+    InteractiveVisualizer,
     ReportGenerator
 )
 
@@ -145,7 +146,7 @@ def run_pipeline(config: Dict[str, Any]) -> None:
             - model_override: Optional model override
             - provider_override: Optional provider override
     """
-    print("--- [blue]Starting Docling-Graph Pipeline[/blue] ---")
+    print("\n--- [blue]Starting Docling-Graph Pipeline[/blue] ---")
 
     processing_mode = config.get("processing_mode")
     backend_type = config.get("backend_type")
@@ -255,12 +256,6 @@ def run_pipeline(config: Dict[str, Any]) -> None:
         print(f"Graph created with [blue]{graph_metadata.node_count} nodes[/blue] "
               f"and [blue]{graph_metadata.edge_count} edges[/blue].")
 
-        # Display node type distribution
-        if graph_metadata.node_types:
-            print("Node types:")
-            for node_type, count in graph_metadata.node_types.items():
-                print(f"  - {node_type}: {count}")
-
         # 6. Export graph
         export_format = config.get("export_format", "csv")
         print(f"Exporting graph data in [cyan]{export_format.upper()}[/cyan] format...")
@@ -268,34 +263,43 @@ def run_pipeline(config: Dict[str, Any]) -> None:
         if export_format == "csv":
             exporter = CSVExporter()
             exporter.export(knowledge_graph, output_dir)
-            print(f"[green]->[/green] Saved CSV files to [green]{output_dir}[/green]")
+            print(f"[green]→[/green] Saved CSV files to [green]{output_dir}[/green]")
 
         elif export_format == "cypher":
             cypher_path = output_dir / f"{base_name}_graph.cypher"
             exporter = CypherExporter()
             exporter.export(knowledge_graph, cypher_path)
-            print(f"[green]->[/green] Saved Cypher script to [green]{cypher_path}[/green]")
+            print(f"[green]→[/green] Saved Cypher script to [green]{cypher_path}[/green]")
 
         # Always export to JSON format
         json_path = output_dir / f"{base_name}_graph.json"
         exporter = JSONExporter()
         exporter.export(knowledge_graph, json_path)
-        print(f"[green]->[/green] Saved JSON to [green]{json_path}[/green]")
+        print(f"[green]→[/green] Saved JSON to [green]{json_path}[/green]")
 
         # 7. Generate reports
-        print(f"[green]->[/green] Generating visualizations...")
+        print(f"Generating outputs...")
 
         # Markdown report
-        report_generator = ReportGenerator()        
+        report_generator = ReportGenerator()
         report_path = output_dir / f"{base_name}_report"
         report_generator.visualize(
             knowledge_graph,
             report_path,
             source_model_count=len(extracted_data)
         )
-        print(f"[green]->[/green] Generated markdown report")
+        print(f"[green]→[/green] Generated markdown report")
 
-        print("--- [blue]Pipeline Finished Successfully![/blue] ---")
+        # Interactive HTML Graph
+        html_path = output_dir / f"{base_name}_graph"
+        visualizer = InteractiveVisualizer()        
+        visualizer.save_cytoscape_graph(
+            knowledge_graph,
+            html_path
+        )
+        print(f"[green]→[/green] Generated interactive html graph")
+
+        print("--- [blue]Pipeline Finished Successfully[/blue] ---")
 
     finally:
         # Cleanup resources

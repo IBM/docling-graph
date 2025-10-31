@@ -1,9 +1,9 @@
 """Graph visualization tools."""
 
 from .interactive_visualizer import InteractiveVisualizer
-from .static_visualizer import StaticVisualizer
+from .report_generator import ReportGenerator
 
 __all__ = [
     "InteractiveVisualizer",
-    "StaticVisualizer"
+    "ReportGenerator"
 ]

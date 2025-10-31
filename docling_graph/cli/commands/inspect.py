@@ -9,6 +9,7 @@ from pathlib import Path
 from rich import print
 import typer
 
+from ...core.visualizers.interactive_visualizer import InteractiveVisualizer
 
 def inspect_command(
     path: Annotated[Path, typer.Argument(
@@ -48,7 +49,6 @@ def inspect_command(
         # Create HTML without opening browser
         docling-graph inspect ./output_dir --no-open --output viz.html
     """
-    from ...core.visualizers.interactive_visualizer import InteractiveVisualizer
 
     # Validate format
     format = format.lower()
@@ -78,14 +78,14 @@ def inspect_command(
             print(f"[bold red]Error:[/bold red] For JSON format, path must be a .json file")
             raise typer.Exit(code=1)
 
-    print("[blue]--- Docling-Graph Inspection ---[/blue]")
+    print("--- [blue]Starting Docling-Graph Inspection[/blue] ---")
     print(f"\n[bold]Interactive Visualization[/bold]")
     print(f"  Input: [cyan]{path}[/cyan]")
     print(f"  Format: [cyan]{format}[/cyan]")
     if output:
         print(f"  Output: [cyan]{output}[/cyan]")
     else:
-        print(f"  Output: [cyan]Temporary file[/cyan]")
+        print(f"  Output: [cyan]temporary file[/cyan]")
 
     try:
         # Create visualizer
@@ -93,12 +93,14 @@ def inspect_command(
 
         # Load and visualize
         print(f"\nLoading graph data...")
-        html_file = visualizer.display_cosmo_graph(
+        visualizer.display_cytoscape_graph(
             path=path,
             format=format,
             output_path=output,
             open_browser=open_browser
         )
+        
+        print("--- [blue]Docling-Graph Inspection Finished Successfully[/blue] ---")
 
         if not open_browser:
             print(f"\n[blue]Tip:[/blue] Open the HTML file in your browser to view the visualization")

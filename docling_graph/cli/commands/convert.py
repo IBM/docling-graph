@@ -104,7 +104,7 @@ def convert_command(
     )] = False
 ):
     """Convert a document to a knowledge graph."""
-    print("[blue]--- Docling-Graph Conversion ---[/blue]")
+    print("--- [blue]Docling-Graph Conversion[/blue] ---")
     
     # Load configuration
     config_data = load_config()
