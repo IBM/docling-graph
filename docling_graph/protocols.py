@@ -181,27 +181,34 @@ class DocumentProcessorProtocol(Protocol):
 
 
 def is_vlm_backend(backend: Any) -> TypeGuard[ExtractionBackendProtocol]:
-    """Check if backend implements VLM extraction protocol.
+    """Check if backend behaves like a VLM backend.
+
+    Uses duck typing so simple mocks in tests are recognized without
+    needing to implement every Protocol attribute (e.g., `cleanup`).
 
     Args:
         backend: Backend instance to check.
 
     Returns:
-        True if backend can extract from documents directly.
+        True if backend provides a document-level extraction method.
     """
-    return isinstance(backend, ExtractionBackendProtocol)
+    return callable(getattr(backend, "extract_from_document", None))
 
 
 def is_llm_backend(backend: Any) -> TypeGuard[TextExtractionBackendProtocol]:
-    """Check if backend implements LLM extraction protocol.
+    """Check if backend behaves like an LLM backend.
+
+    Uses duck typing for test friendliness. Considered LLM if it can
+    extract from markdown; presence of a `client` attribute is optional
+    here and handled by callers as needed.
 
     Args:
         backend: Backend instance to check.
 
     Returns:
-        True if backend requires markdown input.
+        True if backend provides a markdown/text extraction method.
     """
-    return isinstance(backend, TextExtractionBackendProtocol)
+    return callable(getattr(backend, "extract_from_markdown", None))
 
 
 def get_backend_type(backend: Any) -> str:

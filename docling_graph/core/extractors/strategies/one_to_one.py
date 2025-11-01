@@ -90,9 +90,10 @@ class OneToOneStrategy(BaseExtractor):
         self, backend: TextExtractionBackendProtocol, source: str, template: Type[BaseModel]
     ) -> List[BaseModel]:
         """LLM path: convert to markdown and process per page."""
-        # Convert and extract page markdowns
-        document_md = self.doc_processor.convert_to_markdown(source)
-        page_markdowns = self.doc_processor.extract_page_markdowns(document_md)
+        # Use high-level document processing to obtain page markdowns
+        page_markdowns = self.doc_processor.process_document(source)
+
+        print(f"page_markdowns: {page_markdowns}")
 
         extracted_models: List[BaseModel] = []
         total_pages = len(page_markdowns)

@@ -31,12 +31,15 @@ def load_config() -> Dict[str, Any]:
     try:
         with open(config_path) as f:
             data = yaml.safe_load(f)
-            if not isinstance(data, dict):
-                rich_print(
-                    f"[red]Error:[/red] Configuration file '{CONFIG_FILE_NAME}' must contain a mapping at the top level."
-                )
-                raise typer.Exit(code=1)
-            return cast(Dict[str, Any], data)
+            # Allow empty config files: treat as empty dict
+            if data is None:
+                return {}
+            if isinstance(data, dict):
+                return cast(Dict[str, Any], data)
+            rich_print(
+                f"[red]Error:[/red] Configuration file '{CONFIG_FILE_NAME}' must contain a mapping at the top level."
+            )
+            raise typer.Exit(code=1)
     except yaml.YAMLError as err:
         rich_print(f"[red]Error parsing '{CONFIG_FILE_NAME}':[/red] {err}")
         raise typer.Exit(code=1) from err

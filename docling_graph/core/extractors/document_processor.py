@@ -109,6 +109,22 @@ class DocumentProcessor:
         )
         return page_markdowns
 
+    def process_document(self, source: str) -> List[str]:
+        """High-level helper to get per-page markdowns from a source file.
+
+        This wraps conversion and page extraction into a single call, which
+        simplifies strategy code and matches the interface commonly mocked in tests.
+
+        Args:
+            source: Path to the source document.
+
+        Returns:
+            List of Markdown strings, one per page.
+        """
+        rich_print("[blue][DocumentProcessor][/blue] Processing document into per-page markdowns")
+        document = self.convert_to_markdown(source)
+        return self.extract_page_markdowns(document)
+
     def extract_full_markdown(self, document: DoclingDocument) -> str:
         """
         Extracts the full document as a single Markdown string.

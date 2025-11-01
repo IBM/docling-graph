@@ -2,6 +2,8 @@
 Unit tests for core data models (Edge, GraphMetadata).
 """
 
+import datetime
+
 import pytest
 from pydantic import ValidationError
 
@@ -207,8 +209,9 @@ class TestGraphMetadata:
 
     def test_metadata_equality(self):
         """Test GraphMetadata equality."""
-        meta1 = GraphMetadata(node_count=10, edge_count=15, source_models=5)
-        meta2 = GraphMetadata(node_count=10, edge_count=15, source_models=5)
+        now = datetime.datetime.now()
+        meta1 = GraphMetadata(node_count=10, edge_count=15, source_models=5, created_at=now)
+        meta2 = GraphMetadata(node_count=10, edge_count=15, source_models=5, created_at=now)
         assert meta1 == meta2
 
     def test_metadata_inequality(self):
