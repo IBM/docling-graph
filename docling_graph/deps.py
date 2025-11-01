@@ -1,6 +1,7 @@
 """
 Utility for managing optional dependencies with helpful error messages.
 """
+
 import importlib.util
 from enum import Enum
 from typing import Any, Dict, List, Optional

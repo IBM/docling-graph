@@ -2,11 +2,17 @@
 Input validation functions for CLI commands.
 """
 
-from typing import  Optional, Tuple, Literal
+from typing import Literal, Optional, Tuple
 
 import typer
 from rich import print as rich_print
 
+from ..deps import (
+    INFERENCE_PROVIDERS,
+    OPTIONAL_DEPS,
+    get_missing_dependencies,
+    get_missing_for_inference_type,
+)
 from .constants import (
     BACKEND_TYPES,
     DOCLING_PIPELINES,
@@ -15,15 +21,8 @@ from .constants import (
     PROCESSING_MODES,
 )
 
-from ..deps import (
-    INFERENCE_PROVIDERS,
-    OPTIONAL_DEPS,
-    get_missing_dependencies,
-    get_missing_for_inference_type,
-)
-
-
 # --- Configuration Validators ---
+
 
 def validate_processing_mode(mode: str) -> str:
     """Validate processing mode.
@@ -161,6 +160,7 @@ def validate_provider(provider: str, inference: str) -> str:
 
 # --- Dependencies Validators ---
 
+
 def check_provider_installed(provider: str) -> bool:
     """Check if a provider's package is installed."""
     dep = OPTIONAL_DEPS.get(provider)
@@ -169,7 +169,7 @@ def check_provider_installed(provider: str) -> bool:
     return dep.is_installed
 
 
-def validate_config_dependencies(config_dict: dict) -> Tuple[bool, Optional[str]]:
+def validate_config_dependencies(config_dict: dict) -> Tuple[bool, str]:
     """
     Validate that required dependencies for the config are available.
 
@@ -183,7 +183,7 @@ def validate_config_dependencies(config_dict: dict) -> Tuple[bool, Optional[str]
     """
     # Extract inference type from config
     defaults = config_dict.get("defaults", {})
-    inference_type = defaults.get("inference", "remote")
+    inference_type: str = defaults.get("inference", "remote")
 
     # Extract provider from config
     models = config_dict.get("models", {})
@@ -204,9 +204,7 @@ def validate_config_dependencies(config_dict: dict) -> Tuple[bool, Optional[str]
     return True, inference_type
 
 
-def validate_and_warn_dependencies(
-    config_dict: dict, interactive: bool = True
-) -> bool:
+def validate_and_warn_dependencies(config_dict: dict, interactive: bool = True) -> bool:
     """
     Validate dependencies and show helpful warnings if missing.
 

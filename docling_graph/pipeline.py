@@ -116,11 +116,11 @@ def _initialize_llm_client(provider: str, model: str) -> BaseLlmClient:
 
     Raises:
         ValueError: If provider is unknown.
-        ImportError: If the provider’s package is not installed.
+        ImportError: If the provider's package is not installed.
     """
     # Lazy-load the client class only when actually needed
-    ClientClass = get_client(provider)
-    return ClientClass(model=model)
+    client_class = get_client(provider)
+    return client_class(model=model)
 
 
 def run_pipeline(config: Dict[str, Any]) -> None:

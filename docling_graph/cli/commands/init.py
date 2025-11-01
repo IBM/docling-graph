@@ -1,6 +1,7 @@
 """
 Init command - creates configuration file interactively.
 """
+
 from pathlib import Path
 
 import typer
@@ -9,8 +10,8 @@ from rich import print as rich_print
 
 from ..config_utils import save_config
 from ..constants import CONFIG_FILE_NAME
+from ..validators import print_next_steps_with_deps, validate_and_warn_dependencies
 from .config_builder import build_config_interactive, print_next_steps
-from ..validators import validate_and_warn_dependencies, print_next_steps_with_deps
 
 
 def init_command() -> None:
@@ -48,7 +49,9 @@ def init_command() -> None:
                 },
                 "docling": {"pipeline": "ocr"},
                 "models": {
-                    "vlm": {"local": {"default_model": "numind/NuExtract-2.0-8B", "provider": "docling"}},
+                    "vlm": {
+                        "local": {"default_model": "numind/NuExtract-2.0-8B", "provider": "docling"}
+                    },
                     "llm": {
                         "local": {"default_model": "llama-3.8b-instruct", "provider": "ollama"},
                     },

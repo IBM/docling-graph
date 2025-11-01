@@ -29,7 +29,7 @@ except ImportError:
 OpenAI: Any = _OpenAI
 
 if TYPE_CHECKING:  # Only imported for type checking; avoids runtime dependency at import
-    from OpenAI.types.chat import ChatCompletionMessageParam
+    from openai.types.chat import ChatCompletionMessageParam
 
 
 class VllmClient(BaseLlmClient):

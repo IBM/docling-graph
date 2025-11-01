@@ -1,15 +1,19 @@
 """
 LLM Clients module with lazy imports for optional dependencies.
 """
+
+from typing import Type
+
 from .llm_base import BaseLlmClient
 
 __all__ = ["BaseLlmClient", "get_client"]
 
 
-def _get_mistral_client():
+def _get_mistral_client() -> Type[BaseLlmClient]:
     """Lazy import MistralClient - only loads if actually used."""
     try:
         from .mistral import MistralClient
+
         return MistralClient
     except ImportError as e:
         raise ImportError(
@@ -19,10 +23,11 @@ def _get_mistral_client():
         ) from e
 
 
-def _get_ollama_client():
+def _get_ollama_client() -> Type[BaseLlmClient]:
     """Lazy import OllamaClient - only loads if actually used."""
     try:
         from .ollama import OllamaClient
+
         return OllamaClient
     except ImportError as e:
         raise ImportError(
@@ -32,10 +37,11 @@ def _get_ollama_client():
         ) from e
 
 
-def _get_vllm_client():
+def _get_vllm_client() -> Type[BaseLlmClient]:
     """Lazy import VllmClient - only loads if actually used."""
     try:
         from .vllm import VllmClient
+
         return VllmClient
     except ImportError as e:
         raise ImportError(
@@ -45,10 +51,11 @@ def _get_vllm_client():
         ) from e
 
 
-def _get_openai_client():
+def _get_openai_client() -> Type[BaseLlmClient]:
     """Lazy import OpenAIClient - only loads if actually used."""
     try:
         from .openai import OpenAIClient
+
         return OpenAIClient
     except ImportError as e:
         raise ImportError(
@@ -58,10 +65,11 @@ def _get_openai_client():
         ) from e
 
 
-def _get_gemini_client():
+def _get_gemini_client() -> Type[BaseLlmClient]:
     """Lazy import GeminiClient - only loads if actually used."""
     try:
         from .gemini import GeminiClient
+
         return GeminiClient
     except ImportError as e:
         raise ImportError(
@@ -81,7 +89,7 @@ _CLIENT_REGISTRY = {
 }
 
 
-def get_client(provider: str):
+def get_client(provider: str) -> Type[BaseLlmClient]:
     """
     Get LLM client class for the specified provider.
 
@@ -99,10 +107,7 @@ def get_client(provider: str):
     """
     if provider not in _CLIENT_REGISTRY:
         available = ", ".join(_CLIENT_REGISTRY.keys())
-        raise ValueError(
-            f"Unknown provider '{provider}'. "
-            f"Available providers: {available}"
-        )
+        raise ValueError(f"Unknown provider '{provider}'. Available providers: {available}")
 
     # Call the lazy import function
     return _CLIENT_REGISTRY[provider]()

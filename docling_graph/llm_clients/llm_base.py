@@ -9,6 +9,14 @@ class BaseLlmClient(ABC):
     """
 
     @abstractmethod
+    def __init__(self, model: str, **kwargs: Any) -> None:
+        """
+        Initialize the client.
+        All client implementations must accept at least a 'model' argument.
+        """
+        ...
+
+    @abstractmethod
     def get_json_response(self, prompt: str | dict[str, str], schema_json: str) -> Dict[str, Any]:
         """
         Executes the LLM call with the given prompt and schema.
