@@ -49,12 +49,12 @@ The toolkit supports two extraction families: **local VLM** via Docling and **LL
 
 
 
-## First Setup
+## Initial Setup
 
 ### Requirements
 
 - Python 3.10 or higher
-- uv package manager (recommended)
+- UV package manager (recommended)
 
 ### Installation
 
@@ -65,13 +65,7 @@ git clone https://github.com/ayoub-ibm/docling-graph
 cd docling-graph
 ```
 
-#### 2. Install uv (if not already available)
-
-```bash
-pip install uv
-```
-
-#### 3. Install Dependencies
+#### 2. Install Dependencies
 
 Choose the installation option that matches your use case:
 
