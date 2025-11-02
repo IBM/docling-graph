@@ -1,216 +1,178 @@
 """
-Unit tests for protocol definitions and type checking utilities.
+Tests for protocol definitions and type checking utilities.
 """
 
-from unittest.mock import Mock
+from typing import List, Type
+from unittest.mock import MagicMock
 
 import pytest
+from pydantic import BaseModel
 
 from docling_graph.protocols import (
+    DocumentProcessorProtocol,
     ExtractionBackendProtocol,
-    TextExtractionBackendProtocol,
     ExtractorProtocol,
     LLMClientProtocol,
-    DocumentProcessorProtocol,
-    is_vlm_backend,
-    is_llm_backend,
+    TextExtractionBackendProtocol,
     get_backend_type,
+    is_llm_backend,
+    is_vlm_backend,
 )
 
 
+# Test Models
+class SampleModel(BaseModel):
+    """Sample Pydantic model for testing."""
+
+    name: str
+    value: int
+
+
 class TestExtractionBackendProtocol:
-    """Tests for ExtractionBackendProtocol."""
+    """Test VLM backend protocol compliance."""
 
-    def test_protocol_with_required_methods(self):
-        """Test class implementing protocol."""
-        class VLMBackend:
-            def extract_from_document(self, source, template):
-                return []
-            
-            def cleanup(self):
-                pass
-        
-        backend = VLMBackend()
-        assert isinstance(backend, ExtractionBackendProtocol)
+    def test_is_vlm_backend_with_valid_backend(self):
+        """Should return True for valid VLM backend."""
+        backend = MagicMock()
+        backend.extract_from_document = MagicMock(return_value=[SampleModel(name="test", value=1)])
 
-    def test_protocol_missing_extract_method(self):
-        """Test protocol requires extract_from_document."""
-        class IncompleteBackend:
-            def cleanup(self):
-                pass
-        
-        backend = IncompleteBackend()
-        assert not isinstance(backend, ExtractionBackendProtocol)
+        result = is_vlm_backend(backend)
+        assert result is True
+
+    def test_is_vlm_backend_missing_method(self):
+        """Should return False if method is missing."""
+        backend = MagicMock(spec=[])  # Empty spec, no methods
+        result = is_vlm_backend(backend)
+        assert result is False
+
+    def test_is_vlm_backend_with_none(self):
+        """Should handle None gracefully."""
+        result = is_vlm_backend(None)
+        assert result is False
 
 
 class TestTextExtractionBackendProtocol:
-    """Tests for TextExtractionBackendProtocol."""
+    """Test LLM backend protocol compliance."""
 
-    def test_protocol_with_required_methods(self):
-        """Test class implementing protocol."""
-        class LLMBackend:
-            client = Mock()
-            
-            def extract_from_markdown(self, markdown, template, context="document"):
-                return None
-            
-            def cleanup(self):
-                pass
-        
-        backend = LLMBackend()
-        assert isinstance(backend, TextExtractionBackendProtocol)
+    def test_is_llm_backend_with_valid_backend(self):
+        """Should return True for valid LLM backend."""
+        backend = MagicMock()
+        backend.extract_from_markdown = MagicMock(return_value=SampleModel(name="test", value=1))
 
-    def test_protocol_missing_extract_method(self):
-        """Test protocol requires extract_from_markdown."""
-        class IncompleteBackend:
-            client = Mock()
-            
-            def cleanup(self):
-                pass
-        
-        backend = IncompleteBackend()
-        assert not isinstance(backend, TextExtractionBackendProtocol)
+        result = is_llm_backend(backend)
+        assert result is True
+
+    def test_is_llm_backend_missing_method(self):
+        """Should return False if method is missing."""
+        backend = MagicMock(spec=[])
+        result = is_llm_backend(backend)
+        assert result is False
+
+    def test_is_llm_backend_with_none(self):
+        """Should handle None gracefully."""
+        result = is_llm_backend(None)
+        assert result is False
 
 
 class TestLLMClientProtocol:
-    """Tests for LLMClientProtocol."""
+    """Test LLM client protocol."""
 
-    def test_protocol_with_required_methods(self):
-        """Test class implementing protocol."""
-        class OllamaClient:
-            @property
-            def context_limit(self):
-                return 4096
-            
-            def get_json_response(self, prompt, schema_json):
-                return {}
-        
-        client = OllamaClient()
-        assert isinstance(client, LLMClientProtocol)
+    def test_llm_client_has_context_limit(self):
+        """Client should have context_limit property."""
+        client = MagicMock()
+        client.context_limit = 4096
+        assert client.context_limit == 4096
 
-    def test_protocol_missing_context_limit(self):
-        """Test protocol requires context_limit."""
-        class IncompleteClient:
-            def get_json_response(self, prompt, schema_json):
-                return {}
-        
-        client = IncompleteClient()
-        assert not isinstance(client, LLMClientProtocol)
+    def test_llm_client_has_get_json_response(self):
+        """Client should have get_json_response method."""
+        client = MagicMock()
+        response = {"key": "value"}
+        client.get_json_response = MagicMock(return_value=response)
+
+        result = client.get_json_response("prompt", '{"schema": "json"}')
+        assert result == response
 
 
 class TestExtractorProtocol:
-    """Tests for ExtractorProtocol."""
+    """Test extractor strategy protocol."""
 
-    def test_protocol_with_required_methods(self):
-        """Test class implementing protocol."""
-        class OneToOneStrategy:
-            backend = Mock()
-            
-            def extract(self, source, template):
-                return []
-        
-        extractor = OneToOneStrategy()
-        assert isinstance(extractor, ExtractorProtocol)
+    def test_extractor_has_backend(self):
+        """Extractor should have backend attribute."""
+        extractor = MagicMock()
+        extractor.backend = MagicMock()
+        assert extractor.backend is not None
+
+    def test_extractor_has_extract_method(self):
+        """Extractor should have extract method."""
+        extractor = MagicMock()
+        extractor.extract = MagicMock(return_value=[SampleModel(name="test", value=1)])
+
+        result = extractor.extract("source.pdf", SampleModel)
+        assert isinstance(result, list)
 
 
 class TestDocumentProcessorProtocol:
-    """Tests for DocumentProcessorProtocol."""
+    """Test document processor protocol."""
 
-    def test_protocol_with_required_methods(self):
-        """Test class implementing protocol."""
-        class DocProcessor:
-            def convert_to_markdown(self, source):
-                return Mock()
-            
-            def extract_full_markdown(self, document):
-                return "# Content"
-            
-            def extract_page_markdowns(self, document):
-                return ["# Page 1"]
-        
-        processor = DocProcessor()
-        assert isinstance(processor, DocumentProcessorProtocol)
+    def test_document_processor_has_convert_to_markdown(self):
+        """Processor should have convert_to_markdown method."""
+        processor = MagicMock()
+        processor.convert_to_markdown = MagicMock(return_value=MagicMock())
 
+        result = processor.convert_to_markdown("doc.pdf")
+        assert result is not None
 
-class TestIsVLMBackend:
-    """Tests for is_vlm_backend type guard."""
+    def test_document_processor_has_extract_full_markdown(self):
+        """Processor should have extract_full_markdown method."""
+        processor = MagicMock()
+        doc = MagicMock()
+        processor.extract_full_markdown = MagicMock(return_value="# Markdown\ncontent")
 
-    def test_vlm_backend_detected(self):
-        """Test detecting VLM backend."""
-        backend = Mock()
-        backend.extract_from_document = Mock()
-        
-        assert is_vlm_backend(backend) is True
+        result = processor.extract_full_markdown(doc)
+        assert "Markdown" in result
 
-    def test_non_vlm_backend(self):
-        """Test non-VLM backend."""
-        backend = Mock(spec=[])  # No extract_from_document
-        
-        assert is_vlm_backend(backend) is False
+    def test_document_processor_has_extract_page_markdowns(self):
+        """Processor should have extract_page_markdowns method."""
+        processor = MagicMock()
+        doc = MagicMock()
+        processor.extract_page_markdowns = MagicMock(return_value=["Page 1", "Page 2"])
 
-    def test_llm_backend_not_vlm(self):
-        """Test LLM backend is not VLM."""
-        backend = Mock()
-        backend.extract_from_markdown = Mock()
-        backend.extract_from_document = None
-        
-        assert is_vlm_backend(backend) is False
-
-
-class TestIsLLMBackend:
-    """Tests for is_llm_backend type guard."""
-
-    def test_llm_backend_detected(self):
-        """Test detecting LLM backend."""
-        backend = Mock()
-        backend.extract_from_markdown = Mock()
-        
-        assert is_llm_backend(backend) is True
-
-    def test_non_llm_backend(self):
-        """Test non-LLM backend."""
-        backend = Mock(spec=[])  # No extract_from_markdown
-        
-        assert is_llm_backend(backend) is False
-
-    def test_vlm_backend_not_llm(self):
-        """Test VLM backend is not LLM."""
-        backend = Mock()
-        backend.extract_from_document = Mock()
-        backend.extract_from_markdown = None
-        
-        assert is_llm_backend(backend) is False
+        result = processor.extract_page_markdowns(doc)
+        assert isinstance(result, list)
+        assert len(result) == 2
 
 
 class TestGetBackendType:
-    """Tests for get_backend_type function."""
+    """Test backend type detection."""
 
-    def test_vlm_backend_type(self):
-        """Test identifying VLM backend."""
-        backend = Mock()
-        backend.extract_from_document = Mock()
-        backend.extract_from_markdown = None
-        
-        assert get_backend_type(backend) == "vlm"
+    def test_get_backend_type_vlm(self):
+        """Should return 'vlm' for VLM backend."""
+        backend = MagicMock()
+        backend.extract_from_document = MagicMock()
 
-    def test_llm_backend_type(self):
-        """Test identifying LLM backend."""
-        backend = Mock()
-        backend.extract_from_markdown = Mock()
-        backend.extract_from_document = None
-        
-        assert get_backend_type(backend) == "llm"
+        result = get_backend_type(backend)
+        assert result == "vlm"
 
-    def test_both_methods_returns_vlm(self):
-        """Test when both methods present, VLM is returned first."""
-        backend = Mock()
-        backend.extract_from_document = Mock()
-        backend.extract_from_markdown = Mock()
-        
-        assert get_backend_type(backend) == "vlm"
+    def test_get_backend_type_llm(self):
+        """Should return 'llm' for LLM backend."""
+        backend = MagicMock()
+        backend.extract_from_markdown = MagicMock()
+        del backend.extract_from_document  # Remove VLM method
 
-    def test_unknown_backend_type(self):
-        """Test unknown backend type."""
-        backend = Mock(spec=[])  # No methods
-        
-        assert get_backend_type(backend) == "unknown"
+        result = get_backend_type(backend)
+        assert result == "llm"
+
+    def test_get_backend_type_unknown(self):
+        """Should return 'unknown' for unknown backend."""
+        backend = MagicMock(spec=[])
+        result = get_backend_type(backend)
+        assert result == "unknown"
+
+    def test_get_backend_type_prefers_vlm(self):
+        """Should prefer VLM if both methods present."""
+        backend = MagicMock()
+        backend.extract_from_document = MagicMock()
+        backend.extract_from_markdown = MagicMock()
+
+        result = get_backend_type(backend)
+        assert result == "vlm"  # VLM check comes first

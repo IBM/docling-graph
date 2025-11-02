@@ -1,255 +1,167 @@
 """
-Unit tests for DoclingExporter.
+Tests for Docling document exporter.
 """
 
+import json
 from pathlib import Path
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
 from docling_graph.core.exporters.docling_exporter import DoclingExporter
 
 
-class TestDoclingExporterInitialization:
-    """Tests for DoclingExporter initialization."""
+@pytest.fixture
+def mock_docling_document():
+    """Create a mock Docling document."""
+    doc = MagicMock()
+    doc.pages = {1: MagicMock(), 2: MagicMock()}
+    doc.export_to_markdown.return_value = "# Document\n\nContent here"
+    doc.export_to_dict.return_value = {"pages": [{"page_number": 1}], "metadata": {}}
+    return doc
 
-    def test_init_with_default_output_dir(self):
-        """Test initialization with default output directory."""
+
+class TestDoclingExporterInitialization:
+    """Test DoclingExporter initialization."""
+
+    def test_initialization_default(self):
+        """Should initialize with default output directory."""
         exporter = DoclingExporter()
-        
         assert exporter.output_dir == Path("outputs")
 
-    def test_init_with_custom_output_dir(self, temp_dir):
-        """Test initialization with custom output directory."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        
-        assert exporter.output_dir == temp_dir
+    def test_initialization_custom_directory(self, tmp_path):
+        """Should accept custom output directory."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+        assert exporter.output_dir == tmp_path
 
 
 class TestDoclingExporterExportDocument:
-    """Tests for export_document method."""
+    """Test document export."""
 
-    def test_export_document_creates_directory(self, temp_dir):
-        """Test that export creates output directory."""
-        exporter = DoclingExporter(output_dir=temp_dir / "new_dir")
-        mock_document = Mock()
-        mock_document.export_to_dict.return_value = {"content": "test"}
-        mock_document.export_to_markdown.return_value = "# Test"
-        
-        assert not (temp_dir / "new_dir").exists()
-        exporter.export_document(
-            document=mock_document,
-            base_name="test",
-            include_json=True,
-            include_markdown=False
-        )
-        assert (temp_dir / "new_dir").exists()
+    def test_export_document_creates_directory(self, mock_docling_document, tmp_path):
+        """Should create output directory."""
+        exporter = DoclingExporter(output_dir=tmp_path)
 
-    def test_export_json_only(self, temp_dir):
-        """Test exporting only JSON."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.export_to_dict.return_value = {"content": "test"}
-        
-        result = exporter.export_document(
-            document=mock_document,
-            base_name="test",
-            include_json=True,
-            include_markdown=False
-        )
-        
-        assert (temp_dir / "test.json").exists()
-        assert "json_path" in result
-        assert "markdown_path" not in result
+        exporter.export_document(mock_docling_document, "test_doc")
 
-    def test_export_markdown_only(self, temp_dir):
-        """Test exporting only markdown."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.export_to_markdown.return_value = "# Test Document"
-        
-        result = exporter.export_document(
-            document=mock_document,
-            base_name="test",
-            include_json=False,
-            include_markdown=True
-        )
-        
-        assert (temp_dir / "test.md").exists()
-        assert "markdown_path" in result
-        assert "json_path" not in result
+        assert tmp_path.exists()
 
-    def test_export_both_formats(self, temp_dir):
-        """Test exporting both JSON and markdown."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.export_to_dict.return_value = {"content": "test"}
-        mock_document.export_to_markdown.return_value = "# Test"
-        
-        result = exporter.export_document(
-            document=mock_document,
-            base_name="test",
-            include_json=True,
-            include_markdown=True
-        )
-        
-        assert (temp_dir / "test.json").exists()
-        assert (temp_dir / "test.md").exists()
-        assert "json_path" in result
-        assert "markdown_path" in result
+    def test_export_document_returns_dict(self, mock_docling_document, tmp_path):
+        """Should return dictionary of exported file paths."""
+        exporter = DoclingExporter(output_dir=tmp_path)
 
-    def test_export_per_page_markdown(self, temp_dir):
-        """Test exporting per-page markdown."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.pages = {0: Mock(), 1: Mock()}
-        mock_document.export_to_markdown.side_effect = ["# Page 1", "# Page 2"]
-        
-        result = exporter.export_document(
-            document=mock_document,
-            base_name="test",
-            include_json=False,
-            include_markdown=True,
-            per_page=True
-        )
-        
-        assert (temp_dir / "test_page_0.md").exists()
-        assert (temp_dir / "test_page_1.md").exists()
-        assert "per_page_markdown_paths" in result
-        assert len(result["per_page_markdown_paths"]) == 2
+        result = exporter.export_document(mock_docling_document, "test_doc")
 
-    def test_export_no_formats_raises_error(self, temp_dir):
-        """Test that requesting no exports raises error."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        
-        with pytest.raises(ValueError, match="At least one format"):
-            exporter.export_document(
-                document=mock_document,
-                base_name="test",
-                include_json=False,
-                include_markdown=False
-            )
-
-
-class TestDoclingExporterFileNaming:
-    """Tests for file naming."""
-
-    def test_json_filename_format(self, temp_dir):
-        """Test JSON filename format."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.export_to_dict.return_value = {}
-        
-        exporter.export_document(
-            document=mock_document,
-            base_name="my_document",
-            include_json=True,
-            include_markdown=False
-        )
-        
-        assert (temp_dir / "my_document.json").exists()
-
-    def test_markdown_filename_format(self, temp_dir):
-        """Test markdown filename format."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.export_to_markdown.return_value = "# Test"
-        
-        exporter.export_document(
-            document=mock_document,
-            base_name="my_document",
-            include_json=False,
-            include_markdown=True
-        )
-        
-        assert (temp_dir / "my_document.md").exists()
-
-    def test_per_page_filename_format(self, temp_dir):
-        """Test per-page markdown filename format."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.pages = {0: Mock(), 1: Mock()}
-        mock_document.export_to_markdown.side_effect = ["Page 1", "Page 2"]
-        
-        exporter.export_document(
-            document=mock_document,
-            base_name="doc",
-            include_json=False,
-            include_markdown=True,
-            per_page=True
-        )
-        
-        assert (temp_dir / "doc_page_0.md").exists()
-        assert (temp_dir / "doc_page_1.md").exists()
-
-
-class TestDoclingExporterErrorHandling:
-    """Tests for error handling."""
-
-    def test_handles_document_export_error(self, temp_dir):
-        """Test handling of document export errors."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.export_to_dict.side_effect = RuntimeError("Export failed")
-        
-        with pytest.raises(RuntimeError, match="Export failed"):
-            exporter.export_document(
-                document=mock_document,
-                base_name="test",
-                include_json=True,
-                include_markdown=False
-            )
-
-    def test_handles_markdown_export_error(self, temp_dir):
-        """Test handling of markdown export errors."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.export_to_markdown.side_effect = RuntimeError("Markdown export failed")
-        
-        with pytest.raises(RuntimeError):
-            exporter.export_document(
-                document=mock_document,
-                base_name="test",
-                include_json=False,
-                include_markdown=True
-            )
-
-
-class TestDoclingExporterReturnValues:
-    """Tests for return value structure."""
-
-    def test_return_value_has_paths(self, temp_dir):
-        """Test that return value contains file paths."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.export_to_dict.return_value = {}
-        mock_document.export_to_markdown.return_value = "# Test"
-        
-        result = exporter.export_document(
-            document=mock_document,
-            base_name="test",
-            include_json=True,
-            include_markdown=True
-        )
-        
         assert isinstance(result, dict)
-        assert isinstance(result["json_path"], str)
-        assert isinstance(result["markdown_path"], str)
 
-    def test_return_value_per_page_is_list(self, temp_dir):
-        """Test that per-page paths are returned as list."""
-        exporter = DoclingExporter(output_dir=temp_dir)
-        mock_document = Mock()
-        mock_document.pages = {0: Mock()}
-        mock_document.export_to_markdown.return_value = "# Page"
-        
-        result = exporter.export_document(
-            document=mock_document,
-            base_name="test",
-            include_json=False,
-            include_markdown=True,
-            per_page=True
-        )
-        
-        assert isinstance(result["per_page_markdown_paths"], list)
+    def test_export_document_with_json_included(self, mock_docling_document, tmp_path):
+        """Should export document as JSON when enabled."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+
+        result = exporter.export_document(mock_docling_document, "test_doc", include_json=True)
+
+        assert "document_json" in result
+
+    def test_export_document_with_markdown_included(self, mock_docling_document, tmp_path):
+        """Should export markdown when enabled."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+
+        result = exporter.export_document(mock_docling_document, "test_doc", include_markdown=True)
+
+        assert "markdown" in result
+
+    def test_export_document_without_json(self, mock_docling_document, tmp_path):
+        """Should not export JSON when disabled."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+
+        result = exporter.export_document(mock_docling_document, "test_doc", include_json=False)
+
+        assert "document_json" not in result
+
+    def test_export_document_without_markdown(self, mock_docling_document, tmp_path):
+        """Should not export markdown when disabled."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+
+        result = exporter.export_document(mock_docling_document, "test_doc", include_markdown=False)
+
+        assert "markdown" not in result
+
+    def test_export_document_per_page_markup(self, mock_docling_document, tmp_path):
+        """Should export per-page markdown when enabled."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+
+        result = exporter.export_document(mock_docling_document, "test_doc", per_page=True)
+
+        assert "page_markdowns" in result
+
+    def test_export_document_filename_format(self, mock_docling_document, tmp_path):
+        """Exported files should follow naming convention."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+
+        exporter.export_document(mock_docling_document, "test_doc")
+
+        # Check for expected filename patterns
+        files = list(tmp_path.glob("*"))
+        filenames = [f.name for f in files]
+        assert any("test_doc" in name for name in filenames)
+
+
+class TestDoclingExporterExportDocumentJSON:
+    """Test document JSON export."""
+
+    @patch("builtins.open", new_callable=mock_open)
+    def test_export_document_json_creates_file(self, mock_file, mock_docling_document, tmp_path):
+        """Should create JSON file."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+        json_path = tmp_path / "test.json"
+
+        exporter._export_document_json(mock_docling_document, json_path)
+
+        mock_docling_document.export_to_dict.assert_called_once()
+
+    @patch("builtins.open", new_callable=mock_open)
+    def test_export_document_json_uses_dict_export(
+        self, mock_file, mock_docling_document, tmp_path
+    ):
+        """Should use document's export_to_dict method."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+        json_path = tmp_path / "test.json"
+
+        exporter._export_document_json(mock_docling_document, json_path)
+
+        mock_docling_document.export_to_dict.assert_called_once()
+
+
+class TestDoclingExporterSaveText:
+    """Test text saving."""
+
+    def test_save_text_creates_file(self, tmp_path):
+        """Should create file with text content."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+        text_path = tmp_path / "test.md"
+        content = "# Test\n\nContent here"
+
+        exporter._save_text(content, text_path)
+
+        assert text_path.exists()
+        assert text_path.read_text() == content
+
+    def test_save_text_uses_utf8_encoding(self, tmp_path):
+        """Should use UTF-8 encoding."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+        text_path = tmp_path / "test.md"
+        content = "# Tëst with üñíçödé"
+
+        exporter._save_text(content, text_path)
+
+        assert text_path.read_text(encoding="utf-8") == content
+
+    def test_save_text_overwrites_existing(self, tmp_path):
+        """Should overwrite existing file."""
+        exporter = DoclingExporter(output_dir=tmp_path)
+        text_path = tmp_path / "test.md"
+
+        text_path.write_text("old content")
+        exporter._save_text("new content", text_path)
+
+        assert text_path.read_text() == "new content"

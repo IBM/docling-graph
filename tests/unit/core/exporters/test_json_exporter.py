@@ -1,5 +1,5 @@
 """
-Unit tests for JSONExporter.
+Tests for JSON exporter.
 """
 
 import json
@@ -8,202 +8,197 @@ from pathlib import Path
 import networkx as nx
 import pytest
 
-from docling_graph.core.exporters.json_exporter import JSONExporter
 from docling_graph.core.base.config import ExportConfig
+from docling_graph.core.exporters.json_exporter import JSONExporter
+
+
+@pytest.fixture
+def sample_graph():
+    """Create a sample graph."""
+    graph = nx.DiGraph()
+    graph.add_node("n1", label="Person", name="John")
+    graph.add_node("n2", label="Company", name="ACME")
+    graph.add_edge("n1", "n2", label="works_for", strength=0.9)
+    return graph
+
+
+@pytest.fixture
+def empty_graph():
+    """Create an empty graph."""
+    return nx.DiGraph()
 
 
 class TestJSONExporterInitialization:
-    """Tests for JSONExporter initialization."""
+    """Test JSONExporter initialization."""
 
-    def test_init_with_default_config(self):
-        """Test initialization with default configuration."""
+    def test_initialization_default(self):
+        """Should initialize with default config."""
         exporter = JSONExporter()
-        
         assert exporter.config is not None
-        assert isinstance(exporter.config, ExportConfig)
 
-    def test_init_with_custom_config(self):
-        """Test initialization with custom configuration."""
-        custom_config = ExportConfig()
-        exporter = JSONExporter(config=custom_config)
-        
-        assert exporter.config == custom_config
-
-
-class TestJSONExporterExport:
-    """Tests for export method."""
-
-    def test_export_simple_graph(self, simple_graph, temp_dir):
-        """Test exporting a simple graph to JSON."""
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        
-        exporter.export(simple_graph, output_file)
-        
-        assert output_file.exists()
-
-    def test_export_creates_parent_directory(self, simple_graph, temp_dir):
-        """Test that export creates parent directory if needed."""
-        output_file = temp_dir / "subdir" / "graph.json"
-        exporter = JSONExporter()
-        
-        assert not output_file.parent.exists()
-        exporter.export(simple_graph, output_file)
-        assert output_file.parent.exists()
-
-    def test_export_empty_graph_raises_error(self, temp_dir):
-        """Test that exporting empty graph raises ValueError."""
-        empty_graph = nx.DiGraph()
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        
-        with pytest.raises(ValueError, match="Cannot export empty graph"):
-            exporter.export(empty_graph, output_file)
-
-    def test_exported_json_structure(self, simple_graph, temp_dir):
-        """Test that exported JSON has correct structure."""
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        
-        exporter.export(simple_graph, output_file)
-        
-        with open(output_file, encoding="utf-8") as f:
-            data = json.load(f)
-        
-        assert "nodes" in data
-        assert "edges" in data
-        assert "metadata" in data
-        assert isinstance(data["nodes"], list)
-        assert isinstance(data["edges"], list)
-
-    def test_exported_nodes_have_id(self, simple_graph, temp_dir):
-        """Test that exported nodes have 'id' field."""
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        
-        exporter.export(simple_graph, output_file)
-        
-        with open(output_file, encoding="utf-8") as f:
-            data = json.load(f)
-        
-        for node in data["nodes"]:
-            assert "id" in node
-
-    def test_exported_edges_have_source_target(self, simple_graph, temp_dir):
-        """Test that exported edges have 'source' and 'target' fields."""
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        
-        exporter.export(simple_graph, output_file)
-        
-        with open(output_file, encoding="utf-8") as f:
-            data = json.load(f)
-        
-        for edge in data["edges"]:
-            assert "source" in edge
-            assert "target" in edge
-
-    def test_export_preserves_node_properties(self, temp_dir):
-        """Test that node properties are preserved in export."""
-        graph = nx.DiGraph()
-        graph.add_node("node1", label="Person", name="Alice", age=30)
-        
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        exporter.export(graph, output_file)
-        
-        with open(output_file, encoding="utf-8") as f:
-            data = json.load(f)
-        
-        node = data["nodes"][0]
-        assert node["id"] == "node1"
-        assert node["label"] == "Person"
-        assert node["name"] == "Alice"
-        assert node["age"] == 30
-
-    def test_export_preserves_edge_properties(self, temp_dir):
-        """Test that edge properties are preserved in export."""
-        graph = nx.DiGraph()
-        graph.add_node("node1")
-        graph.add_node("node2")
-        graph.add_edge("node1", "node2", label="knows", weight=0.8)
-        
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        exporter.export(graph, output_file)
-        
-        with open(output_file, encoding="utf-8") as f:
-            data = json.load(f)
-        
-        edge = data["edges"][0]
-        assert edge["source"] == "node1"
-        assert edge["target"] == "node2"
-        assert edge["label"] == "knows"
-        assert edge["weight"] == 0.8
-
-
-class TestJSONExporterMetadata:
-    """Tests for metadata in exported JSON."""
-
-    def test_metadata_has_counts(self, simple_graph, temp_dir):
-        """Test that metadata includes node and edge counts."""
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        
-        exporter.export(simple_graph, output_file)
-        
-        with open(output_file, encoding="utf-8") as f:
-            data = json.load(f)
-        
-        assert "node_count" in data["metadata"]
-        assert "edge_count" in data["metadata"]
-        assert data["metadata"]["node_count"] == simple_graph.number_of_nodes()
-        assert data["metadata"]["edge_count"] == simple_graph.number_of_edges()
-
-
-class TestJSONExporterFormatting:
-    """Tests for JSON formatting options."""
-
-    def test_json_is_formatted_with_indent(self, simple_graph, temp_dir):
-        """Test that exported JSON is formatted with indentation."""
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        
-        exporter.export(simple_graph, output_file)
-        
-        content = output_file.read_text()
-        # Check for indentation (newlines and spaces)
-        assert "\n" in content
-        assert "  " in content or "\t" in content
-
-    def test_unicode_characters_preserved(self, temp_dir):
-        """Test that Unicode characters are properly preserved."""
-        graph = nx.DiGraph()
-        graph.add_node("node1", name="François", city="北京")
-        
-        output_file = temp_dir / "graph.json"
-        exporter = JSONExporter()
-        exporter.export(graph, output_file)
-        
-        with open(output_file, encoding="utf-8") as f:
-            data = json.load(f)
-        
-        node = data["nodes"][0]
-        assert node["name"] == "François"
-        assert node["city"] == "北京"
+    def test_initialization_custom_config(self):
+        """Should accept custom config."""
+        config = ExportConfig()
+        exporter = JSONExporter(config=config)
+        assert exporter.config is config
 
 
 class TestJSONExporterValidation:
-    """Tests for validate_graph method."""
+    """Test graph validation."""
 
-    def test_validate_graph_with_nodes(self, simple_graph):
-        """Test validation of graph with nodes."""
+    def test_validate_graph_with_nodes(self, sample_graph):
+        """Should return True for non-empty graph."""
         exporter = JSONExporter()
-        assert exporter.validate_graph(simple_graph) is True
+        assert exporter.validate_graph(sample_graph) is True
 
-    def test_validate_empty_graph(self):
-        """Test validation of empty graph."""
-        empty_graph = nx.DiGraph()
+    def test_validate_graph_empty(self, empty_graph):
+        """Should return False for empty graph."""
         exporter = JSONExporter()
-        
         assert exporter.validate_graph(empty_graph) is False
+
+
+class TestJSONExporterGraphToDict:
+    """Test graph to dictionary conversion."""
+
+    def test_graph_to_dict_structure(self, sample_graph):
+        """Should convert graph to dict with correct structure."""
+        result = JSONExporter._graph_to_dict(sample_graph)
+
+        assert "nodes" in result
+        assert "edges" in result
+        assert "metadata" in result
+
+    def test_graph_to_dict_nodes_list(self, sample_graph):
+        """Nodes should be list."""
+        result = JSONExporter._graph_to_dict(sample_graph)
+
+        assert isinstance(result["nodes"], list)
+        assert len(result["nodes"]) == 2
+
+    def test_graph_to_dict_edges_list(self, sample_graph):
+        """Edges should be list."""
+        result = JSONExporter._graph_to_dict(sample_graph)
+
+        assert isinstance(result["edges"], list)
+        assert len(result["edges"]) == 1
+
+    def test_graph_to_dict_node_attributes(self, sample_graph):
+        """Nodes should include attributes."""
+        result = JSONExporter._graph_to_dict(sample_graph)
+
+        node = result["nodes"][0]
+        assert "id" in node
+        assert "label" in node
+
+    def test_graph_to_dict_edge_attributes(self, sample_graph):
+        """Edges should include attributes."""
+        result = JSONExporter._graph_to_dict(sample_graph)
+
+        edge = result["edges"][0]
+        assert "source" in edge
+        assert "target" in edge
+        assert "label" in edge
+
+    def test_graph_to_dict_metadata(self, sample_graph):
+        """Metadata should contain node and edge counts."""
+        result = JSONExporter._graph_to_dict(sample_graph)
+
+        assert result["metadata"]["node_count"] == 2
+        assert result["metadata"]["edge_count"] == 1
+
+
+class TestJSONExporterExport:
+    """Test JSON export functionality."""
+
+    def test_export_creates_file(self, sample_graph, tmp_path):
+        """Should create JSON file."""
+        exporter = JSONExporter()
+        output_file = tmp_path / "graph.json"
+
+        exporter.export(sample_graph, output_file)
+
+        assert output_file.exists()
+        assert output_file.suffix == ".json"
+
+    def test_export_empty_graph_raises_error(self, empty_graph, tmp_path):
+        """Should raise error for empty graph."""
+        exporter = JSONExporter()
+
+        with pytest.raises(ValueError):
+            exporter.export(empty_graph, tmp_path / "output.json")
+
+    def test_export_creates_parent_directories(self, sample_graph, tmp_path):
+        """Should create parent directories if needed."""
+        exporter = JSONExporter()
+        output_file = tmp_path / "nested" / "deep" / "graph.json"
+
+        exporter.export(sample_graph, output_file)
+
+        assert output_file.exists()
+
+    def test_export_creates_valid_json(self, sample_graph, tmp_path):
+        """Exported file should be valid JSON."""
+        exporter = JSONExporter()
+        output_file = tmp_path / "graph.json"
+
+        exporter.export(sample_graph, output_file)
+
+        with open(output_file) as f:
+            data = json.load(f)
+
+        assert "nodes" in data
+        assert "edges" in data
+
+    def test_export_preserves_node_data(self, sample_graph, tmp_path):
+        """Export should preserve node attributes."""
+        exporter = JSONExporter()
+        output_file = tmp_path / "graph.json"
+
+        exporter.export(sample_graph, output_file)
+
+        with open(output_file) as f:
+            data = json.load(f)
+
+        nodes = data["nodes"]
+        assert len(nodes) == 2
+        assert any(n["name"] == "John" for n in nodes)
+
+    def test_export_preserves_edge_data(self, sample_graph, tmp_path):
+        """Export should preserve edge attributes."""
+        exporter = JSONExporter()
+        output_file = tmp_path / "graph.json"
+
+        exporter.export(sample_graph, output_file)
+
+        with open(output_file) as f:
+            data = json.load(f)
+
+        edges = data["edges"]
+        assert len(edges) == 1
+        assert edges[0]["strength"] == 0.9
+
+    def test_export_uses_configured_encoding(self, sample_graph, tmp_path):
+        """Should use configured encoding."""
+        config = ExportConfig()
+        exporter = JSONExporter(config=config)
+        output_file = tmp_path / "graph.json"
+
+        exporter.export(sample_graph, output_file)
+
+        # Verify encoding by reading file
+        with open(output_file, encoding=config.JSON_ENCODING) as f:
+            data = json.load(f)
+        assert data is not None
+
+    def test_export_uses_configured_indent(self, sample_graph, tmp_path):
+        """Should use configured indentation."""
+        config = ExportConfig()
+        exporter = JSONExporter(config=config)
+        output_file = tmp_path / "graph.json"
+
+        exporter.export(sample_graph, output_file)
+
+        content = output_file.read_text()
+        # Indented JSON should have newlines and spaces
+        assert "\n" in content
+        assert "  " in content

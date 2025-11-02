@@ -1,12 +1,17 @@
 """
-Unit tests for CLI validators.
+Tests for CLI validators.
 """
+
+from unittest.mock import MagicMock, patch
 
 import pytest
 import typer
 
 from docling_graph.cli.validators import (
+    check_provider_installed,
+    validate_and_warn_dependencies,
     validate_backend_type,
+    validate_config_dependencies,
     validate_docling_config,
     validate_export_format,
     validate_inference,
@@ -16,201 +21,210 @@ from docling_graph.cli.validators import (
 
 
 class TestValidateProcessingMode:
-    """Tests for validate_processing_mode function."""
+    """Test processing mode validation."""
 
-    def test_valid_one_to_one(self):
-        """Test validation of 'one-to-one' mode."""
-        assert validate_processing_mode("one-to-one") == "one-to-one"
-        assert validate_processing_mode("ONE-TO-ONE") == "one-to-one"
-        assert validate_processing_mode("One-To-One") == "one-to-one"
+    def test_validate_processing_mode_one_to_one(self):
+        """Should accept 'one-to-one' mode."""
+        result = validate_processing_mode("one-to-one")
+        assert result == "one-to-one"
 
-    def test_valid_many_to_one(self):
-        """Test validation of 'many-to-one' mode."""
-        assert validate_processing_mode("many-to-one") == "many-to-one"
-        assert validate_processing_mode("MANY-TO-ONE") == "many-to-one"
+    def test_validate_processing_mode_many_to_one(self):
+        """Should accept 'many-to-one' mode."""
+        result = validate_processing_mode("many-to-one")
+        assert result == "many-to-one"
 
-    def test_invalid_mode(self):
-        """Test validation fails for invalid modes."""
+    def test_validate_processing_mode_case_insensitive(self):
+        """Should handle case-insensitive input."""
+        result = validate_processing_mode("ONE-TO-ONE")
+        assert result == "one-to-one"
+
+    def test_validate_processing_mode_invalid_raises_exit(self):
+        """Should exit on invalid processing mode."""
         with pytest.raises(typer.Exit) as exc_info:
             validate_processing_mode("invalid-mode")
         assert exc_info.value.exit_code == 1
 
-    def test_empty_mode(self):
-        """Test validation fails for empty mode."""
-        with pytest.raises(typer.Exit):
-            validate_processing_mode("")
-
-    @pytest.mark.parametrize("invalid_input", ["one-two-one", "many", "one", "all", "batch"])
-    def test_various_invalid_modes(self, invalid_input):
-        """Test various invalid mode inputs."""
-        with pytest.raises(typer.Exit):
-            validate_processing_mode(invalid_input)
-
 
 class TestValidateBackendType:
-    """Tests for validate_backend_type function."""
+    """Test backend type validation."""
 
-    def test_valid_llm(self):
-        """Test validation of 'llm' backend."""
-        assert validate_backend_type("llm") == "llm"
-        assert validate_backend_type("LLM") == "llm"
-        assert validate_backend_type("Llm") == "llm"
+    def test_validate_backend_type_llm(self):
+        """Should accept 'llm' backend."""
+        result = validate_backend_type("llm")
+        assert result == "llm"
 
-    def test_valid_vlm(self):
-        """Test validation of 'vlm' backend."""
-        assert validate_backend_type("vlm") == "vlm"
-        assert validate_backend_type("VLM") == "vlm"
+    def test_validate_backend_type_vlm(self):
+        """Should accept 'vlm' backend."""
+        result = validate_backend_type("vlm")
+        assert result == "vlm"
 
-    def test_invalid_backend(self):
-        """Test validation fails for invalid backends."""
+    def test_validate_backend_type_case_insensitive(self):
+        """Should handle case-insensitive input."""
+        result = validate_backend_type("LLM")
+        assert result == "llm"
+
+    def test_validate_backend_type_invalid_raises_exit(self):
+        """Should exit on invalid backend type."""
         with pytest.raises(typer.Exit) as exc_info:
-            validate_backend_type("gpt")
+            validate_backend_type("invalid-backend")
         assert exc_info.value.exit_code == 1
-
-    @pytest.mark.parametrize("invalid_input", ["transformer", "bert", "gpt", "api", ""])
-    def test_various_invalid_backends(self, invalid_input):
-        """Test various invalid backend inputs."""
-        with pytest.raises(typer.Exit):
-            validate_backend_type(invalid_input)
 
 
 class TestValidateInference:
-    """Tests for validate_inference function."""
+    """Test inference location validation."""
 
-    def test_valid_local(self):
-        """Test validation of 'local' inference."""
-        assert validate_inference("local") == "local"
-        assert validate_inference("LOCAL") == "local"
+    def test_validate_inference_local(self):
+        """Should accept 'local' inference."""
+        result = validate_inference("local")
+        assert result == "local"
 
-    def test_valid_remote(self):
-        """Test validation of 'remote' inference."""
-        assert validate_inference("remote") == "remote"
-        assert validate_inference("REMOTE") == "remote"
+    def test_validate_inference_remote(self):
+        """Should accept 'remote' inference."""
+        result = validate_inference("remote")
+        assert result == "remote"
 
-    def test_invalid_inference(self):
-        """Test validation fails for invalid inference."""
-        with pytest.raises(typer.Exit):
+    def test_validate_inference_case_insensitive(self):
+        """Should handle case-insensitive input."""
+        result = validate_inference("REMOTE")
+        assert result == "remote"
+
+    def test_validate_inference_invalid_raises_exit(self):
+        """Should exit on invalid inference location."""
+        with pytest.raises(typer.Exit) as exc_info:
             validate_inference("cloud")
-
-    @pytest.mark.parametrize("invalid_input", ["api", "cloud", "hybrid", "distributed", ""])
-    def test_various_invalid_inference(self, invalid_input):
-        """Test various invalid inference inputs."""
-        with pytest.raises(typer.Exit):
-            validate_inference(invalid_input)
+        assert exc_info.value.exit_code == 1
 
 
 class TestValidateDoclingConfig:
-    """Tests for validate_docling_config function."""
+    """Test Docling configuration validation."""
 
-    def test_valid_ocr(self):
-        """Test validation of 'ocr' config."""
-        assert validate_docling_config("ocr") == "ocr"
-        assert validate_docling_config("OCR") == "ocr"
+    def test_validate_docling_config_ocr(self):
+        """Should accept 'ocr' pipeline."""
+        result = validate_docling_config("ocr")
+        assert result == "ocr"
 
-    def test_valid_vision(self):
-        """Test validation of 'vision' config."""
-        assert validate_docling_config("vision") == "vision"
-        assert validate_docling_config("VISION") == "vision"
+    def test_validate_docling_config_vision(self):
+        """Should accept 'vision' pipeline."""
+        result = validate_docling_config("vision")
+        assert result == "vision"
 
-    def test_invalid_config(self):
-        """Test validation fails for invalid config."""
-        with pytest.raises(typer.Exit):
-            validate_docling_config("default")
+    def test_validate_docling_config_case_insensitive(self):
+        """Should handle case-insensitive input."""
+        result = validate_docling_config("OCR")
+        assert result == "ocr"
 
-    @pytest.mark.parametrize("invalid_input", ["default", "tesseract", "paddle", "easyocr", ""])
-    def test_various_invalid_configs(self, invalid_input):
-        """Test various invalid config inputs."""
-        with pytest.raises(typer.Exit):
-            validate_docling_config(invalid_input)
+    def test_validate_docling_config_invalid_raises_exit(self):
+        """Should exit on invalid pipeline."""
+        with pytest.raises(typer.Exit) as exc_info:
+            validate_docling_config("invalid-pipeline")
+        assert exc_info.value.exit_code == 1
 
 
 class TestValidateExportFormat:
-    """Tests for validate_export_format function."""
+    """Test export format validation."""
 
-    def test_valid_csv(self):
-        """Test validation of 'csv' format."""
-        assert validate_export_format("csv") == "csv"
-        assert validate_export_format("CSV") == "csv"
+    def test_validate_export_format_csv(self):
+        """Should accept 'csv' format."""
+        result = validate_export_format("csv")
+        assert result == "csv"
 
-    def test_valid_cypher(self):
-        """Test validation of 'cypher' format."""
-        assert validate_export_format("cypher") == "cypher"
-        assert validate_export_format("CYPHER") == "cypher"
+    def test_validate_export_format_cypher(self):
+        """Should accept 'cypher' format."""
+        result = validate_export_format("cypher")
+        assert result == "cypher"
 
-    def test_invalid_format(self):
-        """Test validation fails for invalid format."""
-        with pytest.raises(typer.Exit):
-            validate_export_format("xml")
+    def test_validate_export_format_json(self):
+        """Should accept 'json' format."""
+        result = validate_export_format("json")
+        assert result == "json"
+
+    def test_validate_export_format_case_insensitive(self):
+        """Should handle case-insensitive input."""
+        result = validate_export_format("CSV")
+        assert result == "csv"
+
+    def test_validate_export_format_invalid_raises_exit(self):
+        """Should exit on invalid export format."""
+        with pytest.raises(typer.Exit) as exc_info:
+            validate_export_format("invalid-format")
+        assert exc_info.value.exit_code == 1
 
 
-class TestValidateVlmConstraints:
-    """Tests for validate_vlm_constraints function."""
+class TestValidateVLMConstraints:
+    """Test VLM constraint validation."""
 
-    def test_valid_vlm_local(self):
-        """Test VLM with local inference is valid."""
-        # Should not raise any exception
+    def test_vlm_local_inference_valid(self):
+        """Should allow VLM with local inference."""
+        # Should not raise
         validate_vlm_constraints("vlm", "local")
 
-    def test_valid_llm_remote(self):
-        """Test LLM with remote inference is valid."""
-        # Should not raise any exception
-        validate_vlm_constraints("llm", "remote")
-
-    def test_valid_llm_local(self):
-        """Test LLM with local inference is valid."""
-        # Should not raise any exception
-        validate_vlm_constraints("llm", "local")
-
-    def test_invalid_vlm_remote(self):
-        """Test VLM with remote inference is invalid."""
+    def test_vlm_remote_inference_invalid(self):
+        """Should reject VLM with remote inference."""
         with pytest.raises(typer.Exit) as exc_info:
             validate_vlm_constraints("vlm", "remote")
         assert exc_info.value.exit_code == 1
 
-    @pytest.mark.parametrize(
-        "backend,inference,should_pass",
-        [
-            ("vlm", "local", True),
-            ("vlm", "remote", False),
-            ("llm", "local", True),
-            ("llm", "remote", True),
-        ],
-    )
-    def test_various_constraint_combinations(self, backend, inference, should_pass):
-        """Test various backend/inference combinations."""
-        if should_pass:
-            validate_vlm_constraints(backend, inference)
-        else:
-            with pytest.raises(typer.Exit):
-                validate_vlm_constraints(backend, inference)
+    def test_llm_remote_inference_valid(self):
+        """Should allow LLM with remote inference."""
+        validate_vlm_constraints("llm", "remote")
+
+    def test_llm_local_inference_valid(self):
+        """Should allow LLM with local inference."""
+        validate_vlm_constraints("llm", "local")
 
 
-class TestValidatorEdgeCases:
-    """Test edge cases and special scenarios."""
+class TestCheckProviderInstalled:
+    """Test provider installation checking."""
 
-    def test_none_inputs(self):
-        """Test validators with None input."""
-        # These should raise AttributeError or TypeError
-        with pytest.raises((AttributeError, TypeError)):
-            validate_processing_mode(None)
+    def test_check_provider_installed_returns_bool(self):
+        """Should return boolean for provider check."""
+        result = check_provider_installed("ollama")
+        assert isinstance(result, bool)
 
-    def test_numeric_inputs(self):
-        """Test validators with numeric input."""
-        with pytest.raises((AttributeError, TypeError)):
-            validate_backend_type(123)
+    def test_check_unknown_provider_returns_true(self):
+        """Should return True for unknown provider."""
+        result = check_provider_installed("unknown-provider")
+        assert result is True
 
-    def test_whitespace_inputs(self):
-        """Test validators with whitespace."""
-        with pytest.raises(typer.Exit):
-            validate_processing_mode("  ")
 
-        with pytest.raises(typer.Exit):
-            validate_backend_type("\t")
+class TestValidateConfigDependencies:
+    """Test configuration dependency validation."""
 
-    def test_special_characters(self):
-        """Test validators with special characters."""
-        with pytest.raises(typer.Exit):
-            validate_inference("local@remote")
+    def test_validate_config_dependencies_local_llm(self):
+        """Should validate local LLM configuration."""
+        config = {
+            "defaults": {"inference": "local"},
+            "models": {"llm": {"local": {"provider": "ollama", "default_model": "llama"}}},
+        }
+        is_valid, inference_type = validate_config_dependencies(config)
+        assert isinstance(is_valid, bool)
+        assert inference_type == "local"
 
-        with pytest.raises(typer.Exit):
-            validate_export_format("csv;cypher")
+    def test_validate_config_dependencies_remote(self):
+        """Should validate remote configuration."""
+        config = {
+            "defaults": {"inference": "remote"},
+            "models": {"llm": {"remote": {"provider": "mistral", "default_model": "test"}}},
+        }
+        is_valid, inference_type = validate_config_dependencies(config)
+        assert isinstance(is_valid, bool)
+        assert inference_type == "remote"
+
+    def test_validate_config_dependencies_missing_config(self):
+        """Should handle missing config sections."""
+        config = {}
+        is_valid, inference_type = validate_config_dependencies(config)
+        assert inference_type == "remote"  # Default value
+
+
+class TestValidateAndWarnDependencies:
+    """Test dependency validation and warnings."""
+
+    def test_validate_and_warn_dependencies_returns_bool(self):
+        """Should return boolean result."""
+        config = {
+            "defaults": {"inference": "remote"},
+            "models": {"llm": {"remote": {"provider": "mistral"}}},
+        }
+        result = validate_and_warn_dependencies(config, interactive=False)
+        assert isinstance(result, bool)

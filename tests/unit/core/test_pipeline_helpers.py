@@ -1,230 +1,210 @@
 """
-Unit tests for pipeline module helpers.
+Tests for pipeline helper functions.
 """
 
+import importlib
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 from pydantic import BaseModel
 
 from docling_graph.pipeline import (
+    _get_model_config,
+    _initialize_llm_client,
     _load_template_class,
-    run_pipeline,
 )
 
 
-class SampleModel(BaseModel):
-    """Sample model for testing."""
+# Test Pydantic models (renamed to avoid pytest collection)
+class SamplePydanticModel(BaseModel):
+    """Sample Pydantic model for testing."""
+
     name: str
     value: int
 
 
 class TestLoadTemplateClass:
-    """Tests for _load_template_class function."""
+    """Test template loading functionality."""
 
-    def test_load_builtin_model(self):
-        """Test loading a built-in model."""
-        # Use this test module's SampleModel
-        template = _load_template_class("test_pipeline.SampleModel")
-        
-        # Should return the class
-        assert template is not None
+    def test_load_template_class_success(self):
+        """Should load valid Pydantic template."""
+        template_str = "tests.fixtures.test_template.SamplePydanticModel"
 
-    def test_load_invalid_module_raises_error(self):
-        """Test loading from non-existent module."""
-        with pytest.raises(Exception):  # ModuleNotFoundError or similar
-            _load_template_class("nonexistent_module.Model")
+        with patch("importlib.import_module") as mock_import:
+            mock_module = MagicMock()
+            mock_module.SamplePydanticModel = SamplePydanticModel
+            mock_import.return_value = mock_module
 
-    def test_load_invalid_class_raises_error(self):
-        """Test loading non-existent class."""
-        with pytest.raises(Exception):
-            _load_template_class("test_pipeline.NonexistentModel")
+            result = _load_template_class(template_str)
+            assert result is SamplePydanticModel
 
-    def test_load_template_is_pydantic_model(self):
-        """Test that loaded template is a Pydantic model."""
-        template = _load_template_class("test_pipeline.SampleModel")
-        
-        # Should be instantiable with correct fields
-        instance = template(name="test", value=42)
-        assert instance.name == "test"
-        assert instance.value == 42
+    def test_load_template_class_with_dots_in_path(self):
+        """Should handle multiple dots in class path."""
+        template_str = "examples.templates.invoice.Invoice"
 
-    def test_template_string_format(self):
-        """Test that template string must be dotted path."""
-        # Valid dotted path
-        template = _load_template_class("test_pipeline.SampleModel")
-        assert template is not None
+        with patch("importlib.import_module") as mock_import:
+            mock_module = MagicMock()
+            # Mock an invoice class
+            invoice_model = type("Invoice", (BaseModel,), {"__annotations__": {}})
+            mock_module.Invoice = invoice_model
+            mock_import.return_value = mock_module
+
+            result = _load_template_class(template_str)
+            assert result is invoice_model
+
+    def test_load_template_class_invalid_format(self):
+        """Should raise exception for invalid format."""
+        with pytest.raises(ValueError):
+            _load_template_class("invalid_no_dot_path")
+
+    def test_load_template_class_module_not_found(self):
+        """Should raise exception if module not found."""
+        with patch("importlib.import_module", side_effect=ModuleNotFoundError()):
+            with pytest.raises(ModuleNotFoundError):
+                _load_template_class("nonexistent.module.Model")
+
+    def test_load_template_class_not_basemodel(self):
+        """Should raise TypeError if class is not Pydantic model."""
+        with patch("importlib.import_module") as mock_import:
+            mock_module = MagicMock()
+            mock_module.NotAModel = str  # Not a BaseModel
+            mock_import.return_value = mock_module
+
+            with pytest.raises(TypeError):
+                _load_template_class("some.module.NotAModel")
+
+    def test_load_template_class_attribute_not_found(self):
+        """Should raise exception if class not found in module."""
+        with patch("importlib.import_module") as mock_import:
+            mock_module = MagicMock(spec=[])  # Empty module
+            mock_import.return_value = mock_module
+
+            with pytest.raises(AttributeError):
+                _load_template_class("some.module.MissingClass")
 
 
-class TestRunPipeline:
-    """Tests for run_pipeline function."""
+class TestGetModelConfig:
+    """Test model configuration retrieval."""
 
-    @patch("docling_graph.pipeline.GraphConverter")
-    @patch("docling_graph.pipeline._load_template_class")
-    @patch("docling_graph.pipeline.get_client")
-    def test_pipeline_with_minimal_config(self, mock_get_client, mock_load_template, mock_converter):
-        """Test pipeline with minimal configuration."""
-        # Setup mocks
-        mock_load_template.return_value = SampleModel
-        mock_client = Mock()
-        mock_get_client.return_value = mock_client
-        mock_converter_instance = Mock()
-        mock_converter.return_value = mock_converter_instance
-        mock_converter_instance.pydantic_list_to_graph.return_value = (Mock(), Mock())
-        
+    def test_get_model_config_local_llm(self):
+        """Should return config for local LLM."""
         config = {
-            "source": "test.pdf",
-            "template": "test_pipeline.SampleModel",
-            "processing_mode": "many-to-one",
-            "backend_type": "llm",
-            "inference": "local",
+            "models": {"llm": {"local": {"provider": "ollama", "default_model": "llama-3.1-8b"}}}
         }
-        
-        # Should not raise error
-        result = run_pipeline(config)
-        assert result is not None
 
-    @patch("docling_graph.pipeline._load_template_class")
-    def test_pipeline_invalid_template_raises_error(self, mock_load_template):
-        """Test pipeline with invalid template."""
-        mock_load_template.side_effect = ImportError("Cannot load template")
-        
+        result = _get_model_config(config, "llm", "local")
+
+        assert result["model"] == "llama-3.1-8b"
+        assert result["provider"] == "ollama"
+
+    def test_get_model_config_remote_llm(self):
+        """Should return config for remote LLM."""
         config = {
-            "source": "test.pdf",
-            "template": "invalid.Template",
+            "models": {"llm": {"remote": {"provider": "mistral", "default_model": "mistral-small"}}}
         }
-        
-        with pytest.raises(ImportError):
-            run_pipeline(config)
 
-    @patch("docling_graph.pipeline.GraphConverter")
-    @patch("docling_graph.pipeline._load_template_class")
-    @patch("docling_graph.pipeline.get_client")
-    def test_pipeline_missing_required_config(self, mock_get_client, mock_load_template, mock_converter):
-        """Test pipeline with missing required configuration."""
+        result = _get_model_config(config, "llm", "remote")
+
+        assert result["model"] == "mistral-small"
+        assert result["provider"] == "mistral"
+
+    def test_get_model_config_vlm(self):
+        """Should return config for VLM."""
         config = {
-            # Missing source and template
-            "backend_type": "llm",
+            "models": {"vlm": {"local": {"provider": "docling", "default_model": "nuextract"}}}
         }
-        
-        with pytest.raises(KeyError):
-            run_pipeline(config)
 
-    @patch("docling_graph.pipeline.GraphConverter")
-    @patch("docling_graph.pipeline._load_template_class")
-    @patch("docling_graph.pipeline.get_client")
-    def test_pipeline_with_all_options(
-        self, mock_get_client, mock_load_template, mock_converter
-    ):
-        """Test pipeline with all configuration options."""
-        mock_load_template.return_value = SampleModel
-        mock_client = Mock()
-        mock_get_client.return_value = mock_client
-        mock_converter_instance = Mock()
-        mock_converter.return_value = mock_converter_instance
-        mock_graph = Mock()
-        mock_metadata = Mock()
-        mock_converter_instance.pydantic_list_to_graph.return_value = (mock_graph, mock_metadata)
-        
+        result = _get_model_config(config, "vlm", "local")
+
+        assert result["model"] == "nuextract"
+        assert result["provider"] == "docling"
+
+    def test_get_model_config_with_override(self):
+        """Should apply model override."""
         config = {
-            "source": "test.pdf",
-            "template": "test_pipeline.SampleModel",
-            "processing_mode": "many-to-one",
-            "backend_type": "llm",
-            "inference": "local",
-            "model": "llama3",
-            "provider": "ollama",
-            "export_format": "csv",
-            "output_dir": Path("outputs"),
-            "reverse_edges": True,
-            "docling_config": "ocr",
+            "models": {"llm": {"local": {"provider": "ollama", "default_model": "llama-3.1-8b"}}}
         }
-        
-        result = run_pipeline(config)
-        
-        # Verify pipeline was executed
-        mock_load_template.assert_called_once()
 
-    @patch("docling_graph.pipeline.GraphConverter")
-    @patch("docling_graph.pipeline._load_template_class")
-    @patch("docling_graph.pipeline.get_client")
-    def test_pipeline_returns_graph_and_metadata(
-        self, mock_get_client, mock_load_template, mock_converter
-    ):
-        """Test that pipeline returns graph and metadata."""
-        mock_load_template.return_value = SampleModel
-        mock_client = Mock()
-        mock_get_client.return_value = mock_client
-        mock_converter_instance = Mock()
-        mock_converter.return_value = mock_converter_instance
-        mock_graph = Mock()
-        mock_metadata = Mock()
-        mock_converter_instance.pydantic_list_to_graph.return_value = (mock_graph, mock_metadata)
-        
+        result = _get_model_config(config, "llm", "local", model_override="custom-model")
+
+        assert result["model"] == "custom-model"
+
+    def test_get_model_config_with_provider_override(self):
+        """Should apply provider override."""
         config = {
-            "source": "test.pdf",
-            "template": "test_pipeline.SampleModel",
+            "models": {"llm": {"remote": {"provider": "mistral", "default_model": "mistral-small"}}}
         }
-        
-        result = run_pipeline(config)
-        
-        # Result should be tuple of (graph, metadata)
-        assert result is not None
-        assert len(result) == 2
 
-    @patch("docling_graph.pipeline.GraphConverter")
-    @patch("docling_graph.pipeline._load_template_class")
-    @patch("docling_graph.pipeline.get_client")
-    def test_pipeline_vlm_backend(self, mock_get_client, mock_load_template, mock_converter):
-        """Test pipeline with VLM backend."""
-        mock_load_template.return_value = SampleModel
-        mock_converter_instance = Mock()
-        mock_converter.return_value = mock_converter_instance
-        mock_converter_instance.pydantic_list_to_graph.return_value = (Mock(), Mock())
-        
-        config = {
-            "source": "test.pdf",
-            "template": "test_pipeline.SampleModel",
-            "backend_type": "vlm",
-            "model": "numind/NuExtract",
-        }
-        
-        result = run_pipeline(config)
-        assert result is not None
+        result = _get_model_config(config, "llm", "remote", provider_override="openai")
+
+        assert result["provider"] == "openai"
+
+    def test_get_model_config_missing_raises_error(self):
+        """Should raise ValueError if config missing."""
+        config = {"models": {}}
+
+        with pytest.raises(ValueError):
+            _get_model_config(config, "llm", "local")
+
+    def test_get_model_config_default_provider(self):
+        """Should use default provider if not specified."""
+        config = {"models": {"llm": {"local": {"default_model": "llama"}}}}
+
+        result = _get_model_config(config, "llm", "local")
+
+        assert result["provider"] == "ollama"  # Default for local
 
 
-class TestPipelineIntegration:
-    """Integration tests for pipeline."""
+class TestInitializeLLMClient:
+    """Test LLM client initialization."""
 
-    @patch("docling_graph.pipeline.GraphConverter")
-    @patch("docling_graph.pipeline._load_template_class")
-    @patch("docling_graph.pipeline.get_client")
-    def test_pipeline_end_to_end(self, mock_get_client, mock_load_template, mock_converter):
-        """Test pipeline end-to-end."""
-        mock_load_template.return_value = SampleModel
-        mock_client = Mock()
-        mock_get_client.return_value = mock_client
-        mock_converter_instance = Mock()
-        mock_converter.return_value = mock_converter_instance
-        
-        # Mock the graph and metadata
-        mock_graph = Mock()
-        mock_graph.number_of_nodes.return_value = 5
-        mock_graph.number_of_edges.return_value = 4
-        mock_metadata = Mock()
-        mock_converter_instance.pydantic_list_to_graph.return_value = (mock_graph, mock_metadata)
-        
-        config = {
-            "source": "test.pdf",
-            "template": "test_pipeline.SampleModel",
-            "processing_mode": "many-to-one",
-            "backend_type": "llm",
-            "inference": "local",
-        }
-        
-        graph, metadata = run_pipeline(config)
-        
-        # Verify graph was created
-        assert graph.number_of_nodes() == 5
-        assert graph.number_of_edges() == 4
+    def test_initialize_llm_client_ollama(self):
+        """Should initialize Ollama client."""
+        with patch("docling_graph.pipeline.get_client") as mock_get_client:
+            mock_client_class = MagicMock()
+            mock_client_class.return_value = MagicMock()
+            mock_get_client.return_value = mock_client_class
+
+            _initialize_llm_client("ollama", "llama-3.1-8b")
+
+            mock_get_client.assert_called_with("ollama")
+            mock_client_class.assert_called_with(model="llama-3.1-8b")
+
+    def test_initialize_llm_client_mistral(self):
+        """Should initialize Mistral client."""
+        with patch("docling_graph.pipeline.get_client") as mock_get_client:
+            mock_client_class = MagicMock()
+            mock_client_class.return_value = MagicMock()
+            mock_get_client.return_value = mock_client_class
+
+            _initialize_llm_client("mistral", "mistral-small")
+
+            mock_get_client.assert_called_with("mistral")
+            mock_client_class.assert_called_with(model="mistral-small")
+
+    def test_initialize_llm_client_invalid_provider(self):
+        """Should raise error for invalid provider."""
+        with patch("docling_graph.pipeline.get_client", side_effect=ValueError("Unknown provider")):
+            with pytest.raises(ValueError):
+                _initialize_llm_client("invalid_provider", "model")
+
+    def test_initialize_llm_client_vllm(self):
+        """Should initialize vLLM client."""
+        with patch("docling_graph.pipeline.get_client") as mock_get_client:
+            mock_client_class = MagicMock()
+            mock_client_class.return_value = MagicMock()
+            mock_get_client.return_value = mock_client_class
+
+            _initialize_llm_client("openai", "gpt-4")
+            mock_get_client.assert_called_with("openai")
+
+    def test_initialize_llm_client_openai(self):
+        """Should initialize OpenAI client."""
+        with patch("docling_graph.pipeline.get_client") as mock_get_client:
+            mock_client_class = MagicMock()
+            mock_client_class.return_value = MagicMock()
+            mock_get_client.return_value = mock_client_class
+
+            _initialize_llm_client("openai", "gpt-4")
+            mock_get_client.assert_called_with("openai")

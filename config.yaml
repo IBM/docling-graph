@@ -12,7 +12,7 @@ docling:
 models:
   vlm:
     local:
-      default_model: numind/NuExtract-2.0-8B
+      default_model: numind/NuExtract-2.0-2B
       provider: docling
   llm:
     local:

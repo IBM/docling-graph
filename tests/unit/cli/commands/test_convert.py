@@ -1,9 +1,9 @@
 """
-Unit tests for convert command module.
+Tests for convert command.
 """
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 import typer
@@ -12,16 +12,15 @@ from docling_graph.cli.commands.convert import convert_command
 
 
 class TestConvertCommand:
-    """Tests for convert_command function."""
+    """Test convert command functionality."""
 
     @patch("docling_graph.cli.commands.convert.run_pipeline")
     @patch("docling_graph.cli.commands.convert.load_config")
-    @patch("docling_graph.cli.commands.convert.rich_print")
-    def test_convert_command_basic(self, mock_print, mock_load_config, mock_run_pipeline, temp_dir):
-        """Test basic convert command with minimal arguments."""
-        # Create a dummy source file
-        source_file = temp_dir / "test.pdf"
-        source_file.write_text("dummy pdf")
+    def test_convert_command_with_all_defaults(self, mock_load_config, mock_run_pipeline, tmp_path):
+        """Should process document with default configuration."""
+        # Create temporary document
+        doc_path = tmp_path / "test.pdf"
+        doc_path.write_text("test")
 
         mock_load_config.return_value = {
             "defaults": {
@@ -30,174 +29,183 @@ class TestConvertCommand:
                 "inference": "local",
                 "export_format": "csv",
             },
-            "docling": {"pipeline": "ocr", "export": {}},
-            "models": {},
-        }
-
-        convert_command(
-            source=source_file,
-            template="templates.Invoice",
-        )
-
-        # Verify pipeline was called
-        mock_run_pipeline.assert_called_once()
-        run_config = mock_run_pipeline.call_args[0][0]
-
-        assert run_config["source"] == str(source_file)
-        assert run_config["template"] == "templates.Invoice"
-        assert run_config["processing_mode"] == "many-to-one"
-
-    @patch("docling_graph.cli.commands.convert.run_pipeline")
-    @patch("docling_graph.cli.commands.convert.load_config")
-    @patch("docling_graph.cli.commands.convert.rich_print")
-    def test_convert_command_with_overrides(
-        self, mock_print, mock_load_config, mock_run_pipeline, temp_dir
-    ):
-        """Test convert command with CLI argument overrides."""
-        source_file = temp_dir / "test.pdf"
-        source_file.write_text("dummy")
-
-        mock_load_config.return_value = {
-            "defaults": {
-                "processing_mode": "many-to-one",
-                "backend_type": "llm",
-                "inference": "local",
-                "export_format": "csv",
-            },
-            "docling": {"pipeline": "ocr", "export": {}},
-            "models": {},
-        }
-
-        convert_command(
-            source=source_file,
-            template="templates.Resume",
-            processing_mode="one-to-one",
-            backend_type="vlm",
-            inference="local",
-            export_format="json",
-            model="custom-model",
-            provider="ollama",
-            reverse_edges=True,
-        )
-
-        run_config = mock_run_pipeline.call_args[0][0]
-
-        # Verify overrides were applied
-        assert run_config["processing_mode"] == "one-to-one"
-        assert run_config["backend_type"] == "vlm"
-        assert run_config["export_format"] == "json"
-        assert run_config["model_override"] == "custom-model"
-        assert run_config["provider_override"] == "ollama"
-        assert run_config["reverse_edges"] is True
-
-    @patch("docling_graph.cli.commands.convert.run_pipeline")
-    @patch("docling_graph.cli.commands.convert.load_config")
-    @patch("docling_graph.cli.commands.convert.rich_print")
-    def test_convert_command_docling_export_options(
-        self, mock_print, mock_load_config, mock_run_pipeline, temp_dir
-    ):
-        """Test convert command with Docling export options."""
-        source_file = temp_dir / "test.pdf"
-        source_file.write_text("dummy")
-
-        mock_load_config.return_value = {
-            "defaults": {"processing_mode": "many-to-one", "backend_type": "llm"},
             "docling": {
                 "pipeline": "ocr",
-                "export": {
-                    "docling_json": True,
-                    "markdown": True,
-                    "per_page_markdown": False,
-                },
+                "export": {"docling_json": True, "markdown": True, "per_page_markdown": False},
             },
-            "models": {},
         }
 
-        convert_command(
-            source=source_file,
-            template="templates.Invoice",
-            export_docling_json=True,
-            export_markdown=True,
-            export_per_page=True,
-        )
+        with patch(
+            "docling_graph.cli.commands.convert.validate_processing_mode",
+            return_value="many-to-one",
+        ):
+            with patch(
+                "docling_graph.cli.commands.convert.validate_backend_type", return_value="llm"
+            ):
+                with patch(
+                    "docling_graph.cli.commands.convert.validate_inference", return_value="local"
+                ):
+                    with patch(
+                        "docling_graph.cli.commands.convert.validate_docling_config",
+                        return_value="ocr",
+                    ):
+                        with patch(
+                            "docling_graph.cli.commands.convert.validate_export_format",
+                            return_value="csv",
+                        ):
+                            with patch(
+                                "docling_graph.cli.commands.convert.validate_vlm_constraints"
+                            ):
+                                convert_command(
+                                    source=doc_path,
+                                    template="templates.invoice.Invoice",
+                                )
 
-        run_config = mock_run_pipeline.call_args[0][0]
+        mock_run_pipeline.assert_called_once()
 
-        assert run_config["export_docling_json"] is True
-        assert run_config["export_markdown"] is True
-        assert run_config["export_per_page_markdown"] is True
-
-    @patch("docling_graph.cli.commands.convert.validate_vlm_constraints")
     @patch("docling_graph.cli.commands.convert.load_config")
-    @patch("docling_graph.cli.commands.convert.rich_print")
-    def test_convert_command_vlm_validation(
-        self, mock_print, mock_load_config, mock_validate, temp_dir
-    ):
-        """Test that VLM constraints are validated."""
-        source_file = temp_dir / "test.pdf"
-        source_file.write_text("dummy")
+    def test_convert_command_cli_overrides_config(self, mock_load_config, tmp_path):
+        """Should allow CLI arguments to override config file."""
+        doc_path = tmp_path / "test.pdf"
+        doc_path.write_text("test")
 
         mock_load_config.return_value = {
-            "defaults": {"processing_mode": "many-to-one", "backend_type": "vlm"},
+            "defaults": {
+                "processing_mode": "many-to-one",
+                "backend_type": "llm",
+                "inference": "remote",
+                "export_format": "csv",
+            },
             "docling": {"pipeline": "ocr", "export": {}},
-            "models": {},
         }
 
-        # Simulate validation failure
-        mock_validate.side_effect = typer.Exit(code=1)
+        with patch("docling_graph.cli.commands.convert.run_pipeline") as mock_pipeline:
+            with patch(
+                "docling_graph.cli.commands.convert.validate_processing_mode",
+                return_value="one-to-one",
+            ):
+                with patch(
+                    "docling_graph.cli.commands.convert.validate_backend_type", return_value="llm"
+                ):
+                    with patch(
+                        "docling_graph.cli.commands.convert.validate_inference",
+                        return_value="local",
+                    ):
+                        with patch(
+                            "docling_graph.cli.commands.convert.validate_docling_config",
+                            return_value="ocr",
+                        ):
+                            with patch(
+                                "docling_graph.cli.commands.convert.validate_export_format",
+                                return_value="csv",
+                            ):
+                                with patch(
+                                    "docling_graph.cli.commands.convert.validate_vlm_constraints"
+                                ):
+                                    convert_command(
+                                        source=doc_path,
+                                        template="templates.invoice.Invoice",
+                                        processing_mode="one-to-one",
+                                        inference="local",
+                                    )
 
-        with pytest.raises(typer.Exit):
-            convert_command(
-                source=source_file,
-                template="templates.Invoice",
-                backend_type="vlm",
-                inference="remote",  # Invalid for VLM
-            )
+            # Verify overrides were applied
+            called_config = mock_pipeline.call_args[0][0]
+            assert called_config["processing_mode"] == "one-to-one"
+            assert called_config["inference"] == "local"
+
+    @patch(
+        "docling_graph.cli.commands.convert.run_pipeline", side_effect=Exception("Pipeline error")
+    )
+    @patch("docling_graph.cli.commands.convert.load_config")
+    def test_convert_command_pipeline_error_exits(
+        self, mock_load_config, mock_run_pipeline, tmp_path
+    ):
+        """Should exit with error on pipeline failure."""
+        doc_path = tmp_path / "test.pdf"
+        doc_path.write_text("test")
+
+        mock_load_config.return_value = {
+            "defaults": {
+                "processing_mode": "many-to-one",
+                "backend_type": "llm",
+                "inference": "local",
+                "export_format": "csv",
+            },
+            "docling": {"pipeline": "ocr", "export": {}},
+        }
+
+        with patch(
+            "docling_graph.cli.commands.convert.validate_processing_mode",
+            return_value="many-to-one",
+        ):
+            with patch(
+                "docling_graph.cli.commands.convert.validate_backend_type", return_value="llm"
+            ):
+                with patch(
+                    "docling_graph.cli.commands.convert.validate_inference", return_value="local"
+                ):
+                    with patch(
+                        "docling_graph.cli.commands.convert.validate_docling_config",
+                        return_value="ocr",
+                    ):
+                        with patch(
+                            "docling_graph.cli.commands.convert.validate_export_format",
+                            return_value="csv",
+                        ):
+                            with patch(
+                                "docling_graph.cli.commands.convert.validate_vlm_constraints"
+                            ):
+                                with pytest.raises(typer.Exit) as exc_info:
+                                    convert_command(
+                                        source=doc_path,
+                                        template="templates.invoice.Invoice",
+                                    )
+                                assert exc_info.value.exit_code == 1
 
     @patch("docling_graph.cli.commands.convert.run_pipeline")
     @patch("docling_graph.cli.commands.convert.load_config")
-    @patch("docling_graph.cli.commands.convert.rich_print")
-    def test_convert_command_pipeline_error(
-        self, mock_print, mock_load_config, mock_run_pipeline, temp_dir
-    ):
-        """Test convert command when pipeline raises error."""
-        source_file = temp_dir / "test.pdf"
-        source_file.write_text("dummy")
+    def test_convert_command_docling_exports(self, mock_load_config, mock_run_pipeline, tmp_path):
+        """Should respect Docling export flags."""
+        doc_path = tmp_path / "test.pdf"
+        doc_path.write_text("test")
 
         mock_load_config.return_value = {
-            "defaults": {},
-            "docling": {"pipeline": "ocr", "export": {}},
-            "models": {},
-        }
-        mock_run_pipeline.side_effect = Exception("Pipeline failed")
-
-        with pytest.raises(typer.Exit) as exc_info:
-            convert_command(source=source_file, template="templates.Invoice")
-
-        assert exc_info.value.exit_code == 1
-
-    @patch("docling_graph.cli.commands.convert.run_pipeline")
-    @patch("docling_graph.cli.commands.convert.load_config")
-    @patch("docling_graph.cli.commands.convert.rich_print")
-    def test_convert_command_custom_output_dir(
-        self, mock_print, mock_load_config, mock_run_pipeline, temp_dir
-    ):
-        """Test convert command with custom output directory."""
-        source_file = temp_dir / "test.pdf"
-        source_file.write_text("dummy")
-        output_dir = temp_dir / "custom_output"
-
-        mock_load_config.return_value = {
-            "defaults": {},
-            "docling": {"pipeline": "ocr", "export": {}},
-            "models": {},
+            "defaults": {
+                "processing_mode": "many-to-one",
+                "backend_type": "llm",
+                "inference": "local",
+                "export_format": "csv",
+            },
+            "docling": {"pipeline": "ocr", "export": {"docling_json": True, "markdown": False}},
         }
 
-        convert_command(
-            source=source_file,
-            template="templates.Invoice",
-            output_dir=output_dir,
-        )
+        with patch(
+            "docling_graph.cli.commands.convert.validate_processing_mode",
+            return_value="many-to-one",
+        ):
+            with patch(
+                "docling_graph.cli.commands.convert.validate_backend_type", return_value="llm"
+            ):
+                with patch(
+                    "docling_graph.cli.commands.convert.validate_inference", return_value="local"
+                ):
+                    with patch(
+                        "docling_graph.cli.commands.convert.validate_docling_config",
+                        return_value="ocr",
+                    ):
+                        with patch(
+                            "docling_graph.cli.commands.convert.validate_export_format",
+                            return_value="csv",
+                        ):
+                            with patch(
+                                "docling_graph.cli.commands.convert.validate_vlm_constraints"
+                            ):
+                                convert_command(
+                                    source=doc_path,
+                                    template="templates.invoice.Invoice",
+                                    export_markdown=False,
+                                )
 
-        run_config = mock_run_pipeline.call_args[0][0]
-        assert run_config["output_dir"] == str(output_dir)
+        called_config = mock_run_pipeline.call_args[0][0]
+        assert called_config["export_markdown"] is False

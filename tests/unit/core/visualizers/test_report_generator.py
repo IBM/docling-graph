@@ -1,5 +1,5 @@
 """
-Unit tests for ReportGenerator.
+Tests for ReportGenerator class.
 """
 
 from pathlib import Path
@@ -7,169 +7,152 @@ from pathlib import Path
 import networkx as nx
 import pytest
 
+from docling_graph.core.base.models import GraphMetadata
 from docling_graph.core.visualizers.report_generator import ReportGenerator
 
 
-class TestReportGeneratorInitialization:
-    """Tests for ReportGenerator initialization."""
-
-    def test_init_creates_instance(self):
-        """Test that initializer creates instance."""
-        generator = ReportGenerator()
-        
-        assert generator is not None
-
-
-class TestReportGeneratorVisualize:
-    """Tests for visualize method."""
-
-    def test_visualize_creates_markdown_file(self, simple_graph, temp_dir):
-        """Test that visualize creates markdown file."""
-        output_file = temp_dir / "report"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file)
-        
-        # Should add .md extension
-        assert (temp_dir / "report.md").exists()
-
-    def test_visualize_with_md_extension(self, simple_graph, temp_dir):
-        """Test visualize with .md extension already present."""
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file)
-        
-        assert output_file.exists()
-
-    def test_visualize_empty_graph_raises_error(self, temp_dir):
-        """Test that visualizing empty graph raises ValueError."""
-        empty_graph = nx.DiGraph()
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        with pytest.raises(ValueError, match="Cannot generate report for empty graph"):
-            generator.visualize(empty_graph, output_file)
-
-    def test_report_contains_markdown_headers(self, simple_graph, temp_dir):
-        """Test that report contains markdown headers."""
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file)
-        
-        content = output_file.read_text()
-        assert "#" in content  # Markdown headers
-
-    def test_report_contains_statistics(self, simple_graph, temp_dir):
-        """Test that report contains graph statistics."""
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file)
-        
-        content = output_file.read_text()
-        assert "node" in content.lower()
-        assert "edge" in content.lower()
-
-    def test_report_includes_samples_by_default(self, simple_graph, temp_dir):
-        """Test that report includes sample nodes/edges by default."""
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file, include_samples=True)
-        
-        content = output_file.read_text()
-        assert len(content) > 100  # Should have substantial content
-
-    def test_report_without_samples(self, simple_graph, temp_dir):
-        """Test report generation without samples."""
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file, include_samples=False)
-        
-        content = output_file.read_text()
-        # Should still have content but less detailed
-        assert "#" in content
+@pytest.fixture
+def sample_graph():
+    """Create a sample graph for testing."""
+    graph = nx.DiGraph()
+    graph.add_node("node_1", label="Person", name="John")
+    graph.add_node("node_2", label="Company", name="ACME")
+    graph.add_edge("node_1", "node_2", label="works_for")
+    return graph
 
 
-class TestReportGeneratorStatistics:
-    """Tests for statistics in reports."""
-
-    def test_report_shows_node_count(self, simple_graph, temp_dir):
-        """Test that report shows node count."""
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file)
-        
-        content = output_file.read_text()
-        node_count_str = str(simple_graph.number_of_nodes())
-        assert node_count_str in content
-
-    def test_report_shows_edge_count(self, simple_graph, temp_dir):
-        """Test that report shows edge count."""
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file)
-        
-        content = output_file.read_text()
-        edge_count_str = str(simple_graph.number_of_edges())
-        assert edge_count_str in content
-
-    def test_report_shows_source_model_count(self, simple_graph, temp_dir):
-        """Test that report shows source model count."""
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file, source_model_count=5)
-        
-        content = output_file.read_text()
-        assert "5" in content
+@pytest.fixture
+def empty_graph():
+    """Create an empty graph."""
+    return nx.DiGraph()
 
 
 class TestReportGeneratorValidation:
-    """Tests for validate_graph method."""
+    """Test graph validation."""
 
-    def test_validate_graph_with_nodes(self, simple_graph):
-        """Test validation of graph with nodes."""
+    def test_validate_graph_with_nodes(self, sample_graph):
+        """Should return True for non-empty graph."""
         generator = ReportGenerator()
-        assert generator.validate_graph(simple_graph) is True
+        assert generator.validate_graph(sample_graph) is True
 
-    def test_validate_empty_graph(self):
-        """Test validation of empty graph."""
-        empty_graph = nx.DiGraph()
+    def test_validate_graph_empty(self, empty_graph):
+        """Should return False for empty graph."""
         generator = ReportGenerator()
-        
         assert generator.validate_graph(empty_graph) is False
 
 
-class TestReportGeneratorFormatting:
-    """Tests for report formatting."""
+class TestReportGeneratorReportSections:
+    """Test report section generation."""
 
-    def test_report_is_valid_markdown(self, simple_graph, temp_dir):
-        """Test that generated report is valid markdown."""
-        output_file = temp_dir / "report.md"
-        generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file)
-        
-        content = output_file.read_text()
-        # Check for markdown elements
-        assert "#" in content  # Headers
-        lines = content.split("\n")
-        assert len(lines) > 5  # Multiple lines
+    def test_create_header(self):
+        """Should create valid header section."""
+        header = ReportGenerator._create_header()
 
-    def test_report_readable_format(self, simple_graph, temp_dir):
-        """Test that report is in readable format."""
-        output_file = temp_dir / "report.md"
+        assert isinstance(header, str)
+        assert "Knowledge Graph Report" in header
+        assert "#" in header  # Markdown header
+
+    def test_create_overview(self):
+        """Should create overview section."""
+        metadata = GraphMetadata(node_count=10, edge_count=15, source_models=2)
+
+        overview = ReportGenerator._create_overview(metadata)
+
+        assert "10" in overview  # Node count
+        assert "15" in overview  # Edge count
+        assert "2" in overview  # Source models
+
+    def test_create_node_type_distribution(self):
+        """Should create node type distribution section."""
+        metadata = GraphMetadata(
+            node_count=10, edge_count=15, source_models=1, node_types={"Person": 6, "Company": 4}
+        )
+
+        dist = ReportGenerator._create_node_type_distribution(metadata)
+
+        assert "Node Type" in dist
+        assert "Person" in dist
+        assert "6" in dist
+
+    def test_create_edge_type_distribution(self):
+        """Should create edge type distribution section."""
+        metadata = GraphMetadata(
+            node_count=10,
+            edge_count=15,
+            source_models=1,
+            edge_types={"works_for": 8, "located_in": 7},
+        )
+
+        dist = ReportGenerator._create_edge_type_distribution(metadata)
+
+        assert "Edge Type" in dist
+        assert "works_for" in dist
+        assert "8" in dist
+
+    def test_create_sample_nodes(self, sample_graph):
+        """Should create sample nodes section."""
+        samples = ReportGenerator._create_sample_nodes(sample_graph, max_samples=5)
+
+        assert "Sample Nodes" in samples
+        assert "node_" in samples
+
+    def test_create_sample_edges(self, sample_graph):
+        """Should create sample edges section."""
+        samples = ReportGenerator._create_sample_edges(sample_graph, max_samples=5)
+
+        assert "Sample Edges" in samples
+        assert "works_for" in samples
+
+
+class TestReportGeneratorOutput:
+    """Test report file generation."""
+
+    def test_visualize_creates_file(self, sample_graph, tmp_path):
+        """Should create markdown file."""
         generator = ReportGenerator()
-        
-        generator.visualize(simple_graph, output_file)
-        
-        content = output_file.read_text()
-        # Should not be empty and should be readable
-        assert len(content) > 50
-        assert content.isprintable() or "\n" in content
+        output_path = tmp_path / "report.md"
+
+        generator.visualize(sample_graph, output_path, source_model_count=1)
+
+        assert output_path.exists()
+        assert output_path.suffix == ".md"
+
+    def test_visualize_adds_md_extension(self, sample_graph, tmp_path):
+        """Should add .md extension if missing."""
+        generator = ReportGenerator()
+        output_path = tmp_path / "report"  # No extension
+
+        generator.visualize(sample_graph, output_path, source_model_count=1)
+
+        assert (tmp_path / "report.md").exists()
+
+    def test_visualize_creates_valid_markdown(self, sample_graph, tmp_path):
+        """Generated file should be valid markdown."""
+        generator = ReportGenerator()
+        output_path = tmp_path / "report.md"
+
+        generator.visualize(sample_graph, output_path, source_model_count=1)
+
+        content = output_path.read_text()
+        assert "# Knowledge Graph Report" in content
+        assert "## Overview" in content
+        assert "## Node Type Distribution" in content
+
+    def test_visualize_empty_graph_raises_error(self, empty_graph, tmp_path):
+        """Should raise error for empty graph."""
+        generator = ReportGenerator()
+        output_path = tmp_path / "report.md"
+
+        with pytest.raises(ValueError):
+            generator.visualize(empty_graph, output_path)
+
+    def test_visualize_without_samples(self, sample_graph, tmp_path):
+        """Should omit samples when disabled."""
+        generator = ReportGenerator()
+        output_path = tmp_path / "report.md"
+
+        generator.visualize(sample_graph, output_path, source_model_count=1, include_samples=False)
+
+        content = output_path.read_text()
+        assert "Sample Nodes" not in content
+        assert "Sample Edges" not in content

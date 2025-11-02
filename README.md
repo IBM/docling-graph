@@ -55,7 +55,7 @@ The toolkit supports two extraction families: **local VLM** via Docling and **LL
 ### Requirements
 
 - Python 3.10 or higher
-- UV package manager (recommended)
+- UV package manager (pip install uv)
 
 ### Installation
 
@@ -75,7 +75,12 @@ Choose the installation option that matches your use case:
 uv sync
 ```
 
-**Option B: Local LLM Inference** (Run LLMs on your machine)
+**Option B: Full Installation** (All features and providers)
+```bash
+uv sync --extra all
+```
+
+**Option C: Local LLM Inference** (Run LLMs on your machine)
 ```bash
 uv sync --extra local
 ```
@@ -84,7 +89,7 @@ Includes:
 - `vllm` - Fast local LLM inference (requires GPU)
 - `ollama` - Run open-source models locally
 
-**Option C: Remote API Inference** (Use cloud-based LLM APIs)
+**Option D: Remote API Inference** (Use cloud-based LLM APIs)
 ```bash
 uv sync --extra remote
 ```
@@ -94,10 +99,11 @@ Includes:
 - `openai` - OpenAI API
 - `gemini` - Google Gemini API
 
-**Option D: Full Installation** (All features and providers)
-```bash
-uv sync --extra all
-```
+
+#### 3. OPTIONAL - GPU Support (PyTorch)
+
+Follow the steps in [this guide](docs/guides/setup_gpu_support_via_uv.md) to install PyTorch with NVIDIA GPU (CUDA) support using uv.
+
 
 
 ### API Key Setup (for Remote Inference)

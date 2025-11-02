@@ -1,186 +1,264 @@
 """
-Unit tests for optional dependency management.
+Tests for dependency management utilities.
 """
 
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from docling_graph.deps import OptionalDependency, DependencyStatus
-
-
-class TestOptionalDependency:
-    """Tests for OptionalDependency class."""
-
-    def test_init_with_defaults(self):
-        """Test initialization with default values."""
-        dep = OptionalDependency(
-            name="test_package",
-            package="test_pkg"
-        )
-        
-        assert dep.name == "test_package"
-        assert dep.package == "test_pkg"
-        assert dep.extra == "all"
-        assert dep.inference_type is None
-
-    def test_init_with_custom_extra(self):
-        """Test initialization with custom extra."""
-        dep = OptionalDependency(
-            name="test_package",
-            package="test_pkg",
-            extra="gpu"
-        )
-        
-        assert dep.extra == "gpu"
-
-    def test_init_with_description(self):
-        """Test initialization with description."""
-        dep = OptionalDependency(
-            name="test_package",
-            package="test_pkg",
-            description="Test LLM provider"
-        )
-        
-        assert dep.description == "Test LLM provider"
-
-    def test_default_description(self):
-        """Test default description is generated."""
-        dep = OptionalDependency(
-            name="ollama",
-            package="ollama"
-        )
-        
-        assert "ollama" in dep.description.lower()
-
-    def test_init_with_inference_type(self):
-        """Test initialization with inference type."""
-        dep = OptionalDependency(
-            name="ollama",
-            package="ollama",
-            inference_type="local"
-        )
-        
-        assert dep.inference_type == "local"
-
-
-class TestOptionalDependencyStatus:
-    """Tests for dependency status checking."""
-
-    @patch("docling_graph.deps.importlib.util.find_spec")
-    def test_is_installed_true(self, mock_find_spec):
-        """Test is_installed returns True when found."""
-        mock_find_spec.return_value = Mock()  # Package found
-        
-        dep = OptionalDependency(
-            name="ollama",
-            package="ollama"
-        )
-        
-        assert dep.is_installed is True
-
-    @patch("docling_graph.deps.importlib.util.find_spec")
-    def test_is_installed_false(self, mock_find_spec):
-        """Test is_installed returns False when not found."""
-        mock_find_spec.return_value = None  # Package not found
-        
-        dep = OptionalDependency(
-            name="ollama",
-            package="ollama"
-        )
-        
-        assert dep.is_installed is False
-
-    @patch("docling_graph.deps.importlib.util.find_spec")
-    def test_caches_status(self, mock_find_spec):
-        """Test that status is cached after first check."""
-        mock_find_spec.return_value = Mock()
-        
-        dep = OptionalDependency(
-            name="ollama",
-            package="ollama"
-        )
-        
-        # First call
-        status1 = dep.is_installed
-        # Second call
-        status2 = dep.is_installed
-        
-        # find_spec should only be called once
-        assert mock_find_spec.call_count == 1
-        assert status1 == status2 == True
+from docling_graph.deps import (
+    INFERENCE_PROVIDERS,
+    OPTIONAL_DEPS,
+    DependencyStatus,
+    OptionalDependency,
+    check_dependency,
+    check_inference_type_available,
+    get_all_missing_dependencies,
+    get_missing_dependencies,
+    get_missing_for_inference_type,
+    require_dependency,
+)
 
 
 class TestDependencyStatus:
-    """Tests for DependencyStatus enum."""
+    """Test DependencyStatus enum."""
 
-    def test_status_values(self):
-        """Test DependencyStatus values."""
+    def test_dependency_status_has_valid_values(self):
+        """Should have all required status values."""
         assert DependencyStatus.INSTALLED.value == "installed"
         assert DependencyStatus.NOT_INSTALLED.value == "not_installed"
         assert DependencyStatus.UNKNOWN.value == "unknown"
 
-    def test_status_enum_members(self):
-        """Test DependencyStatus has expected members."""
-        assert hasattr(DependencyStatus, "INSTALLED")
-        assert hasattr(DependencyStatus, "NOT_INSTALLED")
-        assert hasattr(DependencyStatus, "UNKNOWN")
 
+class TestOptionalDependency:
+    """Test OptionalDependency class."""
 
-class TestOptionalDependencyComparison:
-    """Tests for dependency comparison."""
-
-    def test_dependency_equality_same_name(self):
-        """Test dependencies with same name are comparable."""
-        dep1 = OptionalDependency(name="ollama", package="ollama")
-        dep2 = OptionalDependency(name="ollama", package="ollama")
-        
-        assert dep1.name == dep2.name
-        assert dep1.package == dep2.package
-
-    def test_dependency_inequality_different_name(self):
-        """Test dependencies with different names."""
-        dep1 = OptionalDependency(name="ollama", package="ollama")
-        dep2 = OptionalDependency(name="mistral", package="mistralai")
-        
-        assert dep1.name != dep2.name
-
-
-class TestOptionalDependencyValidation:
-    """Tests for dependency validation."""
-
-    def test_required_fields(self):
-        """Test that required fields must be provided."""
-        # This should work - required fields provided
+    def test_optional_dependency_initialization(self):
+        """Should initialize with required attributes."""
         dep = OptionalDependency(
-            name="test",
-            package="test_pkg"
+            name="test_pkg",
+            package="test_module",
+            extra="test_extra",
+            description="Test dependency",
+            inference_type="local",
         )
-        assert dep is not None
+        assert dep.name == "test_pkg"
+        assert dep.package == "test_module"
+        assert dep.extra == "test_extra"
+        assert dep.description == "Test dependency"
+        assert dep.inference_type == "local"
 
-    def test_inference_types(self):
-        """Test valid inference types."""
-        dep_local = OptionalDependency(
-            name="ollama",
-            package="ollama",
-            inference_type="local"
-        )
-        
-        dep_remote = OptionalDependency(
-            name="openai",
-            package="openai",
-            inference_type="remote"
-        )
-        
-        assert dep_local.inference_type == "local"
-        assert dep_remote.inference_type == "remote"
+    def test_optional_dependency_default_extra(self):
+        """Should default extra to 'all' if not provided."""
+        dep = OptionalDependency(name="test", package="test_module")
+        assert dep.extra == "all"
 
-    def test_none_inference_type(self):
-        """Test None as inference type."""
-        dep = OptionalDependency(
-            name="test",
-            package="test",
-            inference_type=None
-        )
-        
-        assert dep.inference_type is None
+    def test_optional_dependency_default_description(self):
+        """Should generate default description."""
+        dep = OptionalDependency(name="test_pkg", package="test_module")
+        assert "test_pkg" in dep.description
+
+    def test_optional_dependency_is_installed_caches_result(self):
+        """Should cache installation check result."""
+        dep = OptionalDependency(name="sys", package="sys")
+        # First call
+        result1 = dep.is_installed
+        # Second call should return cached result
+        result2 = dep.is_installed
+        assert result1 == result2
+        # sys should be installed
+        assert result1 is True
+
+    def test_optional_dependency_get_install_command(self):
+        """Should generate correct install command."""
+        dep = OptionalDependency(name="ollama", package="ollama", extra="ollama")
+        cmd = dep.get_install_command()
+        assert "pip install" in cmd
+        assert "ollama" in cmd
+
+    def test_optional_dependency_get_direct_install_command(self):
+        """Should generate direct install command."""
+        dep = OptionalDependency(name="ollama", package="ollama")
+        cmd = dep.get_direct_install_command()
+        assert "pip install ollama" == cmd
+
+    def test_optional_dependency_repr(self):
+        """Should have meaningful repr."""
+        dep = OptionalDependency(name="test", package="test")
+        repr_str = repr(dep)
+        assert "OptionalDependency" in repr_str
+        assert "test" in repr_str
+
+
+class TestOptionalDepsRegistry:
+    """Test the OPTIONAL_DEPS registry."""
+
+    def test_optional_deps_has_required_local_providers(self):
+        """Should have all local providers."""
+        assert "ollama" in OPTIONAL_DEPS
+        assert "vllm" in OPTIONAL_DEPS
+
+    def test_optional_deps_has_required_remote_providers(self):
+        """Should have all remote providers."""
+        assert "mistral" in OPTIONAL_DEPS
+        assert "openai" in OPTIONAL_DEPS
+        assert "gemini" in OPTIONAL_DEPS
+
+    def test_optional_deps_entries_are_valid(self):
+        """All registry entries should be OptionalDependency instances."""
+        for name, dep in OPTIONAL_DEPS.items():
+            assert isinstance(dep, OptionalDependency)
+            assert dep.name == name
+
+    def test_inference_providers_mapping(self):
+        """Should have correct inference type mappings."""
+        assert "local" in INFERENCE_PROVIDERS
+        assert "remote" in INFERENCE_PROVIDERS
+        assert set(INFERENCE_PROVIDERS["local"]) == {"ollama", "vllm"}
+        assert set(INFERENCE_PROVIDERS["remote"]) == {"mistral", "openai", "gemini"}
+
+
+class TestCheckDependency:
+    """Test check_dependency function."""
+
+    def test_check_dependency_installed(self):
+        """Should return True for installed package."""
+        # sys is always installed
+        result = check_dependency("sys")
+        assert result is True
+
+    def test_check_dependency_unknown_provider(self):
+        """Should return True for unknown provider."""
+        result = check_dependency("nonexistent_provider_xyz")
+        assert result is True  # Safe default
+
+    def test_check_dependency_uninstalled(self):
+        """Should return False for uninstalled packages."""
+        # Create a fake dependency
+        with patch.dict(
+            OPTIONAL_DEPS,
+            {
+                "fake_pkg": OptionalDependency(
+                    name="fake_pkg", package="this_definitely_does_not_exist_xyz"
+                )
+            },
+        ):
+            result = check_dependency("fake_pkg")
+            assert result is False
+
+
+class TestRequireDependency:
+    """Test require_dependency function."""
+
+    def test_require_dependency_installed_succeeds(self):
+        """Should not raise for installed packages."""
+        # sys is always installed
+        require_dependency("sys")  # Should not raise
+
+    def test_require_dependency_uninstalled_raises(self):
+        """Should raise ImportError for uninstalled packages."""
+        with patch.dict(
+            OPTIONAL_DEPS,
+            {
+                "fake_pkg": OptionalDependency(
+                    name="fake_pkg", package="this_definitely_does_not_exist_xyz"
+                )
+            },
+        ):
+            with pytest.raises(ImportError) as exc_info:
+                require_dependency("fake_pkg")
+            assert "fake_pkg" in str(exc_info.value)
+            assert "pip install" in str(exc_info.value)
+
+    def test_require_dependency_unknown_provider(self):
+        """Should not raise for unknown providers."""
+        require_dependency("unknown_provider")  # Should not raise
+
+
+class TestGetMissingDependencies:
+    """Test get_missing_dependencies function."""
+
+    def test_get_missing_dependencies_empty_list(self):
+        """Should return empty list if all dependencies installed."""
+        # sys is always installed
+        result = get_missing_dependencies(["sys"])
+        assert result == []
+
+    def test_get_missing_dependencies_returns_objects(self):
+        """Should return OptionalDependency objects."""
+        with patch.dict(
+            OPTIONAL_DEPS,
+            {"fake_pkg": OptionalDependency(name="fake_pkg", package="nonexistent_xyz")},
+        ):
+            result = get_missing_dependencies(["fake_pkg"])
+            assert len(result) == 1
+            assert isinstance(result[0], OptionalDependency)
+            assert result[0].name == "fake_pkg"
+
+    def test_get_missing_dependencies_mixed(self):
+        """Should handle mix of installed and missing."""
+        with patch.dict(
+            OPTIONAL_DEPS,
+            {"fake_pkg": OptionalDependency(name="fake_pkg", package="nonexistent_xyz")},
+        ):
+            result = get_missing_dependencies(["sys", "fake_pkg"])
+            # Only fake_pkg should be in missing
+            assert len(result) == 1
+            assert result[0].name == "fake_pkg"
+
+
+class TestGetMissingForInferenceType:
+    """Test get_missing_for_inference_type function."""
+
+    def test_get_missing_for_inference_type_local(self):
+        """Should check local inference providers."""
+        result = get_missing_for_inference_type("local")
+        assert isinstance(result, list)
+        # Result should contain OptionalDependency objects
+        for dep in result:
+            assert isinstance(dep, OptionalDependency)
+
+    def test_get_missing_for_inference_type_remote(self):
+        """Should check remote inference providers."""
+        result = get_missing_for_inference_type("remote")
+        assert isinstance(result, list)
+        for dep in result:
+            assert isinstance(dep, OptionalDependency)
+
+    def test_get_missing_for_inference_type_unknown(self):
+        """Should return empty list for unknown inference type."""
+        result = get_missing_for_inference_type("unknown_type")
+        assert result == []
+
+
+class TestCheckInferenceTypeAvailable:
+    """Test check_inference_type_available function."""
+
+    def test_check_inference_type_available_with_provider(self):
+        """Should check specific provider if provided."""
+        result = check_inference_type_available("local", selected_provider="sys")
+        assert isinstance(result, bool)
+
+    def test_check_inference_type_available_all_providers(self):
+        """Should check all providers for inference type."""
+        result = check_inference_type_available("local")
+        assert isinstance(result, bool)
+
+
+class TestGetAllMissingDependencies:
+    """Test get_all_missing_dependencies function."""
+
+    def test_get_all_missing_dependencies_structure(self):
+        """Should return dict with local and remote keys."""
+        result = get_all_missing_dependencies()
+        assert isinstance(result, dict)
+        assert "local" in result
+        assert "remote" in result
+
+    def test_get_all_missing_dependencies_values_are_lists(self):
+        """Should have lists of OptionalDependency objects."""
+        result = get_all_missing_dependencies()
+        for dep_list in result.values():
+            assert isinstance(dep_list, list)
+            for dep in dep_list:
+                assert isinstance(dep, OptionalDependency)

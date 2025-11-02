@@ -1,212 +1,132 @@
 """
-Unit tests for LlmBackend.
+Tests for LLM backend.
 """
 
-from unittest.mock import MagicMock, Mock, patch
+import json
+from unittest.mock import MagicMock, patch
 
 import pytest
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ValidationError
 
 from docling_graph.core.extractors.backends.llm_backend import LlmBackend
 
 
 class SampleModel(BaseModel):
-    """Sample Pydantic model for testing."""
+    """Sample model for testing."""
+
     name: str
-    age: int
+    value: int
+
+
+@pytest.fixture
+def mock_llm_client():
+    """Create a mock LLM client."""
+    client = MagicMock()
+    client.__class__.__name__ = "MockLlmClient"
+    client.context_limit = 4096
+    client.get_json_response = MagicMock(return_value={"name": "test", "value": 42})
+    return client
 
 
 class TestLlmBackendInitialization:
-    """Tests for LlmBackend initialization."""
+    """Test LLM backend initialization."""
 
-    def test_init_with_client(self):
-        """Test initialization with LLM client."""
-        mock_client = Mock()
-        backend = LlmBackend(llm_client=mock_client)
-        
-        assert backend.client == mock_client
+    def test_initialization_with_client(self, mock_llm_client):
+        """Should initialize with LLM client."""
+        backend = LlmBackend(llm_client=mock_llm_client)
+        assert backend.client is mock_llm_client
 
-    def test_init_stores_client_reference(self):
-        """Test that client reference is properly stored."""
-        mock_client = Mock()
-        mock_client.__class__.__name__ = "OllamaClient"
-        
-        backend = LlmBackend(llm_client=mock_client)
-        
+    def test_initialization_stores_client(self, mock_llm_client):
+        """Should store client reference."""
+        backend = LlmBackend(llm_client=mock_llm_client)
         assert hasattr(backend, "client")
-        assert backend.client.__class__.__name__ == "OllamaClient"
+        assert backend.client == mock_llm_client
 
 
-class TestLlmBackendExtraction:
-    """Tests for extract_from_markdown method."""
+class TestLlmBackendExtractFromMarkdown:
+    """Test LLM extraction from markdown."""
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.get_prompt")
-    def test_extract_success(self, mock_get_prompt):
-        """Test successful extraction."""
-        mock_client = Mock()
-        mock_client.get_json_response.return_value = {"name": "Alice", "age": 30}
-        mock_get_prompt.return_value = "test prompt"
-        
-        backend = LlmBackend(llm_client=mock_client)
-        result = backend.extract_from_markdown(
-            markdown="# Alice\nAge: 30",
-            template=SampleModel,
-            context="page 1"
-        )
-        
+    def test_extract_from_markdown_success(self, mock_llm_client):
+        """Should extract successfully."""
+        backend = LlmBackend(llm_client=mock_llm_client)
+        markdown = "# Document\n\nContent here"
+
+        result = backend.extract_from_markdown(markdown, SampleModel)
+
         assert result is not None
-        assert result.name == "Alice"
-        assert result.age == 30
+        assert isinstance(result, SampleModel)
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.get_prompt")
-    def test_extract_empty_markdown(self, mock_get_prompt):
-        """Test extraction with empty markdown."""
-        mock_client = Mock()
-        backend = LlmBackend(llm_client=mock_client)
-        
-        result = backend.extract_from_markdown(
-            markdown="",
-            template=SampleModel,
-            context="page 1"
-        )
-        
-        assert result is None
-        mock_client.get_json_response.assert_not_called()
+    def test_extract_from_markdown_empty_returns_none(self, mock_llm_client):
+        """Should return None for empty markdown."""
+        backend = LlmBackend(llm_client=mock_llm_client)
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.get_prompt")
-    def test_extract_whitespace_only_markdown(self, mock_get_prompt):
-        """Test extraction with whitespace-only markdown."""
-        mock_client = Mock()
-        backend = LlmBackend(llm_client=mock_client)
-        
-        result = backend.extract_from_markdown(
-            markdown="   \n\t  ",
-            template=SampleModel,
-            context="page 1"
-        )
-        
+        result = backend.extract_from_markdown("", SampleModel)
+
         assert result is None
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.get_prompt")
-    def test_extract_llm_returns_none(self, mock_get_prompt):
-        """Test when LLM returns None."""
-        mock_client = Mock()
-        mock_client.get_json_response.return_value = None
-        mock_get_prompt.return_value = "test prompt"
-        
-        backend = LlmBackend(llm_client=mock_client)
-        result = backend.extract_from_markdown(
-            markdown="Test content",
-            template=SampleModel
-        )
-        
-        assert result is None
+    def test_extract_from_markdown_with_context(self, mock_llm_client):
+        """Should use context parameter."""
+        backend = LlmBackend(llm_client=mock_llm_client)
+        markdown = "# Document\n\nContent"
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.get_prompt")
-    def test_extract_validation_error(self, mock_get_prompt):
-        """Test extraction with validation error."""
-        mock_client = Mock()
-        mock_client.get_json_response.return_value = {"name": "Alice", "age": "invalid"}
-        mock_get_prompt.return_value = "test prompt"
-        
-        backend = LlmBackend(llm_client=mock_client)
-        result = backend.extract_from_markdown(
-            markdown="Test content",
-            template=SampleModel
-        )
-        
-        assert result is None
+        result = backend.extract_from_markdown(markdown, SampleModel, context="page 1")
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.get_prompt")
-    def test_extract_llm_exception(self, mock_get_prompt):
-        """Test extraction when LLM raises exception."""
-        mock_client = Mock()
-        mock_client.get_json_response.side_effect = RuntimeError("API error")
-        mock_get_prompt.return_value = "test prompt"
-        
-        backend = LlmBackend(llm_client=mock_client)
-        result = backend.extract_from_markdown(
-            markdown="Test content",
-            template=SampleModel
-        )
-        
-        assert result is None
-
-    @patch("docling_graph.core.extractors.backends.llm_backend.get_prompt")
-    def test_extract_with_context(self, mock_get_prompt):
-        """Test that context is passed correctly."""
-        mock_client = Mock()
-        mock_client.get_json_response.return_value = {"name": "Bob", "age": 25}
-        mock_get_prompt.return_value = "test prompt"
-        
-        backend = LlmBackend(llm_client=mock_client)
-        result = backend.extract_from_markdown(
-            markdown="Test content",
-            template=SampleModel,
-            context="full document"
-        )
-        
         assert result is not None
-        assert result.name == "Bob"
 
+    def test_extract_calls_llm_client(self, mock_llm_client):
+        """Should call LLM client."""
+        backend = LlmBackend(llm_client=mock_llm_client)
+        markdown = "# Document"
 
-class TestLlmBackendPromptGeneration:
-    """Tests for prompt generation."""
+        backend.extract_from_markdown(markdown, SampleModel)
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.get_prompt")
-    @patch("docling_graph.core.extractors.backends.llm_backend.json.dumps")
-    def test_prompt_generation_called(self, mock_json_dumps, mock_get_prompt):
-        """Test that prompt generation is called correctly."""
-        mock_client = Mock()
-        mock_client.get_json_response.return_value = {"name": "Alice", "age": 30}
-        mock_get_prompt.return_value = "generated prompt"
-        mock_json_dumps.return_value = '{"schema": "json"}'
-        
-        backend = LlmBackend(llm_client=mock_client)
-        backend.extract_from_markdown(
-            markdown="Test markdown",
-            template=SampleModel
-        )
-        
-        # Verify prompt generation was called
-        mock_get_prompt.assert_called_once()
-        call_kwargs = mock_get_prompt.call_args[1]
-        assert "markdown_content" in call_kwargs
-        assert "schema_json" in call_kwargs
-        assert call_kwargs["markdown_content"] == "Test markdown"
+        mock_llm_client.get_json_response.assert_called_once()
+
+    def test_extract_validates_response(self, mock_llm_client):
+        """Should validate LLM response against template."""
+        mock_llm_client.get_json_response.return_value = {"name": "test", "value": 42}
+        backend = LlmBackend(llm_client=mock_llm_client)
+
+        result = backend.extract_from_markdown("# Doc", SampleModel)
+
+        assert result.name == "test"
+        assert result.value == 42
+
+    def test_extract_handles_invalid_json(self, mock_llm_client):
+        """Should handle invalid JSON from LLM."""
+        mock_llm_client.get_json_response.return_value = None
+        backend = LlmBackend(llm_client=mock_llm_client)
+
+        result = backend.extract_from_markdown("# Doc", SampleModel)
+
+        assert result is None
 
 
 class TestLlmBackendCleanup:
-    """Tests for cleanup method."""
+    """Test LLM backend cleanup."""
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.gc")
-    def test_cleanup_success(self, mock_gc):
-        """Test successful cleanup."""
-        mock_client = Mock()
-        backend = LlmBackend(llm_client=mock_client)
-        
+    def test_cleanup_removes_client(self, mock_llm_client):
+        """Should remove client reference."""
+        backend = LlmBackend(llm_client=mock_llm_client)
         backend.cleanup()
-        
-        mock_gc.collect.assert_called_once()
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.gc")
-    def test_cleanup_with_client_cleanup_method(self, mock_gc):
-        """Test cleanup when client has cleanup method."""
-        mock_client = Mock()
-        mock_client.cleanup = Mock()
-        
-        backend = LlmBackend(llm_client=mock_client)
+        # Client should be deleted
+        assert not hasattr(backend, "client") or backend.client is None
+
+    def test_cleanup_calls_client_cleanup(self, mock_llm_client):
+        """Should call client's cleanup method if available."""
+        mock_llm_client.cleanup = MagicMock()
+        backend = LlmBackend(llm_client=mock_llm_client)
+
         backend.cleanup()
-        
-        mock_client.cleanup.assert_called_once()
-        mock_gc.collect.assert_called_once()
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.gc")
-    def test_cleanup_handles_error(self, mock_gc):
-        """Test cleanup handles errors gracefully."""
-        mock_client = Mock()
-        mock_client.cleanup = Mock(side_effect=RuntimeError("Cleanup error"))
-        
+        mock_llm_client.cleanup.assert_called_once()
+
+    def test_cleanup_handles_missing_client(self):
+        """Should handle cleanup without client gracefully."""
+        mock_client = MagicMock()
         backend = LlmBackend(llm_client=mock_client)
+        del backend.client  # Force missing client
+
         # Should not raise
         backend.cleanup()

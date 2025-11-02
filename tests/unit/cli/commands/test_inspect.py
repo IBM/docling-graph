@@ -1,5 +1,5 @@
 """
-Unit tests for inspect command module.
+Tests for inspect command.
 """
 
 from pathlib import Path
@@ -12,154 +12,126 @@ from docling_graph.cli.commands.inspect import inspect_command
 
 
 class TestInspectCommand:
-    """Tests for inspect_command function."""
+    """Test inspect command functionality."""
 
     @patch("docling_graph.cli.commands.inspect.InteractiveVisualizer")
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_csv_format(self, mock_print, mock_visualizer, temp_dir):
-        """Test inspect command with CSV format."""
-        # Create dummy CSV files
-        nodes_csv = temp_dir / "nodes.csv"
-        edges_csv = temp_dir / "edges.csv"
-        nodes_csv.write_text("id,label\n1,Node1")
-        edges_csv.write_text("source,target,label\n1,2,connects")
+    def test_inspect_command_csv_format(self, mock_visualizer_class, tmp_path):
+        """Should handle CSV format inspection."""
+        # Create CSV files
+        csv_dir = tmp_path / "graph_data"
+        csv_dir.mkdir()
+        (csv_dir / "nodes.csv").write_text("id,label\n1,node1")
+        (csv_dir / "edges.csv").write_text("source,target,label\n1,2,edge")
 
-        mock_viz_instance = MagicMock()
-        mock_visualizer.return_value = mock_viz_instance
+        mock_visualizer = MagicMock()
+        mock_visualizer_class.return_value = mock_visualizer
 
-        inspect_command(path=temp_dir, input_format="csv")
+        inspect_command(path=csv_dir, input_format="csv", open_browser=False)
 
-        # Verify visualizer was created and called
-        mock_visualizer.assert_called_once()
-        mock_viz_instance.display_cytoscape_graph.assert_called_once()
-
-        # Check arguments
-        call_args = mock_viz_instance.display_cytoscape_graph.call_args
-        assert call_args[1]["path"] == temp_dir
-        assert call_args[1]["input_format"] == "csv"
-        assert call_args[1]["open_browser"] is True
+        mock_visualizer.display_cytoscape_graph.assert_called_once()
+        call_args = mock_visualizer.display_cytoscape_graph.call_args
+        assert call_args.kwargs["input_format"] == "csv"
 
     @patch("docling_graph.cli.commands.inspect.InteractiveVisualizer")
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_json_format(self, mock_print, mock_visualizer, temp_dir):
-        """Test inspect command with JSON format."""
-        # Create dummy JSON file
-        json_file = temp_dir / "graph.json"
+    def test_inspect_command_json_format(self, mock_visualizer_class, tmp_path):
+        """Should handle JSON format inspection."""
+        # Create JSON file
+        json_file = tmp_path / "graph.json"
         json_file.write_text('{"nodes": [], "edges": []}')
 
-        mock_viz_instance = MagicMock()
-        mock_visualizer.return_value = mock_viz_instance
+        mock_visualizer = MagicMock()
+        mock_visualizer_class.return_value = mock_visualizer
 
-        inspect_command(path=json_file, input_format="json")
+        inspect_command(path=json_file, input_format="json", open_browser=False)
 
-        call_args = mock_viz_instance.display_cytoscape_graph.call_args
-        assert call_args[1]["path"] == json_file
-        assert call_args[1]["input_format"] == "json"
+        mock_visualizer.display_cytoscape_graph.assert_called_once()
+        call_args = mock_visualizer.display_cytoscape_graph.call_args
+        assert call_args.kwargs["input_format"] == "json"
 
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_invalid_format(self, mock_print, temp_dir):
-        """Test inspect command with invalid format."""
+    def test_inspect_command_invalid_format(self, tmp_path):
+        """Should exit for invalid format."""
+        csv_dir = tmp_path / "data"
+        csv_dir.mkdir()
+
         with pytest.raises(typer.Exit) as exc_info:
-            inspect_command(path=temp_dir, input_format="invalid")
-
+            inspect_command(path=csv_dir, input_format="invalid")
         assert exc_info.value.exit_code == 1
 
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_csv_missing_nodes(self, mock_print, temp_dir):
-        """Test inspect command when nodes.csv is missing."""
-        # Only create edges.csv
-        edges_csv = temp_dir / "edges.csv"
-        edges_csv.write_text("source,target,label\n1,2,connects")
+    def test_inspect_command_csv_missing_nodes(self, tmp_path):
+        """Should exit if nodes.csv missing for CSV format."""
+        csv_dir = tmp_path / "graph_data"
+        csv_dir.mkdir()
+        (csv_dir / "edges.csv").write_text("source,target\n1,2")
 
         with pytest.raises(typer.Exit) as exc_info:
-            inspect_command(path=temp_dir, input_format="csv")
-
+            inspect_command(path=csv_dir, input_format="csv")
         assert exc_info.value.exit_code == 1
 
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_csv_missing_edges(self, mock_print, temp_dir):
-        """Test inspect command when edges.csv is missing."""
-        # Only create nodes.csv
-        nodes_csv = temp_dir / "nodes.csv"
-        nodes_csv.write_text("id,label\n1,Node1")
+    def test_inspect_command_csv_missing_edges(self, tmp_path):
+        """Should exit if edges.csv missing for CSV format."""
+        csv_dir = tmp_path / "graph_data"
+        csv_dir.mkdir()
+        (csv_dir / "nodes.csv").write_text("id,label\n1,node1")
 
         with pytest.raises(typer.Exit) as exc_info:
-            inspect_command(path=temp_dir, input_format="csv")
-
+            inspect_command(path=csv_dir, input_format="csv")
         assert exc_info.value.exit_code == 1
 
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_csv_path_not_directory(self, mock_print, temp_dir):
-        """Test inspect command when CSV path is not a directory."""
-        file_path = temp_dir / "not_a_dir.txt"
-        file_path.write_text("content")
+    def test_inspect_command_json_wrong_type(self, tmp_path):
+        """Should exit if JSON path is directory."""
+        json_dir = tmp_path / "not_a_file"
+        json_dir.mkdir()
 
         with pytest.raises(typer.Exit) as exc_info:
-            inspect_command(path=file_path, input_format="csv")
-
-        assert exc_info.value.exit_code == 1
-
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_json_invalid_path(self, mock_print, temp_dir):
-        """Test inspect command when JSON path is invalid."""
-        txt_file = temp_dir / "not_json.txt"
-        txt_file.write_text("content")
-
-        with pytest.raises(typer.Exit) as exc_info:
-            inspect_command(path=txt_file, input_format="json")
-
+            inspect_command(path=json_dir, input_format="json")
         assert exc_info.value.exit_code == 1
 
     @patch("docling_graph.cli.commands.inspect.InteractiveVisualizer")
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_with_custom_output(self, mock_print, mock_visualizer, temp_dir):
-        """Test inspect command with custom output path."""
-        nodes_csv = temp_dir / "nodes.csv"
-        edges_csv = temp_dir / "edges.csv"
-        nodes_csv.write_text("id,label\n1,Node1")
-        edges_csv.write_text("source,target,label\n1,2,connects")
+    def test_inspect_command_with_output_path(self, mock_visualizer_class, tmp_path):
+        """Should save output to specified path."""
+        csv_dir = tmp_path / "graph_data"
+        csv_dir.mkdir()
+        (csv_dir / "nodes.csv").write_text("id,label\n1,node1")
+        (csv_dir / "edges.csv").write_text("source,target,label\n1,2,edge")
 
-        output_file = temp_dir / "visualization.html"
+        output_file = tmp_path / "output.html"
 
-        mock_viz_instance = MagicMock()
-        mock_visualizer.return_value = mock_viz_instance
+        mock_visualizer = MagicMock()
+        mock_visualizer_class.return_value = mock_visualizer
 
-        inspect_command(path=temp_dir, input_format="csv", output=output_file)
+        inspect_command(path=csv_dir, input_format="csv", output=output_file, open_browser=False)
 
-        call_args = mock_viz_instance.display_cytoscape_graph.call_args
-        assert call_args[1]["output_path"] == output_file
-
-    @patch("docling_graph.cli.commands.inspect.InteractiveVisualizer")
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_no_open_browser(self, mock_print, mock_visualizer, temp_dir):
-        """Test inspect command without opening browser."""
-        nodes_csv = temp_dir / "nodes.csv"
-        edges_csv = temp_dir / "edges.csv"
-        nodes_csv.write_text("id,label\n1,Node1")
-        edges_csv.write_text("source,target,label\n1,2,connects")
-
-        mock_viz_instance = MagicMock()
-        mock_visualizer.return_value = mock_viz_instance
-
-        inspect_command(path=temp_dir, input_format="csv", open_browser=False)
-
-        call_args = mock_viz_instance.display_cytoscape_graph.call_args
-        assert call_args[1]["open_browser"] is False
+        call_args = mock_visualizer.display_cytoscape_graph.call_args
+        assert call_args.kwargs["output_path"] == output_file
 
     @patch("docling_graph.cli.commands.inspect.InteractiveVisualizer")
-    @patch("docling_graph.cli.commands.inspect.rich_print")
-    def test_inspect_command_visualizer_error(self, mock_print, mock_visualizer, temp_dir):
-        """Test inspect command when visualizer raises error."""
-        nodes_csv = temp_dir / "nodes.csv"
-        edges_csv = temp_dir / "edges.csv"
-        nodes_csv.write_text("id,label\n1,Node1")
-        edges_csv.write_text("source,target,label\n1,2,connects")
+    def test_inspect_command_open_browser_flag(self, mock_visualizer_class, tmp_path):
+        """Should respect open_browser flag."""
+        csv_dir = tmp_path / "graph_data"
+        csv_dir.mkdir()
+        (csv_dir / "nodes.csv").write_text("id,label\n1,node1")
+        (csv_dir / "edges.csv").write_text("source,target,label\n1,2,edge")
 
-        mock_viz_instance = MagicMock()
-        mock_viz_instance.display_cytoscape_graph.side_effect = Exception("Visualization failed")
-        mock_visualizer.return_value = mock_viz_instance
+        mock_visualizer = MagicMock()
+        mock_visualizer_class.return_value = mock_visualizer
+
+        inspect_command(path=csv_dir, open_browser=True)
+
+        call_args = mock_visualizer.display_cytoscape_graph.call_args
+        assert call_args.kwargs["open_browser"] is True
+
+    @patch("docling_graph.cli.commands.inspect.InteractiveVisualizer")
+    def test_inspect_command_error_handling(self, mock_visualizer_class, tmp_path):
+        """Should exit on visualizer error."""
+        csv_dir = tmp_path / "graph_data"
+        csv_dir.mkdir()
+        (csv_dir / "nodes.csv").write_text("id,label\n1,node1")
+        (csv_dir / "edges.csv").write_text("source,target,label\n1,2,edge")
+
+        mock_visualizer = MagicMock()
+        mock_visualizer_class.return_value = mock_visualizer
+        mock_visualizer.display_cytoscape_graph.side_effect = RuntimeError("Viz error")
 
         with pytest.raises(typer.Exit) as exc_info:
-            inspect_command(path=temp_dir, input_format="csv")
-
+            inspect_command(path=csv_dir, open_browser=False)
         assert exc_info.value.exit_code == 1

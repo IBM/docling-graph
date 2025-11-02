@@ -1,123 +1,44 @@
 """
-Mock API clients for testing without actual API calls.
+Mock LLM clients for testing.
 """
 
 from typing import Any, Dict, List, Optional
+from unittest.mock import MagicMock
 
 
-class MockAPIClient:
-    """Base mock API client."""
+class MockOllamaClient(MagicMock):
+    """Mock Ollama client."""
 
-    def __init__(self, api_key: str = "mock-api-key") -> None:
-        """Initialize mock API client.
-
-        Args:
-            api_key: API key (mock).
-        """
-        self.api_key = api_key
-        self.call_count = 0
-        self.last_request = None
-
-    def make_request(self, endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Mock API request.
-
-        Args:
-            endpoint: API endpoint.
-            data: Request data.
-
-        Returns:
-            Mock response.
-        """
-        self.call_count += 1
-        self.last_request = {"endpoint": endpoint, "data": data}
-
-        return {"status": "success", "data": {"result": "mock_result"}}
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.generate = MagicMock(
+            return_value={
+                "response": "Mock response from Ollama",
+                "model": "llama:7b",
+            }
+        )
+        self.list_models = MagicMock(return_value={"models": [{"name": "llama:7b"}]})
 
 
-class MockOpenAIClient:
-    """Mock OpenAI API client."""
+class MockMistralClient(MagicMock):
+    """Mock Mistral API client."""
 
-    def __init__(self, api_key: str = "mock-openai-key") -> None:
-        """Initialize mock OpenAI client.
-
-        Args:
-            api_key: API key (mock).
-        """
-        self.api_key = api_key
-        self.call_count = 0
-
-    def chat_completion(self, model: str, messages: List[Dict[str, str]]) -> Dict[str, Any]:
-        """Mock chat completion.
-
-        Args:
-            model: Model name.
-            messages: Chat messages.
-
-        Returns:
-            Mock completion response.
-        """
-        self.call_count += 1
-
-        return {"choices": [{"message": {"role": "assistant", "content": '{"extracted": "data"}'}}]}
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.complete = MagicMock(
+            return_value=MagicMock(
+                choices=[MagicMock(message=MagicMock(content="Mock response from Mistral"))]
+            )
+        )
 
 
-class MockGeminiClient:
-    """Mock Google Gemini API client."""
+class MockOpenAIClient(MagicMock):
+    """Mock OpenAI client."""
 
-    def __init__(self, api_key: str = "mock-gemini-key") -> None:
-        """Initialize mock Gemini client.
-
-        Args:
-            api_key: API key (mock).
-        """
-        self.api_key = api_key
-        self.call_count = 0
-
-    def generate_content(self, prompt: str) -> Any:
-        """Mock content generation.
-
-        Args:
-            prompt: Input prompt.
-
-        Returns:
-            Mock response.
-        """
-        self.call_count += 1
-
-        class MockResponse:
-            text = '{"field": "value"}'
-
-        return MockResponse()
-
-
-class RateLimitedMockClient:
-    """Mock client that simulates rate limiting."""
-
-    def __init__(self, rate_limit: int = 3) -> None:
-        """Initialize rate-limited mock client.
-
-        Args:
-            rate_limit: Number of calls before rate limit error.
-        """
-        self.rate_limit = rate_limit
-        self.call_count = 0
-
-    def make_request(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Mock request with rate limiting.
-
-        Args:
-            data: Request data.
-
-        Returns:
-            Mock response or raises rate limit error.
-        """
-        self.call_count += 1
-
-        if self.call_count > self.rate_limit:
-            raise Exception("Rate limit exceeded")
-
-        return {"status": "success"}
-
-    def reset(self):
-        """Reset call counter."""
-        self.call_count = 0
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.chat.completions.create = MagicMock(
+            return_value=MagicMock(
+                choices=[MagicMock(message=MagicMock(content="Mock response from OpenAI"))]
+            )
+        )
