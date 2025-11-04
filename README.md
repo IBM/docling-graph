@@ -21,7 +21,9 @@
 [![License MIT](https://img.shields.io/github/license/ayoub-ibm/docling-graph)](https://opensource.org/licenses/MIT)
 [![LF AI & Data](https://img.shields.io/badge/LF%20AI%20%26%20Data-003778?logo=linuxfoundation&logoColor=fff&color=0094ff&labelColor=003778)](https://lfaidata.foundation/projects/)
 
-Docling-Graph converts documents into validated **Pydantic** objects and then into a **directed knowledge graph**, with exports to CSV or Cypher and both static and interactive visualizations.  
+Docling-Graph converts documents into validated **Pydantic** objects and then into a **directed knowledge graph**, with exports to CSV or Cypher and both static and interactive visualizations.
+
+This transformation of unstructured documents into validated knowledge graphs with precise semantic relationships—essential for complex domains like **chemistry, finance, and physics** where AI systems must understand exact entity connections (e.g., chemical compounds and their reactions, financial instruments and their dependencies, physical properties and their measurements) rather than approximate text vectors, **enabling explainable reasoning over technical document collections**.
 
 The toolkit supports two extraction families: **local VLM** via Docling and **LLM-based extraction** via local (vLLM, Ollama) or API providers (Mistral, OpenAI, Gemini), all orchestrated by a flexible, config-driven pipeline.
 
@@ -239,7 +241,12 @@ MIT License - see [LICENSE](LICENSE) for details.
 - Visualizations powered by [Cytoscape.js](https://js.cytoscape.org/).
 - CLI powered by [Typer](https://typer.tiangolo.com/) and [Rich](https://github.com/Textualize/rich).
 
+## Core Authors (Code, Logic, Architecture...)
 
+ - Ayoub El Bouchtili
+ - Sophie Lang
+ - Maxime Gillot
+ - Guilhaume Leroy-Méline
 
 ## IBM ❤️ Open Source AI
 
