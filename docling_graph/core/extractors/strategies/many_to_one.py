@@ -35,8 +35,8 @@ class ManyToOneStrategy(BaseExtractor):
         self,
         backend: Backend,
         docling_config: str = "default",
-        llm_consolidation: bool = True,
         use_chunking: bool = True,
+        llm_consolidation: bool = False,
         chunker_config: dict = None,
     ) -> None:
         """
@@ -250,15 +250,13 @@ class ManyToOneStrategy(BaseExtractor):
             
             if not extracted_models:
                 rich_print(
-                    "[red][ManyToOneStrategy][/red] "
-                    "No models extracted from any batch"
+                    "[red][ManyToOneStrategy][/red] No models extracted from any batch"
                 )
                 return []
             
             if len(extracted_models) == 1:
                 rich_print(
-                    "[blue][ManyToOneStrategy][/blue] "
-                    "Single batch extracted — no merge needed"
+                    "[blue][ManyToOneStrategy][/blue] Single batch extracted — no merge needed"
                 )
                 return extracted_models
             
@@ -270,8 +268,7 @@ class ManyToOneStrategy(BaseExtractor):
 
             if not programmatic_model:
                 rich_print(
-                    "[yellow][ManyToOneStrategy][/yellow] "
-                    "Programmatic merge failed. Returning first extracted model."
+                    "[yellow][ManyToOneStrategy][/yellow] Programmatic merge failed. Returning first extracted model."
                 )
                 return [extracted_models[0]]
 
@@ -286,8 +283,7 @@ class ManyToOneStrategy(BaseExtractor):
                 if final_model:
                     return [final_model]
                 rich_print(
-                    "[yellow][ManyToOneStrategy][/yellow] LLM consolidation failed. "
-                    "Falling back to programmatic merge."
+                    "[yellow][ManyToOneStrategy][/yellow] LLM consolidation failed. Falling back to programmatic merge."
                 )
                 return [programmatic_model]
             else:

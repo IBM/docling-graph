@@ -129,6 +129,8 @@ config = PipelineConfig(
     processing_mode="many-to-one",
     provider_override="mistral",              # Specify your preferred provider and ensure its API key is set
     model_override="mistral-medium-latest",   # Specify your preferred LLM model
+    use_chunking=True,                        # Enable docling's hybrid chunker
+    llm_consolidation=False,                  # If False, programmatically merge batch-extracted dictionaries
     output_dir="outputs/battery_research"
 )
 
@@ -162,7 +164,9 @@ You can use: `docling-graph convert --help` to see the full list of available op
 uv run docling-graph convert "examples/data/battery_research/bauer2014.pdf" \
     --template "examples.templates.battery_research.Research" \
     --output-dir "outputs/battery_research"  \
-    --processing-mode "many-to-one"
+    --processing-mode "many-to-one" \
+    --use-chunking \
+    --no-llm-consolidation 
 ```
 
 #### 2.3. Run Conversion
@@ -207,13 +211,13 @@ For complete guidance, see: [Pydantic Templates for Knowledge Graph Extraction](
 
 ## Documentation
 
-* *Work In Progress*
+* *Work In Progress...*
 
 
 
 ## Examples
 
-* *Work In Progress*
+* *Work In Progress...*
 
 
 

@@ -25,6 +25,8 @@ class ExtractorFactory:
         model_name: str | None = None,
         llm_client: BaseLlmClient | None = None,
         docling_config: str = "ocr",
+        use_chunking: bool = True,
+        llm_consolidation: bool = False,
     ) -> BaseExtractor:
         """
         Create an extractor based on configuration.
@@ -35,6 +37,8 @@ class ExtractorFactory:
             model_name (str): Model name for VLM (optional)
             llm_client (BaseLlmClient): LLM client instance (optional)
             docling_config (str): Docling pipeline configuration ('default' or 'vlm')
+            llm_consolidation (bool): Whether to use LLM consolidation.
+            use_chunking (bool): Whether to use chunking.
 
         Returns:
             BaseExtractor: Configured extractor instance.
@@ -43,6 +47,12 @@ class ExtractorFactory:
         rich_print(f" • Mode: [cyan]{processing_mode}[/cyan]")
         rich_print(f" • Type: [cyan]{backend_name}[/cyan]")
         rich_print(f" • Docling: [cyan]{docling_config}[/cyan]")
+        # --- ADDED PRINT STATEMENTS START ---
+        if backend_name == "llm":
+            rich_print(f" • Consolidation: [cyan]{llm_consolidation}[/cyan]")
+        rich_print(f" • Chunking: [cyan]{use_chunking}[/cyan]")
+        # --- ADDED PRINT STATEMENTS END ---
+
 
         # Create backend instance
         backend_obj: Backend
@@ -59,10 +69,21 @@ class ExtractorFactory:
 
         # Create strategy with docling_config
         extractor: BaseExtractor
+        
+        strategy_args = {
+            "backend": backend_obj,
+            "docling_config": docling_config,
+            "use_chunking": use_chunking,
+        }
+        
+        # Only pass llm_consolidation if backend is llm
+        if backend_name == "llm":
+            strategy_args["llm_consolidation"] = llm_consolidation
+
         if processing_mode == "one-to-one":
-            extractor = OneToOneStrategy(backend=backend_obj, docling_config=docling_config)
+            extractor = OneToOneStrategy(**strategy_args)
         elif processing_mode == "many-to-one":
-            extractor = ManyToOneStrategy(backend=backend_obj, docling_config=docling_config)
+            extractor = ManyToOneStrategy(**strategy_args)
         else:
             raise ValueError(f"Unknown processing_mode: {processing_mode}")
 

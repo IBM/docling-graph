@@ -61,6 +61,21 @@ def convert_command(
         Optional[str],
         typer.Option("--docling-pipeline", "-d", help="Docling pipeline: 'ocr' or 'vision'."),
     ] = None,
+    # Extraction options
+    llm_consolidation: Annotated[
+        Optional[bool],
+        typer.Option(
+            "--llm-consolidation/--no-llm-consolidation",
+            help="Enable/disable final LLM consolidation step.",
+        ),
+    ] = None,
+    use_chunking: Annotated[
+        Optional[bool],
+        typer.Option(
+            "--use-chunking/--no-use-chunking",
+            help="Enable/disable document chunking.",
+        ),
+    ] = None,
     # Docling export options
     export_docling_json: Annotated[
         bool,
@@ -114,6 +129,18 @@ def convert_command(
     # Docling settings
     docling_pipeline_val = docling_pipeline or docling_cfg.get("pipeline", "ocr")
 
+    # Resolve extraction settings
+    final_llm_consolidation = (
+        llm_consolidation
+        if llm_consolidation is not None
+        else defaults.get("llm_consolidation", True)
+    )
+    final_use_chunking = (
+        use_chunking
+        if use_chunking is not None
+        else defaults.get("use_chunking", True)
+    )
+
     # Docling export settings - use config file as fallback
     docling_export_settings = docling_cfg.get("export", {})
     final_export_docling_json = (
@@ -151,6 +178,11 @@ def convert_command(
     rich_print(f" • Export: [cyan]{export_format_val}[/cyan]")
     rich_print(f" • Reverse edges: [cyan]{reverse_edges}[/cyan]")
 
+    # Display Extraction settings
+    rich_print("\n[bold]Extraction Settings:[/bold]")
+    rich_print(f" • LLM Consolidation: [cyan]{final_llm_consolidation}[/cyan]")
+    rich_print(f" • Use Chunking: [cyan]{final_use_chunking}[/cyan]")
+
     # Display Docling export settings
     rich_print("\n[bold]Docling Export:[/bold]")
     rich_print(f" • Document JSON: [cyan]{final_export_docling_json}[/cyan]")
@@ -168,6 +200,8 @@ def convert_command(
         model_override=model,
         provider_override=provider,
         models=models_from_yaml,
+        llm_consolidation=final_llm_consolidation,
+        use_chunking=final_use_chunking,
         export_format=export_format_val,
         export_docling=True,
         export_docling_json=final_export_docling_json,

@@ -14,6 +14,7 @@ app = typer.Typer(
     name="docling-graph",
     help="A tool to convert documents into knowledge graphs using configurable pipelines.",
     add_completion=False,
+    pretty_exceptions_show_locals=False,
 )
 
 # Register commands

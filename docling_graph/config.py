@@ -71,7 +71,6 @@ class PipelineConfig(BaseModel):
 
     # Docling settings (with defaults)
     docling_config: Literal["ocr", "vision"] = Field(default="ocr")
-    use_chunking: bool = True
 
     # Model overrides
     model_override: Optional[str] = None
@@ -81,8 +80,9 @@ class PipelineConfig(BaseModel):
     models: ModelsConfig = Field(default_factory=ModelsConfig)
 
     # Extract settings (with defaults)
-    llm_consolidation: bool = True
-    batch_size: int = 1
+    use_chunking: bool = True
+    llm_consolidation: bool = False
+    max_batch_size: int = 1
 
     # Export settings (with defaults)
     export_format: Literal["csv", "cypher"] = Field(default="csv")
@@ -119,6 +119,8 @@ class PipelineConfig(BaseModel):
             "inference": self.inference,
             "processing_mode": self.processing_mode,
             "docling_config": self.docling_config,
+            "use_chunking": self.use_chunking,
+            "llm_consolidation": self.llm_consolidation,
             "model_override": self.model_override,
             "provider_override": self.provider_override,
             "export_format": self.export_format,

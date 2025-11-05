@@ -106,6 +106,8 @@ def run_pipeline(config: Union[PipelineConfig, Dict[str, Any]]) -> None:
     inference = cast(str, conf["inference"])
     docling_config = cast(str, conf["docling_config"])
     reverse_edges = cast(bool, conf.get("reverse_edges", False))
+    llm_consolidation = cast(bool, conf.get("llm_consolidation", True))
+    use_chunking = cast(bool, conf.get("use_chunking", True))
 
     output_dir = Path(conf.get("output_dir", "outputs"))
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -154,6 +156,8 @@ def run_pipeline(config: Union[PipelineConfig, Dict[str, Any]]) -> None:
                 backend_name=backend_literal,
                 llm_client=llm_client,
                 docling_config=docling_config,
+                llm_consolidation=llm_consolidation,
+                use_chunking=use_chunking,
             )
 
         # 4. Run Extraction
