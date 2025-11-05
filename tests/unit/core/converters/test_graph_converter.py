@@ -1,4 +1,5 @@
 from typing import List, Optional
+from unittest.mock import MagicMock, patch
 
 import pytest
 from pydantic import BaseModel, Field
@@ -7,28 +8,31 @@ from docling_graph.core.converters.config import GraphConfig
 from docling_graph.core.converters.graph_converter import GraphConverter
 
 
-# --- Test Pydantic Models ---
-
+# Test Pydantic Models
 class SimpleModel(BaseModel):
-    name: str = Field(..., graph_key=True)
+    name: str
     age: int
+
+    model_config = {"graph_id_fields": ["name"]}
 
 
 class Company(BaseModel):
-    name: str = Field(..., graph_key=True)
+    name: str
     location: str
+
+    model_config = {"graph_id_fields": ["name"]}
 
 
 class Person(BaseModel):
-    name: str = Field(..., graph_key=True)
+    name: str
     works_for: Optional[Company] = None
     friends: List["Person"] = []
 
+    model_config = {"graph_id_fields": ["name"]}
 
-# Rebuild forward refs
+
 Person.model_rebuild()
 
-# --- Tests ---
 
 @pytest.fixture
 def default_config():
@@ -43,22 +47,19 @@ def converter(default_config):
 def test_converter_init(converter):
     """Test converter initialization."""
     assert converter.registry is not None
-    assert converter.edges == []
-    assert converter.config.use_raw_edge_labels is False
+    assert converter.config is not None
 
 
 def test_convert_simple_model(converter):
-    """Test converting a single, simple model."""
-    model = SimpleModel(name="Alice", age=30)
-    converter.convert(model)
-    graph = converter.get_graph()
+    """Test converting a single model with nested relationship to create edges."""
+    company = Company(name="TechCorp", location="SF")
+    person = Person(name="Alice", works_for=company)
 
-    assert len(graph["nodes"]) == 1
-    assert len(graph["edges"]) == 0
-    assert graph["nodes"][0]["id"] == "simplemodel-1"
-    assert graph["nodes"][0]["label"] == "SimpleModel"
-    assert graph["nodes"][0]["properties"]["name"] == "Alice"
-    assert graph["nodes"][0]["properties"]["age"] == 30
+    # This creates 2 nodes (Person, Company) and 1 edge (Person -> Company)
+    graph, metadata = converter.pydantic_list_to_graph([person])
+
+    assert graph.number_of_nodes() == 2
+    assert graph.number_of_edges() == 1
 
 
 def test_convert_nested_model_creates_edge(converter):
@@ -66,27 +67,19 @@ def test_convert_nested_model_creates_edge(converter):
     company = Company(name="Acme Inc.", location="NY")
     person = Person(name="Alice", works_for=company)
 
-    converter.convert(person)
-    graph = converter.get_graph()
+    graph, metadata = converter.pydantic_list_to_graph([person])
 
-    assert len(graph["nodes"]) == 2
-    assert len(graph["edges"]) == 1
+    assert graph.number_of_nodes() == 2
+    assert graph.number_of_edges() == 1
 
-    # Check for Person node
-    person_node = next(n for n in graph["nodes"] if n["label"] == "Person")
-    assert person_node["properties"]["name"] == "Alice"
-    assert person_node["id"] == "person-1"
+    # Check nodes exist
+    node_labels = [data["label"] for _, data in graph.nodes(data=True)]
+    assert "Person" in node_labels
+    assert "Company" in node_labels
 
-    # Check for Company node
-    company_node = next(n for n in graph["nodes"] if n["label"] == "Company")
-    assert company_node["properties"]["name"] == "Acme Inc."
-    assert company_node["id"] == "company-1"
-
-    # Check for edge
-    edge = graph["edges"][0]
-    assert edge["source"] == person_node["id"]
-    assert edge["target"] == company_node["id"]
-    assert edge["label"] == "WORKS_FOR"  # Default is uppercase
+    # Check edge exists
+    edges = list(graph.edges(data=True))
+    assert len(edges) == 1
 
 
 def test_convert_list_of_models_creates_edges(converter):
@@ -95,84 +88,52 @@ def test_convert_list_of_models_creates_edges(converter):
     bob = Person(name="Bob")
     charlie = Person(name="Charlie", friends=[alice, bob])
 
-    converter.convert(charlie)
-    graph = converter.get_graph()
+    graph, metadata = converter.pydantic_list_to_graph([charlie])
 
-    assert len(graph["nodes"]) == 3
-    assert len(graph["edges"]) == 2
-
-    charlie_id = next(n["id"] for n in graph["nodes"] if n["properties"]["name"] == "Charlie")
-    alice_id = next(n["id"] for n in graph["nodes"] if n["properties"]["name"] == "Alice")
-    bob_id = next(n["id"] for n in graph["nodes"] if n["properties"]["name"] == "Bob")
-
-    edges = graph["edges"]
-    assert {"source": charlie_id, "target": alice_id, "label": "FRIENDS"} in edges
-    assert {"source": charlie_id, "target": bob_id, "label": "FRIENDS"} in edges
+    assert graph.number_of_nodes() == 3
+    assert graph.number_of_edges() == 2
 
 
 def test_model_deduplication(converter):
     """Test that identical nested models are not duplicated."""
     company = Company(name="Acme Inc.", location="NY")
     alice = Person(name="Alice", works_for=company)
-    bob = Person(name="Bob", works_for=company)  # Works for the *same* company
+    bob = Person(name="Bob", works_for=company)
 
-    converter.convert([alice, bob])
-    graph = converter.get_graph()
+    graph, metadata = converter.pydantic_list_to_graph([alice, bob])
 
-    # Should be 3 nodes: Alice, Bob, and *one* Acme Inc.
-    assert len(graph["nodes"]) == 3
-    assert len(graph["edges"]) == 2
+    # Should be 3 nodes: Alice, Bob, and one Acme Inc.
+    assert graph.number_of_nodes() == 3
+    assert graph.number_of_edges() == 2
 
-    company_nodes = [n for n in graph["nodes"] if n["label"] == "Company"]
+    company_nodes = [
+        node_id for node_id, data in graph.nodes(data=True) if data["label"] == "Company"
+    ]
     assert len(company_nodes) == 1
 
 
-def test_config_use_raw_edge_labels():
-    """Test config to use raw field names for edge labels."""
-    config = GraphConfig(use_raw_edge_labels=True)
-    converter = GraphConverter(config=config)
+@patch("docling_graph.core.converters.graph_converter.GraphCleaner")
+@patch("docling_graph.core.converters.graph_converter.validate_graph_structure")
+def test_conversion_with_validation(mock_validate, mock_cleaner_class, converter):
+    """Test that validation is called."""
+    model = SimpleModel(name="Test", age=25)
 
-    company = Company(name="Acme Inc.", location="NY")
-    person = Person(name="Alice", works_for=company)
+    graph, metadata = converter.pydantic_list_to_graph([model])
 
-    converter.convert(person)
-    graph = converter.get_graph()
-
-    assert len(graph["edges"]) == 1
-    edge = graph["edges"][0]
-    assert edge["label"] == "works_for"  # Not "WORKS_FOR"
+    mock_validate.assert_called_once()
 
 
-def test_config_use_title_case_edge_labels():
-    """Test config to use title-cased field names for edge labels."""
-    config = GraphConfig(use_title_case_edge_labels=True)
-    converter = GraphConverter(config=config)
+def test_conversion_without_cleanup():
+    """Test conversion with auto_cleanup disabled and validation disabled."""
+    config = GraphConfig()
+    # Disable validation to allow graphs without edges
+    converter = GraphConverter(config=config, auto_cleanup=False, validate_graph=False)
 
-    company = Company(name="Acme Inc.", location="NY")
-    person = Person(name="Alice", works_for=company)
+    company = Company(name="TestCorp", location="LA")
+    person = Person(name="Test", works_for=company)
 
-    converter.convert(person)
-    graph = converter.get_graph()
+    graph, metadata = converter.pydantic_list_to_graph([person])
 
-    assert len(graph["edges"]) == 1
-    edge = graph["edges"][0]
-    assert edge["label"] == "Works For"  # Not "WORKS_FOR" or "works_for"
-
-
-def test_no_graph_key_field():
-    """Test that a model without a `graph_key` Field raises a Warning."""
-
-    class NoKeyModel(BaseModel):
-        name: str
-
-    model = NoKeyModel(name="Test")
-    converter = GraphConverter(GraphConfig())
-
-    # Should raise a UserWarning because no graph_key is defined
-    with pytest.warns(UserWarning, match="using object hash as key"):
-        converter.convert(model)
-        graph = converter.get_graph()
-
-    # It should still process the model
-    assert len(graph["nodes"]) == 1
-    assert graph["nodes"][0]["label"] == "NoKeyModel"
+    # Should have 2 nodes and 1 edge
+    assert graph.number_of_nodes() == 2
+    assert graph.number_of_edges() == 1

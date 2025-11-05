@@ -16,7 +16,7 @@ from docling.pipeline.vlm_pipeline import VlmPipeline
 from docling_core.types.doc import DoclingDocument
 from rich import print as rich_print
 
-from .chunker import DocumentChunker
+from .document_chunker import DocumentChunker
 
 
 class DocumentProcessor:

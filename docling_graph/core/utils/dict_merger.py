@@ -10,19 +10,16 @@ def merge_pydantic_models(models: List[Any], template_class: type) -> Any:
     """
     Merge multiple Pydantic model instances into a single model.
 
-    This function takes a list of Pydantic model instances and merges them
-    into a single instance by deeply merging their dict representations.
-
     Args:
         models: List of Pydantic model instances to merge
         template_class: The Pydantic model class to use for the result
 
     Returns:
-        A single merged Pydantic model instance, or None if models list is empty
+        A single merged Pydantic model instance
     """
-    # Return None for empty list
+    # Return default instance for empty list
     if not models:
-        return None
+        return template_class()
 
     if len(models) == 1:
         return models[0]

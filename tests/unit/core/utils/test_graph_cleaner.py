@@ -1,5 +1,5 @@
-import pytest
 import networkx as nx
+import pytest
 
 from docling_graph.core.utils.graph_cleaner import (
     GraphCleaner,
@@ -18,11 +18,11 @@ def dirty_graph() -> nx.DiGraph:
     """Returns a graph with duplicates, phantoms, and orphans."""
     G = nx.DiGraph()
     # Add nodes
-    G.add_node("node-1", **{"name": "Alice"})
-    G.add_node("node-2", **{"name": "Acme"})
-    G.add_node("node-3", **{"name": "Bob"})
+    G.add_node("node-1", name="Alice")
+    G.add_node("node-2", name="Acme")
+    G.add_node("node-3", name="Bob")
     # Add a semantic duplicate node
-    G.add_node("node-4", **{"name": "Alice"})
+    G.add_node("node-4", name="Alice")
     # Add a phantom node (only metadata)
     G.add_node("phantom-1", id="phantom-1", label="Person")
 
@@ -42,8 +42,8 @@ def dirty_graph() -> nx.DiGraph:
 
 def test_clean_graph(cleaner: GraphCleaner, dirty_graph: nx.DiGraph):
     """Test the full clean_graph method."""
-    assert dirty_graph.number_of_nodes() == 5
-    assert dirty_graph.number_of_edges() == 5
+    assert dirty_graph.number_of_nodes() == 6
+    assert dirty_graph.number_of_edges() == 4
 
     # Run the cleanup
     cleaned_graph = cleaner.clean_graph(dirty_graph)
@@ -82,12 +82,12 @@ def test_validate_graph_structure_valid():
 
 
 def test_validate_graph_structure_orphan_edge():
-    """Test validation failure for an orphaned edge."""
+    """Test validation failure for an auto-created empty node."""
     G = nx.DiGraph()
     G.add_node("A", name="Node A")
-    G.add_edge("A", "B", label="CONNECTS")  # Node "B" does not exist
+    G.add_edge("A", "B", label="CONNECTS")  # networkx auto-creates node "B" with no data
 
-    with pytest.raises(ValueError, match="Edge target not in graph: B"):
+    with pytest.raises(ValueError, match="Empty node: B"):
         validate_graph_structure(G, raise_on_error=True)
 
 

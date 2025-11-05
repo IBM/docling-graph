@@ -34,9 +34,7 @@ def test_init(llm_backend, mock_llm_client):
 
 
 @patch("docling_graph.core.extractors.backends.llm_backend.get_extraction_prompt")
-def test_extract_from_markdown_success(
-    mock_get_prompt, llm_backend, mock_llm_client
-):
+def test_extract_from_markdown_success(mock_get_prompt, llm_backend, mock_llm_client):
     """Test successful extraction and validation."""
     markdown = "This is a test."
     context = "test context"
@@ -66,12 +64,8 @@ def test_extract_from_markdown_success(
 
 def test_extract_from_markdown_empty_input(llm_backend):
     """Test that empty or whitespace-only markdown returns None."""
-    result_empty = llm_backend.extract_from_markdown(
-        markdown="", template=MockTemplate
-    )
-    result_whitespace = llm_backend.extract_from_markdown(
-        markdown="   \n ", template=MockTemplate
-    )
+    result_empty = llm_backend.extract_from_markdown(markdown="", template=MockTemplate)
+    result_whitespace = llm_backend.extract_from_markdown(markdown="   \n ", template=MockTemplate)
 
     assert result_empty is None
     assert result_whitespace is None
@@ -81,24 +75,18 @@ def test_extract_from_markdown_no_json_returned(llm_backend, mock_llm_client):
     """Test when the LLM client returns no valid JSON (e.g., None)."""
     mock_llm_client.get_json_response.return_value = None
 
-    result = llm_backend.extract_from_markdown(
-        markdown="Some content", template=MockTemplate
-    )
+    result = llm_backend.extract_from_markdown(markdown="Some content", template=MockTemplate)
     assert result is None
 
 
 @patch("docling_graph.core.extractors.backends.llm_backend.rich_print")
-def test_extract_from_markdown_validation_error(
-    mock_rich_print, llm_backend, mock_llm_client
-):
+def test_extract_from_markdown_validation_error(mock_rich_print, llm_backend, mock_llm_client):
     """Test when the LLM returns JSON that fails Pydantic validation."""
     # 'age' is missing, which is a required field
     invalid_json = {"name": "Test Only"}
     mock_llm_client.get_json_response.return_value = invalid_json
 
-    result = llm_backend.extract_from_markdown(
-        markdown="Some content", template=MockTemplate
-    )
+    result = llm_backend.extract_from_markdown(markdown="Some content", template=MockTemplate)
 
     # Should fail validation and return None
     assert result is None
@@ -109,9 +97,7 @@ def test_extract_from_markdown_validation_error(
 
 
 @patch("docling_graph.core.extractors.backends.llm_backend.get_consolidation_prompt")
-def test_consolidate_success(
-    mock_get_prompt, llm_backend, mock_llm_client
-):
+def test_consolidate_success(mock_get_prompt, llm_backend, mock_llm_client):
     """Test successful consolidation."""
     raw_models = [MockTemplate(name="Test", age=30)]
     programmatic_model = MockTemplate(name="Test", age=30)
@@ -132,9 +118,7 @@ def test_consolidate_success(
 
 
 @patch("docling_graph.core.extractors.backends.llm_backend.rich_print")
-def test_consolidate_validation_error(
-    mock_rich_print, llm_backend, mock_llm_client
-):
+def test_consolidate_validation_error(mock_rich_print, llm_backend, mock_llm_client):
     """Test consolidation with a Pydantic validation error."""
     raw_models = [MockTemplate(name="Test", age=30)]
     programmatic_model = MockTemplate(name="Test", age=30)

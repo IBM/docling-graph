@@ -14,6 +14,7 @@ from typing_extensions import Self
 
 class BackendConfig(BaseModel):
     """Configuration for an extraction backend."""
+
     provider: str = Field(..., description="Backend provider (e.g., 'ollama', 'mistral', 'vlm')")
     model: str = Field(..., description="Model name or path")
     api_key: Optional[str] = Field(None, description="API key, if required")
@@ -22,6 +23,7 @@ class BackendConfig(BaseModel):
 
 class ExtractorConfig(BaseModel):
     """Configuration for the extraction strategy."""
+
     strategy: Literal["many-to-one", "one-to-one"] = Field(default="many-to-one")
     docling_config: Literal["ocr", "vision"] = Field(default="ocr")
     use_chunking: bool = Field(default=True)

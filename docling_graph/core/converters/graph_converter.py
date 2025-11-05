@@ -15,8 +15,8 @@ from rich import print as rich_print
 from ..utils.graph_cleaner import GraphCleaner, validate_graph_structure
 from ..utils.stats_calculator import calculate_graph_stats
 from .config import GraphConfig
-from .node_id_registry import NodeIDRegistry
 from .models import Edge, GraphMetadata
+from .node_id_registry import NodeIDRegistry
 
 
 class GraphConverter:
