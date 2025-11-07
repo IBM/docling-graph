@@ -1162,6 +1162,10 @@ chunking = [
     { name = "semchunk" },
     { name = "transformers" },
 ]
+chunking-openai = [
+    { name = "semchunk" },
+    { name = "tiktoken" },
+]
 
 [[package]]
 name = "docling-graph"
@@ -1169,7 +1173,7 @@ version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "docling", extra = ["vlm"] },
-    { name = "docling-core", extra = ["chunking"] },
+    { name = "docling-core", extra = ["chunking", "chunking-openai"] },
     { name = "networkx", version = "3.4.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "networkx", version = "3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pydantic" },
@@ -1184,7 +1188,6 @@ all = [
     { name = "mistralai" },
     { name = "ollama" },
     { name = "openai" },
-    { name = "tiktoken" },
 ]
 gemini = [
     { name = "google-genai" },
@@ -1201,13 +1204,11 @@ ollama = [
 ]
 openai = [
     { name = "openai" },
-    { name = "tiktoken" },
 ]
 remote = [
     { name = "google-genai" },
     { name = "mistralai" },
     { name = "openai" },
-    { name = "tiktoken" },
 ]
 vllm = [
     { name = "openai" },
@@ -1260,7 +1261,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "docling", extras = ["vlm"], specifier = ">=2.60.0,<3.0.0" },
-    { name = "docling-core", extras = ["chunking"], specifier = ">=2.50.0,<3.0.0" },
+    { name = "docling-core", extras = ["chunking", "chunking-openai"], specifier = ">=2.50.0,<3.0.0" },
     { name = "docling-graph", extras = ["gemini"], marker = "extra == 'remote'" },
     { name = "docling-graph", extras = ["local"], marker = "extra == 'all'" },
     { name = "docling-graph", extras = ["mistral"], marker = "extra == 'remote'" },
@@ -1277,7 +1278,6 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.0.0,<3.0.0" },
     { name = "python-dotenv", specifier = ">=1.0,<2.0" },
     { name = "rich", specifier = ">=13,<14" },
-    { name = "tiktoken", marker = "extra == 'openai'" },
     { name = "typer", extras = ["all"], specifier = ">=0.12,<1.0.0" },
 ]
 provides-extras = ["ollama", "vllm", "gemini", "mistral", "openai", "local", "remote", "all"]

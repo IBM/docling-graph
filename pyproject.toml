@@ -32,7 +32,7 @@ authors = [ # In alphabetical order
 requires-python = ">=3.10,<4.0"
 dependencies = [
     "docling[vlm]>=2.60.0,<3.0.0",
-    "docling-core[chunking]>=2.50.0,<3.0.0",
+    "docling-core[chunking, chunking-openai]>=2.50.0,<3.0.0",
     "pydantic>=2.0.0,<3.0.0",
     "networkx>=3.0.0,<4.0.0",
     "rich>=13,<14",
@@ -57,7 +57,7 @@ vllm = ["openai"]
 # --- Remote Clients ---
 gemini = ["google-genai"]
 mistral = ["mistralai"]
-openai = ["openai", "tiktoken"]
+openai = ["openai"]
 
 # --- Bundles ---
 local = ["docling-graph[ollama]", "docling-graph[vllm]"]
@@ -115,7 +115,7 @@ notebook = [
 
 [tool.uv]
 package = true
-default-groups = "all"
+default-groups = ["dev", "test", "notebook"]
 
 [tool.setuptools.packages.find]
 include = ["docling_graph*"]
