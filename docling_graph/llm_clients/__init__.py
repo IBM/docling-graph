@@ -79,6 +79,20 @@ def _get_gemini_client() -> Type[BaseLlmClient]:
         ) from e
 
 
+def _get_watsonx_client() -> Type[BaseLlmClient]:
+    """Lazy import WatsonxClient - only loads if actually used."""
+    try:
+        from .watsonx import WatsonxClient
+
+        return WatsonxClient
+    except ImportError as e:
+        raise ImportError(
+            "\nWatsonX client requires 'ibm-watsonx-ai' package.\n"
+            "Install with: pip install 'docling-graph[watsonx]'\n"
+            "Or: pip install ibm-watsonx-ai"
+        ) from e
+
+
 # Registry mapping provider names to lazy import functions
 _CLIENT_REGISTRY = {
     "mistral": _get_mistral_client,
@@ -86,6 +100,7 @@ _CLIENT_REGISTRY = {
     "vllm": _get_vllm_client,
     "openai": _get_openai_client,
     "gemini": _get_gemini_client,
+    "watsonx": _get_watsonx_client,
 }
 
 
@@ -96,7 +111,7 @@ def get_client(provider: str) -> Type[BaseLlmClient]:
     Uses lazy imports, so client packages are only loaded when actually used.
 
     Args:
-        provider: Provider name (mistral, ollama, vllm, openai, gemini)
+        provider: Provider name (mistral, ollama, vllm, openai, gemini, watsonx)
 
     Returns:
         The client class for the provider
