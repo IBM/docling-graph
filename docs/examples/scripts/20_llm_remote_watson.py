@@ -24,37 +24,37 @@ from examples.templates.battery_research import Research
 
 # Example 1: Using WatsonX with default Granite model
 config_default = PipelineConfig(
-    source="examples/data/battery_research/bauer2014.pdf",
+    source="docs/examples/data/battery_research/bauer2014.pdf",
     template=Research,
     backend="llm",
     inference="remote",
     processing_mode="many-to-one",
     provider_override="watsonx",
-    model_override="ibm-granite/granite-4.0-h-small",  # Default Granite model
+    model_override="ibm/granite-4-h-small",  # Default Granite model
     output_dir="outputs/watsonx_example_default",
 )
 
 # Example 2: Using WatsonX with Llama model
 config_llama = PipelineConfig(
-    source="examples/data/battery_research/bauer2014.pdf",
+    source="docs/examples/data/battery_research/bauer2014.pdf",
     template=Research,
     backend="llm",
     inference="remote",
     processing_mode="many-to-one",
     provider_override="watsonx",
-    model_override="meta-llama/llama-3-70b-instruct",  # Llama model on WatsonX
+    model_override="meta-llama/llama-4-maverick-17b-128e-instruct-fp8",  # Llama model on WatsonX
     output_dir="outputs/watsonx_example_llama",
 )
 
 # Example 3: Using WatsonX with Mixtral model
 config_mixtral = PipelineConfig(
-    source="examples/data/battery_research/bauer2014.pdf",
+    source="docs/examples/data/battery_research/bauer2014.pdf",
     template=Research,
     backend="llm",
     inference="remote",
     processing_mode="many-to-one",
     provider_override="watsonx",
-    model_override="mistralai/mixtral-8x7b-instruct-v01",  # Mixtral on WatsonX
+    model_override="mistralai/mistral-small-3-1-24b-instruct-2503",  # Mixtral on WatsonX
     output_dir="outputs/watsonx_example_mixtral",
 )
 

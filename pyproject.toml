@@ -58,10 +58,11 @@ vllm = ["openai"]
 gemini = ["google-genai"]
 mistral = ["mistralai"]
 openai = ["openai"]
+watsonx = ["ibm-watsonx-ai"]
 
 # --- Bundles ---
 local = ["docling-graph[ollama]", "docling-graph[vllm]"]
-remote = ["docling-graph[openai]", "docling-graph[mistral]", "docling-graph[gemini]"]
+remote = ["docling-graph[openai]", "docling-graph[mistral]", "docling-graph[gemini]", "docling-graph[watsonx]"]
 all = ["docling-graph[local]", "docling-graph[remote]"]
 
 [dependency-groups]

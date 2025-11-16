@@ -11,7 +11,7 @@ from typing import Any, Dict, cast
 from dotenv import load_dotenv
 from rich import print as rich_print
 
-from .llm_base import BaseLlmClient
+from .base import BaseLlmClient
 
 # Load environment variables
 load_dotenv()
@@ -43,6 +43,14 @@ class WatsonxClient(BaseLlmClient):
     """IBM WatsonX API implementation with proper message structure."""
 
     def __init__(self, model: str) -> None:
+        # Check if the required packages are available
+        if _WatsonxLLM is None or _Credentials is None:
+            raise ImportError(
+                "\nWatsonX client requires 'ibm-watsonx-ai' package.\n"
+                "Install with: pip install 'docling-graph[watsonx]'\n"
+                "Or: pip install ibm-watsonx-ai"
+            )
+        
         self.model = model
         self.api_key = os.getenv("WATSONX_API_KEY")
         self.project_id = os.getenv("WATSONX_PROJECT_ID")
@@ -124,20 +132,44 @@ class WatsonxClient(BaseLlmClient):
             response = self.client.generate_text(prompt=prompt_text, params=params)
 
             # Extract the generated text
-            if not response:
+            if response is None:
+                rich_print("[red]Error:[/red] WatsonX returned None response")
+                return {}
+            
+            if not response or (isinstance(response, str) and not response.strip()):
                 rich_print("[red]Error:[/red] WatsonX returned empty response")
                 return {}
 
             # Parse JSON from response
             try:
                 # Clean the response (remove markdown code blocks if present)
-                content = response.strip()
-                if content.startswith("```json"):
-                    content = content[7:]
-                if content.startswith("```"):
-                    content = content[3:]
-                if content.endswith("```"):
-                    content = content[:-3]
+                content = str(response).strip()
+                
+                # Handle markdown code blocks with optional language specifier
+                if "```json" in content:
+                    # Extract content between ```json and ```
+                    start_idx = content.find("```json") + 7
+                    end_idx = content.find("```", start_idx)
+                    if end_idx != -1:
+                        content = content[start_idx:end_idx]
+                elif "```" in content:
+                    # Extract content between ``` and ```
+                    start_idx = content.find("```") + 3
+                    end_idx = content.find("```", start_idx)
+                    if end_idx != -1:
+                        content = content[start_idx:end_idx]
+                else:
+                    # No markdown blocks - look for JSON object or array
+                    # Find the first { or [ which indicates start of JSON
+                    json_start = -1
+                    for char in ['{', '[']:
+                        idx = content.find(char)
+                        if idx != -1 and (json_start == -1 or idx < json_start):
+                            json_start = idx
+                    
+                    if json_start != -1:
+                        content = content[json_start:]
+                
                 content = content.strip()
 
                 parsed_json = json.loads(content)
