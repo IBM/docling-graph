@@ -35,8 +35,8 @@ The toolkit supports two extraction families: **local VLM** via Docling and **LL
 - **🧠 Extraction**:
   - Local `VLM` (Docling's information extraction pipeline - ideal for small documents with key-value focus)  
   - `LLM` (local via vLLM/Ollama or remote via Mistral/OpenAI/Gemini/IBM WatsonX API)
-  - `Hybrid Chunking` Combines Docling segmentation with semantic LLM chunking for more context-aware extraction
-  - Page-wise or whole-document conversion strategies for flexible processing
+  - `Hybrid Chunking` Leveraging Docling's segmentation with semantic LLM chunking for more context-aware extraction
+  - `Page-wise` or `whole-document` conversion strategies for flexible processing
 - **🔨 Graph Construction**:
   - Markdown to Graph: Convert validated Pydantic instances to a `NetworkX DiGraph` with rich edge metadata and stable node IDs
   - Smart Merge: Combine multi-page documents into a single Pydantic instance for unified processing
@@ -248,12 +248,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 - Visualizations powered by [Cytoscape.js](https://js.cytoscape.org/).
 - CLI powered by [Typer](https://typer.tiangolo.com/) and [Rich](https://github.com/Textualize/rich).
 
-## Core Authors (Code, Logic, Architecture...)
 
- - Ayoub El Bouchtili
- - Sophie Lang
- - Maxime Gillot
- - Guilhaume Leroy-Méline
 
 ## IBM ❤️ Open Source AI
 
