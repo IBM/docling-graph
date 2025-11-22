@@ -27,8 +27,8 @@ uv run docling-graph convert "docs/examples/data/invoice/sample_invoice.jpg" \
 *(Requires `MISTRAL_API_KEY` env var)*
 
 ```bash
-uv run docling-graph convert "docs/examples/data/battery_research/bauer2014.pdf" \
-    --template "docs.examples.templates.battery_research.Research" \
+uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
+    --template "docs.examples.templates.rheology_research.Research" \
     --output-dir "outputs/cli_03" \
     --backend "llm" \
     --inference "remote" \
@@ -48,8 +48,8 @@ uv run docling-graph convert "docs/examples/data/battery_research/bauer2014.pdf"
 *(Requires Ollama server to be running)*
 
 ```bash
-uv run docling-graph convert "docs/examples/data/battery_research/bauer2014.pdf" \
-    --template "docs.examples.templates.battery_research.Research" \
+uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
+    --template "docs.examples.templates.rheology_research.Research" \
     --output-dir "outputs/cli_04" \
     --backend "llm" \
     --inference "local" \
@@ -67,8 +67,8 @@ uv run docling-graph convert "docs/examples/data/battery_research/bauer2014.pdf"
 (Python: `05_llm_with_consolidation.py`)
 
 ```bash
-uv run docling-graph convert "docs/examples/data/battery_research/bauer2014.pdf" \
-    --template "docs.examples.templates.battery_research.Research" \
+uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
+    --template "docs.examples.templates.rheology_research.Research" \
     --output-dir "outputs/cli_05" \
     --backend "llm" \
     --inference "remote" \
@@ -85,8 +85,8 @@ uv run docling-graph convert "docs/examples/data/battery_research/bauer2014.pdf"
 (Python: `08_llm_with_vision_config.py`)
 
 ```bash
-uv run docling-graph convert "docs/examples/data/battery_research/bauer2014.pdf" \
-    --template "docs.examples.templates.battery_research.Research" \
+uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
+    --template "docs.examples.templates.rheology_research.Research" \
     --output-dir "outputs/cli_08" \
     --backend "llm" \
     --inference "local" \

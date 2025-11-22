@@ -128,11 +128,11 @@ To run a conversion programmatically, you define a configuration dictionary and 
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig
-from docs.examples.templates.battery_research import Research  # Pydantic model to use as an extraction template
+from docs.examples.templates.rheology_research import Research  # Pydantic model to use as an extraction template
 
 # Create typed config
 config = PipelineConfig(
-    source="docs/examples/data/battery_research/bauer2014.pdf",
+    source="docs/examples/data/research_paper/rheology.pdf",
     template=Research,
     backend="llm",
     inference="remote",
@@ -174,8 +174,8 @@ You can use: `docling-graph convert --help` to see the full list of available op
 ```bash
 # uv run docling-graph convert <SOURCE_FILE_PATH> --template "<TEMPLATE_DOTTED_PATH>" [OPTIONS]
 
-uv run docling-graph convert "docs/examples/data/battery_research/bauer2014.pdf" \
-    --template "docs.examples.templates.battery_research.Research" \
+uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
+    --template "docs.examples.templates.rheology_research.Research" \
     --output-dir "outputs/battery_research"  \
     --processing-mode "many-to-one" \
     --use-chunking \

@@ -76,7 +76,7 @@ WATSONX_URL=https://us-south.ml.cloud.ibm.com
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig
-from examples.templates.battery_research import Research
+from examples.templates.rheology_research import Research
 
 # Configure pipeline with WatsonX
 config = PipelineConfig(
@@ -150,10 +150,10 @@ uv run docling-graph convert "path/to/document.pdf" \
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig
-from examples.templates.battery_research import Research
+from examples.templates.rheology_research import Research
 
 config = PipelineConfig(
-    source="examples/data/battery_research/bauer2014.pdf",
+    source="docs/examples/data/research_paper/rheology.pdf",
     template=Research,
     backend="llm",
     inference="remote",
