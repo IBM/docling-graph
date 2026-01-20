@@ -1,0 +1,18 @@
+name: DCO Check
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  dco-check:
+    name: Check DCO Sign-off
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for DCO sign-off
+        uses: tim-actions/dco@v1.1.0
+        with:
+          # Require all commits to be signed off
+          require-for-all-commits: true
+
+# Made with Bob

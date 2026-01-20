@@ -1,0 +1,40 @@
+# Configuration for PR auto-labeling
+# See https://github.com/actions/labeler for syntax
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**/*', '*.md', 'README.*']
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file: ['tests/**/*', '**/test_*.py', '**/*_test.py']
+
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: ['pyproject.toml', 'uv.lock', 'requirements*.txt']
+
+ci/cd:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/**/*', '.pre-commit-config.yaml']
+
+core:
+  - changed-files:
+    - any-glob-to-any-file: ['docling_graph/core/**/*']
+
+cli:
+  - changed-files:
+    - any-glob-to-any-file: ['docling_graph/cli/**/*']
+
+llm-clients:
+  - changed-files:
+    - any-glob-to-any-file: ['docling_graph/llm_clients/**/*']
+
+exporters:
+  - changed-files:
+    - any-glob-to-any-file: ['docling_graph/core/exporters/**/*']
+
+extractors:
+  - changed-files:
+    - any-glob-to-any-file: ['docling_graph/core/extractors/**/*']
+
+# Made with Bob

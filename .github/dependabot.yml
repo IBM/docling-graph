@@ -1,0 +1,53 @@
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci/cd"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # Python dependencies via pip
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      # Group development dependencies
+      dev-dependencies:
+        patterns:
+          - "pytest*"
+          - "mypy*"
+          - "ruff*"
+          - "pre-commit*"
+          - "types-*"
+      # Group test dependencies
+      test-dependencies:
+        patterns:
+          - "pytest*"
+          - "coverage*"
+          - "hypothesis*"
+      # Group LLM client dependencies
+      llm-clients:
+        patterns:
+          - "openai*"
+          - "mistralai*"
+          - "google-*"
+          - "ollama*"
+          - "ibm-watsonx-ai*"
+
+# Made with Bob
