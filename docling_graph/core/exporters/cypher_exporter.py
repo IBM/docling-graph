@@ -12,7 +12,7 @@ from ..converters.config import ExportConfig
 class CypherExporter:
     """Export graph to Cypher script for Neo4j."""
 
-    def __init__(self, config: Optional[ExportConfig] = None) -> None:
+    def __init__(self, config: ExportConfig | None = None) -> None:
         """Initialize Cypher exporter.
 
         Args:

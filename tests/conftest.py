@@ -329,8 +329,8 @@ def pydantic_models():
 
         id: str = Field(..., json_schema_extra={"graph_id_fields": ["id"]})
         name: str
-        email: Optional[str] = None
-        address: Optional[Address] = None
+        email: str | None = None
+        address: Address | None = None
 
     class Company(BaseModel):
         """Company model."""
@@ -403,8 +403,8 @@ def sample_pydantic_models_for_conversion():
 
         model_config = ConfigDict(is_entity=True)
         name: str = Field(..., json_schema_extra={"graph_id_fields": ["name"]})
-        email: Optional[str] = None
-        address: Optional[AddressModel] = None
+        email: str | None = None
+        address: AddressModel | None = None
 
     class CompanyModel(BaseModel):
         """Company model."""

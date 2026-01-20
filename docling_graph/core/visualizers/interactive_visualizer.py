@@ -200,7 +200,7 @@ class InteractiveVisualizer:
         self,
         path: Path,
         input_format: str = "csv",
-        output_path: Optional[Path] = None,
+        output_path: Path | None = None,
         open_browser: bool = True,
     ) -> Path:
         """Load graph data from file and visualize with Cytoscape in the browser."""
@@ -233,7 +233,7 @@ class InteractiveVisualizer:
         self,
         nodes_df: pd.DataFrame,
         edges_df: pd.DataFrame,
-        output_path: Optional[Path],
+        output_path: Path | None,
         open_browser: bool,
     ) -> Path:
         """Common logic to prepare data and create Cytoscape HTML."""

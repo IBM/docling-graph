@@ -313,7 +313,7 @@ def build_config_interactive() -> Dict[str, Any]:
     return builder.build_config()
 
 
-def print_next_steps(config_dict: dict, return_text: bool = False) -> Optional[str]:
+def print_next_steps(config_dict: dict, return_text: bool = False) -> str | None:
     """Print or return next steps after configuration creation."""
     steps = [
         "\n[bold green]Next steps:[/bold green]",

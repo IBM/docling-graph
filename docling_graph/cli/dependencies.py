@@ -22,16 +22,16 @@ class OptionalDependency:
         self,
         name: str,
         package: str,
-        extra: Optional[str] = None,
-        description: Optional[str] = None,
-        inference_type: Optional[str] = None,
+        extra: str | None = None,
+        description: str | None = None,
+        inference_type: str | None = None,
     ) -> None:
         self.name = name
         self.package = package
         self.extra = extra or "all"
         self.description = description or f"{name} provider"
         self.inference_type = inference_type  # "local" or "remote"
-        self._status: Optional[DependencyStatus] = None
+        self._status: DependencyStatus | None = None
 
     @property
     def is_installed(self) -> bool:
@@ -181,7 +181,7 @@ def get_missing_for_inference_type(inference_type: str) -> List[OptionalDependen
 
 
 def check_inference_type_available(
-    inference_type: str, selected_provider: Optional[str] = None
+    inference_type: str, selected_provider: str | None = None
 ) -> bool:
     """
     Check if an inference type has required dependencies installed.

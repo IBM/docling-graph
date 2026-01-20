@@ -22,11 +22,11 @@ load_dotenv()
 _WatsonxLLM: Any | None = None
 _Credentials: Any | None = None
 try:
-    from ibm_watsonx_ai import Credentials
-    from ibm_watsonx_ai.foundation_models import ModelInference
+    from ibm_watsonx_ai import Credentials as WatsonxCredentials  # type: ignore[import-untyped]
+    from ibm_watsonx_ai.foundation_models import ModelInference  # type: ignore[import-untyped]
 
     _WatsonxLLM = ModelInference
-    _Credentials = Credentials
+    _Credentials = WatsonxCredentials
 except ImportError:
     rich_print(
         "[red]Error:[/red] `ibm-watsonx-ai` package not found. "
@@ -51,7 +51,7 @@ class WatsonxClient(BaseLlmClient):
                 "Install with: pip install 'docling-graph[watsonx]'\n"
                 "Or: pip install ibm-watsonx-ai"
             )
-        
+
         self.model = model
         self.api_key = os.getenv("WATSONX_API_KEY")
         self.project_id = os.getenv("WATSONX_PROJECT_ID")
@@ -91,10 +91,12 @@ class WatsonxClient(BaseLlmClient):
             # Fallback for unknown models
             self._context_limit = 8192
             self._max_new_tokens = 2048
-            rich_print(f"[WatsonxClient] [yellow]Warning:[/yellow] Model '{model}' not in config, using defaults")
+            rich_print(
+                f"[WatsonxClient] [yellow]Warning:[/yellow] Model '{model}' not in config, using defaults"
+            )
             rich_print(f"[WatsonxClient] Context: [cyan]{self._context_limit:,}[/cyan] tokens")
             rich_print(f"[WatsonxClient] Max output: [cyan]{self._max_new_tokens:,}[/cyan] tokens")
-        
+
         rich_print(f"[WatsonxClient] Using endpoint: [cyan]{self.url}[/cyan]")
 
     def get_json_response(self, prompt: str | dict, schema_json: str) -> Dict[str, Any]:
@@ -115,7 +117,7 @@ class WatsonxClient(BaseLlmClient):
             # Combine system and user messages
             system_content = prompt.get("system", "")
             user_content = prompt.get("user", "")
-            
+
             # Format as a conversation
             prompt_text = f"{system_content}\n\n{user_content}"
         else:
@@ -142,7 +144,7 @@ class WatsonxClient(BaseLlmClient):
             if response is None:
                 rich_print("[red]Error:[/red] WatsonX returned None response")
                 return {}
-            
+
             if not response or (isinstance(response, str) and not response.strip()):
                 rich_print("[red]Error:[/red] WatsonX returned empty response")
                 return {}
@@ -151,7 +153,7 @@ class WatsonxClient(BaseLlmClient):
             try:
                 # Clean the response (remove markdown code blocks if present)
                 content = str(response).strip()
-                
+
                 # Handle markdown code blocks with optional language specifier
                 if "```json" in content:
                     # Extract content between ```json and ```
@@ -169,14 +171,14 @@ class WatsonxClient(BaseLlmClient):
                     # No markdown blocks - look for JSON object or array
                     # Find the first { or [ which indicates start of JSON
                     json_start = -1
-                    for char in ['{', '[']:
+                    for char in ["{", "["]:
                         idx = content.find(char)
                         if idx != -1 and (json_start == -1 or idx < json_start):
                             json_start = idx
-                    
+
                     if json_start != -1:
                         content = content[json_start:]
-                
+
                 content = content.strip()
 
                 parsed_json = json.loads(content)
@@ -210,5 +212,3 @@ class WatsonxClient(BaseLlmClient):
     @property
     def context_limit(self) -> int:
         return self._context_limit
-
-# Made with Bob, 

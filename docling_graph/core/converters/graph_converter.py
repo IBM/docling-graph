@@ -35,10 +35,10 @@ class GraphConverter:
 
     def __init__(
         self,
-        config: Optional[GraphConfig] = None,
+        config: GraphConfig | None = None,
         add_reverse_edges: bool = False,
         validate_graph: bool = True,
-        registry: Optional[NodeIDRegistry] = None,
+        registry: NodeIDRegistry | None = None,
         auto_cleanup: bool = True,
     ) -> None:
         """
@@ -161,13 +161,16 @@ class GraphConverter:
         """Recursively create nodes from model and nested entities."""
         # Check if this model should be an entity (respect is_entity=False)
         model_config = model.model_config
-        is_entity = model_config.get("is_entity", True) if hasattr(model_config, "get") \
-                    else getattr(model_config, "is_entity", True)
-        
+        is_entity = (
+            model_config.get("is_entity", True)
+            if hasattr(model_config, "get")
+            else getattr(model_config, "is_entity", True)
+        )
+
         if not is_entity:
             # Skip node creation for non-entities (they will be embedded in parent nodes)
             return
-        
+
         # Get node ID from registry
         node_id = self._get_node_id(model)
 
@@ -253,7 +256,7 @@ class GraphConverter:
         """Get deterministic node ID from registry."""
         return self.registry.get_node_id(model)
 
-    def _get_edge_label(self, model: BaseModel, field_name: str) -> Optional[str]:
+    def _get_edge_label(self, model: BaseModel, field_name: str) -> str | None:
         """
         Extract edge label from field metadata if available.
 

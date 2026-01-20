@@ -42,7 +42,7 @@ class ProviderConfig:
     tokenizer: str
     content_ratio: float = 0.8  # Ratio of context available for content vs prompt/response
 
-    def get_model(self, model_name: str) -> Optional[ModelConfig]:
+    def get_model(self, model_name: str) -> ModelConfig | None:
         """Get a specific model from this provider."""
         return self.models.get(model_name)
 
@@ -53,13 +53,13 @@ class ProviderConfig:
     def get_recommended_chunk_size(self, model_name: str, schema_size: int = 0) -> int:
         """
         Get recommended chunk size for a model in this provider.
-        
+
         Uses dynamic adjustment based on schema complexity to prevent output overflow.
-        
+
         Args:
             model_name: Name of the model
             schema_size: Size of the Pydantic schema JSON (optional, for dynamic adjustment)
-            
+
         Returns:
             Recommended max_tokens for DocumentChunker
         """
@@ -78,21 +78,21 @@ class ProviderConfig:
         else:
             # No schema info: use conservative default
             output_ratio = 0.4
-        
+
         system_prompt_tokens = 500
         safety_buffer = 0.8  # 20% safety margin
-        
+
         # Strategy 1: Output-constrained sizing
         # Chunk size limited by max_new_tokens to prevent output overflow
         max_safe_chunk = int(model.max_new_tokens / output_ratio * safety_buffer)
-        
+
         # Strategy 2: Context-constrained sizing
         # Also respect total context window
         max_by_context = int((model.context_limit - system_prompt_tokens) * 0.7)
-        
+
         # Use the SMALLER of the two (most conservative approach)
         chunk_size = min(max_safe_chunk, max_by_context)
-        
+
         return max(1024, chunk_size)  # Minimum 1024 tokens
 
 
@@ -453,7 +453,7 @@ PROVIDERS: Dict[str, ProviderConfig] = {
 # --- LOOKUP FUNCTIONS ---
 
 
-def get_provider_config(provider: str) -> Optional[ProviderConfig]:
+def get_provider_config(provider: str) -> ProviderConfig | None:
     """
     Get provider configuration by name.
 
@@ -466,7 +466,7 @@ def get_provider_config(provider: str) -> Optional[ProviderConfig]:
     return PROVIDERS.get(provider.lower())
 
 
-def get_model_config(provider: str, model_name: str) -> Optional[ModelConfig]:
+def get_model_config(provider: str, model_name: str) -> ModelConfig | None:
     """
     Get model configuration by provider and model name.
 
@@ -539,7 +539,7 @@ def list_providers() -> list[str]:
     return list(PROVIDERS.keys())
 
 
-def list_models(provider: str) -> Optional[list[str]]:
+def list_models(provider: str) -> list[str] | None:
     """List all models for a provider."""
     provider_config = get_provider_config(provider)
     if provider_config:

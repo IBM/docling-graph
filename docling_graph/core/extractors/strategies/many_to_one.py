@@ -36,7 +36,7 @@ class ManyToOneStrategy(BaseExtractor):
         docling_config: str = "default",
         use_chunking: bool = True,
         llm_consolidation: bool = False,
-        chunker_config: Optional[dict] = None,
+        chunker_config: dict | None = None,
     ) -> None:
         """
         Initialize the extraction strategy with a backend and document processor.
@@ -65,23 +65,23 @@ class ManyToOneStrategy(BaseExtractor):
             if hasattr(backend, "client"):
                 # Try to get provider info from client
                 provider = None
-                client_name = backend.client.__class__.__name__.lower()  # type: ignore
-                if 'watsonx' in client_name:
-                    provider = 'watsonx'
-                elif 'openai' in client_name:
-                    provider = 'openai'
-                elif 'mistral' in client_name:
-                    provider = 'mistral'
-                elif 'ollama' in client_name:
-                    provider = 'ollama'
-                elif 'gemini' in client_name:
-                    provider = 'google'
-                
+                client_name = backend.client.__class__.__name__.lower()
+                if "watsonx" in client_name:
+                    provider = "watsonx"
+                elif "openai" in client_name:
+                    provider = "openai"
+                elif "mistral" in client_name:
+                    provider = "mistral"
+                elif "ollama" in client_name:
+                    provider = "ollama"
+                elif "gemini" in client_name:
+                    provider = "google"
+
                 if provider:
                     chunker_config = {"provider": provider}
                 else:
                     # Fallback: use context limit if available
-                    context_limit = getattr(backend.client, "context_limit", 8000)  # type: ignore
+                    context_limit = getattr(backend.client, "context_limit", 8000)
                     chunker_config = {"max_tokens": int(context_limit * 0.6)}
             else:
                 chunker_config = {"max_tokens": 5120}
@@ -223,32 +223,31 @@ class ManyToOneStrategy(BaseExtractor):
                 # Check if max_tokens is the default 5120
                 if self.doc_processor.chunker.max_tokens == 5120:
                     from ..document_chunker import DocumentChunker
+
                     provider = None
                     # Try to determine provider from backend client
-                    if hasattr(backend.client, '__class__'):
+                    if hasattr(backend.client, "__class__"):
                         client_name = backend.client.__class__.__name__.lower()
-                        if 'watsonx' in client_name:
-                            provider = 'watsonx'
-                        elif 'openai' in client_name:
-                            provider = 'openai'
-                        elif 'mistral' in client_name:
-                            provider = 'mistral'
-                        elif 'ollama' in client_name:
-                            provider = 'ollama'
-                        elif 'gemini' in client_name:
-                            provider = 'google'
-                    
+                        if "watsonx" in client_name:
+                            provider = "watsonx"
+                        elif "openai" in client_name:
+                            provider = "openai"
+                        elif "mistral" in client_name:
+                            provider = "mistral"
+                        elif "ollama" in client_name:
+                            provider = "ollama"
+                        elif "gemini" in client_name:
+                            provider = "google"
+
                     if provider:
                         self.doc_processor.chunker = DocumentChunker(
-                            provider=provider,
-                            schema_size=schema_size,
-                            merge_peers=True
+                            provider=provider, schema_size=schema_size, merge_peers=True
                         )
                         rich_print(
                             f"[blue][ManyToOneStrategy][/blue] Updated chunker with schema size: "
                             f"[cyan]{schema_size}[/cyan] bytes for provider: [yellow]{provider}[/yellow]"
                         )
-            
+
             chunks = self.doc_processor.extract_chunks(document)
             total_chunks = len(chunks)
 

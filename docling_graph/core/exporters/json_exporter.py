@@ -14,7 +14,7 @@ from ..utils.string_formatter import json_serializable
 class JSONExporter:
     """Export graph to JSON format."""
 
-    def __init__(self, config: Optional[ExportConfig] = None) -> None:
+    def __init__(self, config: ExportConfig | None = None) -> None:
         """Initialize JSON exporter.
 
         Args:

@@ -11,7 +11,7 @@ from rich import print as rich_print
 class DoclingExporter:
     """Export Docling documents and markdown to output directory."""
 
-    def __init__(self, output_dir: Optional[Path] = None) -> None:
+    def __init__(self, output_dir: Path | None = None) -> None:
         """Initialize Docling exporter.
 
         Args:

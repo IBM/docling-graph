@@ -17,8 +17,8 @@ class BackendConfig(BaseModel):
 
     provider: str = Field(..., description="Backend provider (e.g., 'ollama', 'mistral', 'vlm')")
     model: str = Field(..., description="Model name or path")
-    api_key: Optional[str] = Field(None, description="API key, if required")
-    base_url: Optional[str] = Field(None, description="Base URL for API, if required")
+    api_key: str | None = Field(None, description="API key, if required")
+    base_url: str | None = Field(None, description="Base URL for API, if required")
 
 
 class ExtractorConfig(BaseModel):
@@ -28,7 +28,7 @@ class ExtractorConfig(BaseModel):
     docling_config: Literal["ocr", "vision"] = Field(default="ocr")
     use_chunking: bool = Field(default=True)
     llm_consolidation: bool = Field(default=False)
-    chunker_config: Optional[Dict[str, Any]] = Field(default=None)
+    chunker_config: Dict[str, Any] | None = Field(default=None)
 
 
 class ModelConfig(BaseModel):
@@ -95,8 +95,8 @@ class PipelineConfig(BaseModel):
     docling_config: Literal["ocr", "vision"] = Field(default="ocr")
 
     # Model overrides
-    model_override: Optional[str] = None
-    provider_override: Optional[str] = None
+    model_override: str | None = None
+    provider_override: str | None = None
 
     # Models configuration (flat only, with defaults)
     models: ModelsConfig = Field(default_factory=ModelsConfig)

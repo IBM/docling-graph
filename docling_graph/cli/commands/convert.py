@@ -46,31 +46,31 @@ def convert_command(
         ),
     ],
     processing_mode: Annotated[
-        Optional[str],
+        str | None,
         typer.Option(
             "--processing-mode", "-p", help="Processing strategy: 'one-to-one' or 'many-to-one'."
         ),
     ] = None,
     backend: Annotated[
-        Optional[str], typer.Option("--backend", "-b", help="Backend: 'llm' or 'vlm'.")
+        str | None, typer.Option("--backend", "-b", help="Backend: 'llm' or 'vlm'.")
     ] = None,
     inference: Annotated[
-        Optional[str], typer.Option("--inference", "-i", help="Inference: 'local' or 'remote'.")
+        str | None, typer.Option("--inference", "-i", help="Inference: 'local' or 'remote'.")
     ] = None,
     docling_pipeline: Annotated[
-        Optional[str],
+        str | None,
         typer.Option("--docling-pipeline", "-d", help="Docling pipeline: 'ocr' or 'vision'."),
     ] = None,
     # Extraction options
     llm_consolidation: Annotated[
-        Optional[bool],
+        bool | None,
         typer.Option(
             "--llm-consolidation/--no-llm-consolidation",
             help="Enable/disable final LLM consolidation step.",
         ),
     ] = None,
     use_chunking: Annotated[
-        Optional[bool],
+        bool | None,
         typer.Option(
             "--use-chunking/--no-use-chunking",
             help="Enable/disable document chunking.",
@@ -97,14 +97,10 @@ def convert_command(
             "--output-dir", "-o", help="Output directory.", file_okay=False, writable=True
         ),
     ] = Path("outputs"),
-    model: Annotated[
-        Optional[str], typer.Option("--model", "-m", help="Override model name.")
-    ] = None,
-    provider: Annotated[
-        Optional[str], typer.Option("--provider", help="Override provider.")
-    ] = None,
+    model: Annotated[str | None, typer.Option("--model", "-m", help="Override model name.")] = None,
+    provider: Annotated[str | None, typer.Option("--provider", help="Override provider.")] = None,
     export_format: Annotated[
-        Optional[str],
+        str | None,
         typer.Option("--export-format", "-e", help="Export format: 'csv' or 'cypher'."),
     ] = None,
     reverse_edges: Annotated[

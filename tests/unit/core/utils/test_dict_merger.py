@@ -19,8 +19,8 @@ class NestedModel(BaseModel):
 
 
 class DocumentModel(BaseModel):
-    title: Optional[str] = None
-    page_count: Optional[int] = None
+    title: str | None = None
+    page_count: int | None = None
     content: List[NestedModel] = []
 
 

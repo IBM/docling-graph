@@ -31,7 +31,7 @@ class Address(BaseModel):
     )
     postal_code: str = Field(description="Postal or ZIP code", examples=["9400", "2501"])
     city: str = Field(description="City or town name", examples=["Rorschach", "Biel"])
-    country: Optional[str] = Field(
+    country: str | None = Field(
         default=None, description="Country, preferably as a two-letter code.", examples=["CH"]
     )
 
@@ -42,13 +42,13 @@ class Issuer(BaseModel):
     name: str = Field(
         description="The legal name of the organization", examples=["Robert Schneider AG", "Slack"]
     )
-    phone: Optional[str] = Field(
+    phone: str | None = Field(
         default=None, description="Contact phone number", examples=["059/987 6540"]
     )
-    email: Optional[str] = Field(
+    email: str | None = Field(
         default=None, description="Contact email address", examples=["robert@rschneider.ch"]
     )
-    website: Optional[str] = Field(
+    website: str | None = Field(
         default=None, description="Company website URL", examples=["www.rschneider.ch"]
     )
 
@@ -63,13 +63,13 @@ class Client(BaseModel):
         description="Full name of the person or client entity",
         examples=["Pia Rutschmann", "MineralTree"],
     )
-    phone: Optional[str] = Field(
+    phone: str | None = Field(
         default=None, description="Client phone number", examples=["059/987 6540"]
     )
-    email: Optional[str] = Field(
+    email: str | None = Field(
         default=None, description="Client email address", examples=["client@client.com"]
     )
-    website: Optional[str] = Field(
+    website: str | None = Field(
         default=None, description="Client website URL", examples=["www.client.ch"]
     )
 
@@ -85,7 +85,7 @@ class LineItem(BaseModel):
         examples=["Garden work", "Disposal of cuttings", "Business+ Monthly User License"],
     )
     quantity: float = Field(description="The quantity of the item", examples=[28.0, 1.0, 115.0])
-    unit: Optional[str] = Field(
+    unit: str | None = Field(
         description="The unit of measurement for the quantity",
         examples=["Std.", "pcs", "hours", "user"],
     )
@@ -116,7 +116,7 @@ class Invoice(BaseModel):
     subtotal: float = Field(
         description="The total amount before tax or other fees", examples=[3667.35, 1725.0]
     )
-    vat_rate: Optional[float | str] = Field(
+    vat_rate: float | str | None = Field(
         default=None,
         description="The numeric Value Added Tax rate as a percentage without the '%' symbol",
         examples=["7.7", 9.2],

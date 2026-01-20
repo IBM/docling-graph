@@ -12,7 +12,7 @@ from ..converters.config import ExportConfig
 class CSVExporter:
     """Export graph to CSV format compatible with Neo4j import."""
 
-    def __init__(self, config: Optional[ExportConfig] = None) -> None:
+    def __init__(self, config: ExportConfig | None = None) -> None:
         """Initialize CSV exporter.
 
         Args:

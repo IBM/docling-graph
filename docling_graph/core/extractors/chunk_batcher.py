@@ -81,7 +81,7 @@ class ChunkBatcher:
     def batch_chunks(
         self,
         chunks: List[str],
-        tokenizer_fn: Optional[Callable[[str], int]] = None,
+        tokenizer_fn: Callable[[str], int] | None = None,
     ) -> List[ChunkBatch]:
         """
         Batch chunks to fit context window efficiently.

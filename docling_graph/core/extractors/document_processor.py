@@ -25,7 +25,7 @@ class DocumentProcessor:
     def __init__(
         self,
         docling_config: str = "ocr",
-        chunker_config: Optional[dict] = None,
+        chunker_config: dict | None = None,
     ) -> None:
         """
         Initialize document processor with specified pipeline.
@@ -47,8 +47,8 @@ class DocumentProcessor:
                 }
         """
         self.docling_config = docling_config
-        self._last_document: Optional[DoclingDocument] = None
-        self._last_source: Optional[str] = None
+        self._last_document: DoclingDocument | None = None
+        self._last_source: str | None = None
 
         # Initialize chunker if config provided
         self.chunker = None
@@ -79,7 +79,7 @@ class DocumentProcessor:
             pipeline_options = PdfPipelineOptions()
             pipeline_options.do_ocr = True
             pipeline_options.do_table_structure = True
-            pipeline_options.table_structure_options.do_cell_matching = True
+            pipeline_options.table_structure_options.do_cell_matching = True  # type: ignore[attr-defined]
             pipeline_options.ocr_options.lang = ["en", "fr"]
             pipeline_options.accelerator_options = AcceleratorOptions(
                 num_threads=4, device=AcceleratorDevice.AUTO
@@ -109,31 +109,31 @@ class DocumentProcessor:
             f"[blue][DocumentProcessor][/blue] Converting document: [yellow]{source}[/yellow]"
         )
         result = self.converter.convert(source)
-        
+
         # Cache the document and source for potential reuse
         self._last_document = result.document
         self._last_source = source
-        
+
         rich_print(
             f"[blue][DocumentProcessor][/blue] Converted [cyan]{result.document.num_pages()}[/cyan] pages"
         )
         return result.document
 
     @property
-    def last_document(self) -> Optional[DoclingDocument]:
+    def last_document(self) -> DoclingDocument | None:
         """
         Get the last converted DoclingDocument.
-        
+
         Returns:
             The last converted document, or None if no document has been converted yet.
         """
         return self._last_document
 
     @property
-    def last_source(self) -> Optional[str]:
+    def last_source(self) -> str | None:
         """
         Get the source path of the last converted document.
-        
+
         Returns:
             The source path of the last converted document, or None.
         """
@@ -265,7 +265,7 @@ class DocumentProcessor:
             # Clear cached document
             self._last_document = None
             self._last_source = None
-            
+
             if hasattr(self, "converter"):
                 del self.converter
             gc.collect()

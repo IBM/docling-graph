@@ -25,7 +25,7 @@ class Company(BaseModel):
 
 class Person(BaseModel):
     name: str
-    works_for: Optional[Company] = None
+    works_for: Company | None = None
     friends: List["Person"] = []
 
     model_config = {"graph_id_fields": ["name"]}
@@ -56,7 +56,7 @@ def test_convert_simple_model(converter):
     person = Person(name="Alice", works_for=company)
 
     # This creates 2 nodes (Person, Company) and 1 edge (Person -> Company)
-    graph, metadata = converter.pydantic_list_to_graph([person])
+    graph, _ = converter.pydantic_list_to_graph([person])
 
     assert graph.number_of_nodes() == 2
     assert graph.number_of_edges() == 1
@@ -67,7 +67,7 @@ def test_convert_nested_model_creates_edge(converter):
     company = Company(name="Acme Inc.", location="NY")
     person = Person(name="Alice", works_for=company)
 
-    graph, metadata = converter.pydantic_list_to_graph([person])
+    graph, _ = converter.pydantic_list_to_graph([person])
 
     assert graph.number_of_nodes() == 2
     assert graph.number_of_edges() == 1
@@ -88,7 +88,7 @@ def test_convert_list_of_models_creates_edges(converter):
     bob = Person(name="Bob")
     charlie = Person(name="Charlie", friends=[alice, bob])
 
-    graph, metadata = converter.pydantic_list_to_graph([charlie])
+    graph, _ = converter.pydantic_list_to_graph([charlie])
 
     assert graph.number_of_nodes() == 3
     assert graph.number_of_edges() == 2
@@ -100,7 +100,7 @@ def test_model_deduplication(converter):
     alice = Person(name="Alice", works_for=company)
     bob = Person(name="Bob", works_for=company)
 
-    graph, metadata = converter.pydantic_list_to_graph([alice, bob])
+    graph, _ = converter.pydantic_list_to_graph([alice, bob])
 
     # Should be 3 nodes: Alice, Bob, and one Acme Inc.
     assert graph.number_of_nodes() == 3
@@ -118,7 +118,7 @@ def test_conversion_with_validation(mock_validate, mock_cleaner_class, converter
     """Test that validation is called."""
     model = SimpleModel(name="Test", age=25)
 
-    graph, metadata = converter.pydantic_list_to_graph([model])
+    _, _ = converter.pydantic_list_to_graph([model])
 
     mock_validate.assert_called_once()
 
@@ -132,7 +132,7 @@ def test_conversion_without_cleanup():
     company = Company(name="TestCorp", location="LA")
     person = Person(name="Test", works_for=company)
 
-    graph, metadata = converter.pydantic_list_to_graph([person])
+    graph, _ = converter.pydantic_list_to_graph([person])
 
     # Should have 2 nodes and 1 edge
     assert graph.number_of_nodes() == 2

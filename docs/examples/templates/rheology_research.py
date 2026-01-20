@@ -25,9 +25,11 @@ def edge(label: str, **kwargs: Any) -> Any:
     # Extract default/default_factory if present to avoid conflict with Field(...)
     default = kwargs.pop("default", ...)
     default_factory = kwargs.pop("default_factory", None)
-    
+
     if default_factory is not None:
-        return Field(default_factory=default_factory, json_schema_extra={"edge_label": label}, **kwargs)
+        return Field(
+            default_factory=default_factory, json_schema_extra={"edge_label": label}, **kwargs
+        )
     else:
         return Field(default, json_schema_extra={"edge_label": label}, **kwargs)
 
@@ -63,9 +65,7 @@ def _normalize_enum(enum_cls: Type[Enum], v: Any) -> Any:
     raise ValueError(f"Cannot normalize {v} to {enum_cls}")
 
 
-def _parse_measurement_string(
-    s: str, default_name: Optional[str] = None, strict: bool = False
-) -> Any:
+def _parse_measurement_string(s: str, default_name: str | None = None, strict: bool = False) -> Any:
     """
     Parse strings like:
     "1.6 mPa.s", "2 mm", "0.27 g", "45 mm", "2600", "80-90 °C" (ranges)
@@ -132,40 +132,45 @@ class Measurement(BaseModel):
 
     name: str = Field(
         description="The name of the property, e.g., 'Viscosity', 'Frequency', 'Amplitude', 'Pressure'.",
-        examples=["Effective Viscosity", "Vibration Frequency", "Particle Radius", "Confining Pressure"],
+        examples=[
+            "Effective Viscosity",
+            "Vibration Frequency",
+            "Particle Radius",
+            "Confining Pressure",
+        ],
     )
 
-    text_value: Optional[str] = Field(
+    text_value: str | None = Field(
         default=None,
         description="The textual value of the property, if not numerical.",
         examples=["High", "Low", "Non-monotonic", "Weakly fluidized"],
     )
 
-    numeric_value: Optional[Union[float, int]] = Field(
+    numeric_value: Union[float, int] | None = Field(
         default=None,
         description="The numerical value of the property (float or int).",
         examples=[1.6, 2.0, 2600, 0.27, 45],
     )
 
-    numeric_value_min: Optional[Union[float, int]] = Field(
+    numeric_value_min: Union[float, int] | None = Field(
         default=None,
         description="Minimum value for range measurements.",
         examples=[6, 31, 80],
     )
 
-    numeric_value_max: Optional[Union[float, int]] = Field(
+    numeric_value_max: Union[float, int] | None = Field(
         default=None,
         description="Maximum value for range measurements.",
         examples=[58, 924, 90],
     )
 
-    unit: Optional[str] = Field(
+    unit: str | None = Field(
         default=None,
         description="The unit of measurement, e.g., 'mPa.s', 'Hz', 'µm', 'Pa', 'mm', 'g'.",
         examples=["mPa.s", "Hz", "µm", "Pa", "mm", "g", "Nm", "rpm"],
     )
 
-    condition: Optional[str] = Field(
+    condition: str | None = Field(
         default=None,
         description="Measurement condition, e.g., 'at frequency f', 'under confining pressure p'.",
         examples=["at intermediate frequency", "under vertical vibration", "in steady state"],
@@ -216,7 +221,7 @@ class GranularMaterial(BaseModel):
         examples=["Monodispersed spherical particles", "Glass beads", "Sand", "Polymer particles"],
     )
 
-    particle_count: Optional[int] = Field(
+    particle_count: int | None = Field(
         default=None,
         description="Number of particles in the system.",
         examples=[2600, 5000, 10000],
@@ -255,7 +260,7 @@ class SystemGeometry(BaseModel):
         examples=["Vane Rheometer", "Double Plate", "Cylindrical Container"],
     )
 
-    description: Optional[str] = Field(
+    description: str | None = Field(
         default=None,
         description="Detailed description of the geometry.",
         examples=[
@@ -298,31 +303,33 @@ class VibrationConditions(BaseModel):
         examples=["Vertical sinusoidal", "Horizontal", "Random", "Pulsed"],
     )
 
-    amplitude: Optional[VibrationParameter] = Field(
+    amplitude: VibrationParameter | None = Field(
         default=None,
         description="Vibration amplitude.",
         examples=[{"name": "Amplitude", "numeric_value": 26, "unit": "µm"}],
     )
 
-    frequency: Optional[VibrationParameter] = Field(
+    frequency: VibrationParameter | None = Field(
         default=None,
         description="Vibration frequency.",
         examples=[{"name": "Frequency", "numeric_value": 50, "unit": "Hz"}],
     )
 
-    rescaled_acceleration: Optional[VibrationParameter] = Field(
+    rescaled_acceleration: VibrationParameter | None = Field(
         default=None,
         description="Rescaled acceleration Γ = (2πf)²A/g.",
         examples=[{"name": "Gamma", "numeric_value": 1.5, "unit": "dimensionless"}],
     )
 
-    confining_pressure: Optional[VibrationParameter] = Field(
+    confining_pressure: VibrationParameter | None = Field(
         default=None,
         description="Confining pressure applied to the system.",
         examples=[{"name": "Pressure", "numeric_value": 308, "unit": "Pa"}],
     )
 
-    @field_validator("amplitude", "frequency", "rescaled_acceleration", "confining_pressure", mode="before")
+    @field_validator(
+        "amplitude", "frequency", "rescaled_acceleration", "confining_pressure", mode="before"
+    )
     @classmethod
     def _param_coerce(cls, v: Any) -> Any:
         if isinstance(v, dict) or v is None:
@@ -367,13 +374,13 @@ class SimulationSetup(BaseModel):
         examples=["Discrete Element Method", "Molecular Dynamics"],
     )
 
-    software: Optional[str] = Field(
+    software: str | None = Field(
         default=None,
         description="Software package used for simulations.",
         examples=["LAMMPS", "LIGGGHTS", "EDEM", "YADE"],
     )
 
-    contact_model: Optional[ContactModel] = Field(
+    contact_model: ContactModel | None = Field(
         default=None,
         description="Contact model for particle interactions.",
         examples=["Hertz-Mindlin", "Hookean"],
@@ -436,43 +443,43 @@ class RheologicalMeasurement(BaseModel):
 
     model_config = ConfigDict(graph_id_fields=["name", "text_value", "numeric_value", "unit"])
 
-    name: Optional[str] = Field(
+    name: str | None = Field(
         default=None,
         description="The name of the measurement, e.g., 'Effective Viscosity', 'Friction Coefficient'.",
         examples=["Effective Viscosity", "Granular Temperature", "Shear Stress"],
     )
 
-    text_value: Optional[str] = Field(
+    text_value: str | None = Field(
         default=None,
         description="The textual value of the measurement, if not numerical.",
         examples=["High", "Low", "Non-monotonic", "Weakly fluidized"],
     )
 
-    numeric_value: Optional[Union[float, int]] = Field(
+    numeric_value: Union[float, int] | None = Field(
         default=None,
         description="The numerical value of the measurement (float or int).",
         examples=[1.6, 2.0, 0.5],
     )
 
-    numeric_value_min: Optional[Union[float, int]] = Field(
+    numeric_value_min: Union[float, int] | None = Field(
         default=None,
         description="Minimum value for range measurements.",
         examples=[6, 31, 80],
     )
 
-    numeric_value_max: Optional[Union[float, int]] = Field(
+    numeric_value_max: Union[float, int] | None = Field(
         default=None,
         description="Maximum value for range measurements.",
         examples=[58, 924, 90],
     )
 
-    unit: Optional[str] = Field(
+    unit: str | None = Field(
         default=None,
         description="The unit of measurement, e.g., 'mPa.s', 'Hz', 'µm', 'Pa'.",
         examples=["mPa.s", "Hz", "µm", "Pa", "dimensionless"],
     )
 
-    condition: Optional[str] = Field(
+    condition: str | None = Field(
         default=None,
         description="Measurement condition.",
         examples=["at intermediate frequency", "under vibration"],
@@ -489,13 +496,13 @@ class RheologicalResult(BaseModel):
         examples=["Effective Viscosity", "Friction Coefficient", "Granular Temperature"],
     )
 
-    measurement: Optional[RheologicalMeasurement] = Field(
+    measurement: RheologicalMeasurement | None = Field(
         default=None,
         description="The measured value.",
         examples=[{"name": "Effective Viscosity", "numeric_value": 1.6, "unit": "mPa.s"}],
     )
 
-    behavior: Optional[str] = Field(
+    behavior: str | None = Field(
         default=None,
         description="Observed behavior or trend.",
         examples=[
@@ -505,13 +512,13 @@ class RheologicalResult(BaseModel):
         ],
     )
 
-    scaling_relation: Optional[str] = Field(
+    scaling_relation: str | None = Field(
         default=None,
         description="Mathematical scaling relation observed.",
         examples=["η ∝ K^(-2)", "µ_min controlled by A²/p", "K = K(A,f)"],
     )
 
-    method: Optional[str] = Field(
+    method: str | None = Field(
         default=None,
         description="Measurement or analysis method.",
         examples=["Vane rheometry", "Microrheology approach", "DEM simulation"],
@@ -543,13 +550,13 @@ class Experiment(BaseModel):
 
     model_config = ConfigDict(graph_id_fields=["experiment_id"])
 
-    experiment_id: Optional[str] = Field(
+    experiment_id: str | None = Field(
         default=None,
         description="Unique identifier for this experiment.",
         examples=["EXP-RHEOLOGY-001", "VIBRATED-GRANULAR-2024"],
     )
 
-    objective: Optional[str] = Field(
+    objective: str | None = Field(
         default=None,
         description="Goal of the experiment.",
         examples=[
@@ -559,7 +566,7 @@ class Experiment(BaseModel):
         ],
     )
 
-    hypothesis: Optional[str] = Field(
+    hypothesis: str | None = Field(
         default=None,
         description="Hypothesis explored or tested.",
         examples=[
@@ -569,7 +576,7 @@ class Experiment(BaseModel):
         ],
     )
 
-    granular_material: Optional[GranularMaterial] = edge(
+    granular_material: GranularMaterial | None = edge(
         label="USES_MATERIAL",
         description="Granular material used in the experiment.",
         default=None,
@@ -585,7 +592,7 @@ class Experiment(BaseModel):
         ],
     )
 
-    system_geometry: Optional[SystemGeometry] = edge(
+    system_geometry: SystemGeometry | None = edge(
         label="HAS_GEOMETRY",
         description="Geometric configuration of the experimental setup.",
         default=None,
@@ -598,7 +605,7 @@ class Experiment(BaseModel):
         ],
     )
 
-    vibration_conditions: Optional[VibrationConditions] = edge(
+    vibration_conditions: VibrationConditions | None = edge(
         label="HAS_VIBRATION",
         description="Vibration conditions applied.",
         default=None,
@@ -611,7 +618,7 @@ class Experiment(BaseModel):
         ],
     )
 
-    simulation_setup: Optional[SimulationSetup] = edge(
+    simulation_setup: SimulationSetup | None = edge(
         label="HAS_SIMULATION",
         description="Numerical simulation setup details.",
         default=None,
@@ -632,7 +639,11 @@ class Experiment(BaseModel):
             [
                 {
                     "metric_type": "Effective Viscosity",
-                    "measurement": {"name": "Effective Viscosity", "numeric_value": 1.6, "unit": "mPa.s"},
+                    "measurement": {
+                        "name": "Effective Viscosity",
+                        "numeric_value": 1.6,
+                        "unit": "mPa.s",
+                    },
                     "behavior": "Non-monotonic dependence on frequency",
                 },
                 {
@@ -655,7 +666,7 @@ class Experiment(BaseModel):
         ],
     )
 
-    physical_interpretation: Optional[str] = Field(
+    physical_interpretation: str | None = Field(
         default=None,
         description="Physical interpretation of the results.",
         examples=[
@@ -694,13 +705,13 @@ class Research(BaseModel):
         ],
     )
 
-    publication_date: Optional[str] = Field(
+    publication_date: str | None = Field(
         default=None,
         description="Publication or submission date.",
         examples=["2025-11-20", "November 20, 2025"],
     )
 
-    doi: Optional[str] = Field(
+    doi: str | None = Field(
         default=None,
         description="Digital Object Identifier.",
         examples=["10.1103/PhysRevE.XXX.XXXXXX"],
@@ -718,7 +729,7 @@ class Research(BaseModel):
         ],
     )
 
-    abstract: Optional[str] = Field(
+    abstract: str | None = Field(
         default=None,
         description="Abstract or summary of the research.",
         examples=[
@@ -749,5 +760,3 @@ class Research(BaseModel):
             ]
         ],
     )
-
-# Made with Bob

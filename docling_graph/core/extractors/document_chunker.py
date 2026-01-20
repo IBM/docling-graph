@@ -30,9 +30,9 @@ class DocumentChunker:
 
     def __init__(
         self,
-        tokenizer_name: Optional[str] = None,
-        max_tokens: Optional[int] = None,
-        provider: Optional[str] = None,
+        tokenizer_name: str | None = None,
+        max_tokens: int | None = None,
+        provider: str | None = None,
         merge_peers: bool = True,
         schema_size: int = 0,
     ) -> None:
@@ -40,7 +40,7 @@ class DocumentChunker:
         Initialize the chunker with smart defaults based on provider or custom tokenizer.
 
         Now uses centralized llm_config.py registry with dynamic adjustment based on schema complexity.
-        
+
         Args:
             tokenizer_name: Name of the tokenizer to use
             max_tokens: Maximum tokens per chunk (if None, calculated from provider)

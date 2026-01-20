@@ -31,23 +31,23 @@ class Address(BaseModel):
 
     model_config = ConfigDict(is_entity=False)
 
-    street_address: Optional[str] = Field(
+    street_address: str | None = Field(
         None,
         description="Street name and number",
         examples=["123 Rue de la Paix", "90 Boulevard Voltaire"],
     )
 
-    city: Optional[str] = Field(None, description="City", examples=["Paris", "Lyon"])
+    city: str | None = Field(None, description="City", examples=["Paris", "Lyon"])
 
-    state_or_province: Optional[str] = Field(
+    state_or_province: str | None = Field(
         None, description="State, province, or region", examples=["Île-de-France"]
     )
 
-    postal_code: Optional[str] = Field(
+    postal_code: str | None = Field(
         None, description="Postal or ZIP code", examples=["75001", "69002"]
     )
 
-    country: Optional[str] = Field(None, description="Country", examples=["France"])
+    country: str | None = Field(None, description="Country", examples=["France"])
 
     def __str__(self) -> str:
         parts = [
@@ -71,21 +71,21 @@ class Person(BaseModel):
 
     model_config = ConfigDict(graph_id_fields=["given_names", "last_name", "date_of_birth"])
 
-    given_names: Optional[List[str]] = Field(
+    given_names: List[str] | None = Field(
         default=None,
         description="List of given names (first names usually separated with a comma) of the person, in order",
         examples=[["Pierre"], ["Pierre", "Louis"], ["Pierre", "Louis", "André"]],
     )
 
-    last_name: Optional[str] = Field(
+    last_name: str | None = Field(
         None, description="The person's family name (surname)", examples=["Dupont", "Martin"]
     )
 
-    alternate_name: Optional[str] = Field(
+    alternate_name: str | None = Field(
         None, description="The person's alternate name", examples=["Doe", "MJ"]
     )
 
-    date_of_birth: Optional[date] = Field(
+    date_of_birth: date | None = Field(
         None,
         description=(
             "The cardholder's date of birth.",
@@ -95,16 +95,16 @@ class Person(BaseModel):
         examples=["1990-05-15"],
     )
 
-    place_of_birth: Optional[str] = Field(
+    place_of_birth: str | None = Field(
         None, description="City and/or country of birth", examples=["Paris", "Marseille (France)"]
     )
 
-    gender: Optional[str] = Field(
+    gender: str | None = Field(
         None, description="Gender or sex of the person", examples=["F", "M", "Female", "Male"]
     )
 
     # --- Edge Definition ---
-    lives_at: Optional[Address] = edge(
+    lives_at: Address | None = edge(
         label="LIVES_AT", description="Physical address (e.g., home address)"
     )
 
@@ -174,13 +174,13 @@ class IDCard(BaseModel):
         examples=["23AB12345", "19XF56789", "1234567890"],
     )
 
-    issuing_country: Optional[str] = Field(
+    issuing_country: str | None = Field(
         None,
         description="The country that issued the document (e.g., 'France', 'République Française')",
         examples=["France", "USA", "Deutschland"],
     )
 
-    issue_date: Optional[date] = Field(
+    issue_date: date | None = Field(
         None,
         description=(
             "Date the document was issued.",
@@ -190,7 +190,7 @@ class IDCard(BaseModel):
         examples=["2023-10-20"],
     )
 
-    expiry_date: Optional[date] = Field(
+    expiry_date: date | None = Field(
         None,
         description=(
             "Date the document expires.",

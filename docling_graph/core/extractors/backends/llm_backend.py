@@ -35,7 +35,7 @@ class LlmBackend:
         template: Type[BaseModel],
         context: str = "document",
         is_partial: bool = False,
-    ) -> Optional[BaseModel]:
+    ) -> BaseModel | None:
         """
         Extract structured data from markdown content using LLM.
 
@@ -107,7 +107,7 @@ class LlmBackend:
         raw_models: List[BaseModel],
         programmatic_model: BaseModel,
         template: Type[BaseModel],
-    ) -> Optional[BaseModel]:
+    ) -> BaseModel | None:
         """
         Uses an LLM to consolidate multiple extracted models into a final one.
 

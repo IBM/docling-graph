@@ -35,7 +35,7 @@ class MonetaryAmount(BaseModel):
         examples=[500.00, 150000.00, 75.50, 1200.00, 89.90],
     )
 
-    currency: Optional[str] = Field(
+    currency: str | None = Field(
         None, description="The ISO 4217 currency code", examples=["EUR", "USD", "CAD", "CHF"]
     )
 
@@ -59,7 +59,7 @@ class Address(BaseModel):
 
     model_config = ConfigDict(is_entity=False)
 
-    street_address: Optional[str] = Field(
+    street_address: str | None = Field(
         None,
         description="Street name and number",
         examples=[
@@ -70,21 +70,21 @@ class Address(BaseModel):
         ],
     )
 
-    city: Optional[str] = Field(
+    city: str | None = Field(
         None, description="City", examples=["Paris", "London", "Lyon", "Marseille"]
     )
 
-    state_or_province: Optional[str] = Field(
+    state_or_province: str | None = Field(
         None,
         description="State, province, or region",
         examples=["Île-de-France", "London", "Auvergne-Rhône-Alpes"],
     )
 
-    postal_code: Optional[str] = Field(
+    postal_code: str | None = Field(
         None, description="Postal or ZIP code", examples=["75001", "NW1 6XE", "69002", "13001"]
     )
 
-    country: Optional[str] = Field(
+    country: str | None = Field(
         None, description="Country", examples=["France", "United Kingdom", "FR"]
     )
 
@@ -116,25 +116,25 @@ class Organization(BaseModel):
         examples=["AXA Assurance", "Allianz France", "MAIF", "Generali", "MACIF"],
     )
 
-    phone: Optional[str] = Field(
+    phone: str | None = Field(
         None,
         description="Contact phone number",
         examples=["+33 1 40 75 57 00", "01 55 92 30 00", "09 69 39 30 00"],
     )
 
-    email: Optional[str] = Field(
+    email: str | None = Field(
         None,
         description="Contact email address",
         examples=["service.client@axa.fr", "contact@allianz.fr", "info@maif.fr"],
     )
 
-    website: Optional[str] = Field(
+    website: str | None = Field(
         None,
         description="Official website",
         examples=["www.axa.fr", "www.allianz.fr", "www.maif.fr"],
     )
 
-    tax_id: Optional[str] = Field(
+    tax_id: str | None = Field(
         None,
         description="Tax ID, VAT ID, SIREN, or other official identifier",
         examples=["572 093 920", "775 665 631", "775 689 309"],
@@ -170,45 +170,45 @@ class Person(BaseModel):
 
     model_config = ConfigDict(graph_id_fields=["first_name", "last_name", "date_of_birth"])
 
-    first_name: Optional[str] = Field(
+    first_name: str | None = Field(
         None,
         description="The person's given name(s)",
         examples=["Jean", "Sophie", "Pierre", "Marie", "Luc"],
     )
 
-    last_name: Optional[str] = Field(
+    last_name: str | None = Field(
         None,
         description="The person's family name (surname)",
         examples=["Dupont", "Martin", "Bernard", "Dubois", "Thomas"],
     )
 
-    date_of_birth: Optional[date] = Field(
+    date_of_birth: date | None = Field(
         None,
         description="Date of birth in YYYY-MM-DD format",
         examples=["1985-03-12", "1990-06-20", "1978-11-05"],
     )
 
-    place_of_birth: Optional[str] = Field(
+    place_of_birth: str | None = Field(
         None,
         description="City and/or country of birth",
         examples=["Paris", "Lyon (France)", "Marseille"],
     )
 
-    gender: Optional[str] = Field(
+    gender: str | None = Field(
         None, description="Gender or sex of the person", examples=["M", "F", "Male", "Female"]
     )
 
-    nationality: Optional[str] = Field(
+    nationality: str | None = Field(
         None, description="Nationality of the person", examples=["Française", "French", "Belge"]
     )
 
-    phone: Optional[str] = Field(
+    phone: str | None = Field(
         None,
         description="Contact phone number",
         examples=["+33 7 98 76 54 32", "06 12 34 56 78", "01 23 45 67 89"],
     )
 
-    email: Optional[str] = Field(
+    email: str | None = Field(
         None,
         description="Contact email address",
         examples=["jean.dupont@email.com", "sophie.martin@gmail.com", "pierre.bernard@orange.fr"],
@@ -262,7 +262,7 @@ class Guarantee(BaseModel):
         ],
     )
 
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None,
         description="Detailed description of what the guarantee covers",
         examples=[
@@ -273,7 +273,7 @@ class Guarantee(BaseModel):
         ],
     )
 
-    coverage_conditions: Optional[List[str]] = Field(
+    coverage_conditions: List[str] | None = Field(
         default_factory=list,
         description="Specific conditions that must be met for coverage to apply",
         examples=[
@@ -287,15 +287,15 @@ class Guarantee(BaseModel):
         ],
     )
 
-    coverage_limit: Optional[MonetaryAmount] = Field(
+    coverage_limit: MonetaryAmount | None = Field(
         None, description="The maximum amount covered for this guarantee"
     )
 
-    deductible: Optional[MonetaryAmount] = Field(
+    deductible: MonetaryAmount | None = Field(
         None, description="The deductible amount (franchise) that the policyholder must pay"
     )
 
-    exclusions: Optional[List[str]] = Field(
+    exclusions: List[str] | None = Field(
         default_factory=list,
         description="List of exclusions that are not covered by this guarantee",
         examples=[
@@ -335,7 +335,7 @@ class InsurancePlan(BaseModel):
         ],
     )
 
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None,
         description="Brief description of the plan and its target customers",
         examples=[
@@ -345,7 +345,7 @@ class InsurancePlan(BaseModel):
         ],
     )
 
-    base_price: Optional[MonetaryAmount] = Field(
+    base_price: MonetaryAmount | None = Field(
         None, description="Starting or example price for this plan"
     )
 
@@ -356,7 +356,7 @@ class InsurancePlan(BaseModel):
         description="List of guarantees included in this plan",
     )
 
-    available_options: Optional[List[str]] = Field(
+    available_options: List[str] | None = Field(
         default_factory=list,
         description="Optional coverages that can be added to this plan",
         examples=[
@@ -381,7 +381,7 @@ class InsuranceTerms(BaseModel):
     model_config = ConfigDict(graph_id_fields=["document_reference"])
 
     # Changed to Optional with default to handle options-only documents
-    document_reference: Optional[str] = Field(
+    document_reference: str | None = Field(
         default="UNKNOWN",
         description="Reference identifier or version of the terms document",
         examples=[
@@ -392,7 +392,7 @@ class InsuranceTerms(BaseModel):
         ],
     )
 
-    product_name: Optional[str] = Field(
+    product_name: str | None = Field(
         default=None,
         description="Name of the insurance product these terms apply to",
         examples=[
@@ -403,19 +403,19 @@ class InsuranceTerms(BaseModel):
         ],
     )
 
-    issuer: Optional[str] = Field(
+    issuer: str | None = Field(
         default=None,
         description="Name of the insurance company issuing these terms",
         examples=["AXA France IARD", "Allianz France", "MAIF", "Direct Assurance (Avanssur)"],
     )
 
-    effective_date: Optional[date] = Field(
+    effective_date: date | None = Field(
         None,
         description="Date when these terms become effective (YYYY-MM-DD)",
         examples=["2024-07-01", "2025-01-01", "2024-09-15"],
     )
 
-    document_type: Optional[str] = Field(
+    document_type: str | None = Field(
         None,
         description="Type of insurance terms document",
         examples=[
@@ -427,7 +427,7 @@ class InsuranceTerms(BaseModel):
         ],
     )
 
-    contract_duration: Optional[str] = Field(
+    contract_duration: str | None = Field(
         None,
         description="Standard duration and renewal terms",
         examples=[
@@ -445,7 +445,7 @@ class InsuranceTerms(BaseModel):
     )
 
     # Additional coverage details
-    territorial_scope: Optional[List[str]] = Field(
+    territorial_scope: List[str] | None = Field(
         default_factory=list,
         description="Geographic areas where coverage applies",
         examples=[
@@ -455,7 +455,7 @@ class InsuranceTerms(BaseModel):
         ],
     )
 
-    common_exclusions: Optional[List[str]] = Field(
+    common_exclusions: List[str] | None = Field(
         default_factory=list,
         description="Exclusions that apply to all guarantees",
         examples=[
@@ -469,7 +469,7 @@ class InsuranceTerms(BaseModel):
         ],
     )
 
-    claims_procedure: Optional[str] = Field(
+    claims_procedure: str | None = Field(
         None,
         description="General procedure for filing claims",
         examples=[
@@ -479,7 +479,7 @@ class InsuranceTerms(BaseModel):
         ],
     )
 
-    prescription_period: Optional[str] = Field(
+    prescription_period: str | None = Field(
         None,
         description="Time limit for legal action on claims",
         examples=[
@@ -489,7 +489,7 @@ class InsuranceTerms(BaseModel):
         ],
     )
 
-    cancellation_terms: Optional[str] = Field(
+    cancellation_terms: str | None = Field(
         None,
         description="Terms and conditions for contract cancellation",
         examples=[

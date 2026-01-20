@@ -49,8 +49,8 @@ def _get_model_config(
     models_config: Dict[str, Any],
     backend: str,
     inference: str,
-    model_override: Optional[str] = None,
-    provider_override: Optional[str] = None,
+    model_override: str | None = None,
+    provider_override: str | None = None,
 ) -> Dict[str, str]:
     """Retrieves the appropriate model configuration based on settings."""
     model_config = models_config.get(backend, {}).get(inference, {})
@@ -113,7 +113,7 @@ def run_pipeline(config: Union[PipelineConfig, Dict[str, Any]]) -> None:
     base_name = Path(conf["source"]).stem
 
     extractor = None
-    llm_client: Optional[BaseLlmClient] = None
+    llm_client: BaseLlmClient | None = None
 
     try:
         # 1. Load Template

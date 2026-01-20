@@ -24,7 +24,7 @@ class SamplePerson(BaseModel):
 
     first_name: str = Field(description="First name")
     last_name: str = Field(description="Last name")
-    age: Optional[int] = Field(default=None, description="Age")
+    age: int | None = Field(default=None, description="Age")
     email: str = Field(description="Email address")
 
     model_config = {"graph_id_fields": ["email"]}

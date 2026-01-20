@@ -56,7 +56,7 @@ class TextExtractionBackendProtocol(Protocol):
         template: Type[BaseModel],
         context: str = "document",
         is_partial: bool = False,
-    ) -> Optional[BaseModel]:
+    ) -> BaseModel | None:
         """Extract structured data from markdown content.
 
         Args:
@@ -74,7 +74,7 @@ class TextExtractionBackendProtocol(Protocol):
         raw_models: List[BaseModel],
         programmatic_model: BaseModel,
         template: Type[BaseModel],
-    ) -> Optional[BaseModel]:
+    ) -> BaseModel | None:
         """Consolidate multiple models using the LLM."""
         ...
 

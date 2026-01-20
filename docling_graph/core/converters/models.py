@@ -38,7 +38,7 @@ class GraphMetadata(BaseModel):
     )
     source_models: int = Field(..., description="Number of source Pydantic models")
     # Average degree of nodes in the graph
-    average_degree: Optional[float] = Field(
+    average_degree: float | None = Field(
         default=None, description="Average degree of nodes in the graph"
     )
 

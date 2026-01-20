@@ -19,7 +19,7 @@ def mock_llm_backend():
     backend.client = MagicMock(context_limit=8000, content_ratio=0.8)
     backend.__class__.__name__ = "MockLlmBackend"
 
-    def mock_extract(markdown, template, context, is_partial) -> Optional[MockTemplate]:
+    def mock_extract(markdown, template, context, is_partial) -> MockTemplate | None:
         if "fail" in markdown:
             return None
         return template(name=context, value=len(markdown))
@@ -87,7 +87,7 @@ def patch_deps():
 
 def test_init_llm_chunking(mock_llm_backend, patch_deps):
     """Test init with LLM backend and chunking enabled."""
-    mock_dp, _, _, _, _ = patch_deps
+    _, _, _, _, _ = patch_deps
 
     strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
 
@@ -97,7 +97,7 @@ def test_init_llm_chunking(mock_llm_backend, patch_deps):
 
 def test_extract_with_vlm_single_page(mock_vlm_backend, patch_deps):
     """Test VLM extraction for a single-page document."""
-    _, _, mock_merge, mock_is_llm, mock_is_vlm = patch_deps
+    _, _, mock_merge, _, mock_is_vlm = patch_deps
     mock_is_vlm.return_value = True
 
     strategy = ManyToOneStrategy(backend=mock_vlm_backend)
@@ -110,7 +110,7 @@ def test_extract_with_vlm_single_page(mock_vlm_backend, patch_deps):
 
 def test_extract_with_vlm_multi_page(mock_vlm_backend, patch_deps):
     """Test VLM extraction and merge for a multi-page document."""
-    _, _, mock_merge, mock_is_llm, mock_is_vlm = patch_deps
+    _, _, mock_merge, _, mock_is_vlm = patch_deps
     mock_is_vlm.return_value = True
 
     strategy = ManyToOneStrategy(backend=mock_vlm_backend)

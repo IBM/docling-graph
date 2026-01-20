@@ -122,7 +122,7 @@ def _get_install_command(provider: str) -> str:
     return f"uv sync --extra {provider}"
 
 
-def print_dependency_setup_guide(inference_type: str, provider: Optional[str] = None) -> None:
+def print_dependency_setup_guide(inference_type: str, provider: str | None = None) -> None:
     """Print setup guide for the selected inference type."""
     providers = [provider] if provider else INFERENCE_PROVIDERS.get(inference_type, [])
     missing = get_missing_dependencies(providers)

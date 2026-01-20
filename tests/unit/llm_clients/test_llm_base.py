@@ -18,7 +18,7 @@ def test_concrete_implementation_requires_methods():
     class IncompleteClient(BaseLlmClient):
         pass
 
-    with pytest.raises(TypeError, match="Can't instantiate abstract class .* abstract methods"):
+    with pytest.raises(TypeError, match=r"Can't instantiate abstract class .* abstract methods"):
         IncompleteClient()
 
     # This class implements all required abstract methods

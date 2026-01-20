@@ -24,7 +24,7 @@ def inspect_command(
         str, typer.Option("--format", "-f", help="Import format: 'csv' or 'json'.")
     ] = "csv",
     output: Annotated[
-        Optional[Path],
+        Path | None,
         typer.Option(
             "--output", "-o", help="Output HTML file path. If not specified, uses temporary file."
         ),

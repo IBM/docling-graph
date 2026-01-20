@@ -15,15 +15,16 @@ Prerequisites:
 import sys
 from pathlib import Path
 
+from examples.templates.rheology_research import Research
+
+from docling_graph import PipelineConfig, run_pipeline
+
 # Add the workspace root to Python path to enable imports
 workspace_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(workspace_root))
 
-from docling_graph import PipelineConfig, run_pipeline
-from examples.templates.rheology_research import Research
-
 # Define Source document :
-source_doc="docs/examples/data/research_paper/rheology.pdf"
+source_doc = "docs/examples/data/research_paper/rheology.pdf"
 
 # Example 1: Using WatsonX with default Granite model
 config_default: PipelineConfig = PipelineConfig(
@@ -36,6 +37,7 @@ config_default: PipelineConfig = PipelineConfig(
     model_override="ibm/granite-4-h-small",  # Default Granite model
     output_dir="outputs/watsonx_example_default",
 )
+
 
 def main() -> None:
     """Run the WatsonX extraction examples."""
@@ -54,5 +56,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-# Made with Bob, Checked by Guilhaume
