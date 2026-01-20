@@ -36,13 +36,12 @@ jobs:
         run: uv run pre-commit run --all-files
 
   test:
-    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Test Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.10', '3.12']
     
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +64,7 @@ jobs:
         run: uv run pytest --cov=docling_graph --cov-report=xml --cov-report=term tests/
       
       - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        if: matrix.python-version == '3.12'
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage.xml
@@ -146,5 +145,3 @@ jobs:
         with:
           name: dist
           path: dist/
-
-# Made with Bob

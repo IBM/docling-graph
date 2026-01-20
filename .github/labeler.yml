@@ -37,4 +37,3 @@ extractors:
   - changed-files:
     - any-glob-to-any-file: ['docling_graph/core/extractors/**/*']
 
-# Made with Bob

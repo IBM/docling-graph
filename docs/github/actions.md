@@ -8,7 +8,7 @@ The project uses several GitHub Actions workflows to automate CI/CD, security sc
 
 1. **CI Workflow** - Runs tests, linting, and type checking
 2. **DCO Check** - Ensures all commits are signed off
-3. **Security Scanning** - Scans for vulnerabilities and secrets
+3. **Security Scanning** - Scans for vulnerabilities
 4. **Release Workflow** - Automates package publishing
 5. **PR Labeler** - Automatically labels pull requests
 6. **Dependabot** - Keeps dependencies up to date
@@ -21,13 +21,13 @@ The project uses several GitHub Actions workflows to automate CI/CD, security sc
 
 **Jobs:**
 - **Pre-commit checks**: Runs all pre-commit hooks (ruff, mypy, pytest)
-- **Tests**: Runs test suite on multiple Python versions (3.10-3.13) and OS (Ubuntu, macOS, Windows)
+- **Tests**: Runs test suite on Python 3.10 and 3.12 (Ubuntu only)
 - **Type checking**: Runs mypy for static type analysis
 - **Linting**: Runs ruff formatter and linter
 - **Build**: Creates distribution packages
 
 **Key Features:**
-- Matrix testing across Python versions and operating systems
+- Matrix testing across Python 3.10 and 3.12
 - Code coverage reporting to Codecov
 - Caching with uv for faster builds
 - Artifact upload for distribution packages
@@ -50,22 +50,18 @@ git config --global format.signoff true
 
 ### 3. Security Scanning (`.github/workflows/security.yml`)
 
-**Triggers:** Push, Pull Requests, Weekly schedule (Mondays), Manual dispatch
+**Triggers:** Pull Requests, Weekly schedule (Mondays), Manual dispatch
 
 **Jobs:**
-- **Dependency Review**: Reviews dependencies in PRs for known vulnerabilities
-- **Safety Check**: Scans Python dependencies for security issues
-- **CodeQL Analysis**: Advanced semantic code analysis for security vulnerabilities
-- **Secret Scanning**: Scans for accidentally committed secrets using TruffleHog
+- **Dependency Review**: Reviews dependencies in PRs for known vulnerabilities (high severity)
 
 ### 4. Release Workflow (`.github/workflows/release.yml`)
 
-**Triggers:** Git tags matching `v*.*.*`, Manual dispatch
+**Triggers:** Git tags matching `v*.*.*`
 
 **Jobs:**
-- **Build**: Creates distribution packages
-- **Publish to PyPI**: Publishes package using trusted publishing (OIDC)
-- **GitHub Release**: Creates GitHub release with signed artifacts
+- **Build and Publish**: Creates distribution packages and publishes to PyPI using trusted publishing (OIDC)
+- **GitHub Release**: Creates GitHub release with artifacts
 
 **Setup Required:**
 1. Configure PyPI trusted publishing:
@@ -128,7 +124,7 @@ git push origin v0.3.0
 For `main` branch:
 - Require pull request reviews before merging
 - Require status checks to pass before merging
-  - Select: `Pre-commit checks`, `Test`, `Type checking`, `Linting`, `DCO Check`
+  - Select: `Pre-commit checks`, `Test (3.10)`, `Test (3.12)`, `Type checking`, `Linting`, `DCO Check`
 - Require branches to be up to date before merging
 - Require signed commits (optional but recommended)
 - Include administrators
@@ -139,8 +135,6 @@ For `main` branch:
 - Dependency graph
 - Dependabot alerts
 - Dependabot security updates
-- Secret scanning
-- Code scanning (CodeQL)
 
 #### 3. Secrets and Variables
 
@@ -178,11 +172,9 @@ uv run pre-commit run --all-files
 - UV lock file check
 
 ### What runs in CI (additional):
-- Multi-platform testing (Linux, macOS, Windows)
-- Multi-version testing (Python 3.10-3.13)
+- Multi-version testing (Python 3.10, 3.12)
 - Security scanning
 - Dependency review
-- Secret scanning
 - DCO verification
 
 ## Best Practices
@@ -238,12 +230,15 @@ git rebase --signoff HEAD~3  # Last 3 commits
 git push --force-with-lease
 ```
 
-### Tests Fail on Specific Platform
+### Tests Fail on Specific Python Version
 
-**Solution:** Use matrix testing to identify platform-specific issues:
-- Check the specific job logs in GitHub Actions
-- Test locally on that platform if possible
-- Use conditional logic for platform-specific code
+**Solution:** Test locally with that Python version:
+```bash
+# Using pyenv or similar
+pyenv install 3.10
+pyenv local 3.10
+uv run pytest
+```
 
 ### Release Workflow Fails
 

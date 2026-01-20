@@ -14,5 +14,3 @@ jobs:
         with:
           # Require all commits to be signed off
           require-for-all-commits: true
-
-# Made with Bob
