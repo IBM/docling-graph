@@ -1,4 +1,4 @@
-site_name: Docling Graph
+site_name: Docling Graph Documentation
 site_description: Convert documents into knowledge graphs using Docling
 site_author: IBM Research
 site_url: https://ibm.github.io/docling-graph
@@ -26,6 +26,8 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+  logo: assets/logo.png
+  favicon: assets/logo.png
   features:
     - navigation.instant
     - navigation.tracking
@@ -102,7 +104,8 @@ nav:
     - Extractors: api/extractors.md
     - Exporters: api/exporters.md
     - LLM Clients: api/llm-clients.md
-    
+
+
 extra:
   social:
     - icon: fontawesome/brands/github
