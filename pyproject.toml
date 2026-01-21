@@ -218,6 +218,7 @@ ignore_missing_imports = true
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]
 version_variables = ["docling_graph/__init__.py:__version__"]
+commit_message = "chore(release): bump package version to {version}"
 
 [tool.semantic_release.branches.main]
 match = "main"
