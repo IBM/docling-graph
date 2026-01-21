@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## Unreleased
+
+### Chores
+
+- **ci**: Exclude attestation files from GitHub releases
+  ([`1ae2685`](https://github.com/IBM/docling-graph/commit/1ae2685ccba1234ed99d6eb95e5f8f39525237bf))
+
+Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+
+### Documentation
+
+- **readme**: Fix PyPI badge to include prereleases
+  ([`ca3b14f`](https://github.com/IBM/docling-graph/commit/ca3b14fa7f960348f2d3a257173843a7dc9f81ec))
+
+Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+
+
 ## v0.2.5 (2026-01-21)
 
 ### Bug Fixes
