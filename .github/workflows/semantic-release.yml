@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
       
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -35,43 +35,31 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync --dev
-          uv pip install python-semantic-release
       
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
       
-      - name: Check for release
-        id: check_release
-        run: |
-          # Run semantic-release in dry-run mode to check if a release is needed
-          if uv run semantic-release version --noop 2>&1 | grep -q "No release will be made"; then
-            echo "release_needed=false" >> $GITHUB_OUTPUT
-            echo "No release needed - no relevant commits since last release"
-          else
-            echo "release_needed=true" >> $GITHUB_OUTPUT
-            echo "Release will be created"
-          fi
-      
       - name: Python Semantic Release
-        if: steps.check_release.outputs.release_needed == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          uv run semantic-release version
-          uv run semantic-release changelog
-          uv run semantic-release publish
+          uv run semantic-release version --skip-build
       
       - name: Push changes
-        if: steps.check_release.outputs.release_needed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          git push --follow-tags
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main --follow-tags
       
       - name: Summary
         run: |
-          if [ "${{ steps.check_release.outputs.release_needed }}" == "true" ]; then
-            echo "- New version released and tagged" >> $GITHUB_STEP_SUMMARY
+          echo "## Semantic Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if git describe --exact-match --tags HEAD 2>/dev/null; then
+            NEW_VERSION=$(git describe --exact-match --tags HEAD)
+            echo "- New version released: **${NEW_VERSION}**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "The release workflow will now be triggered by the new tag." >> $GITHUB_STEP_SUMMARY
           else
