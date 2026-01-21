@@ -9,6 +9,6 @@ __all__ = [
     "ModelsConfig",
     "PipelineConfig",
     "VLMConfig",
-    "run_pipeline",
     "__version__",
+    "run_pipeline",
 ]
