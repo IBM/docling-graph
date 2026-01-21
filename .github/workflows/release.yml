@@ -76,63 +76,32 @@ jobs:
       
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-  
-  create-release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: publish-pypi
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      
-      - name: Extract release notes
-        id: extract_notes
-        run: |
-          # Extract release notes from CHANGELOG.md
-          VERSION="${{ github.ref_name }}"
-          
-          # Get content between version headers
-          awk "/## ${VERSION}/,/## v[0-9]/" CHANGELOG.md | \
-            sed '/## v[0-9]/d' | \
-            sed '1d' > release_notes.md
-          
-          # If no specific notes found, use generic message
-          if [ ! -s release_notes.md ]; then
-            echo "Release ${VERSION}" > release_notes.md
-            echo "" >> release_notes.md
-            echo "See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details." >> release_notes.md
-          fi
-      
-      - name: Create GitHub Release
+      - name: Upload artifacts to GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          gh release create '${{ github.ref_name }}' \
-            --repo '${{ github.repository }}' \
-            --title "${{ github.ref_name }}" \
-            --notes-file release_notes.md
-      
-      - name: Upload artifacts to release
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
+          # Semantic-release already created the GitHub release
+          # Just upload the distribution files to it
           gh release upload '${{ github.ref_name }}' dist/* \
-            --repo '${{ github.repository }}'
+            --repo '${{ github.repository }}' \
+            --clobber
       
       - name: Summary
         run: |
-          echo "- Release ${{ github.ref_name }} published successfully" >> $GITHUB_STEP_SUMMARY
+          VERSION="${{ github.ref_name }}"
+          VERSION_NUM="${VERSION#v}"
+          
+          echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Published to:**" >> $GITHUB_STEP_SUMMARY
-          echo "- TestPyPI: https://test.pypi.org/project/docling-graph/${{ github.ref_name }}/" >> $GITHUB_STEP_SUMMARY
-          echo "- PyPI: https://pypi.org/project/docling-graph/${{ github.ref_name }}/" >> $GITHUB_STEP_SUMMARY
-          echo "- GitHub: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Release **${VERSION}** published successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Published to:" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 [TestPyPI](https://test.pypi.org/project/docling-graph/${VERSION_NUM}/)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚀 [PyPI](https://pypi.org/project/docling-graph/${VERSION_NUM}/)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📝 [GitHub Release](https://github.com/${{ github.repository }}/releases/tag/${VERSION})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Install:" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "pip install docling-graph==${VERSION_NUM}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
