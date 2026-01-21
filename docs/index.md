@@ -6,7 +6,7 @@
 
 [![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://ibm.github.io/docling-graph)
 [![Docling](https://img.shields.io/badge/Docling-VLM-red)](https://github.com/docling-project/docling)
-[![PyPI version](https://img.shields.io/pypi/v/docling-graph)](https://pypi.org/project/docling-graph/)
+[![PyPI version](https://img.shields.io/pypi/v/docling-graph?include_prereleases)](https://pypi.org/project/docling-graph/)
 [![Python 3.10 | 3.11 | 3.12](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
