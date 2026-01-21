@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## v0.2.3 (2026-01-21)
+
+### Bug Fixes
+
+- **ci**: Skip TestPyPI installation test due to dependency issues
+  ([`da001fd`](https://github.com/IBM/docling-graph/commit/da001fd8de88c0cc82f07ed1888f8e4945ad3498))
+
+Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+
+### Chores
+
+- **whitesource**: Update policies and scanning rules
+  ([`211d55e`](https://github.com/IBM/docling-graph/commit/211d55e6ead84c5b7a77750a3275802609a6154b))
+
+Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+
+
 ## v0.2.2 (2026-01-21)
 
 ### Bug Fixes
