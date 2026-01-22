@@ -226,15 +226,15 @@ For complete guidance, see: [Pydantic Templates for Knowledge Graph Extraction](
 
 ## Documentation
 
-Comprehensive documentation is available at **[https://ibm.github.io/docling-graph/](https://ibm.github.io/docling-graph/)**
+Comprehensive documentation can be found on [Docling Graph's Page](https://ibm.github.io/docling-graph/).
 
 ### Key Resources
 
-- **[Getting Started](https://ibm.github.io/docling-graph/getting-started/installation/)** - Installation and quick start guides
-- **[Concepts](https://ibm.github.io/docling-graph/concepts/)** - Core concepts and architecture
-- **[Guides](https://ibm.github.io/docling-graph/guides/create_pydantic_templates_for_kg_extraction/)** - In-depth tutorials and best practices
-- **[Examples](https://ibm.github.io/docling-graph/examples/README/)** - Working code examples
-- **[API Reference](https://ibm.github.io/docling-graph/api/pipeline/)** - Detailed API documentation
+- [Getting Started](https://ibm.github.io/docling-graph/getting-started/installation/) - Installation and quick start guides
+- [Concepts](https://ibm.github.io/docling-graph/concepts/) - Core concepts and architecture
+- [Guides](https://ibm.github.io/docling-graph/guides/create_pydantic_templates_for_kg_extraction/) - In-depth tutorials and best practices
+- [Examples](https://ibm.github.io/docling-graph/examples/README/) - Working code examples
+- [API Reference](https://ibm.github.io/docling-graph/api/pipeline/) - Detailed API documentation
 
 You can also browse the documentation locally in the [`docs/`](docs/) directory.
 

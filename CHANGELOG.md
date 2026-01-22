@@ -1,14 +1,6 @@
 # CHANGELOG
 
 
-## v0.2.6 (2026-01-21)
-
-### Chores
-
-- **ci**: Exclude attestation files from GitHub releases
-  ([`1ae2685`](https://github.com/IBM/docling-graph/commit/1ae2685ccba1234ed99d6eb95e5f8f39525237bf))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 
 ### Documentation
 

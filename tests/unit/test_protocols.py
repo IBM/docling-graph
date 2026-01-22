@@ -105,10 +105,12 @@ class TestExtractorProtocol:
     def test_extractor_has_extract_method(self):
         """Extractor should have extract method."""
         extractor = MagicMock()
-        extractor.extract = MagicMock(return_value=[SampleModel(name="test", value=1)])
+        extractor.extract = MagicMock(return_value=([SampleModel(name="test", value=1)], None))
 
         result = extractor.extract("source.pdf", SampleModel)
-        assert isinstance(result, list)
+        assert isinstance(result, tuple)
+        models, _document = result
+        assert isinstance(models, list)
 
 
 class TestDocumentProcessorProtocol:

@@ -163,7 +163,7 @@ def run_pipeline(config: Union[PipelineConfig, Dict[str, Any]]) -> None:
 
         # 4. Run Extraction
         rich_print("[blue][Pipeline][/blue] Starting extraction...")
-        extracted_models = extractor.extract(conf["source"], template_class)
+        extracted_models, docling_document = extractor.extract(conf["source"], template_class)
 
         if not extracted_models:
             rich_print("[yellow][Pipeline][/yellow] No models extracted.")
@@ -180,15 +180,9 @@ def run_pipeline(config: Union[PipelineConfig, Dict[str, Any]]) -> None:
             or conf.get("export_docling_json", True)
             or conf.get("export_markdown", True)
         ):
-            rich_print("[blue][Pipeline][/blue] Exporting Docling document and markdown...")
-            docling_exporter = DoclingExporter(output_dir=output_dir)
-
-            # Reuse the already-converted document from the extraction phase
-            if hasattr(extractor, "doc_processor") and extractor.doc_processor.last_document:
-                docling_document = extractor.doc_processor.last_document
-                rich_print(
-                    "[blue][Pipeline][/blue] Reusing cached DoclingDocument (avoiding duplicate conversion)"
-                )
+            if docling_document:
+                rich_print("[blue][Pipeline][/blue] Exporting Docling document and markdown...")
+                docling_exporter = DoclingExporter(output_dir=output_dir)
                 docling_exporter.export_document(
                     docling_document,
                     base_name=base_name,
@@ -197,9 +191,7 @@ def run_pipeline(config: Union[PipelineConfig, Dict[str, Any]]) -> None:
                     per_page=conf.get("export_per_page_markdown", False),
                 )
             else:
-                rich_print(
-                    "[yellow][Pipeline][/yellow] No cached document available, skipping Docling export"
-                )
+                rich_print("[yellow][Pipeline][/yellow] No document available for Docling export")
 
         # 6. Convert to Graph
         rich_print("[blue][Pipeline][/blue] Converting Pydantic model(s) to Knowledge Graph...")

@@ -93,9 +93,14 @@ When you need to track which page information came from:
 ```python
 # Each model represents one page
 # Useful for citation or reference tracking
-models = extractor.extract(source, template)
+models, document = extractor.extract(source, template)
 for i, model in enumerate(models, 1):
     print(f"Page {i}: {model}")
+
+# The document object can be used for additional exports if needed
+if document:
+    # Export to markdown, JSON, etc.
+    pass
 ```
 
 ### Example Output

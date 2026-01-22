@@ -3,7 +3,7 @@ Many-to-one extraction strategy.
 Processes entire document and returns single consolidated model.
 """
 
-from typing import List, Optional, Type
+from typing import List, Tuple, Type
 
 from docling_core.types.doc import DoclingDocument
 from pydantic import BaseModel
@@ -100,14 +100,18 @@ class ManyToOneStrategy(BaseExtractor):
         )
 
     # Public extraction entry point
-    def extract(self, source: str, template: Type[BaseModel]) -> List[BaseModel]:
+    def extract(
+        self, source: str, template: Type[BaseModel]
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """Extract structured data using a many-to-one strategy.
 
         - VLM backend: Extracts all pages and merges the results.
         - LLM backend: Uses structure-aware chunking (if enabled) or falls back to page-by-page.
 
         Returns:
-            A list containing a single merged model instance, or an empty list on failure.
+            Tuple containing:
+                - A list containing a single merged model instance, or an empty list on failure.
+                - The DoclingDocument object used during extraction (or None if extraction failed).
         """
         try:
             if is_vlm_backend(self.backend):
@@ -124,12 +128,12 @@ class ManyToOneStrategy(BaseExtractor):
                 )
         except Exception as e:
             rich_print(f"[red][ManyToOneStrategy][/red] Extraction error: {e}")
-            return []  # Graceful fallback
+            return [], None
 
     # VLM backend extraction
     def _extract_with_vlm(
         self, backend: ExtractionBackendProtocol, source: str, template: Type[BaseModel]
-    ) -> List[BaseModel]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """Extract using a Vision-Language Model (VLM) backend, merging page-level models."""
         try:
             rich_print("[blue][ManyToOneStrategy][/blue] Running VLM extraction...")
@@ -139,13 +143,13 @@ class ManyToOneStrategy(BaseExtractor):
                 rich_print(
                     "[yellow][ManyToOneStrategy][/yellow] No models extracted by VLM backend"
                 )
-                return []
+                return [], None
 
             if len(models) == 1:
                 rich_print(
                     "[blue][ManyToOneStrategy][/blue] Single-page document extracted successfully"
                 )
-                return models
+                return models, None
 
             # Merge multiple page-level models
             rich_print(
@@ -157,55 +161,58 @@ class ManyToOneStrategy(BaseExtractor):
                 rich_print(
                     "[green][ManyToOneStrategy][/green] Successfully merged all VLM page models"
                 )
-                return [merged_model]
+                return [merged_model], None
             else:
                 rich_print(
                     "[yellow][ManyToOneStrategy][/yellow] Merge failed — returning first page result"
                 )
-                return [models[0]]
+                return [models[0]], None
 
         except Exception as e:
             rich_print(f"[red][ManyToOneStrategy][/red] VLM extraction failed: {e}")
-            return []
+            return [], None
 
     # LLM backend extraction
     def _extract_with_llm(
         self, backend: TextExtractionBackendProtocol, source: str, template: Type[BaseModel]
-    ) -> List[BaseModel]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """Extract using an LLM backend with intelligent strategy selection."""
         try:
             document = self.doc_processor.convert_to_docling_doc(source)
 
             # Use chunking if enabled
             if self.use_chunking:
-                return self._extract_with_chunks(backend, document, template)
+                models = self._extract_with_chunks(backend, document, template)
+                return models, document
 
             # Fallback to legacy page-by-page or full-doc extraction
             if hasattr(backend.client, "context_limit"):
                 context_limit = backend.client.context_limit
                 full_markdown = self.doc_processor.extract_full_markdown(document)
-                estimated_tokens = len(full_markdown) / 3.5  # Rough heuristic
+                estimated_tokens = len(full_markdown) / 3.5
 
                 if estimated_tokens < (context_limit * 0.9):
                     rich_print(
                         f"[blue][ManyToOneStrategy][/blue] Document fits context "
                         f"({int(estimated_tokens)} tokens) — using full-document extraction"
                     )
-                    return self._extract_full_document(backend, full_markdown, template)
+                    models = self._extract_full_document(backend, full_markdown, template)
+                    return models, document
                 else:
                     rich_print(
                         f"[yellow][ManyToOneStrategy][/yellow] Document too large "
                         f"({int(estimated_tokens)} tokens) — using page-by-page fallback"
                     )
-                    return self._extract_pages_and_merge(backend, document, template)
+                    models = self._extract_pages_and_merge(backend, document, template)
+                    return models, document
             else:
-                # No context info, default to full-document attempt
                 full_markdown = self.doc_processor.extract_full_markdown(document)
-                return self._extract_full_document(backend, full_markdown, template)
+                models = self._extract_full_document(backend, full_markdown, template)
+                return models, document
 
         except Exception as e:
             rich_print(f"[red][ManyToOneStrategy][/red] LLM extraction failed: {e}")
-            return []
+            return [], None
 
     # Chunk-based extraction
     def _extract_with_chunks(

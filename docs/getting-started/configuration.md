@@ -337,9 +337,6 @@ export WATSONX_URL="https://us-south.ml.cloud.ibm.com"
 # Logging level
 export LOG_LEVEL="INFO"  # DEBUG, INFO, WARNING, ERROR
 
-# Cache directory
-export DOCLING_CACHE_DIR="~/.cache/docling"
-
 # Temporary directory
 export TEMP_DIR="/tmp/docling"
 ```
