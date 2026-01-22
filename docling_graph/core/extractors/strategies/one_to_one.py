@@ -3,7 +3,7 @@ One-to-one extraction strategy.
 Processes each page independently and returns multiple models.
 """
 
-from typing import List, Optional, Tuple, Type
+from typing import List, Tuple, Type
 
 from docling_core.types.doc import DoclingDocument
 from pydantic import BaseModel
@@ -45,7 +45,7 @@ class OneToOneStrategy(BaseExtractor):
 
     def extract(
         self, source: str, template: Type[BaseModel]
-    ) -> Tuple[List[BaseModel], Optional[DoclingDocument]]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """Extract data using one-to-one strategy.
 
         For VLM: Uses direct VLM extraction (already page-based).
@@ -79,14 +79,14 @@ class OneToOneStrategy(BaseExtractor):
 
     def _extract_with_vlm(
         self, backend: ExtractionBackendProtocol, source: str, template: Type[BaseModel]
-    ) -> Tuple[List[BaseModel], Optional[DoclingDocument]]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """VLM path: delegate to document-level extraction."""
         models = backend.extract_from_document(source, template)
         return models, None
 
     def _extract_with_llm(
         self, backend: TextExtractionBackendProtocol, source: str, template: Type[BaseModel]
-    ) -> Tuple[List[BaseModel], Optional[DoclingDocument]]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """LLM path: convert to markdown and process per page."""
         document = self.doc_processor.convert_to_docling_doc(source)
         page_markdowns = self.doc_processor.extract_page_markdowns(document)

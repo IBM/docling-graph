@@ -3,7 +3,7 @@ Tests for extractor base class.
 """
 
 from abc import ABC
-from typing import List, Optional, Tuple, Type
+from typing import List, Tuple, Type
 
 import pytest
 from docling_core.types.doc import DoclingDocument
@@ -25,7 +25,7 @@ class ConcreteExtractor(BaseExtractor):
 
     def extract(
         self, source: str, template: Type[BaseModel]
-    ) -> Tuple[List[BaseModel], Optional[DoclingDocument]]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """Simple extract implementation."""
         return [template(name="test", value=1)], None
 
@@ -52,7 +52,7 @@ class TestBaseExtractor:
     def test_extract_method_signature(self):
         """Extract method should accept source and template."""
         extractor = ConcreteExtractor()
-        models, document = extractor.extract("test.pdf", SampleExtractModel)
+        models, _document = extractor.extract("test.pdf", SampleExtractModel)
 
         assert isinstance(models, list)
         assert len(models) > 0
@@ -64,6 +64,6 @@ class TestBaseExtractor:
 
         assert isinstance(result, tuple)
         assert len(result) == 2
-        models, document = result
+        models, _document = result
         assert isinstance(models, list)
         assert all(isinstance(m, BaseModel) for m in models)

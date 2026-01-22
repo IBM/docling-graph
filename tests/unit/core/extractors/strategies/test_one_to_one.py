@@ -77,7 +77,7 @@ class TestOneToOneStrategyExtract:
         mock_is_llm.return_value = False
 
         strategy = OneToOneStrategy(backend=mock_vlm_backend)
-        models, document = strategy.extract("test.pdf", SampleModel)
+        models, _document = strategy.extract("test.pdf", SampleModel)
 
         assert isinstance(models, list)
         mock_vlm_backend.extract_from_document.assert_called_once()
@@ -116,7 +116,7 @@ class TestOneToOneStrategyExtract:
                 return_value=False,
             ):
                 strategy = OneToOneStrategy(backend=mock_vlm_backend)
-                models, document = strategy.extract("test.pdf", SampleModel)
+                models, _document = strategy.extract("test.pdf", SampleModel)
 
         assert isinstance(models, list)
         assert len(models) > 0

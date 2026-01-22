@@ -3,7 +3,7 @@ Base extractor interface for all extraction strategies.
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Optional, Tuple, Type
+from typing import List, Tuple, Type
 
 from docling_core.types.doc import DoclingDocument
 from pydantic import BaseModel
@@ -15,7 +15,7 @@ class BaseExtractor(ABC):
     @abstractmethod
     def extract(
         self, source: str, template: Type[BaseModel]
-    ) -> Tuple[List[BaseModel], Optional[DoclingDocument]]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """
         Extracts structured data from a source document based on a Pydantic template.
 

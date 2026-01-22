@@ -3,7 +3,7 @@ Many-to-one extraction strategy.
 Processes entire document and returns single consolidated model.
 """
 
-from typing import List, Optional, Tuple, Type
+from typing import List, Tuple, Type
 
 from docling_core.types.doc import DoclingDocument
 from pydantic import BaseModel
@@ -102,7 +102,7 @@ class ManyToOneStrategy(BaseExtractor):
     # Public extraction entry point
     def extract(
         self, source: str, template: Type[BaseModel]
-    ) -> Tuple[List[BaseModel], Optional[DoclingDocument]]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """Extract structured data using a many-to-one strategy.
 
         - VLM backend: Extracts all pages and merges the results.
@@ -133,7 +133,7 @@ class ManyToOneStrategy(BaseExtractor):
     # VLM backend extraction
     def _extract_with_vlm(
         self, backend: ExtractionBackendProtocol, source: str, template: Type[BaseModel]
-    ) -> Tuple[List[BaseModel], Optional[DoclingDocument]]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """Extract using a Vision-Language Model (VLM) backend, merging page-level models."""
         try:
             rich_print("[blue][ManyToOneStrategy][/blue] Running VLM extraction...")
@@ -175,7 +175,7 @@ class ManyToOneStrategy(BaseExtractor):
     # LLM backend extraction
     def _extract_with_llm(
         self, backend: TextExtractionBackendProtocol, source: str, template: Type[BaseModel]
-    ) -> Tuple[List[BaseModel], Optional[DoclingDocument]]:
+    ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """Extract using an LLM backend with intelligent strategy selection."""
         try:
             document = self.doc_processor.convert_to_docling_doc(source)

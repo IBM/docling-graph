@@ -109,7 +109,7 @@ class TestExtractorProtocol:
 
         result = extractor.extract("source.pdf", SampleModel)
         assert isinstance(result, tuple)
-        models, document = result
+        models, _document = result
         assert isinstance(models, list)
 
 
