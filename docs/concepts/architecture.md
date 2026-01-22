@@ -32,7 +32,7 @@ Handles document conversion using Docling:
 - Converts documents to DoclingDocument format
 - Extracts full markdown or per-page markdown
 - Supports OCR and Vision pipelines
-- Caches converted documents to avoid redundant processing
+- Stateless operation suitable for pod deployments
 
 **Protocols**: `DocumentProcessorProtocol`
 
@@ -154,7 +154,7 @@ Generate human-readable outputs:
 3. **Document Processing**
    - Convert source document using Docling
    - Extract markdown (full or per-page)
-   - Cache DoclingDocument for exports
+   - Return DoclingDocument for exports
 
 4. **Extraction**
    - Initialize appropriate backend (VLM or LLM)
@@ -249,7 +249,7 @@ class PipelineConfig(BaseModel):
 ### Memory Management
 
 - **GPU Memory**: Automatic cleanup after extraction
-- **Document Caching**: Reuse converted documents
+- **Stateless Design**: No internal caching, predictable memory usage
 - **Batch Processing**: Configurable batch sizes for chunking
 
 ### Optimization Strategies
@@ -257,6 +257,7 @@ class PipelineConfig(BaseModel):
 - **Chunking**: Reduces memory footprint for large documents
 - **Lazy Loading**: Import modules only when needed
 - **Resource Pooling**: Reuse LLM clients across batches
+- **Document Return**: Extraction methods return documents directly without caching
 
 ## Error Handling
 

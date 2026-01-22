@@ -101,7 +101,7 @@ def test_extract_with_vlm_single_page(mock_vlm_backend, patch_deps):
     mock_is_vlm.return_value = True
 
     strategy = ManyToOneStrategy(backend=mock_vlm_backend)
-    results = strategy.extract("single_page_doc.pdf", MockTemplate)
+    results, document = strategy.extract("single_page_doc.pdf", MockTemplate)
 
     assert len(results) == 1
     assert results[0].name == "Page 1"
@@ -114,7 +114,7 @@ def test_extract_with_vlm_multi_page(mock_vlm_backend, patch_deps):
     mock_is_vlm.return_value = True
 
     strategy = ManyToOneStrategy(backend=mock_vlm_backend)
-    results = strategy.extract("multi_page_doc.pdf", MockTemplate)
+    results, document = strategy.extract("multi_page_doc.pdf", MockTemplate)
 
     assert len(results) == 1
     assert results[0].name == "Merged"

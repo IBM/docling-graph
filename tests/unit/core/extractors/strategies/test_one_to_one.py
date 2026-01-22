@@ -77,15 +77,15 @@ class TestOneToOneStrategyExtract:
         mock_is_llm.return_value = False
 
         strategy = OneToOneStrategy(backend=mock_vlm_backend)
-        result = strategy.extract("test.pdf", SampleModel)
+        models, document = strategy.extract("test.pdf", SampleModel)
 
-        assert isinstance(result, list)
+        assert isinstance(models, list)
         mock_vlm_backend.extract_from_document.assert_called_once()
 
     @patch("docling_graph.core.extractors.strategies.one_to_one.DocumentProcessor")
     @patch("docling_graph.core.extractors.strategies.one_to_one.get_backend_type")
-    def test_extract_returns_list(self, mock_get_type, mock_doc_proc, mock_vlm_backend):
-        """Should return list of models."""
+    def test_extract_returns_tuple(self, mock_get_type, mock_doc_proc, mock_vlm_backend):
+        """Should return tuple of (models, document)."""
         mock_get_type.return_value = "vlm"
 
         with patch(
@@ -98,7 +98,8 @@ class TestOneToOneStrategyExtract:
                 strategy = OneToOneStrategy(backend=mock_vlm_backend)
                 result = strategy.extract("test.pdf", SampleModel)
 
-        assert isinstance(result, list)
+        assert isinstance(result, tuple)
+        assert len(result) == 2
 
     @patch("docling_graph.core.extractors.strategies.one_to_one.DocumentProcessor")
     @patch("docling_graph.core.extractors.strategies.one_to_one.get_backend_type")
@@ -115,8 +116,7 @@ class TestOneToOneStrategyExtract:
                 return_value=False,
             ):
                 strategy = OneToOneStrategy(backend=mock_vlm_backend)
-                result = strategy.extract("test.pdf", SampleModel)
+                models, document = strategy.extract("test.pdf", SampleModel)
 
-        # Should return list even when backend type is unknown (falls back to VLM)
-        assert isinstance(result, list)
-        assert len(result) > 0
+        assert isinstance(models, list)
+        assert len(models) > 0
