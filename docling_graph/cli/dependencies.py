@@ -6,6 +6,28 @@ import importlib.util
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+# Module-level cache for dependency checks
+_DEPENDENCY_CACHE: Dict[str, bool] = {}
+_CACHE_ENABLED = True
+
+
+def clear_dependency_cache() -> None:
+    """Clear the dependency cache. Useful for testing."""
+    global _DEPENDENCY_CACHE
+    _DEPENDENCY_CACHE.clear()
+
+
+def disable_dependency_cache() -> None:
+    """Disable dependency caching. Useful for testing."""
+    global _CACHE_ENABLED
+    _CACHE_ENABLED = False
+
+
+def enable_dependency_cache() -> None:
+    """Enable dependency caching (default behavior)."""
+    global _CACHE_ENABLED
+    _CACHE_ENABLED = True
+
 
 class DependencyStatus(Enum):
     """Status of an optional dependency."""
@@ -35,10 +57,19 @@ class OptionalDependency:
 
     @property
     def is_installed(self) -> bool:
-        """Check if the dependency is installed."""
-        if self._status is None:
-            self._status = self._check_status()
-        return self._status == DependencyStatus.INSTALLED
+        """Check if the dependency is installed (with caching)."""
+        # If caching is disabled, always check fresh
+        if not _CACHE_ENABLED:
+            return self._check_status() == DependencyStatus.INSTALLED
+
+        # Check cache first
+        if self.package in _DEPENDENCY_CACHE:
+            return _DEPENDENCY_CACHE[self.package]
+
+        # Check and cache result
+        is_installed = self._check_status() == DependencyStatus.INSTALLED
+        _DEPENDENCY_CACHE[self.package] = is_installed
+        return is_installed
 
     def _check_status(self) -> DependencyStatus:
         """Check installation status of the package."""

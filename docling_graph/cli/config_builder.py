@@ -3,6 +3,7 @@ Configuration builder for interactive config creation.
 """
 
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any, Callable, Dict, Optional, cast
 
 import click
@@ -21,6 +22,15 @@ from .constants import (
     PROVIDER_DEFAULT_MODELS,
     VLM_DEFAULT_MODEL,
 )
+
+
+@lru_cache(maxsize=1)
+def _get_provider_defaults() -> dict:
+    """Cache provider defaults to avoid repeated lookups."""
+    return {
+        "local": LOCAL_PROVIDER_DEFAULTS,
+        "remote": PROVIDER_DEFAULT_MODELS,
+    }
 
 
 @dataclass
@@ -42,17 +52,15 @@ class ConfigurationBuilder:
         self.step_counter = 1
 
     def build_config(self) -> Dict[str, Any]:
-        """Build configuration through interactive prompts."""
+        """Build configuration through interactive prompts (optimized)."""
         rich_print("[bold blue]Welcome to Docling-Graph Setup![/bold blue]")
-        rich_print("Let's configure your knowledge graph pipeline.")
+        rich_print("Let's configure your knowledge graph pipeline.\n")
 
-        defaults = self._prompt_section("Default Settings", self._build_defaults)
-        models = self._prompt_section(
-            "Model Configuration",
-            lambda: self._build_models(defaults["backend"], defaults["inference"]),
-        )
-        docling = self._prompt_section("Docling Pipeline", self._build_docling)
-        output = self._prompt_section("Output", self._build_output)
+        # Build all sections
+        defaults = self._build_defaults()
+        models = self._build_models(defaults["backend"], defaults["inference"])
+        docling = self._build_docling()
+        output = self._build_output()
 
         return {
             "defaults": defaults,
@@ -60,12 +68,6 @@ class ConfigurationBuilder:
             "models": models,
             "output": output,
         }
-
-    def _prompt_section(
-        self, title: str, builder_func: Callable[[], Dict[str, Any]]
-    ) -> Dict[str, Any]:
-        rich_print(f"\n── [bold]{title}[/bold] ──")
-        return builder_func()
 
     def _prompt_option(self, config: PromptConfig) -> str:
         """Generic option prompt with reusable pattern."""
@@ -88,6 +90,7 @@ class ConfigurationBuilder:
 
     def _build_defaults(self) -> Dict[str, str]:
         """Build default settings section."""
+        rich_print("\n── [bold]Default Settings[/bold] ──")
         processing_mode = self._prompt_option(
             PromptConfig(
                 label="Processing Mode",
@@ -158,6 +161,7 @@ class ConfigurationBuilder:
 
     def _build_docling(self) -> Dict[str, Any]:
         """Build Docling settings section."""
+        rich_print("\n── [bold]Docling Pipeline[/bold] ──")
         pipeline = self._prompt_option(
             PromptConfig(
                 label="Document Processing Pipeline",
@@ -191,6 +195,7 @@ class ConfigurationBuilder:
 
     def _build_models(self, backend: str, inference: str) -> Dict[str, Any]:
         """Build model configuration based on backend and inference type."""
+        rich_print("\n── [bold]Model Configuration[/bold] ──")
         if backend == "vlm":
             return self._build_vlm_config()
         elif inference == "local":
@@ -300,6 +305,7 @@ class ConfigurationBuilder:
 
     def _build_output(self) -> Dict[str, str]:
         """Build output settings section."""
+        rich_print("\n── [bold]Output[/bold] ──")
         directory = typer.prompt(
             "Output directory",
             default="outputs",

@@ -155,28 +155,33 @@ def print_dependency_setup_guide(inference_type: str, provider: str | None = Non
 
 
 def validate_and_warn_dependencies(config_dict: dict, interactive: bool = True) -> bool:
-    """Validate dependencies and show warnings if missing."""
+    """Validate dependencies and show warnings if missing (optimized)."""
     provider, inference_type = get_provider_from_config(config_dict)
 
+    # Only check the selected provider, not all providers
     if provider:
         is_installed = check_provider_installed(provider)
         if is_installed:
-            rich_print(f"\n[green]The {provider} provider is installed![/green]")
+            if interactive:
+                rich_print(f"\n[green]- {provider} provider is installed[/green]")
             return True
 
         # Show warning for missing provider
-        print_dependency_setup_guide(inference_type, provider)
+        if interactive:
+            print_dependency_setup_guide(inference_type, provider)
         return False
 
-    # Fallback: check all providers for inference type
+    # Fallback: check only providers for the selected inference type
     providers = INFERENCE_PROVIDERS.get(inference_type, [])
     missing = get_missing_dependencies(providers)
 
     if not missing:
-        rich_print(f"\n[green]All {inference_type} inference dependencies are installed![/green]")
+        if interactive:
+            rich_print(f"\n[green]- All {inference_type} dependencies installed[/green]")
         return True
 
-    print_dependency_setup_guide(inference_type)
+    if interactive:
+        print_dependency_setup_guide(inference_type)
     return False
 
 

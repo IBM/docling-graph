@@ -2,7 +2,7 @@
 Convert command - converts documents to knowledge graphs.
 """
 
-import sys
+import logging
 from pathlib import Path
 from typing import Optional
 
@@ -10,9 +10,13 @@ import typer
 from rich import print as rich_print
 from typing_extensions import Annotated
 
-sys.path.append(str(Path.cwd()))
-
 from docling_graph.config import PipelineConfig
+from docling_graph.exceptions import (
+    ConfigurationError,
+    DoclingGraphError,
+    ExtractionError,
+    PipelineError,
+)
 from docling_graph.pipeline import run_pipeline
 
 from ..config_utils import load_config
@@ -24,6 +28,8 @@ from ..validators import (
     validate_processing_mode,
     validate_vlm_constraints,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def convert_command(
@@ -108,10 +114,18 @@ def convert_command(
     ] = False,
 ) -> None:
     """Convert a document to a knowledge graph."""
+    logger.debug("Starting convert command")
+    logger.debug(f"Source: {source}, Template: {template}")
+    logger.debug(
+        f"CLI args - Backend: {backend}, Inference: {inference}, Processing: {processing_mode}"
+    )
+
     rich_print("--- [blue]Docling-Graph Conversion[/blue] ---")
 
     # Load YAML configuration (flat)
+    logger.debug("Loading configuration from config.yaml")
     config_data = load_config()
+    logger.debug(f"Loaded config keys: {list(config_data.keys())}")
     defaults = config_data.get("defaults", {})
     docling_cfg = config_data.get("docling", {})
     models_from_yaml = config_data.get("models", {})  # flat models only
@@ -161,6 +175,9 @@ def convert_command(
     export_format_val = validate_export_format(export_format_val)
     validate_vlm_constraints(backend_val, inference_val)
 
+    logger.debug(f"Validated configuration - Backend: {backend_val}, Inference: {inference_val}")
+    logger.debug(f"Processing mode: {processing_mode_val}, Export format: {export_format_val}")
+
     # Display configuration
     rich_print("\n[bold]Configuration:[/bold]")
     rich_print(f" • Source: [cyan]{source}[/cyan]")
@@ -184,6 +201,7 @@ def convert_command(
     rich_print(f" • Per-page MD: [cyan]{final_export_per_page}[/cyan]")
 
     # Build typed config
+    logger.debug("Building PipelineConfig object")
     cfg = PipelineConfig(
         source=str(source),
         template=template,
@@ -205,8 +223,49 @@ def convert_command(
         output_dir=str(output_dir),
     )
 
+    logger.debug(f"PipelineConfig created: backend={cfg.backend}, inference={cfg.inference}")
+    logger.debug(f"Output directory: {cfg.output_dir}")
+
     # Run pipeline with normalized/validated config
+    logger.info("Starting pipeline execution")
     try:
+        logger.debug("Calling run_pipeline()")
         run_pipeline(cfg)
+        logger.info("--- Pipeline execution Completed Successfully ---")
+        rich_print("\n[green]--- Conversion Completed Successfully ---[/green]")
+    except ConfigurationError as e:
+        logger.error(f"Configuration error: {e.message}", exc_info=True)
+        rich_print(f"\n[red]Configuration Error:[/red] {e.message}")
+        if e.details:
+            rich_print("[yellow]Details:[/yellow]")
+            for key, value in e.details.items():
+                rich_print(f"  • {key}: {value}")
+        raise typer.Exit(code=1) from e
+    except ExtractionError as e:
+        logger.error(f"Extraction error: {e.message}", exc_info=True)
+        rich_print(f"\n[red]Extraction Error:[/red] {e.message}")
+        if e.details:
+            rich_print("[yellow]Details:[/yellow]")
+            for key, value in e.details.items():
+                rich_print(f"  • {key}: {value}")
+        raise typer.Exit(code=1) from e
+    except PipelineError as e:
+        logger.error(f"Pipeline error: {e.message}", exc_info=True)
+        rich_print(f"\n[red]Pipeline Error:[/red] {e.message}")
+        if e.details:
+            rich_print("[yellow]Details:[/yellow]")
+            for key, value in e.details.items():
+                rich_print(f"  • {key}: {value}")
+        raise typer.Exit(code=1) from e
+    except DoclingGraphError as e:
+        logger.error(f"Docling-graph error: {e.message}", exc_info=True)
+        rich_print(f"\n[red]Error:[/red] {e.message}")
+        if e.details:
+            rich_print("[yellow]Details:[/yellow]")
+            for key, value in e.details.items():
+                rich_print(f"  • {key}: {value}")
+        raise typer.Exit(code=1) from e
     except Exception as e:
-        raise ValueError(str(e)) from e
+        logger.exception(f"Unexpected error: {type(e).__name__}: {e}")
+        rich_print(f"\n[red]Unexpected error:[/red] {type(e).__name__}: {e}")
+        raise typer.Exit(code=1) from e
