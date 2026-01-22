@@ -84,9 +84,7 @@ jobs:
           # Semantic-release already created the GitHub release
           # Just upload the distribution files to it (excluding .attestation files)
           # Attestation files are kept on PyPI but filtered from GitHub releases for cleaner presentation
-          find dist/ -type f ! -name '*.attestation' -exec gh release upload '${{ github.ref_name }}' {} + \
-            --repo '${{ github.repository }}' \
-            --clobber
+          find dist/ -type f ! -name '*.attestation' -exec gh release upload '${{ github.ref_name }}' {} --repo '${{ github.repository }}' --clobber +
       
       - name: Summary
         run: |
@@ -95,12 +93,12 @@ jobs:
           
           echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Release **${VERSION}** published successfully" >> $GITHUB_STEP_SUMMARY
+          echo "- Release **${VERSION}** published successfully" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Published to:" >> $GITHUB_STEP_SUMMARY
-          echo "- 📦 [TestPyPI](https://test.pypi.org/project/docling-graph/${VERSION_NUM}/)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🚀 [PyPI](https://pypi.org/project/docling-graph/${VERSION_NUM}/)" >> $GITHUB_STEP_SUMMARY
-          echo "- 📝 [GitHub Release](https://github.com/${{ github.repository }}/releases/tag/${VERSION})" >> $GITHUB_STEP_SUMMARY
+          echo "- [TestPyPI](https://test.pypi.org/project/docling-graph/${VERSION_NUM}/)" >> $GITHUB_STEP_SUMMARY
+          echo "- [PyPI](https://pypi.org/project/docling-graph/${VERSION_NUM}/)" >> $GITHUB_STEP_SUMMARY
+          echo "- [GitHub Release](https://github.com/${{ github.repository }}/releases/tag/${VERSION})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Install:" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
