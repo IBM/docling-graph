@@ -1415,28 +1415,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#docling_graph.core.extractors.document_processor.DocumentProcessor.last_document" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        last_document
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docling_graph.core.extractors.document_processor.DocumentProcessor.last_source" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        last_source
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#docling_graph.core.extractors.document_processor.DocumentProcessor.__init__" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1914,28 +1892,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#docling_graph.core.extractors.document_processor.DocumentProcessor.last_document" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        last_document
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docling_graph.core.extractors.document_processor.DocumentProcessor.last_source" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        last_source
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#docling_graph.core.extractors.document_processor.DocumentProcessor.__init__" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2298,8 +2254,7 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>docling_graph/core/extractors/extractor_base.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
 <span class="normal"><a href="#__codelineno-0-15">15</a></span>
@@ -2314,23 +2269,32 @@
 <span class="normal"><a href="#__codelineno-0-24">24</a></span>
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">BaseExtractor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for all extraction strategies.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>    <span class="nd">@abstractmethod</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]:</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        Extracts structured data from a source document based on a Pydantic template.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">        Args:</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">            source (str): The file path to the document.</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">            template (Type[BaseModel]): The Pydantic model to extract into.</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">            List[BaseModel]: A list of Pydantic model instances.</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">                - For &quot;One-to-One&quot;, this list may contain N models (one per page).</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">                - For &quot;Many-to-One&quot;, this list will contain 1 model.</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">        &quot;&quot;&quot;</span>
+<span class="normal"><a href="#__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#__codelineno-0-32">32</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="k">class</span><span class="w"> </span><span class="nc">BaseExtractor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for all extraction strategies.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a>    <span class="nd">@abstractmethod</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract</span><span class="p">(</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">],</span> <span class="n">DoclingDocument</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        Extracts structured data from a source document based on a Pydantic template.</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        Args:</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">            source (str): The file path to the document.</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">            template (Type[BaseModel]): The Pydantic model to extract into.</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">        Returns:</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">            Tuple[List[BaseModel], Optional[DoclingDocument]]: A tuple containing:</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">                - List of Pydantic model instances:</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">                    - For &quot;One-to-One&quot;, this list may contain N models (one per page).</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">                    - For &quot;Many-to-One&quot;, this list will contain 1 model.</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">                - The DoclingDocument object used during extraction (or None if extraction failed).</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">        &quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2423,13 +2387,15 @@
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="typing.List">List</span>[<span title="pydantic.BaseModel">BaseModel</span>]</code>
+                  <code><span title="typing.Tuple">Tuple</span>[<span title="typing.List">List</span>[<span title="pydantic.BaseModel">BaseModel</span>], <span title="docling_core.types.doc.DoclingDocument">DoclingDocument</span> | None]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>List[BaseModel]: A list of Pydantic model instances.
-- For "One-to-One", this list may contain N models (one per page).
-- For "Many-to-One", this list will contain 1 model.</p>
+                <p>Tuple[List[BaseModel], Optional[DoclingDocument]]: A tuple containing:
+- List of Pydantic model instances:
+    - For "One-to-One", this list may contain N models (one per page).
+    - For "Many-to-One", this list will contain 1 model.
+- The DoclingDocument object used during extraction (or None if extraction failed).</p>
               </div>
             </td>
           </tr>
@@ -2439,8 +2405,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>docling_graph/core/extractors/extractor_base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-15">15</a></span>
 <span class="normal"><a href="#__codelineno-0-16">16</a></span>
 <span class="normal"><a href="#__codelineno-0-17">17</a></span>
 <span class="normal"><a href="#__codelineno-0-18">18</a></span>
@@ -2452,20 +2417,29 @@
 <span class="normal"><a href="#__codelineno-0-24">24</a></span>
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="nd">@abstractmethod</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]:</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    Extracts structured data from a source document based on a Pydantic template.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        source (str): The file path to the document.</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">        template (Type[BaseModel]): The Pydantic model to extract into.</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">        List[BaseModel]: A list of Pydantic model instances.</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">            - For &quot;One-to-One&quot;, this list may contain N models (one per page).</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">            - For &quot;Many-to-One&quot;, this list will contain 1 model.</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal"><a href="#__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#__codelineno-0-32">32</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="nd">@abstractmethod</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract</span><span class="p">(</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">],</span> <span class="n">DoclingDocument</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    Extracts structured data from a source document based on a Pydantic template.</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        source (str): The file path to the document.</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">        template (Type[BaseModel]): The Pydantic model to extract into.</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">        Tuple[List[BaseModel], Optional[DoclingDocument]]: A tuple containing:</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">            - List of Pydantic model instances:</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">                - For &quot;One-to-One&quot;, this list may contain N models (one per page).</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">                - For &quot;Many-to-One&quot;, this list will contain 1 model.</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">            - The DoclingDocument object used during extraction (or None if extraction failed).</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2731,37 +2705,7 @@
 <span class="normal"><a href="#__codelineno-0-243">243</a></span>
 <span class="normal"><a href="#__codelineno-0-244">244</a></span>
 <span class="normal"><a href="#__codelineno-0-245">245</a></span>
-<span class="normal"><a href="#__codelineno-0-246">246</a></span>
-<span class="normal"><a href="#__codelineno-0-247">247</a></span>
-<span class="normal"><a href="#__codelineno-0-248">248</a></span>
-<span class="normal"><a href="#__codelineno-0-249">249</a></span>
-<span class="normal"><a href="#__codelineno-0-250">250</a></span>
-<span class="normal"><a href="#__codelineno-0-251">251</a></span>
-<span class="normal"><a href="#__codelineno-0-252">252</a></span>
-<span class="normal"><a href="#__codelineno-0-253">253</a></span>
-<span class="normal"><a href="#__codelineno-0-254">254</a></span>
-<span class="normal"><a href="#__codelineno-0-255">255</a></span>
-<span class="normal"><a href="#__codelineno-0-256">256</a></span>
-<span class="normal"><a href="#__codelineno-0-257">257</a></span>
-<span class="normal"><a href="#__codelineno-0-258">258</a></span>
-<span class="normal"><a href="#__codelineno-0-259">259</a></span>
-<span class="normal"><a href="#__codelineno-0-260">260</a></span>
-<span class="normal"><a href="#__codelineno-0-261">261</a></span>
-<span class="normal"><a href="#__codelineno-0-262">262</a></span>
-<span class="normal"><a href="#__codelineno-0-263">263</a></span>
-<span class="normal"><a href="#__codelineno-0-264">264</a></span>
-<span class="normal"><a href="#__codelineno-0-265">265</a></span>
-<span class="normal"><a href="#__codelineno-0-266">266</a></span>
-<span class="normal"><a href="#__codelineno-0-267">267</a></span>
-<span class="normal"><a href="#__codelineno-0-268">268</a></span>
-<span class="normal"><a href="#__codelineno-0-269">269</a></span>
-<span class="normal"><a href="#__codelineno-0-270">270</a></span>
-<span class="normal"><a href="#__codelineno-0-271">271</a></span>
-<span class="normal"><a href="#__codelineno-0-272">272</a></span>
-<span class="normal"><a href="#__codelineno-0-273">273</a></span>
-<span class="normal"><a href="#__codelineno-0-274">274</a></span>
-<span class="normal"><a href="#__codelineno-0-275">275</a></span>
-<span class="normal"><a href="#__codelineno-0-276">276</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="k">class</span><span class="w"> </span><span class="nc">DocumentProcessor</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-246">246</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="k">class</span><span class="w"> </span><span class="nc">DocumentProcessor</span><span class="p">:</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles document conversion to Markdown format and chunking.&quot;&quot;&quot;</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -2789,233 +2733,203 @@
 <a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">                }</span>
 <a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-49" name="__codelineno-0-49"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">docling_config</span> <span class="o">=</span> <span class="n">docling_config</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_last_document</span><span class="p">:</span> <span class="n">DoclingDocument</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_last_source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a>
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a>        <span class="c1"># Initialize chunker if config provided</span>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a>        <span class="k">if</span> <span class="n">chunker_config</span><span class="p">:</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span> <span class="o">=</span> <span class="n">DocumentChunker</span><span class="p">(</span><span class="o">**</span><span class="n">chunker_config</span><span class="p">)</span>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>            <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>                <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized chunker with &quot;</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a>                <span class="sa">f</span><span class="s2">&quot;configuration: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">get_config_summary</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a>            <span class="p">)</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a>
-<a id="__codelineno-0-62" name="__codelineno-0-62"></a>        <span class="k">if</span> <span class="n">docling_config</span> <span class="o">==</span> <span class="s2">&quot;vision&quot;</span><span class="p">:</span>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a>            <span class="c1"># VLM Pipeline - Best for complex layouts and images</span>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">DocumentConverter</span><span class="p">(</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a>                <span class="n">format_options</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a>                    <span class="n">InputFormat</span><span class="o">.</span><span class="n">PDF</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span>
-<a id="__codelineno-0-67" name="__codelineno-0-67"></a>                        <span class="n">pipeline_cls</span><span class="o">=</span><span class="n">VlmPipeline</span><span class="p">,</span>
-<a id="__codelineno-0-68" name="__codelineno-0-68"></a>                    <span class="p">),</span>
-<a id="__codelineno-0-69" name="__codelineno-0-69"></a>                    <span class="n">InputFormat</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a>                        <span class="n">pipeline_cls</span><span class="o">=</span><span class="n">VlmPipeline</span><span class="p">,</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a>                    <span class="p">),</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a>                <span class="p">}</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="p">)</span>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a>            <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a>                <span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized with [magenta]VLM pipeline[/magenta]&quot;</span>
-<a id="__codelineno-0-76" name="__codelineno-0-76"></a>            <span class="p">)</span>
-<a id="__codelineno-0-77" name="__codelineno-0-77"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a>            <span class="c1"># Default Pipeline - Most accurate with OCR for standard documents</span>
-<a id="__codelineno-0-79" name="__codelineno-0-79"></a>            <span class="n">pipeline_options</span> <span class="o">=</span> <span class="n">PdfPipelineOptions</span><span class="p">()</span>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">do_ocr</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-81" name="__codelineno-0-81"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">do_table_structure</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">table_structure_options</span><span class="o">.</span><span class="n">do_cell_matching</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-83" name="__codelineno-0-83"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">ocr_options</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;fr&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-84" name="__codelineno-0-84"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">accelerator_options</span> <span class="o">=</span> <span class="n">AcceleratorOptions</span><span class="p">(</span>
-<a id="__codelineno-0-85" name="__codelineno-0-85"></a>                <span class="n">num_threads</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">AcceleratorDevice</span><span class="o">.</span><span class="n">AUTO</span>
-<a id="__codelineno-0-86" name="__codelineno-0-86"></a>            <span class="p">)</span>
-<a id="__codelineno-0-87" name="__codelineno-0-87"></a>
-<a id="__codelineno-0-88" name="__codelineno-0-88"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">DocumentConverter</span><span class="p">(</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a>                <span class="n">format_options</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-0-90" name="__codelineno-0-90"></a>                    <span class="n">InputFormat</span><span class="o">.</span><span class="n">PDF</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span><span class="n">pipeline_options</span><span class="o">=</span><span class="n">pipeline_options</span><span class="p">),</span>
-<a id="__codelineno-0-91" name="__codelineno-0-91"></a>                    <span class="n">InputFormat</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span><span class="n">pipeline_options</span><span class="o">=</span><span class="n">pipeline_options</span><span class="p">),</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a>                <span class="p">}</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a>            <span class="p">)</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>            <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-95" name="__codelineno-0-95"></a>                <span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized with [green]Classic OCR pipeline[/green] (English, French)&quot;</span>
-<a id="__codelineno-0-96" name="__codelineno-0-96"></a>            <span class="p">)</span>
-<a id="__codelineno-0-97" name="__codelineno-0-97"></a>
-<a id="__codelineno-0-98" name="__codelineno-0-98"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_docling_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DoclingDocument</span><span class="p">:</span>
-<a id="__codelineno-0-99" name="__codelineno-0-99"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="sd">        Converts a document to Docling&#39;s Document format.</span>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="sd">        Args:</span>
-<a id="__codelineno-0-103" name="__codelineno-0-103"></a><span class="sd">            source (str): Path to the source document.</span>
-<a id="__codelineno-0-104" name="__codelineno-0-104"></a>
-<a id="__codelineno-0-105" name="__codelineno-0-105"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-106" name="__codelineno-0-106"></a><span class="sd">            Document: Docling document object.</span>
-<a id="__codelineno-0-107" name="__codelineno-0-107"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-108" name="__codelineno-0-108"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-109" name="__codelineno-0-109"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Converting document: [yellow]</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">[/yellow]&quot;</span>
-<a id="__codelineno-0-110" name="__codelineno-0-110"></a>        <span class="p">)</span>
-<a id="__codelineno-0-111" name="__codelineno-0-111"></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<a id="__codelineno-0-112" name="__codelineno-0-112"></a>
-<a id="__codelineno-0-113" name="__codelineno-0-113"></a>        <span class="c1"># Cache the document and source for potential reuse</span>
-<a id="__codelineno-0-114" name="__codelineno-0-114"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_last_document</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">document</span>
-<a id="__codelineno-0-115" name="__codelineno-0-115"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_last_source</span> <span class="o">=</span> <span class="n">source</span>
-<a id="__codelineno-0-116" name="__codelineno-0-116"></a>
-<a id="__codelineno-0-117" name="__codelineno-0-117"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-118" name="__codelineno-0-118"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Converted [cyan]</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">num_pages</span><span class="p">()</span><span class="si">}</span><span class="s2">[/cyan] pages&quot;</span>
-<a id="__codelineno-0-119" name="__codelineno-0-119"></a>        <span class="p">)</span>
-<a id="__codelineno-0-120" name="__codelineno-0-120"></a>        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">document</span>
-<a id="__codelineno-0-121" name="__codelineno-0-121"></a>
-<a id="__codelineno-0-122" name="__codelineno-0-122"></a>    <span class="nd">@property</span>
-<a id="__codelineno-0-123" name="__codelineno-0-123"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">last_document</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DoclingDocument</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="sd">        Get the last converted DoclingDocument.</span>
-<a id="__codelineno-0-126" name="__codelineno-0-126"></a>
-<a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="sd">            The last converted document, or None if no document has been converted yet.</span>
-<a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-130" name="__codelineno-0-130"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_document</span>
-<a id="__codelineno-0-131" name="__codelineno-0-131"></a>
-<a id="__codelineno-0-132" name="__codelineno-0-132"></a>    <span class="nd">@property</span>
-<a id="__codelineno-0-133" name="__codelineno-0-133"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">last_source</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-135" name="__codelineno-0-135"></a><span class="sd">        Get the source path of the last converted document.</span>
-<a id="__codelineno-0-136" name="__codelineno-0-136"></a>
-<a id="__codelineno-0-137" name="__codelineno-0-137"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-138" name="__codelineno-0-138"></a><span class="sd">            The source path of the last converted document, or None.</span>
-<a id="__codelineno-0-139" name="__codelineno-0-139"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-140" name="__codelineno-0-140"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_source</span>
-<a id="__codelineno-0-141" name="__codelineno-0-141"></a>
-<a id="__codelineno-0-142" name="__codelineno-0-142"></a>    <span class="nd">@overload</span>
-<a id="__codelineno-0-143" name="__codelineno-0-143"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_chunks</span><span class="p">(</span>
-<a id="__codelineno-0-144" name="__codelineno-0-144"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">,</span> <span class="n">with_stats</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span>
-<a id="__codelineno-0-145" name="__codelineno-0-145"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]:</span> <span class="o">...</span>
-<a id="__codelineno-0-146" name="__codelineno-0-146"></a>
-<a id="__codelineno-0-147" name="__codelineno-0-147"></a>    <span class="nd">@overload</span>
-<a id="__codelineno-0-148" name="__codelineno-0-148"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_chunks</span><span class="p">(</span>
-<a id="__codelineno-0-149" name="__codelineno-0-149"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">,</span> <span class="n">with_stats</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-<a id="__codelineno-0-150" name="__codelineno-0-150"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
-<a id="__codelineno-0-151" name="__codelineno-0-151"></a>
-<a id="__codelineno-0-152" name="__codelineno-0-152"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">,</span> <span class="n">with_stats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<a id="__codelineno-0-153" name="__codelineno-0-153"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-154" name="__codelineno-0-154"></a><span class="sd">        Extract structure-aware chunks from document using HybridChunker.</span>
-<a id="__codelineno-0-155" name="__codelineno-0-155"></a>
-<a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="sd">        This replaces naive text splitting with semantic chunking that preserves:</span>
-<a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="sd">        - Tables</span>
-<a id="__codelineno-0-158" name="__codelineno-0-158"></a><span class="sd">        - Lists</span>
-<a id="__codelineno-0-159" name="__codelineno-0-159"></a><span class="sd">        - Section hierarchies</span>
-<a id="__codelineno-0-160" name="__codelineno-0-160"></a><span class="sd">        - Semantic boundaries</span>
-<a id="__codelineno-0-161" name="__codelineno-0-161"></a>
-<a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="sd">        Args:</span>
-<a id="__codelineno-0-163" name="__codelineno-0-163"></a><span class="sd">            document: DoclingDocument from convert_to_docling_doc()</span>
-<a id="__codelineno-0-164" name="__codelineno-0-164"></a><span class="sd">            with_stats: If True, return (chunks, stats). If False, return just chunks.</span>
-<a id="__codelineno-0-165" name="__codelineno-0-165"></a>
-<a id="__codelineno-0-166" name="__codelineno-0-166"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="sd">            List of contextualized text chunks (or tuple with stats if with_stats=True)</span>
-<a id="__codelineno-0-168" name="__codelineno-0-168"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-169" name="__codelineno-0-169"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="p">:</span>
-<a id="__codelineno-0-170" name="__codelineno-0-170"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<a id="__codelineno-0-171" name="__codelineno-0-171"></a>                <span class="s2">&quot;Chunker not initialized. Pass chunker_config to __init__() to enable chunking.&quot;</span>
-<a id="__codelineno-0-172" name="__codelineno-0-172"></a>            <span class="p">)</span>
-<a id="__codelineno-0-173" name="__codelineno-0-173"></a>
-<a id="__codelineno-0-174" name="__codelineno-0-174"></a>        <span class="k">if</span> <span class="n">with_stats</span><span class="p">:</span>
-<a id="__codelineno-0-175" name="__codelineno-0-175"></a>            <span class="n">chunks</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">chunk_document_with_stats</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
-<a id="__codelineno-0-176" name="__codelineno-0-176"></a>            <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-177" name="__codelineno-0-177"></a>                <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Created [cyan]</span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;total_chunks&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">[/cyan] chunks &quot;</span>
-<a id="__codelineno-0-178" name="__codelineno-0-178"></a>                <span class="sa">f</span><span class="s2">&quot;(avg: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;avg_tokens&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> tokens, max: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;max_tokens_in_chunk&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> tokens)&quot;</span>
-<a id="__codelineno-0-179" name="__codelineno-0-179"></a>            <span class="p">)</span>
-<a id="__codelineno-0-180" name="__codelineno-0-180"></a>            <span class="k">return</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">stats</span>
-<a id="__codelineno-0-181" name="__codelineno-0-181"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-182" name="__codelineno-0-182"></a>            <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">chunk_document</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
-<a id="__codelineno-0-183" name="__codelineno-0-183"></a>            <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-184" name="__codelineno-0-184"></a>                <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Created [cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] &quot;</span>
-<a id="__codelineno-0-185" name="__codelineno-0-185"></a>                <span class="s2">&quot;structure-aware chunks&quot;</span>
-<a id="__codelineno-0-186" name="__codelineno-0-186"></a>            <span class="p">)</span>
-<a id="__codelineno-0-187" name="__codelineno-0-187"></a>            <span class="k">return</span> <span class="n">chunks</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a>        <span class="c1"># Initialize chunker if config provided</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a>        <span class="k">if</span> <span class="n">chunker_config</span><span class="p">:</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span> <span class="o">=</span> <span class="n">DocumentChunker</span><span class="p">(</span><span class="o">**</span><span class="n">chunker_config</span><span class="p">)</span>
+<a id="__codelineno-0-55" name="__codelineno-0-55"></a>            <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56"></a>                <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized chunker with &quot;</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57"></a>                <span class="sa">f</span><span class="s2">&quot;configuration: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">get_config_summary</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a>            <span class="p">)</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a>
+<a id="__codelineno-0-60" name="__codelineno-0-60"></a>        <span class="k">if</span> <span class="n">docling_config</span> <span class="o">==</span> <span class="s2">&quot;vision&quot;</span><span class="p">:</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61"></a>            <span class="c1"># VLM Pipeline - Best for complex layouts and images</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">DocumentConverter</span><span class="p">(</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a>                <span class="n">format_options</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a>                    <span class="n">InputFormat</span><span class="o">.</span><span class="n">PDF</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a>                        <span class="n">pipeline_cls</span><span class="o">=</span><span class="n">VlmPipeline</span><span class="p">,</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66"></a>                    <span class="p">),</span>
+<a id="__codelineno-0-67" name="__codelineno-0-67"></a>                    <span class="n">InputFormat</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68"></a>                        <span class="n">pipeline_cls</span><span class="o">=</span><span class="n">VlmPipeline</span><span class="p">,</span>
+<a id="__codelineno-0-69" name="__codelineno-0-69"></a>                    <span class="p">),</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a>                <span class="p">}</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a>            <span class="p">)</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a>            <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-73" name="__codelineno-0-73"></a>                <span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized with [magenta]VLM pipeline[/magenta]&quot;</span>
+<a id="__codelineno-0-74" name="__codelineno-0-74"></a>            <span class="p">)</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a>            <span class="c1"># Default Pipeline - Most accurate with OCR for standard documents</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77"></a>            <span class="n">pipeline_options</span> <span class="o">=</span> <span class="n">PdfPipelineOptions</span><span class="p">()</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">do_ocr</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">do_table_structure</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">table_structure_options</span><span class="o">.</span><span class="n">do_cell_matching</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-81" name="__codelineno-0-81"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">ocr_options</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;fr&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a>            <span class="n">pipeline_options</span><span class="o">.</span><span class="n">accelerator_options</span> <span class="o">=</span> <span class="n">AcceleratorOptions</span><span class="p">(</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83"></a>                <span class="n">num_threads</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">AcceleratorDevice</span><span class="o">.</span><span class="n">AUTO</span>
+<a id="__codelineno-0-84" name="__codelineno-0-84"></a>            <span class="p">)</span>
+<a id="__codelineno-0-85" name="__codelineno-0-85"></a>
+<a id="__codelineno-0-86" name="__codelineno-0-86"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">DocumentConverter</span><span class="p">(</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a>                <span class="n">format_options</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a>                    <span class="n">InputFormat</span><span class="o">.</span><span class="n">PDF</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span><span class="n">pipeline_options</span><span class="o">=</span><span class="n">pipeline_options</span><span class="p">),</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a>                    <span class="n">InputFormat</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span><span class="n">pipeline_options</span><span class="o">=</span><span class="n">pipeline_options</span><span class="p">),</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a>                <span class="p">}</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a>            <span class="p">)</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a>            <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>                <span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized with [green]Classic OCR pipeline[/green] (English, French)&quot;</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>            <span class="p">)</span>
+<a id="__codelineno-0-95" name="__codelineno-0-95"></a>
+<a id="__codelineno-0-96" name="__codelineno-0-96"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_docling_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DoclingDocument</span><span class="p">:</span>
+<a id="__codelineno-0-97" name="__codelineno-0-97"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-98" name="__codelineno-0-98"></a><span class="sd">        Converts a document to Docling&#39;s Document format.</span>
+<a id="__codelineno-0-99" name="__codelineno-0-99"></a>
+<a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="sd">        Args:</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101"></a><span class="sd">            source (str): Path to the source document.</span>
+<a id="__codelineno-0-102" name="__codelineno-0-102"></a>
+<a id="__codelineno-0-103" name="__codelineno-0-103"></a><span class="sd">        Returns:</span>
+<a id="__codelineno-0-104" name="__codelineno-0-104"></a><span class="sd">            Document: Docling document object.</span>
+<a id="__codelineno-0-105" name="__codelineno-0-105"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-106" name="__codelineno-0-106"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-107" name="__codelineno-0-107"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Converting document: [yellow]</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">[/yellow]&quot;</span>
+<a id="__codelineno-0-108" name="__codelineno-0-108"></a>        <span class="p">)</span>
+<a id="__codelineno-0-109" name="__codelineno-0-109"></a>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-0-110" name="__codelineno-0-110"></a>
+<a id="__codelineno-0-111" name="__codelineno-0-111"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-112" name="__codelineno-0-112"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Converted [cyan]</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">num_pages</span><span class="p">()</span><span class="si">}</span><span class="s2">[/cyan] pages&quot;</span>
+<a id="__codelineno-0-113" name="__codelineno-0-113"></a>        <span class="p">)</span>
+<a id="__codelineno-0-114" name="__codelineno-0-114"></a>        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">document</span>
+<a id="__codelineno-0-115" name="__codelineno-0-115"></a>
+<a id="__codelineno-0-116" name="__codelineno-0-116"></a>    <span class="nd">@overload</span>
+<a id="__codelineno-0-117" name="__codelineno-0-117"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_chunks</span><span class="p">(</span>
+<a id="__codelineno-0-118" name="__codelineno-0-118"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">,</span> <span class="n">with_stats</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+<a id="__codelineno-0-119" name="__codelineno-0-119"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]:</span> <span class="o">...</span>
+<a id="__codelineno-0-120" name="__codelineno-0-120"></a>
+<a id="__codelineno-0-121" name="__codelineno-0-121"></a>    <span class="nd">@overload</span>
+<a id="__codelineno-0-122" name="__codelineno-0-122"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_chunks</span><span class="p">(</span>
+<a id="__codelineno-0-123" name="__codelineno-0-123"></a>        <span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">,</span> <span class="n">with_stats</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-0-124" name="__codelineno-0-124"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+<a id="__codelineno-0-125" name="__codelineno-0-125"></a>
+<a id="__codelineno-0-126" name="__codelineno-0-126"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">,</span> <span class="n">with_stats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="sd">        Extract structure-aware chunks from document using HybridChunker.</span>
+<a id="__codelineno-0-129" name="__codelineno-0-129"></a>
+<a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="sd">        This replaces naive text splitting with semantic chunking that preserves:</span>
+<a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">        - Tables</span>
+<a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">        - Lists</span>
+<a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">        - Section hierarchies</span>
+<a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">        - Semantic boundaries</span>
+<a id="__codelineno-0-135" name="__codelineno-0-135"></a>
+<a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="sd">        Args:</span>
+<a id="__codelineno-0-137" name="__codelineno-0-137"></a><span class="sd">            document: DoclingDocument from convert_to_docling_doc()</span>
+<a id="__codelineno-0-138" name="__codelineno-0-138"></a><span class="sd">            with_stats: If True, return (chunks, stats). If False, return just chunks.</span>
+<a id="__codelineno-0-139" name="__codelineno-0-139"></a>
+<a id="__codelineno-0-140" name="__codelineno-0-140"></a><span class="sd">        Returns:</span>
+<a id="__codelineno-0-141" name="__codelineno-0-141"></a><span class="sd">            List of contextualized text chunks (or tuple with stats if with_stats=True)</span>
+<a id="__codelineno-0-142" name="__codelineno-0-142"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-143" name="__codelineno-0-143"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="p">:</span>
+<a id="__codelineno-0-144" name="__codelineno-0-144"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<a id="__codelineno-0-145" name="__codelineno-0-145"></a>                <span class="s2">&quot;Chunker not initialized. Pass chunker_config to __init__() to enable chunking.&quot;</span>
+<a id="__codelineno-0-146" name="__codelineno-0-146"></a>            <span class="p">)</span>
+<a id="__codelineno-0-147" name="__codelineno-0-147"></a>
+<a id="__codelineno-0-148" name="__codelineno-0-148"></a>        <span class="k">if</span> <span class="n">with_stats</span><span class="p">:</span>
+<a id="__codelineno-0-149" name="__codelineno-0-149"></a>            <span class="n">chunks</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">chunk_document_with_stats</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+<a id="__codelineno-0-150" name="__codelineno-0-150"></a>            <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-151" name="__codelineno-0-151"></a>                <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Created [cyan]</span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;total_chunks&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">[/cyan] chunks &quot;</span>
+<a id="__codelineno-0-152" name="__codelineno-0-152"></a>                <span class="sa">f</span><span class="s2">&quot;(avg: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;avg_tokens&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> tokens, max: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;max_tokens_in_chunk&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> tokens)&quot;</span>
+<a id="__codelineno-0-153" name="__codelineno-0-153"></a>            <span class="p">)</span>
+<a id="__codelineno-0-154" name="__codelineno-0-154"></a>            <span class="k">return</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">stats</span>
+<a id="__codelineno-0-155" name="__codelineno-0-155"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-156" name="__codelineno-0-156"></a>            <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">chunk_document</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+<a id="__codelineno-0-157" name="__codelineno-0-157"></a>            <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-158" name="__codelineno-0-158"></a>                <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Created [cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] &quot;</span>
+<a id="__codelineno-0-159" name="__codelineno-0-159"></a>                <span class="s2">&quot;structure-aware chunks&quot;</span>
+<a id="__codelineno-0-160" name="__codelineno-0-160"></a>            <span class="p">)</span>
+<a id="__codelineno-0-161" name="__codelineno-0-161"></a>            <span class="k">return</span> <span class="n">chunks</span>
+<a id="__codelineno-0-162" name="__codelineno-0-162"></a>
+<a id="__codelineno-0-163" name="__codelineno-0-163"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_page_markdowns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<a id="__codelineno-0-164" name="__codelineno-0-164"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-165" name="__codelineno-0-165"></a><span class="sd">        Extracts Markdown content for each page.</span>
+<a id="__codelineno-0-166" name="__codelineno-0-166"></a>
+<a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="sd">        Args:</span>
+<a id="__codelineno-0-168" name="__codelineno-0-168"></a><span class="sd">            document (Document): Docling document object.</span>
+<a id="__codelineno-0-169" name="__codelineno-0-169"></a>
+<a id="__codelineno-0-170" name="__codelineno-0-170"></a><span class="sd">        Returns:</span>
+<a id="__codelineno-0-171" name="__codelineno-0-171"></a><span class="sd">            List[str]: List of Markdown strings, one per page.</span>
+<a id="__codelineno-0-172" name="__codelineno-0-172"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-173" name="__codelineno-0-173"></a>        <span class="n">page_markdowns</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-174" name="__codelineno-0-174"></a>        <span class="k">for</span> <span class="n">page_no</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+<a id="__codelineno-0-175" name="__codelineno-0-175"></a>            <span class="n">md</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">(</span><span class="n">page_no</span><span class="o">=</span><span class="n">page_no</span><span class="p">)</span>
+<a id="__codelineno-0-176" name="__codelineno-0-176"></a>            <span class="n">page_markdowns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+<a id="__codelineno-0-177" name="__codelineno-0-177"></a>
+<a id="__codelineno-0-178" name="__codelineno-0-178"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-179" name="__codelineno-0-179"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Extracted Markdown for [cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">page_markdowns</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] pages&quot;</span>
+<a id="__codelineno-0-180" name="__codelineno-0-180"></a>        <span class="p">)</span>
+<a id="__codelineno-0-181" name="__codelineno-0-181"></a>        <span class="k">return</span> <span class="n">page_markdowns</span>
+<a id="__codelineno-0-182" name="__codelineno-0-182"></a>
+<a id="__codelineno-0-183" name="__codelineno-0-183"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<a id="__codelineno-0-184" name="__codelineno-0-184"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;High-level helper to get per-page markdowns from a source file.</span>
+<a id="__codelineno-0-185" name="__codelineno-0-185"></a>
+<a id="__codelineno-0-186" name="__codelineno-0-186"></a><span class="sd">        This wraps conversion and page extraction into a single call, which</span>
+<a id="__codelineno-0-187" name="__codelineno-0-187"></a><span class="sd">        simplifies strategy code and matches the interface commonly mocked in tests.</span>
 <a id="__codelineno-0-188" name="__codelineno-0-188"></a>
-<a id="__codelineno-0-189" name="__codelineno-0-189"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_page_markdowns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-191" name="__codelineno-0-191"></a><span class="sd">        Extracts Markdown content for each page.</span>
-<a id="__codelineno-0-192" name="__codelineno-0-192"></a>
-<a id="__codelineno-0-193" name="__codelineno-0-193"></a><span class="sd">        Args:</span>
-<a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="sd">            document (Document): Docling document object.</span>
-<a id="__codelineno-0-195" name="__codelineno-0-195"></a>
-<a id="__codelineno-0-196" name="__codelineno-0-196"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-197" name="__codelineno-0-197"></a><span class="sd">            List[str]: List of Markdown strings, one per page.</span>
-<a id="__codelineno-0-198" name="__codelineno-0-198"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-199" name="__codelineno-0-199"></a>        <span class="n">page_markdowns</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-200" name="__codelineno-0-200"></a>        <span class="k">for</span> <span class="n">page_no</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-<a id="__codelineno-0-201" name="__codelineno-0-201"></a>            <span class="n">md</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">(</span><span class="n">page_no</span><span class="o">=</span><span class="n">page_no</span><span class="p">)</span>
-<a id="__codelineno-0-202" name="__codelineno-0-202"></a>            <span class="n">page_markdowns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
-<a id="__codelineno-0-203" name="__codelineno-0-203"></a>
-<a id="__codelineno-0-204" name="__codelineno-0-204"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-205" name="__codelineno-0-205"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Extracted Markdown for [cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">page_markdowns</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] pages&quot;</span>
-<a id="__codelineno-0-206" name="__codelineno-0-206"></a>        <span class="p">)</span>
-<a id="__codelineno-0-207" name="__codelineno-0-207"></a>        <span class="k">return</span> <span class="n">page_markdowns</span>
-<a id="__codelineno-0-208" name="__codelineno-0-208"></a>
-<a id="__codelineno-0-209" name="__codelineno-0-209"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;High-level helper to get per-page markdowns from a source file.</span>
-<a id="__codelineno-0-211" name="__codelineno-0-211"></a>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">        This wraps conversion and page extraction into a single call, which</span>
-<a id="__codelineno-0-213" name="__codelineno-0-213"></a><span class="sd">        simplifies strategy code and matches the interface commonly mocked in tests.</span>
-<a id="__codelineno-0-214" name="__codelineno-0-214"></a>
-<a id="__codelineno-0-215" name="__codelineno-0-215"></a><span class="sd">        Args:</span>
-<a id="__codelineno-0-216" name="__codelineno-0-216"></a><span class="sd">            source: Path to the source document.</span>
-<a id="__codelineno-0-217" name="__codelineno-0-217"></a>
-<a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-219" name="__codelineno-0-219"></a><span class="sd">            List of Markdown strings, one per page.</span>
-<a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-221" name="__codelineno-0-221"></a>        <span class="n">rich_print</span><span class="p">(</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Processing document into per-page markdowns&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-222" name="__codelineno-0-222"></a>        <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_docling_doc</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<a id="__codelineno-0-223" name="__codelineno-0-223"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_page_markdowns</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
-<a id="__codelineno-0-224" name="__codelineno-0-224"></a>
-<a id="__codelineno-0-225" name="__codelineno-0-225"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_document_with_chunking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="sd">        Process document with structure-aware chunking instead of page-by-page.</span>
-<a id="__codelineno-0-228" name="__codelineno-0-228"></a>
-<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">        This is the recommended approach for LLM extraction as it:</span>
-<a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="sd">        - Preserves tables and lists</span>
-<a id="__codelineno-0-231" name="__codelineno-0-231"></a><span class="sd">        - Respects semantic boundaries</span>
-<a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="sd">        - Optimizes for context window usage</span>
-<a id="__codelineno-0-233" name="__codelineno-0-233"></a>
-<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">        Args:</span>
-<a id="__codelineno-0-235" name="__codelineno-0-235"></a><span class="sd">            source: Path to the source document.</span>
-<a id="__codelineno-0-236" name="__codelineno-0-236"></a>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-238" name="__codelineno-0-238"></a><span class="sd">            List of structure-aware text chunks</span>
-<a id="__codelineno-0-239" name="__codelineno-0-239"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-240" name="__codelineno-0-240"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-241" name="__codelineno-0-241"></a>            <span class="s2">&quot;[blue][DocumentProcessor][/blue] Processing document with structure-aware chunking&quot;</span>
-<a id="__codelineno-0-242" name="__codelineno-0-242"></a>        <span class="p">)</span>
-<a id="__codelineno-0-243" name="__codelineno-0-243"></a>        <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_docling_doc</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<a id="__codelineno-0-244" name="__codelineno-0-244"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_chunks</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
-<a id="__codelineno-0-245" name="__codelineno-0-245"></a>
-<a id="__codelineno-0-246" name="__codelineno-0-246"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_full_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-247" name="__codelineno-0-247"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-248" name="__codelineno-0-248"></a><span class="sd">        Extracts the full document as a single Markdown string.</span>
-<a id="__codelineno-0-249" name="__codelineno-0-249"></a>
-<a id="__codelineno-0-250" name="__codelineno-0-250"></a><span class="sd">        Args:</span>
-<a id="__codelineno-0-251" name="__codelineno-0-251"></a><span class="sd">            document (Document): Docling document object.</span>
-<a id="__codelineno-0-252" name="__codelineno-0-252"></a>
-<a id="__codelineno-0-253" name="__codelineno-0-253"></a><span class="sd">        Returns:</span>
-<a id="__codelineno-0-254" name="__codelineno-0-254"></a><span class="sd">            str: Complete document in Markdown format.</span>
-<a id="__codelineno-0-255" name="__codelineno-0-255"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-256" name="__codelineno-0-256"></a>        <span class="n">md</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">()</span>
-<a id="__codelineno-0-257" name="__codelineno-0-257"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-258" name="__codelineno-0-258"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Extracted full document Markdown ([cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">md</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] chars)&quot;</span>
-<a id="__codelineno-0-259" name="__codelineno-0-259"></a>        <span class="p">)</span>
-<a id="__codelineno-0-260" name="__codelineno-0-260"></a>        <span class="k">return</span> <span class="n">md</span>
-<a id="__codelineno-0-261" name="__codelineno-0-261"></a>
-<a id="__codelineno-0-262" name="__codelineno-0-262"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-263" name="__codelineno-0-263"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean up document converter resources.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-264" name="__codelineno-0-264"></a>        <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-0-265" name="__codelineno-0-265"></a>            <span class="c1"># Clear cached document</span>
-<a id="__codelineno-0-266" name="__codelineno-0-266"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_last_document</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-267" name="__codelineno-0-267"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_last_source</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-268" name="__codelineno-0-268"></a>
-<a id="__codelineno-0-269" name="__codelineno-0-269"></a>            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;converter&quot;</span><span class="p">):</span>
-<a id="__codelineno-0-270" name="__codelineno-0-270"></a>                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span>
-<a id="__codelineno-0-271" name="__codelineno-0-271"></a>            <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-<a id="__codelineno-0-272" name="__codelineno-0-272"></a>            <span class="n">rich_print</span><span class="p">(</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] [green]Cleaned up resources[/green]&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-273" name="__codelineno-0-273"></a>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-0-274" name="__codelineno-0-274"></a>            <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-275" name="__codelineno-0-275"></a>                <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] [yellow]Warning during cleanup:[/yellow] </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
-<a id="__codelineno-0-276" name="__codelineno-0-276"></a>            <span class="p">)</span>
+<a id="__codelineno-0-189" name="__codelineno-0-189"></a><span class="sd">        Args:</span>
+<a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="sd">            source: Path to the source document.</span>
+<a id="__codelineno-0-191" name="__codelineno-0-191"></a>
+<a id="__codelineno-0-192" name="__codelineno-0-192"></a><span class="sd">        Returns:</span>
+<a id="__codelineno-0-193" name="__codelineno-0-193"></a><span class="sd">            List of Markdown strings, one per page.</span>
+<a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-195" name="__codelineno-0-195"></a>        <span class="n">rich_print</span><span class="p">(</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Processing document into per-page markdowns&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-196" name="__codelineno-0-196"></a>        <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_docling_doc</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-0-197" name="__codelineno-0-197"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_page_markdowns</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+<a id="__codelineno-0-198" name="__codelineno-0-198"></a>
+<a id="__codelineno-0-199" name="__codelineno-0-199"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_document_with_chunking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<a id="__codelineno-0-200" name="__codelineno-0-200"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="sd">        Process document with structure-aware chunking instead of page-by-page.</span>
+<a id="__codelineno-0-202" name="__codelineno-0-202"></a>
+<a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="sd">        This is the recommended approach for LLM extraction as it:</span>
+<a id="__codelineno-0-204" name="__codelineno-0-204"></a><span class="sd">        - Preserves tables and lists</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="sd">        - Respects semantic boundaries</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="sd">        - Optimizes for context window usage</span>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a>
+<a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="sd">        Args:</span>
+<a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">            source: Path to the source document.</span>
+<a id="__codelineno-0-210" name="__codelineno-0-210"></a>
+<a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">        Returns:</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">            List of structure-aware text chunks</span>
+<a id="__codelineno-0-213" name="__codelineno-0-213"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-214" name="__codelineno-0-214"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-215" name="__codelineno-0-215"></a>            <span class="s2">&quot;[blue][DocumentProcessor][/blue] Processing document with structure-aware chunking&quot;</span>
+<a id="__codelineno-0-216" name="__codelineno-0-216"></a>        <span class="p">)</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217"></a>        <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_docling_doc</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_chunks</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+<a id="__codelineno-0-219" name="__codelineno-0-219"></a>
+<a id="__codelineno-0-220" name="__codelineno-0-220"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_full_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">        Extracts the full document as a single Markdown string.</span>
+<a id="__codelineno-0-223" name="__codelineno-0-223"></a>
+<a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">        Args:</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">            document (Document): Docling document object.</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226"></a>
+<a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="sd">        Returns:</span>
+<a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="sd">            str: Complete document in Markdown format.</span>
+<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-230" name="__codelineno-0-230"></a>        <span class="n">md</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">()</span>
+<a id="__codelineno-0-231" name="__codelineno-0-231"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-232" name="__codelineno-0-232"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Extracted full document Markdown ([cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">md</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] chars)&quot;</span>
+<a id="__codelineno-0-233" name="__codelineno-0-233"></a>        <span class="p">)</span>
+<a id="__codelineno-0-234" name="__codelineno-0-234"></a>        <span class="k">return</span> <span class="n">md</span>
+<a id="__codelineno-0-235" name="__codelineno-0-235"></a>
+<a id="__codelineno-0-236" name="__codelineno-0-236"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean up document converter resources.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-239" name="__codelineno-0-239"></a>            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;converter&quot;</span><span class="p">):</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240"></a>                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241"></a>            <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242"></a>            <span class="n">rich_print</span><span class="p">(</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] [green]Cleaned up resources[/green]&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-243" name="__codelineno-0-243"></a>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-0-244" name="__codelineno-0-244"></a>            <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-245" name="__codelineno-0-245"></a>                <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] [yellow]Warning during cleanup:[/yellow] </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246"></a>            <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3028,96 +2942,6 @@
 
 
 
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="docling_graph.core.extractors.document_processor.DocumentProcessor.last_document" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">last_document</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-<a href="#docling_graph.core.extractors.document_processor.DocumentProcessor.last_document" class="headerlink" title="Permanent link">&para;</a></h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Get the last converted DoclingDocument.</p>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="docling_core.types.doc.DoclingDocument">DoclingDocument</span> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The last converted document, or None if no document has been converted yet.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="docling_graph.core.extractors.document_processor.DocumentProcessor.last_source" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">last_source</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
-  </span>
-
-<a href="#docling_graph.core.extractors.document_processor.DocumentProcessor.last_source" class="headerlink" title="Permanent link">&para;</a></h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Get the source path of the last converted document.</p>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="str">str</span> | None</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The source path of the last converted document, or None.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-    </div>
-
-</div>
 
 
 
@@ -3266,9 +3090,7 @@ Or use provider shortcut:
 <span class="normal"><a href="#__codelineno-0-91">91</a></span>
 <span class="normal"><a href="#__codelineno-0-92">92</a></span>
 <span class="normal"><a href="#__codelineno-0-93">93</a></span>
-<span class="normal"><a href="#__codelineno-0-94">94</a></span>
-<span class="normal"><a href="#__codelineno-0-95">95</a></span>
-<span class="normal"><a href="#__codelineno-0-96">96</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-94">94</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">docling_config</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ocr&quot;</span><span class="p">,</span>
 <a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="n">chunker_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3293,53 +3115,51 @@ Or use provider shortcut:
 <a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">            }</span>
 <a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-49" name="__codelineno-0-49"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">docling_config</span> <span class="o">=</span> <span class="n">docling_config</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_last_document</span><span class="p">:</span> <span class="n">DoclingDocument</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_last_source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a>
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a>    <span class="c1"># Initialize chunker if config provided</span>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="k">if</span> <span class="n">chunker_config</span><span class="p">:</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span> <span class="o">=</span> <span class="n">DocumentChunker</span><span class="p">(</span><span class="o">**</span><span class="n">chunker_config</span><span class="p">)</span>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized chunker with &quot;</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a>            <span class="sa">f</span><span class="s2">&quot;configuration: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">get_config_summary</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a>        <span class="p">)</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a>
-<a id="__codelineno-0-62" name="__codelineno-0-62"></a>    <span class="k">if</span> <span class="n">docling_config</span> <span class="o">==</span> <span class="s2">&quot;vision&quot;</span><span class="p">:</span>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a>        <span class="c1"># VLM Pipeline - Best for complex layouts and images</span>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">DocumentConverter</span><span class="p">(</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a>            <span class="n">format_options</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a>                <span class="n">InputFormat</span><span class="o">.</span><span class="n">PDF</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span>
-<a id="__codelineno-0-67" name="__codelineno-0-67"></a>                    <span class="n">pipeline_cls</span><span class="o">=</span><span class="n">VlmPipeline</span><span class="p">,</span>
-<a id="__codelineno-0-68" name="__codelineno-0-68"></a>                <span class="p">),</span>
-<a id="__codelineno-0-69" name="__codelineno-0-69"></a>                <span class="n">InputFormat</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a>                    <span class="n">pipeline_cls</span><span class="o">=</span><span class="n">VlmPipeline</span><span class="p">,</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a>                <span class="p">),</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a>            <span class="p">}</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a>        <span class="p">)</span>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a>            <span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized with [magenta]VLM pipeline[/magenta]&quot;</span>
-<a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="p">)</span>
-<a id="__codelineno-0-77" name="__codelineno-0-77"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a>        <span class="c1"># Default Pipeline - Most accurate with OCR for standard documents</span>
-<a id="__codelineno-0-79" name="__codelineno-0-79"></a>        <span class="n">pipeline_options</span> <span class="o">=</span> <span class="n">PdfPipelineOptions</span><span class="p">()</span>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">do_ocr</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-81" name="__codelineno-0-81"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">do_table_structure</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">table_structure_options</span><span class="o">.</span><span class="n">do_cell_matching</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-0-83" name="__codelineno-0-83"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">ocr_options</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;fr&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">accelerator_options</span> <span class="o">=</span> <span class="n">AcceleratorOptions</span><span class="p">(</span>
-<a id="__codelineno-0-85" name="__codelineno-0-85"></a>            <span class="n">num_threads</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">AcceleratorDevice</span><span class="o">.</span><span class="n">AUTO</span>
-<a id="__codelineno-0-86" name="__codelineno-0-86"></a>        <span class="p">)</span>
-<a id="__codelineno-0-87" name="__codelineno-0-87"></a>
-<a id="__codelineno-0-88" name="__codelineno-0-88"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">DocumentConverter</span><span class="p">(</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a>            <span class="n">format_options</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-0-90" name="__codelineno-0-90"></a>                <span class="n">InputFormat</span><span class="o">.</span><span class="n">PDF</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span><span class="n">pipeline_options</span><span class="o">=</span><span class="n">pipeline_options</span><span class="p">),</span>
-<a id="__codelineno-0-91" name="__codelineno-0-91"></a>                <span class="n">InputFormat</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span><span class="n">pipeline_options</span><span class="o">=</span><span class="n">pipeline_options</span><span class="p">),</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a>            <span class="p">}</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a>        <span class="p">)</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-95" name="__codelineno-0-95"></a>            <span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized with [green]Classic OCR pipeline[/green] (English, French)&quot;</span>
-<a id="__codelineno-0-96" name="__codelineno-0-96"></a>        <span class="p">)</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a>    <span class="c1"># Initialize chunker if config provided</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a>    <span class="k">if</span> <span class="n">chunker_config</span><span class="p">:</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span> <span class="o">=</span> <span class="n">DocumentChunker</span><span class="p">(</span><span class="o">**</span><span class="n">chunker_config</span><span class="p">)</span>
+<a id="__codelineno-0-55" name="__codelineno-0-55"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized chunker with &quot;</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57"></a>            <span class="sa">f</span><span class="s2">&quot;configuration: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">get_config_summary</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="p">)</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a>
+<a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="k">if</span> <span class="n">docling_config</span> <span class="o">==</span> <span class="s2">&quot;vision&quot;</span><span class="p">:</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61"></a>        <span class="c1"># VLM Pipeline - Best for complex layouts and images</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">DocumentConverter</span><span class="p">(</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a>            <span class="n">format_options</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a>                <span class="n">InputFormat</span><span class="o">.</span><span class="n">PDF</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a>                    <span class="n">pipeline_cls</span><span class="o">=</span><span class="n">VlmPipeline</span><span class="p">,</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66"></a>                <span class="p">),</span>
+<a id="__codelineno-0-67" name="__codelineno-0-67"></a>                <span class="n">InputFormat</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68"></a>                    <span class="n">pipeline_cls</span><span class="o">=</span><span class="n">VlmPipeline</span><span class="p">,</span>
+<a id="__codelineno-0-69" name="__codelineno-0-69"></a>                <span class="p">),</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a>            <span class="p">}</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="p">)</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized with [magenta]VLM pipeline[/magenta]&quot;</span>
+<a id="__codelineno-0-74" name="__codelineno-0-74"></a>        <span class="p">)</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="c1"># Default Pipeline - Most accurate with OCR for standard documents</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77"></a>        <span class="n">pipeline_options</span> <span class="o">=</span> <span class="n">PdfPipelineOptions</span><span class="p">()</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">do_ocr</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">do_table_structure</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">table_structure_options</span><span class="o">.</span><span class="n">do_cell_matching</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-81" name="__codelineno-0-81"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">ocr_options</span><span class="o">.</span><span class="n">lang</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;en&quot;</span><span class="p">,</span> <span class="s2">&quot;fr&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a>        <span class="n">pipeline_options</span><span class="o">.</span><span class="n">accelerator_options</span> <span class="o">=</span> <span class="n">AcceleratorOptions</span><span class="p">(</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83"></a>            <span class="n">num_threads</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">AcceleratorDevice</span><span class="o">.</span><span class="n">AUTO</span>
+<a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="p">)</span>
+<a id="__codelineno-0-85" name="__codelineno-0-85"></a>
+<a id="__codelineno-0-86" name="__codelineno-0-86"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">DocumentConverter</span><span class="p">(</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a>            <span class="n">format_options</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a>                <span class="n">InputFormat</span><span class="o">.</span><span class="n">PDF</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span><span class="n">pipeline_options</span><span class="o">=</span><span class="n">pipeline_options</span><span class="p">),</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a>                <span class="n">InputFormat</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">:</span> <span class="n">PdfFormatOption</span><span class="p">(</span><span class="n">pipeline_options</span><span class="o">=</span><span class="n">pipeline_options</span><span class="p">),</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a>            <span class="p">}</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a>        <span class="p">)</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>            <span class="s2">&quot;[blue][DocumentProcessor][/blue] Initialized with [green]Classic OCR pipeline[/green] (English, French)&quot;</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3362,35 +3182,27 @@ Or use provider shortcut:
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>docling_graph/core/extractors/document_processor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-262">262</a></span>
-<span class="normal"><a href="#__codelineno-0-263">263</a></span>
-<span class="normal"><a href="#__codelineno-0-264">264</a></span>
-<span class="normal"><a href="#__codelineno-0-265">265</a></span>
-<span class="normal"><a href="#__codelineno-0-266">266</a></span>
-<span class="normal"><a href="#__codelineno-0-267">267</a></span>
-<span class="normal"><a href="#__codelineno-0-268">268</a></span>
-<span class="normal"><a href="#__codelineno-0-269">269</a></span>
-<span class="normal"><a href="#__codelineno-0-270">270</a></span>
-<span class="normal"><a href="#__codelineno-0-271">271</a></span>
-<span class="normal"><a href="#__codelineno-0-272">272</a></span>
-<span class="normal"><a href="#__codelineno-0-273">273</a></span>
-<span class="normal"><a href="#__codelineno-0-274">274</a></span>
-<span class="normal"><a href="#__codelineno-0-275">275</a></span>
-<span class="normal"><a href="#__codelineno-0-276">276</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-262" name="__codelineno-0-262"></a><span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-263" name="__codelineno-0-263"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Clean up document converter resources.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-264" name="__codelineno-0-264"></a>    <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-0-265" name="__codelineno-0-265"></a>        <span class="c1"># Clear cached document</span>
-<a id="__codelineno-0-266" name="__codelineno-0-266"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_last_document</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-267" name="__codelineno-0-267"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_last_source</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-268" name="__codelineno-0-268"></a>
-<a id="__codelineno-0-269" name="__codelineno-0-269"></a>        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;converter&quot;</span><span class="p">):</span>
-<a id="__codelineno-0-270" name="__codelineno-0-270"></a>            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span>
-<a id="__codelineno-0-271" name="__codelineno-0-271"></a>        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
-<a id="__codelineno-0-272" name="__codelineno-0-272"></a>        <span class="n">rich_print</span><span class="p">(</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] [green]Cleaned up resources[/green]&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-273" name="__codelineno-0-273"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-0-274" name="__codelineno-0-274"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-275" name="__codelineno-0-275"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] [yellow]Warning during cleanup:[/yellow] </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
-<a id="__codelineno-0-276" name="__codelineno-0-276"></a>        <span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-236">236</a></span>
+<span class="normal"><a href="#__codelineno-0-237">237</a></span>
+<span class="normal"><a href="#__codelineno-0-238">238</a></span>
+<span class="normal"><a href="#__codelineno-0-239">239</a></span>
+<span class="normal"><a href="#__codelineno-0-240">240</a></span>
+<span class="normal"><a href="#__codelineno-0-241">241</a></span>
+<span class="normal"><a href="#__codelineno-0-242">242</a></span>
+<span class="normal"><a href="#__codelineno-0-243">243</a></span>
+<span class="normal"><a href="#__codelineno-0-244">244</a></span>
+<span class="normal"><a href="#__codelineno-0-245">245</a></span>
+<span class="normal"><a href="#__codelineno-0-246">246</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-236" name="__codelineno-0-236"></a><span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Clean up document converter resources.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-239" name="__codelineno-0-239"></a>        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;converter&quot;</span><span class="p">):</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240"></a>            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241"></a>        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242"></a>        <span class="n">rich_print</span><span class="p">(</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] [green]Cleaned up resources[/green]&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-243" name="__codelineno-0-243"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-0-244" name="__codelineno-0-244"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-245" name="__codelineno-0-245"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] [yellow]Warning during cleanup:[/yellow] </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246"></a>        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3467,7 +3279,9 @@ Or use provider shortcut:
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>docling_graph/core/extractors/document_processor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-98"> 98</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-96"> 96</a></span>
+<span class="normal"><a href="#__codelineno-0-97"> 97</a></span>
+<span class="normal"><a href="#__codelineno-0-98"> 98</a></span>
 <span class="normal"><a href="#__codelineno-0-99"> 99</a></span>
 <span class="normal"><a href="#__codelineno-0-100">100</a></span>
 <span class="normal"><a href="#__codelineno-0-101">101</a></span>
@@ -3483,35 +3297,25 @@ Or use provider shortcut:
 <span class="normal"><a href="#__codelineno-0-111">111</a></span>
 <span class="normal"><a href="#__codelineno-0-112">112</a></span>
 <span class="normal"><a href="#__codelineno-0-113">113</a></span>
-<span class="normal"><a href="#__codelineno-0-114">114</a></span>
-<span class="normal"><a href="#__codelineno-0-115">115</a></span>
-<span class="normal"><a href="#__codelineno-0-116">116</a></span>
-<span class="normal"><a href="#__codelineno-0-117">117</a></span>
-<span class="normal"><a href="#__codelineno-0-118">118</a></span>
-<span class="normal"><a href="#__codelineno-0-119">119</a></span>
-<span class="normal"><a href="#__codelineno-0-120">120</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-98" name="__codelineno-0-98"></a><span class="k">def</span><span class="w"> </span><span class="nf">convert_to_docling_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DoclingDocument</span><span class="p">:</span>
-<a id="__codelineno-0-99" name="__codelineno-0-99"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="sd">    Converts a document to Docling&#39;s Document format.</span>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-103" name="__codelineno-0-103"></a><span class="sd">        source (str): Path to the source document.</span>
-<a id="__codelineno-0-104" name="__codelineno-0-104"></a>
-<a id="__codelineno-0-105" name="__codelineno-0-105"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-106" name="__codelineno-0-106"></a><span class="sd">        Document: Docling document object.</span>
-<a id="__codelineno-0-107" name="__codelineno-0-107"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-108" name="__codelineno-0-108"></a>    <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-109" name="__codelineno-0-109"></a>        <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Converting document: [yellow]</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">[/yellow]&quot;</span>
-<a id="__codelineno-0-110" name="__codelineno-0-110"></a>    <span class="p">)</span>
-<a id="__codelineno-0-111" name="__codelineno-0-111"></a>    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<a id="__codelineno-0-112" name="__codelineno-0-112"></a>
-<a id="__codelineno-0-113" name="__codelineno-0-113"></a>    <span class="c1"># Cache the document and source for potential reuse</span>
-<a id="__codelineno-0-114" name="__codelineno-0-114"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_last_document</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">document</span>
-<a id="__codelineno-0-115" name="__codelineno-0-115"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_last_source</span> <span class="o">=</span> <span class="n">source</span>
-<a id="__codelineno-0-116" name="__codelineno-0-116"></a>
-<a id="__codelineno-0-117" name="__codelineno-0-117"></a>    <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-118" name="__codelineno-0-118"></a>        <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Converted [cyan]</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">num_pages</span><span class="p">()</span><span class="si">}</span><span class="s2">[/cyan] pages&quot;</span>
-<a id="__codelineno-0-119" name="__codelineno-0-119"></a>    <span class="p">)</span>
-<a id="__codelineno-0-120" name="__codelineno-0-120"></a>    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">document</span>
+<span class="normal"><a href="#__codelineno-0-114">114</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-96" name="__codelineno-0-96"></a><span class="k">def</span><span class="w"> </span><span class="nf">convert_to_docling_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DoclingDocument</span><span class="p">:</span>
+<a id="__codelineno-0-97" name="__codelineno-0-97"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-98" name="__codelineno-0-98"></a><span class="sd">    Converts a document to Docling&#39;s Document format.</span>
+<a id="__codelineno-0-99" name="__codelineno-0-99"></a>
+<a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101"></a><span class="sd">        source (str): Path to the source document.</span>
+<a id="__codelineno-0-102" name="__codelineno-0-102"></a>
+<a id="__codelineno-0-103" name="__codelineno-0-103"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-104" name="__codelineno-0-104"></a><span class="sd">        Document: Docling document object.</span>
+<a id="__codelineno-0-105" name="__codelineno-0-105"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-106" name="__codelineno-0-106"></a>    <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-107" name="__codelineno-0-107"></a>        <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Converting document: [yellow]</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">[/yellow]&quot;</span>
+<a id="__codelineno-0-108" name="__codelineno-0-108"></a>    <span class="p">)</span>
+<a id="__codelineno-0-109" name="__codelineno-0-109"></a>    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-0-110" name="__codelineno-0-110"></a>
+<a id="__codelineno-0-111" name="__codelineno-0-111"></a>    <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-112" name="__codelineno-0-112"></a>        <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Converted [cyan]</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">num_pages</span><span class="p">()</span><span class="si">}</span><span class="s2">[/cyan] pages&quot;</span>
+<a id="__codelineno-0-113" name="__codelineno-0-113"></a>    <span class="p">)</span>
+<a id="__codelineno-0-114" name="__codelineno-0-114"></a>    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">document</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3613,7 +3417,33 @@ Or use provider shortcut:
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>docling_graph/core/extractors/document_processor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-152">152</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-126">126</a></span>
+<span class="normal"><a href="#__codelineno-0-127">127</a></span>
+<span class="normal"><a href="#__codelineno-0-128">128</a></span>
+<span class="normal"><a href="#__codelineno-0-129">129</a></span>
+<span class="normal"><a href="#__codelineno-0-130">130</a></span>
+<span class="normal"><a href="#__codelineno-0-131">131</a></span>
+<span class="normal"><a href="#__codelineno-0-132">132</a></span>
+<span class="normal"><a href="#__codelineno-0-133">133</a></span>
+<span class="normal"><a href="#__codelineno-0-134">134</a></span>
+<span class="normal"><a href="#__codelineno-0-135">135</a></span>
+<span class="normal"><a href="#__codelineno-0-136">136</a></span>
+<span class="normal"><a href="#__codelineno-0-137">137</a></span>
+<span class="normal"><a href="#__codelineno-0-138">138</a></span>
+<span class="normal"><a href="#__codelineno-0-139">139</a></span>
+<span class="normal"><a href="#__codelineno-0-140">140</a></span>
+<span class="normal"><a href="#__codelineno-0-141">141</a></span>
+<span class="normal"><a href="#__codelineno-0-142">142</a></span>
+<span class="normal"><a href="#__codelineno-0-143">143</a></span>
+<span class="normal"><a href="#__codelineno-0-144">144</a></span>
+<span class="normal"><a href="#__codelineno-0-145">145</a></span>
+<span class="normal"><a href="#__codelineno-0-146">146</a></span>
+<span class="normal"><a href="#__codelineno-0-147">147</a></span>
+<span class="normal"><a href="#__codelineno-0-148">148</a></span>
+<span class="normal"><a href="#__codelineno-0-149">149</a></span>
+<span class="normal"><a href="#__codelineno-0-150">150</a></span>
+<span class="normal"><a href="#__codelineno-0-151">151</a></span>
+<span class="normal"><a href="#__codelineno-0-152">152</a></span>
 <span class="normal"><a href="#__codelineno-0-153">153</a></span>
 <span class="normal"><a href="#__codelineno-0-154">154</a></span>
 <span class="normal"><a href="#__codelineno-0-155">155</a></span>
@@ -3622,68 +3452,42 @@ Or use provider shortcut:
 <span class="normal"><a href="#__codelineno-0-158">158</a></span>
 <span class="normal"><a href="#__codelineno-0-159">159</a></span>
 <span class="normal"><a href="#__codelineno-0-160">160</a></span>
-<span class="normal"><a href="#__codelineno-0-161">161</a></span>
-<span class="normal"><a href="#__codelineno-0-162">162</a></span>
-<span class="normal"><a href="#__codelineno-0-163">163</a></span>
-<span class="normal"><a href="#__codelineno-0-164">164</a></span>
-<span class="normal"><a href="#__codelineno-0-165">165</a></span>
-<span class="normal"><a href="#__codelineno-0-166">166</a></span>
-<span class="normal"><a href="#__codelineno-0-167">167</a></span>
-<span class="normal"><a href="#__codelineno-0-168">168</a></span>
-<span class="normal"><a href="#__codelineno-0-169">169</a></span>
-<span class="normal"><a href="#__codelineno-0-170">170</a></span>
-<span class="normal"><a href="#__codelineno-0-171">171</a></span>
-<span class="normal"><a href="#__codelineno-0-172">172</a></span>
-<span class="normal"><a href="#__codelineno-0-173">173</a></span>
-<span class="normal"><a href="#__codelineno-0-174">174</a></span>
-<span class="normal"><a href="#__codelineno-0-175">175</a></span>
-<span class="normal"><a href="#__codelineno-0-176">176</a></span>
-<span class="normal"><a href="#__codelineno-0-177">177</a></span>
-<span class="normal"><a href="#__codelineno-0-178">178</a></span>
-<span class="normal"><a href="#__codelineno-0-179">179</a></span>
-<span class="normal"><a href="#__codelineno-0-180">180</a></span>
-<span class="normal"><a href="#__codelineno-0-181">181</a></span>
-<span class="normal"><a href="#__codelineno-0-182">182</a></span>
-<span class="normal"><a href="#__codelineno-0-183">183</a></span>
-<span class="normal"><a href="#__codelineno-0-184">184</a></span>
-<span class="normal"><a href="#__codelineno-0-185">185</a></span>
-<span class="normal"><a href="#__codelineno-0-186">186</a></span>
-<span class="normal"><a href="#__codelineno-0-187">187</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-152" name="__codelineno-0-152"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">,</span> <span class="n">with_stats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<a id="__codelineno-0-153" name="__codelineno-0-153"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-154" name="__codelineno-0-154"></a><span class="sd">    Extract structure-aware chunks from document using HybridChunker.</span>
-<a id="__codelineno-0-155" name="__codelineno-0-155"></a>
-<a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="sd">    This replaces naive text splitting with semantic chunking that preserves:</span>
-<a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="sd">    - Tables</span>
-<a id="__codelineno-0-158" name="__codelineno-0-158"></a><span class="sd">    - Lists</span>
-<a id="__codelineno-0-159" name="__codelineno-0-159"></a><span class="sd">    - Section hierarchies</span>
-<a id="__codelineno-0-160" name="__codelineno-0-160"></a><span class="sd">    - Semantic boundaries</span>
-<a id="__codelineno-0-161" name="__codelineno-0-161"></a>
-<a id="__codelineno-0-162" name="__codelineno-0-162"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-163" name="__codelineno-0-163"></a><span class="sd">        document: DoclingDocument from convert_to_docling_doc()</span>
-<a id="__codelineno-0-164" name="__codelineno-0-164"></a><span class="sd">        with_stats: If True, return (chunks, stats). If False, return just chunks.</span>
-<a id="__codelineno-0-165" name="__codelineno-0-165"></a>
-<a id="__codelineno-0-166" name="__codelineno-0-166"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="sd">        List of contextualized text chunks (or tuple with stats if with_stats=True)</span>
-<a id="__codelineno-0-168" name="__codelineno-0-168"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-169" name="__codelineno-0-169"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="p">:</span>
-<a id="__codelineno-0-170" name="__codelineno-0-170"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<a id="__codelineno-0-171" name="__codelineno-0-171"></a>            <span class="s2">&quot;Chunker not initialized. Pass chunker_config to __init__() to enable chunking.&quot;</span>
-<a id="__codelineno-0-172" name="__codelineno-0-172"></a>        <span class="p">)</span>
-<a id="__codelineno-0-173" name="__codelineno-0-173"></a>
-<a id="__codelineno-0-174" name="__codelineno-0-174"></a>    <span class="k">if</span> <span class="n">with_stats</span><span class="p">:</span>
-<a id="__codelineno-0-175" name="__codelineno-0-175"></a>        <span class="n">chunks</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">chunk_document_with_stats</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
-<a id="__codelineno-0-176" name="__codelineno-0-176"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-177" name="__codelineno-0-177"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Created [cyan]</span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;total_chunks&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">[/cyan] chunks &quot;</span>
-<a id="__codelineno-0-178" name="__codelineno-0-178"></a>            <span class="sa">f</span><span class="s2">&quot;(avg: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;avg_tokens&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> tokens, max: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;max_tokens_in_chunk&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> tokens)&quot;</span>
-<a id="__codelineno-0-179" name="__codelineno-0-179"></a>        <span class="p">)</span>
-<a id="__codelineno-0-180" name="__codelineno-0-180"></a>        <span class="k">return</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">stats</span>
-<a id="__codelineno-0-181" name="__codelineno-0-181"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-182" name="__codelineno-0-182"></a>        <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">chunk_document</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
-<a id="__codelineno-0-183" name="__codelineno-0-183"></a>        <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-184" name="__codelineno-0-184"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Created [cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] &quot;</span>
-<a id="__codelineno-0-185" name="__codelineno-0-185"></a>            <span class="s2">&quot;structure-aware chunks&quot;</span>
-<a id="__codelineno-0-186" name="__codelineno-0-186"></a>        <span class="p">)</span>
-<a id="__codelineno-0-187" name="__codelineno-0-187"></a>        <span class="k">return</span> <span class="n">chunks</span>
+<span class="normal"><a href="#__codelineno-0-161">161</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">,</span> <span class="n">with_stats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="sd">    Extract structure-aware chunks from document using HybridChunker.</span>
+<a id="__codelineno-0-129" name="__codelineno-0-129"></a>
+<a id="__codelineno-0-130" name="__codelineno-0-130"></a><span class="sd">    This replaces naive text splitting with semantic chunking that preserves:</span>
+<a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">    - Tables</span>
+<a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">    - Lists</span>
+<a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">    - Section hierarchies</span>
+<a id="__codelineno-0-134" name="__codelineno-0-134"></a><span class="sd">    - Semantic boundaries</span>
+<a id="__codelineno-0-135" name="__codelineno-0-135"></a>
+<a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-137" name="__codelineno-0-137"></a><span class="sd">        document: DoclingDocument from convert_to_docling_doc()</span>
+<a id="__codelineno-0-138" name="__codelineno-0-138"></a><span class="sd">        with_stats: If True, return (chunks, stats). If False, return just chunks.</span>
+<a id="__codelineno-0-139" name="__codelineno-0-139"></a>
+<a id="__codelineno-0-140" name="__codelineno-0-140"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-141" name="__codelineno-0-141"></a><span class="sd">        List of contextualized text chunks (or tuple with stats if with_stats=True)</span>
+<a id="__codelineno-0-142" name="__codelineno-0-142"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-143" name="__codelineno-0-143"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="p">:</span>
+<a id="__codelineno-0-144" name="__codelineno-0-144"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<a id="__codelineno-0-145" name="__codelineno-0-145"></a>            <span class="s2">&quot;Chunker not initialized. Pass chunker_config to __init__() to enable chunking.&quot;</span>
+<a id="__codelineno-0-146" name="__codelineno-0-146"></a>        <span class="p">)</span>
+<a id="__codelineno-0-147" name="__codelineno-0-147"></a>
+<a id="__codelineno-0-148" name="__codelineno-0-148"></a>    <span class="k">if</span> <span class="n">with_stats</span><span class="p">:</span>
+<a id="__codelineno-0-149" name="__codelineno-0-149"></a>        <span class="n">chunks</span><span class="p">,</span> <span class="n">stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">chunk_document_with_stats</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+<a id="__codelineno-0-150" name="__codelineno-0-150"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-151" name="__codelineno-0-151"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Created [cyan]</span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;total_chunks&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">[/cyan] chunks &quot;</span>
+<a id="__codelineno-0-152" name="__codelineno-0-152"></a>            <span class="sa">f</span><span class="s2">&quot;(avg: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;avg_tokens&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> tokens, max: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;max_tokens_in_chunk&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> tokens)&quot;</span>
+<a id="__codelineno-0-153" name="__codelineno-0-153"></a>        <span class="p">)</span>
+<a id="__codelineno-0-154" name="__codelineno-0-154"></a>        <span class="k">return</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">stats</span>
+<a id="__codelineno-0-155" name="__codelineno-0-155"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-156" name="__codelineno-0-156"></a>        <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunker</span><span class="o">.</span><span class="n">chunk_document</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+<a id="__codelineno-0-157" name="__codelineno-0-157"></a>        <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-158" name="__codelineno-0-158"></a>            <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Created [cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] &quot;</span>
+<a id="__codelineno-0-159" name="__codelineno-0-159"></a>            <span class="s2">&quot;structure-aware chunks&quot;</span>
+<a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="p">)</span>
+<a id="__codelineno-0-161" name="__codelineno-0-161"></a>        <span class="k">return</span> <span class="n">chunks</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3760,35 +3564,35 @@ Or use provider shortcut:
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>docling_graph/core/extractors/document_processor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-246">246</a></span>
-<span class="normal"><a href="#__codelineno-0-247">247</a></span>
-<span class="normal"><a href="#__codelineno-0-248">248</a></span>
-<span class="normal"><a href="#__codelineno-0-249">249</a></span>
-<span class="normal"><a href="#__codelineno-0-250">250</a></span>
-<span class="normal"><a href="#__codelineno-0-251">251</a></span>
-<span class="normal"><a href="#__codelineno-0-252">252</a></span>
-<span class="normal"><a href="#__codelineno-0-253">253</a></span>
-<span class="normal"><a href="#__codelineno-0-254">254</a></span>
-<span class="normal"><a href="#__codelineno-0-255">255</a></span>
-<span class="normal"><a href="#__codelineno-0-256">256</a></span>
-<span class="normal"><a href="#__codelineno-0-257">257</a></span>
-<span class="normal"><a href="#__codelineno-0-258">258</a></span>
-<span class="normal"><a href="#__codelineno-0-259">259</a></span>
-<span class="normal"><a href="#__codelineno-0-260">260</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-246" name="__codelineno-0-246"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract_full_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-0-247" name="__codelineno-0-247"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-248" name="__codelineno-0-248"></a><span class="sd">    Extracts the full document as a single Markdown string.</span>
-<a id="__codelineno-0-249" name="__codelineno-0-249"></a>
-<a id="__codelineno-0-250" name="__codelineno-0-250"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-251" name="__codelineno-0-251"></a><span class="sd">        document (Document): Docling document object.</span>
-<a id="__codelineno-0-252" name="__codelineno-0-252"></a>
-<a id="__codelineno-0-253" name="__codelineno-0-253"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-254" name="__codelineno-0-254"></a><span class="sd">        str: Complete document in Markdown format.</span>
-<a id="__codelineno-0-255" name="__codelineno-0-255"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-256" name="__codelineno-0-256"></a>    <span class="n">md</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">()</span>
-<a id="__codelineno-0-257" name="__codelineno-0-257"></a>    <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-258" name="__codelineno-0-258"></a>        <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Extracted full document Markdown ([cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">md</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] chars)&quot;</span>
-<a id="__codelineno-0-259" name="__codelineno-0-259"></a>    <span class="p">)</span>
-<a id="__codelineno-0-260" name="__codelineno-0-260"></a>    <span class="k">return</span> <span class="n">md</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-220">220</a></span>
+<span class="normal"><a href="#__codelineno-0-221">221</a></span>
+<span class="normal"><a href="#__codelineno-0-222">222</a></span>
+<span class="normal"><a href="#__codelineno-0-223">223</a></span>
+<span class="normal"><a href="#__codelineno-0-224">224</a></span>
+<span class="normal"><a href="#__codelineno-0-225">225</a></span>
+<span class="normal"><a href="#__codelineno-0-226">226</a></span>
+<span class="normal"><a href="#__codelineno-0-227">227</a></span>
+<span class="normal"><a href="#__codelineno-0-228">228</a></span>
+<span class="normal"><a href="#__codelineno-0-229">229</a></span>
+<span class="normal"><a href="#__codelineno-0-230">230</a></span>
+<span class="normal"><a href="#__codelineno-0-231">231</a></span>
+<span class="normal"><a href="#__codelineno-0-232">232</a></span>
+<span class="normal"><a href="#__codelineno-0-233">233</a></span>
+<span class="normal"><a href="#__codelineno-0-234">234</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract_full_markdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">    Extracts the full document as a single Markdown string.</span>
+<a id="__codelineno-0-223" name="__codelineno-0-223"></a>
+<a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">        document (Document): Docling document object.</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226"></a>
+<a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="sd">        str: Complete document in Markdown format.</span>
+<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-230" name="__codelineno-0-230"></a>    <span class="n">md</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">()</span>
+<a id="__codelineno-0-231" name="__codelineno-0-231"></a>    <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-232" name="__codelineno-0-232"></a>        <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Extracted full document Markdown ([cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">md</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] chars)&quot;</span>
+<a id="__codelineno-0-233" name="__codelineno-0-233"></a>    <span class="p">)</span>
+<a id="__codelineno-0-234" name="__codelineno-0-234"></a>    <span class="k">return</span> <span class="n">md</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3865,43 +3669,43 @@ Or use provider shortcut:
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>docling_graph/core/extractors/document_processor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-189">189</a></span>
-<span class="normal"><a href="#__codelineno-0-190">190</a></span>
-<span class="normal"><a href="#__codelineno-0-191">191</a></span>
-<span class="normal"><a href="#__codelineno-0-192">192</a></span>
-<span class="normal"><a href="#__codelineno-0-193">193</a></span>
-<span class="normal"><a href="#__codelineno-0-194">194</a></span>
-<span class="normal"><a href="#__codelineno-0-195">195</a></span>
-<span class="normal"><a href="#__codelineno-0-196">196</a></span>
-<span class="normal"><a href="#__codelineno-0-197">197</a></span>
-<span class="normal"><a href="#__codelineno-0-198">198</a></span>
-<span class="normal"><a href="#__codelineno-0-199">199</a></span>
-<span class="normal"><a href="#__codelineno-0-200">200</a></span>
-<span class="normal"><a href="#__codelineno-0-201">201</a></span>
-<span class="normal"><a href="#__codelineno-0-202">202</a></span>
-<span class="normal"><a href="#__codelineno-0-203">203</a></span>
-<span class="normal"><a href="#__codelineno-0-204">204</a></span>
-<span class="normal"><a href="#__codelineno-0-205">205</a></span>
-<span class="normal"><a href="#__codelineno-0-206">206</a></span>
-<span class="normal"><a href="#__codelineno-0-207">207</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-189" name="__codelineno-0-189"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract_page_markdowns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-191" name="__codelineno-0-191"></a><span class="sd">    Extracts Markdown content for each page.</span>
-<a id="__codelineno-0-192" name="__codelineno-0-192"></a>
-<a id="__codelineno-0-193" name="__codelineno-0-193"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="sd">        document (Document): Docling document object.</span>
-<a id="__codelineno-0-195" name="__codelineno-0-195"></a>
-<a id="__codelineno-0-196" name="__codelineno-0-196"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-197" name="__codelineno-0-197"></a><span class="sd">        List[str]: List of Markdown strings, one per page.</span>
-<a id="__codelineno-0-198" name="__codelineno-0-198"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-199" name="__codelineno-0-199"></a>    <span class="n">page_markdowns</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-0-200" name="__codelineno-0-200"></a>    <span class="k">for</span> <span class="n">page_no</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-<a id="__codelineno-0-201" name="__codelineno-0-201"></a>        <span class="n">md</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">(</span><span class="n">page_no</span><span class="o">=</span><span class="n">page_no</span><span class="p">)</span>
-<a id="__codelineno-0-202" name="__codelineno-0-202"></a>        <span class="n">page_markdowns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
-<a id="__codelineno-0-203" name="__codelineno-0-203"></a>
-<a id="__codelineno-0-204" name="__codelineno-0-204"></a>    <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-205" name="__codelineno-0-205"></a>        <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Extracted Markdown for [cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">page_markdowns</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] pages&quot;</span>
-<a id="__codelineno-0-206" name="__codelineno-0-206"></a>    <span class="p">)</span>
-<a id="__codelineno-0-207" name="__codelineno-0-207"></a>    <span class="k">return</span> <span class="n">page_markdowns</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-163">163</a></span>
+<span class="normal"><a href="#__codelineno-0-164">164</a></span>
+<span class="normal"><a href="#__codelineno-0-165">165</a></span>
+<span class="normal"><a href="#__codelineno-0-166">166</a></span>
+<span class="normal"><a href="#__codelineno-0-167">167</a></span>
+<span class="normal"><a href="#__codelineno-0-168">168</a></span>
+<span class="normal"><a href="#__codelineno-0-169">169</a></span>
+<span class="normal"><a href="#__codelineno-0-170">170</a></span>
+<span class="normal"><a href="#__codelineno-0-171">171</a></span>
+<span class="normal"><a href="#__codelineno-0-172">172</a></span>
+<span class="normal"><a href="#__codelineno-0-173">173</a></span>
+<span class="normal"><a href="#__codelineno-0-174">174</a></span>
+<span class="normal"><a href="#__codelineno-0-175">175</a></span>
+<span class="normal"><a href="#__codelineno-0-176">176</a></span>
+<span class="normal"><a href="#__codelineno-0-177">177</a></span>
+<span class="normal"><a href="#__codelineno-0-178">178</a></span>
+<span class="normal"><a href="#__codelineno-0-179">179</a></span>
+<span class="normal"><a href="#__codelineno-0-180">180</a></span>
+<span class="normal"><a href="#__codelineno-0-181">181</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-163" name="__codelineno-0-163"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract_page_markdowns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">DoclingDocument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<a id="__codelineno-0-164" name="__codelineno-0-164"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-165" name="__codelineno-0-165"></a><span class="sd">    Extracts Markdown content for each page.</span>
+<a id="__codelineno-0-166" name="__codelineno-0-166"></a>
+<a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-168" name="__codelineno-0-168"></a><span class="sd">        document (Document): Docling document object.</span>
+<a id="__codelineno-0-169" name="__codelineno-0-169"></a>
+<a id="__codelineno-0-170" name="__codelineno-0-170"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-171" name="__codelineno-0-171"></a><span class="sd">        List[str]: List of Markdown strings, one per page.</span>
+<a id="__codelineno-0-172" name="__codelineno-0-172"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-173" name="__codelineno-0-173"></a>    <span class="n">page_markdowns</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-0-174" name="__codelineno-0-174"></a>    <span class="k">for</span> <span class="n">page_no</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+<a id="__codelineno-0-175" name="__codelineno-0-175"></a>        <span class="n">md</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">export_to_markdown</span><span class="p">(</span><span class="n">page_no</span><span class="o">=</span><span class="n">page_no</span><span class="p">)</span>
+<a id="__codelineno-0-176" name="__codelineno-0-176"></a>        <span class="n">page_markdowns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+<a id="__codelineno-0-177" name="__codelineno-0-177"></a>
+<a id="__codelineno-0-178" name="__codelineno-0-178"></a>    <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-179" name="__codelineno-0-179"></a>        <span class="sa">f</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Extracted Markdown for [cyan]</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">page_markdowns</span><span class="p">)</span><span class="si">}</span><span class="s2">[/cyan] pages&quot;</span>
+<a id="__codelineno-0-180" name="__codelineno-0-180"></a>    <span class="p">)</span>
+<a id="__codelineno-0-181" name="__codelineno-0-181"></a>    <span class="k">return</span> <span class="n">page_markdowns</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3980,35 +3784,35 @@ simplifies strategy code and matches the interface commonly mocked in tests.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>docling_graph/core/extractors/document_processor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-209">209</a></span>
-<span class="normal"><a href="#__codelineno-0-210">210</a></span>
-<span class="normal"><a href="#__codelineno-0-211">211</a></span>
-<span class="normal"><a href="#__codelineno-0-212">212</a></span>
-<span class="normal"><a href="#__codelineno-0-213">213</a></span>
-<span class="normal"><a href="#__codelineno-0-214">214</a></span>
-<span class="normal"><a href="#__codelineno-0-215">215</a></span>
-<span class="normal"><a href="#__codelineno-0-216">216</a></span>
-<span class="normal"><a href="#__codelineno-0-217">217</a></span>
-<span class="normal"><a href="#__codelineno-0-218">218</a></span>
-<span class="normal"><a href="#__codelineno-0-219">219</a></span>
-<span class="normal"><a href="#__codelineno-0-220">220</a></span>
-<span class="normal"><a href="#__codelineno-0-221">221</a></span>
-<span class="normal"><a href="#__codelineno-0-222">222</a></span>
-<span class="normal"><a href="#__codelineno-0-223">223</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;High-level helper to get per-page markdowns from a source file.</span>
-<a id="__codelineno-0-211" name="__codelineno-0-211"></a>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">    This wraps conversion and page extraction into a single call, which</span>
-<a id="__codelineno-0-213" name="__codelineno-0-213"></a><span class="sd">    simplifies strategy code and matches the interface commonly mocked in tests.</span>
-<a id="__codelineno-0-214" name="__codelineno-0-214"></a>
-<a id="__codelineno-0-215" name="__codelineno-0-215"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-216" name="__codelineno-0-216"></a><span class="sd">        source: Path to the source document.</span>
-<a id="__codelineno-0-217" name="__codelineno-0-217"></a>
-<a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-219" name="__codelineno-0-219"></a><span class="sd">        List of Markdown strings, one per page.</span>
-<a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-221" name="__codelineno-0-221"></a>    <span class="n">rich_print</span><span class="p">(</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Processing document into per-page markdowns&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-222" name="__codelineno-0-222"></a>    <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_docling_doc</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<a id="__codelineno-0-223" name="__codelineno-0-223"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_page_markdowns</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-183">183</a></span>
+<span class="normal"><a href="#__codelineno-0-184">184</a></span>
+<span class="normal"><a href="#__codelineno-0-185">185</a></span>
+<span class="normal"><a href="#__codelineno-0-186">186</a></span>
+<span class="normal"><a href="#__codelineno-0-187">187</a></span>
+<span class="normal"><a href="#__codelineno-0-188">188</a></span>
+<span class="normal"><a href="#__codelineno-0-189">189</a></span>
+<span class="normal"><a href="#__codelineno-0-190">190</a></span>
+<span class="normal"><a href="#__codelineno-0-191">191</a></span>
+<span class="normal"><a href="#__codelineno-0-192">192</a></span>
+<span class="normal"><a href="#__codelineno-0-193">193</a></span>
+<span class="normal"><a href="#__codelineno-0-194">194</a></span>
+<span class="normal"><a href="#__codelineno-0-195">195</a></span>
+<span class="normal"><a href="#__codelineno-0-196">196</a></span>
+<span class="normal"><a href="#__codelineno-0-197">197</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-183" name="__codelineno-0-183"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<a id="__codelineno-0-184" name="__codelineno-0-184"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;High-level helper to get per-page markdowns from a source file.</span>
+<a id="__codelineno-0-185" name="__codelineno-0-185"></a>
+<a id="__codelineno-0-186" name="__codelineno-0-186"></a><span class="sd">    This wraps conversion and page extraction into a single call, which</span>
+<a id="__codelineno-0-187" name="__codelineno-0-187"></a><span class="sd">    simplifies strategy code and matches the interface commonly mocked in tests.</span>
+<a id="__codelineno-0-188" name="__codelineno-0-188"></a>
+<a id="__codelineno-0-189" name="__codelineno-0-189"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-190" name="__codelineno-0-190"></a><span class="sd">        source: Path to the source document.</span>
+<a id="__codelineno-0-191" name="__codelineno-0-191"></a>
+<a id="__codelineno-0-192" name="__codelineno-0-192"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-193" name="__codelineno-0-193"></a><span class="sd">        List of Markdown strings, one per page.</span>
+<a id="__codelineno-0-194" name="__codelineno-0-194"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-195" name="__codelineno-0-195"></a>    <span class="n">rich_print</span><span class="p">(</span><span class="s2">&quot;[blue][DocumentProcessor][/blue] Processing document into per-page markdowns&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-196" name="__codelineno-0-196"></a>    <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_docling_doc</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-0-197" name="__codelineno-0-197"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_page_markdowns</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4089,45 +3893,45 @@ simplifies strategy code and matches the interface commonly mocked in tests.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>docling_graph/core/extractors/document_processor.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-225">225</a></span>
-<span class="normal"><a href="#__codelineno-0-226">226</a></span>
-<span class="normal"><a href="#__codelineno-0-227">227</a></span>
-<span class="normal"><a href="#__codelineno-0-228">228</a></span>
-<span class="normal"><a href="#__codelineno-0-229">229</a></span>
-<span class="normal"><a href="#__codelineno-0-230">230</a></span>
-<span class="normal"><a href="#__codelineno-0-231">231</a></span>
-<span class="normal"><a href="#__codelineno-0-232">232</a></span>
-<span class="normal"><a href="#__codelineno-0-233">233</a></span>
-<span class="normal"><a href="#__codelineno-0-234">234</a></span>
-<span class="normal"><a href="#__codelineno-0-235">235</a></span>
-<span class="normal"><a href="#__codelineno-0-236">236</a></span>
-<span class="normal"><a href="#__codelineno-0-237">237</a></span>
-<span class="normal"><a href="#__codelineno-0-238">238</a></span>
-<span class="normal"><a href="#__codelineno-0-239">239</a></span>
-<span class="normal"><a href="#__codelineno-0-240">240</a></span>
-<span class="normal"><a href="#__codelineno-0-241">241</a></span>
-<span class="normal"><a href="#__codelineno-0-242">242</a></span>
-<span class="normal"><a href="#__codelineno-0-243">243</a></span>
-<span class="normal"><a href="#__codelineno-0-244">244</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_document_with_chunking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="sd">    Process document with structure-aware chunking instead of page-by-page.</span>
-<a id="__codelineno-0-228" name="__codelineno-0-228"></a>
-<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">    This is the recommended approach for LLM extraction as it:</span>
-<a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="sd">    - Preserves tables and lists</span>
-<a id="__codelineno-0-231" name="__codelineno-0-231"></a><span class="sd">    - Respects semantic boundaries</span>
-<a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="sd">    - Optimizes for context window usage</span>
-<a id="__codelineno-0-233" name="__codelineno-0-233"></a>
-<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-235" name="__codelineno-0-235"></a><span class="sd">        source: Path to the source document.</span>
-<a id="__codelineno-0-236" name="__codelineno-0-236"></a>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-238" name="__codelineno-0-238"></a><span class="sd">        List of structure-aware text chunks</span>
-<a id="__codelineno-0-239" name="__codelineno-0-239"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-240" name="__codelineno-0-240"></a>    <span class="n">rich_print</span><span class="p">(</span>
-<a id="__codelineno-0-241" name="__codelineno-0-241"></a>        <span class="s2">&quot;[blue][DocumentProcessor][/blue] Processing document with structure-aware chunking&quot;</span>
-<a id="__codelineno-0-242" name="__codelineno-0-242"></a>    <span class="p">)</span>
-<a id="__codelineno-0-243" name="__codelineno-0-243"></a>    <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_docling_doc</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<a id="__codelineno-0-244" name="__codelineno-0-244"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_chunks</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-199">199</a></span>
+<span class="normal"><a href="#__codelineno-0-200">200</a></span>
+<span class="normal"><a href="#__codelineno-0-201">201</a></span>
+<span class="normal"><a href="#__codelineno-0-202">202</a></span>
+<span class="normal"><a href="#__codelineno-0-203">203</a></span>
+<span class="normal"><a href="#__codelineno-0-204">204</a></span>
+<span class="normal"><a href="#__codelineno-0-205">205</a></span>
+<span class="normal"><a href="#__codelineno-0-206">206</a></span>
+<span class="normal"><a href="#__codelineno-0-207">207</a></span>
+<span class="normal"><a href="#__codelineno-0-208">208</a></span>
+<span class="normal"><a href="#__codelineno-0-209">209</a></span>
+<span class="normal"><a href="#__codelineno-0-210">210</a></span>
+<span class="normal"><a href="#__codelineno-0-211">211</a></span>
+<span class="normal"><a href="#__codelineno-0-212">212</a></span>
+<span class="normal"><a href="#__codelineno-0-213">213</a></span>
+<span class="normal"><a href="#__codelineno-0-214">214</a></span>
+<span class="normal"><a href="#__codelineno-0-215">215</a></span>
+<span class="normal"><a href="#__codelineno-0-216">216</a></span>
+<span class="normal"><a href="#__codelineno-0-217">217</a></span>
+<span class="normal"><a href="#__codelineno-0-218">218</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-199" name="__codelineno-0-199"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_document_with_chunking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<a id="__codelineno-0-200" name="__codelineno-0-200"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-201" name="__codelineno-0-201"></a><span class="sd">    Process document with structure-aware chunking instead of page-by-page.</span>
+<a id="__codelineno-0-202" name="__codelineno-0-202"></a>
+<a id="__codelineno-0-203" name="__codelineno-0-203"></a><span class="sd">    This is the recommended approach for LLM extraction as it:</span>
+<a id="__codelineno-0-204" name="__codelineno-0-204"></a><span class="sd">    - Preserves tables and lists</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205"></a><span class="sd">    - Respects semantic boundaries</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="sd">    - Optimizes for context window usage</span>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a>
+<a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">        source: Path to the source document.</span>
+<a id="__codelineno-0-210" name="__codelineno-0-210"></a>
+<a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">        List of structure-aware text chunks</span>
+<a id="__codelineno-0-213" name="__codelineno-0-213"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-214" name="__codelineno-0-214"></a>    <span class="n">rich_print</span><span class="p">(</span>
+<a id="__codelineno-0-215" name="__codelineno-0-215"></a>        <span class="s2">&quot;[blue][DocumentProcessor][/blue] Processing document with structure-aware chunking&quot;</span>
+<a id="__codelineno-0-216" name="__codelineno-0-216"></a>    <span class="p">)</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217"></a>    <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_docling_doc</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_chunks</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

@@ -2174,7 +2174,7 @@
 <li>Converts documents to DoclingDocument format</li>
 <li>Extracts full markdown or per-page markdown</li>
 <li>Supports OCR and Vision pipelines</li>
-<li>Caches converted documents to avoid redundant processing</li>
+<li>Stateless operation suitable for pod deployments</li>
 </ul>
 <p><strong>Protocols</strong>: <code>DocumentProcessorProtocol</code></p>
 <h3 id="3-extraction-backends">3. Extraction Backends<a class="headerlink" href="#3-extraction-backends" title="Permanent link">&para;</a></h3>
@@ -2285,7 +2285,7 @@
 <li>Convert source document using Docling</li>
 <li>Extract markdown (full or per-page)</li>
 <li>
-<p>Cache DoclingDocument for exports</p>
+<p>Return DoclingDocument for exports</p>
 </li>
 <li>
 <p><strong>Extraction</strong></p>
@@ -2378,7 +2378,7 @@
 <h3 id="memory-management">Memory Management<a class="headerlink" href="#memory-management" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>GPU Memory</strong>: Automatic cleanup after extraction</li>
-<li><strong>Document Caching</strong>: Reuse converted documents</li>
+<li><strong>Stateless Design</strong>: No internal caching, predictable memory usage</li>
 <li><strong>Batch Processing</strong>: Configurable batch sizes for chunking</li>
 </ul>
 <h3 id="optimization-strategies">Optimization Strategies<a class="headerlink" href="#optimization-strategies" title="Permanent link">&para;</a></h3>
@@ -2386,6 +2386,7 @@
 <li><strong>Chunking</strong>: Reduces memory footprint for large documents</li>
 <li><strong>Lazy Loading</strong>: Import modules only when needed</li>
 <li><strong>Resource Pooling</strong>: Reuse LLM clients across batches</li>
+<li><strong>Document Return</strong>: Extraction methods return documents directly without caching</li>
 </ul>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
 <p>The pipeline implements comprehensive error handling:</p>
