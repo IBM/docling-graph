@@ -87,7 +87,7 @@ run_pipeline(config)
 
 - **GitHub**: [IBM/docling-graph](https://github.com/IBM/docling-graph)
 - **Issues**: [Report bugs or request features](https://github.com/IBM/docling-graph/issues)
-- **Contributing**: See our [Contributing Guide](https://github.com/IBM/docling-graph/blob/main/CONTRIBUTING.md)
+- **Contributing**: See our [Contributing Guide](https://github.com/IBM/docling-graph/blob/main/.github/CONTRIBUTING.md)
 
 ## License
 

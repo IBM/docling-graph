@@ -393,7 +393,7 @@ After setup is complete:
 
 1. **Read the documentation:**
    - [Release Process](release.md)
-   - [Contributing Guide](https://github.com/IBM/docling-graph/blob/main/CONTRIBUTING.md)
+   - [Contributing Guide](https://github.com/IBM/docling-graph/blob/main/.github/CONTRIBUTING.md)
 
 2. **Start developing:**
    - Create feature branch
@@ -453,4 +453,4 @@ If you encounter issues:
 
 ## Contributing
 
-See [CONTRIBUTING.md](https://github.com/IBM/docling-graph/blob/main/CONTRIBUTING.md) for detailed contribution guidelines.
+See [CONTRIBUTING.md](https://github.com/IBM/docling-graph/blob/main/.github/CONTRIBUTING.md) for detailed contribution guidelines.
