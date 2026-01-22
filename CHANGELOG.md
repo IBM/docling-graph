@@ -1,6 +1,16 @@
 # CHANGELOG
 
 
+## v0.4.1 (2026-01-22)
+
+### Bug Fixes
+
+- **ci**: Fix -exec syntax in GitHub release workflow
+  ([`f40d189`](https://github.com/IBM/docling-graph/commit/f40d18931055df5286013ecc61b32a909c7a574b))
+
+Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+
+
 ## v0.4.0 (2026-01-22)
 
 ### Chores
