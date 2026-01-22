@@ -30,7 +30,7 @@ updates:
       - "dependencies"
     commit-message:
       prefix: "chore"
-      include: "scope"
+      include: "none"
     groups:
       dev-dependencies:
         patterns:
