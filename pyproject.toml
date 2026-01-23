@@ -54,7 +54,7 @@ docling-graph = "docling_graph.cli.main:main"
 [project.optional-dependencies]
 # --- Local Clients ---
 ollama = ["ollama"]
-vllm = ["openai"]
+vllm = ["openai", "vllm>=0.14.0"]
 
 # --- Remote Clients ---
 gemini = ["google-genai"]
