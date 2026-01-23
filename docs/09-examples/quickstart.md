@@ -1,6 +1,6 @@
 # Quickstart
 
-**Navigation:** [← Examples Overview](index.md) | [Next: Invoice Extraction →](invoice-extraction.md)
+**Navigation:** [← Examples Overview](index.md) | [Invoice Extraction →](invoice-extraction.md)
 
 ---
 
@@ -452,4 +452,4 @@ You've learned:
 
 ---
 
-**Navigation:** [← Examples Overview](index.md) | [Next: Invoice Extraction →](invoice-extraction.md)
+**Navigation:** [← Examples Overview](index.md) | [Invoice Extraction →](invoice-extraction.md)

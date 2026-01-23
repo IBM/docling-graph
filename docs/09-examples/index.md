@@ -1,42 +1,135 @@
 # Examples
 
-**Navigation:** [← Batch Processing](../08-api/batch-processing.md) | [Next: Advanced Topics →](../10-advanced/index.md)
+**Navigation:** [← Batch Processing](../08-api/batch-processing.md) | [Advanced Topics →](../10-advanced/index.md)
 
 ---
 
 ## Overview
 
-This section provides **complete, end-to-end examples** for common document processing scenarios. Each example includes:
+This section provides **complete, end-to-end examples** organized by both **input format** and **domain/use case**. Each example demonstrates how to process different types of documents through the Docling Graph pipeline.
 
-- Complete Pydantic template
-- Step-by-step processing guide
+**What's Covered:**
+- Complete Pydantic templates
 - CLI and Python API usage
-- Expected outputs
+- Expected outputs and graph structures
 - Troubleshooting tips
+- Best practices
 
 ---
 
-## Available Examples
+## Quick Navigation
+
+### By Input Format
+
+| Example | Input Type | Time | Backend |
+|---------|-----------|------|---------|
+| **[Quickstart](quickstart.md)** | PDF/Image | 5 min | VLM/LLM |
+| **[URL Input](url-input.md)** | URL (PDF) | 10 min | LLM |
+| **[Markdown Input](markdown-input.md)** | Markdown | 10 min | LLM |
+| **[DoclingDocument Input](docling-document-input.md)** | JSON | 10 min | LLM |
+
+### By Domain/Use Case
+
+| Example | Domain | Input Type | Time |
+|---------|--------|-----------|------|
+| **[Invoice Extraction](invoice-extraction.md)** | Business | PDF/Image | 15 min |
+| **[ID Card](id-card.md)** | Identity | Image | 15 min |
+| **[Insurance Policy](insurance-policy.md)** | Legal | PDF | 20 min |
+| **[Research Paper](research-paper.md)** | Academic | PDF | 20 min |
+
+---
+
+## Section 1: Examples by Input Format
+
+Learn how to work with different input types and understand the pipeline's flexibility.
 
 ### 1. [Quickstart](quickstart.md)
 **5-Minute Introduction**
 
-Get started quickly with a simple invoice extraction example.
+Get started quickly with a simple document extraction example using traditional PDF or image inputs.
 
-- **Document Type:** Invoice (PDF/Image)
-- **Time:** 5 minutes
-- **Backend:** VLM or LLM
+- **Input:** PDF or Image file
+- **Use Case:** Invoice extraction
+- **Backend:** VLM (recommended) or LLM
+- **Features:** Basic extraction, graph visualization
+
+**Perfect for:** First-time users wanting a quick introduction.
 
 ---
 
-### 2. [Invoice Extraction](invoice-extraction.md)
+### 2. [URL Input](url-input.md)
+**Processing Documents from URLs**
+
+Learn how to process documents directly from URLs without manual downloads.
+
+- **Input:** URL (e.g., `https://arxiv.org/pdf/2207.02720`)
+- **Use Case:** Research paper analysis
+- **Backend:** LLM
+- **Features:** Automatic download, content type detection, remote processing
+
+**What You'll Learn:**
+- URL-based workflows
+- Automatic content type detection
+- Download configuration (timeout, size limits)
+- Network error handling
+
+**Perfect for:** Processing documents from web sources, automated pipelines.
+
+---
+
+### 3. [Markdown Input](markdown-input.md)
+**Processing Markdown Documents**
+
+Extract structured data from Markdown files like README.md or documentation.
+
+- **Input:** Markdown file (`.md`)
+- **Use Case:** Documentation analysis
+- **Backend:** LLM (required)
+- **Features:** Text-only processing, no OCR needed, fast extraction
+
+**What You'll Learn:**
+- Text-only extraction workflow
+- Processing documentation
+- Markdown structure preservation
+- Batch processing multiple files
+
+**Perfect for:** Documentation analysis, knowledge base extraction.
+
+---
+
+### 4. [DoclingDocument Input](docling-document-input.md)
+**Reprocessing Pre-Converted Documents**
+
+Use pre-processed DoclingDocument JSON files for fast reprocessing without OCR.
+
+- **Input:** DoclingDocument JSON file
+- **Use Case:** Invoice reprocessing
+- **Backend:** LLM or VLM
+- **Features:** Skip OCR, fast reprocessing, template experimentation
+
+**What You'll Learn:**
+- Creating DoclingDocument files
+- Two-stage processing workflows
+- Template experimentation
+- Batch reprocessing
+
+**Perfect for:** Reprocessing documents, A/B testing templates, incremental workflows.
+
+---
+
+## Section 2: Examples by Domain/Use Case
+
+Explore complete, domain-specific examples with production-ready templates.
+
+### 5. [Invoice Extraction](invoice-extraction.md)
 **Complete Invoice Processing**
 
 Extract structured data from invoices including issuer, client, line items, and totals.
 
-- **Document Type:** Invoice (PDF/JPG)
-- **Features:** Nested entities, relationships, validation
+- **Domain:** Business/Finance
+- **Input:** PDF or Image
 - **Backend:** VLM (recommended) or LLM
+- **Features:** Nested entities, relationships, validation
 
 **What You'll Learn:**
 - Creating entity and component models
@@ -44,352 +137,258 @@ Extract structured data from invoices including issuer, client, line items, and 
 - Using edge() helper
 - Handling addresses and line items
 
----
-
-### 3. [Research Paper](research-paper.md)
-**Scientific Document Analysis**
-
-Extract complex research data including experiments, measurements, and results.
-
-- **Document Type:** Research Paper (PDF)
-- **Features:** Complex ontology, enums, validators, measurements
-- **Backend:** LLM with chunking
-
-**What You'll Learn:**
-- Complex template design
-- Enum normalization
-- Custom validators
-- Measurement parsing
-- Multi-page consolidation
+**Perfect for:** Business document processing, accounting automation.
 
 ---
 
-### 4. [ID Card](id-card.md)
+### 6. [ID Card](id-card.md)
 **Identity Document Extraction**
 
 Extract personal information from ID cards and identity documents.
 
-- **Document Type:** ID Card (Image)
-- **Features:** Date parsing, address validation, person entities
+- **Domain:** Identity/Government
+- **Input:** Image (photo of ID card)
 - **Backend:** VLM (recommended)
+- **Features:** Structured personal data, validation
 
 **What You'll Learn:**
-- Vision-based extraction
-- Date field handling
-- Address parsing
-- Field validators
-- Graph ID configuration
+- Processing identity documents
+- Handling personal information
+- Data validation and formatting
+- Privacy considerations
+
+**Perfect for:** KYC processes, identity verification systems.
 
 ---
 
-### 5. [Insurance Policy](insurance-policy.md)
-**Insurance Document Processing**
+### 7. [Insurance Policy](insurance-policy.md)
+**Legal Document Analysis**
 
-Extract policy details, coverage information, and terms from insurance documents.
+Extract structured information from insurance policies and legal documents.
 
-- **Document Type:** Insurance Policy (PDF)
-- **Features:** Policy terms, coverage details, beneficiaries
-- **Backend:** LLM
+- **Domain:** Legal/Insurance
+- **Input:** PDF (multi-page)
+- **Backend:** LLM with chunking
+- **Features:** Complex document structure, multi-page processing
 
 **What You'll Learn:**
-- Financial document processing
-- Policy structure modeling
-- Coverage relationships
-- Term extraction
+- Processing long documents
+- Handling complex legal terminology
+- Multi-page extraction strategies
+- Document consolidation
+
+**Perfect for:** Legal document processing, insurance automation.
 
 ---
 
-## Quick Comparison
+### 8. [Research Paper](research-paper.md)
+**Scientific Document Analysis**
 
-| Example | Document Type | Complexity | Backend | Time | Key Features |
-|---------|---------------|------------|---------|------|--------------|
-| [Quickstart](quickstart.md) | Invoice | + | Any | 5 min | Quick start |
-| [Invoice](invoice-extraction.md) | Invoice | ++ | VLM/LLM | 15 min | Nested entities |
-| [Research](research-paper.md) | Paper | +++ | LLM | 30 min | Complex ontology |
-| [ID Card](id-card.md) | ID Card | ++ | VLM | 15 min | Vision extraction |
-| [Insurance](insurance-policy.md) | Policy | ++ | LLM | 20 min | Financial docs |
+Extract structured data from academic papers including authors, methodology, and findings.
 
----
+- **Domain:** Academic/Research
+- **Input:** PDF (scientific paper)
+- **Backend:** LLM with chunking
+- **Features:** Complex structure, citations, methodology
 
-## Example Structure
+**What You'll Learn:**
+- Processing scientific documents
+- Extracting methodology and findings
+- Handling citations and references
+- Academic document structure
 
-Each example follows this structure:
-
-### 1. Overview
-- Document type and use case
-- What you'll learn
-- Prerequisites
-
-### 2. Template Definition
-- Complete Pydantic models
-- Field descriptions
-- Relationship definitions
-
-### 3. Processing
-- CLI commands
-- Python API code
-- Configuration options
-
-### 4. Results
-- Expected output structure
-- Graph visualization
-- Statistics
-
-### 5. Troubleshooting
-- Common issues
-- Solutions
-- Tips
+**Perfect for:** Research automation, literature review systems.
 
 ---
 
-## Getting Started
+## Input Format Comparison
 
-### Prerequisites
+| Format | OCR Required | Processing Speed | Backend Support | Best For |
+|--------|--------------|------------------|-----------------|----------|
+| **PDF** | ✅ Yes | 🐢 Slower | LLM + VLM | Scanned documents, forms |
+| **Image** | ✅ Yes | 🐢 Slower | LLM + VLM | Photos, scans |
+| **URL** | Depends | ⚡ Variable | LLM + VLM | Remote documents |
+| **Markdown** | ❌ No | ⚡ Fast | LLM only | Documentation, notes |
+| **DoclingDocument** | ❌ No | ⚡ Very Fast | LLM + VLM | Reprocessing, experimentation |
 
-```bash
-# Install docling-graph
-uv sync --extra all
+---
 
-# Verify installation
-uv run docling-graph --version
-```
+## Choosing the Right Example
 
-### Choose Your Example
+### Start Here
 
-**New to docling-graph?**
+**New to Docling Graph?**
 → Start with [Quickstart](quickstart.md)
 
-**Processing invoices?**
-→ See [Invoice Extraction](invoice-extraction.md)
+### By Input Format
 
-**Working with research papers?**
-→ See [Research Paper](research-paper.md)
+**Processing web documents?**
+→ See [URL Input](url-input.md)
 
-**Extracting from ID cards?**
-→ See [ID Card](id-card.md)
+**Working with documentation?**
+→ See [Markdown Input](markdown-input.md)
 
-**Processing insurance documents?**
-→ See [Insurance Policy](insurance-policy.md)
+**Need to reprocess documents?**
+→ See [DoclingDocument Input](docling-document-input.md)
+
+### By Domain/Use Case
+
+**Business Documents:**
+- [Invoice Extraction](invoice-extraction.md) - Invoices, receipts, financial documents
+
+**Identity Verification:**
+- [ID Card](id-card.md) - ID cards, passports, identity documents
+
+**Legal Documents:**
+- [Insurance Policy](insurance-policy.md) - Policies, contracts, legal agreements
+
+**Academic Research:**
+- [Research Paper](research-paper.md) - Scientific papers, academic documents
+- [URL Input](url-input.md) - Process from arXiv, PubMed, etc.
+
+**Documentation:**
+- [Markdown Input](markdown-input.md) - README files, project documentation
+
+**Workflow Optimization:**
+- [DoclingDocument Input](docling-document-input.md) - Fast reprocessing, template testing
 
 ---
 
-## Example Templates
+## Common Workflows
 
-All example templates are available in the repository:
-
-```
-docs/examples/templates/
-├── invoice.py           # Invoice extraction
-├── rheology_research.py # Research paper
-├── id_card.py          # ID card extraction
-└── insurance.py        # Insurance policy
-```
-
-### Using Example Templates
+### Workflow 1: URL → Extract → Visualize
 
 ```bash
-# Clone repository
-git clone https://github.com/DS4SD/docling-graph.git
-cd docling-graph
+# Download and process in one step
+uv run docling-graph convert "https://arxiv.org/pdf/2207.02720" \
+    --template "templates.research.Research" \
+    --processing-mode "many-to-one"
 
-# Use example template
-uv run docling-graph convert document.pdf \
-    --template "docs.examples.templates.invoice.Invoice"
+# Visualize results
+uv run docling-graph inspect outputs
+```
+
+### Workflow 2: PDF → DoclingDocument → Reprocess
+
+```bash
+# Step 1: Initial processing with DoclingDocument export
+uv run docling-graph convert invoice.pdf \
+    --template "templates.invoice.BasicInvoice" \
+    --export-docling-json
+
+# Step 2: Reprocess with different template (no OCR)
+uv run docling-graph convert outputs/invoice_docling.json \
+    --template "templates.invoice.DetailedInvoice"
+```
+
+### Workflow 3: Batch Markdown Processing
+
+```bash
+# Process all markdown files
+for file in docs/**/*.md; do
+    uv run docling-graph convert "$file" \
+        --template "templates.documentation.Documentation" \
+        --backend llm \
+        --output-dir "outputs/$(basename $file .md)"
+done
 ```
 
 ---
 
-## Common Patterns
+## Template Examples
 
-### Pattern 1: Simple Entity Extraction
+All examples use Pydantic templates. Here's a quick reference:
+
+### Simple Entity
 
 ```python
 from pydantic import BaseModel, Field
 
-class Invoice(BaseModel):
-    """Simple invoice model."""
-    invoice_number: str = Field(description="Invoice number")
-    total: float = Field(description="Total amount")
-    date: str = Field(description="Invoice date")
+class Person(BaseModel):
+    """Person entity."""
+    model_config = {
+        'is_entity': True,
+        'graph_id_fields': ['name']
+    }
+    
+    name: str = Field(description="Person's name")
+    email: str = Field(description="Email address")
 ```
 
-### Pattern 2: Nested Entities
+### With Relationships
 
 ```python
-class Address(BaseModel):
-    """Address component."""
-    street: str
-    city: str
-    postal_code: str
+from docling_graph.utils import edge
 
 class Organization(BaseModel):
-    """Organization entity."""
-    name: str
-    address: Address  # Nested component
+    """Organization with employees."""
+    model_config = {'is_entity': True}
+    
+    name: str = Field(description="Organization name")
+    employees: list[Person] = edge(
+        "EMPLOYS",
+        description="Organization employees"
+    )
 ```
 
-### Pattern 3: Graph Relationships
+### Complete Examples
 
-```python
-def edge(label: str, **kwargs):
-    """Helper for graph edges."""
-    return Field(..., json_schema_extra={"edge_label": label}, **kwargs)
-
-class Invoice(BaseModel):
-    """Invoice with relationships."""
-    invoice_number: str
-    issued_by: Organization = edge(label="ISSUED_BY")
-    sent_to: Client = edge(label="SENT_TO")
-```
-
----
-
-## Best Practices
-
-### 1. Start Simple
-
-```python
-# ✅ Good - Start with basic fields
-class Invoice(BaseModel):
-    invoice_number: str
-    total: float
-
-# ❌ Avoid - Too complex initially
-class Invoice(BaseModel):
-    invoice_number: str
-    total: float
-    line_items: List[LineItem]
-    issued_by: Organization
-    sent_to: Client
-    # ... 20 more fields
-```
-
-### 2. Add Descriptions
-
-```python
-# ✅ Good - Clear descriptions
-invoice_number: str = Field(
-    description="The unique invoice identifier",
-    examples=["INV-001", "2024-001"]
-)
-
-# ❌ Avoid - No guidance
-invoice_number: str
-```
-
-### 3. Use Examples
-
-```python
-# ✅ Good - Concrete examples
-total: float = Field(
-    description="Total amount",
-    examples=[1234.56, 999.99]
-)
-
-# ❌ Avoid - Abstract examples
-total: float = Field(
-    description="Total amount",
-    examples=["amount"]
-)
-```
-
----
-
-## Testing Your Templates
-
-### Quick Test
-
-```bash
-# Test with example document
-uv run docling-graph convert test.pdf \
-    --template "my_templates.Invoice" \
-    --output-dir "test_output"
-
-# Inspect results
-uv run docling-graph inspect test_output/
-```
-
-### Iterative Development
-
-```python
-# 1. Start simple
-class Invoice(BaseModel):
-    invoice_number: str
-    total: float
-
-# 2. Test extraction
-config = PipelineConfig(
-    source="test.pdf",
-    template=Invoice
-)
-config.run()
-
-# 3. Review results
-# 4. Add more fields
-# 5. Repeat
-```
-
----
-
-## Next Steps
-
-1. **[Quickstart →](quickstart.md)** - Get started in 5 minutes
-2. **[Invoice Extraction →](invoice-extraction.md)** - Complete invoice example
-3. **[Advanced Topics →](../10-advanced/index.md)** - Custom backends and more
+See individual example pages for complete, domain-specific templates.
 
 ---
 
 ## Additional Resources
 
 ### Documentation
-- [Schema Definition](../03-schema-definition/index.md) - Template creation guide
-- [CLI Reference](../07-cli/index.md) - Command-line usage
-- [Python API](../08-api/index.md) - Programmatic usage
 
-### Example Scripts
-- `docs/examples/scripts/` - Python scripts
-- `docs/examples/templates/` - Template files
-- `docs/examples/data/` - Sample documents
+- **[Input Formats Guide](../04-pipeline-configuration/input-formats.md)** - Complete input format reference
+- **[Backend Selection](../04-pipeline-configuration/backend-selection.md)** - Choose LLM vs VLM
+- **[Processing Modes](../04-pipeline-configuration/processing-modes.md)** - One-to-one vs many-to-one
 
-### Community
-- [GitHub Issues](https://github.com/DS4SD/docling-graph/issues) - Report issues
-- [Discussions](https://github.com/DS4SD/docling-graph/discussions) - Ask questions
+### API Reference
 
----
+- **[PipelineConfig](../08-api/pipeline-config.md)** - Configuration options
+- **[run_pipeline](../08-api/run-pipeline.md)** - Pipeline execution
+- **[Batch Processing](../08-api/batch-processing.md)** - Process multiple documents
 
-## Quick Reference
+### Advanced Topics
 
-### Run Example
-
-```bash
-# CLI
-uv run docling-graph convert document.pdf \
-    --template "docs.examples.templates.invoice.Invoice"
-
-# Python
-from docling_graph import PipelineConfig
-
-config = PipelineConfig(
-    source="document.pdf",
-    template="docs.examples.templates.invoice.Invoice"
-)
-config.run()
-```
-
-### View Results
-
-```bash
-# Inspect graph
-uv run docling-graph inspect outputs/
-
-# View statistics
-cat outputs/graph_stats.json
-
-# Read CSV
-cat outputs/nodes.csv
-cat outputs/edges.csv
-```
+- **[Performance Tuning](../10-advanced/performance-tuning.md)** - Optimize processing
+- **[Error Handling](../10-advanced/error-handling.md)** - Handle failures gracefully
+- **[Custom Backends](../10-advanced/custom-backends.md)** - Extend functionality
 
 ---
 
-**Navigation:** [← Batch Processing](../08-api/batch-processing.md) | [Next: Advanced Topics →](../10-advanced/index.md)
+## Getting Help
+
+### Common Issues
+
+**"VLM backend does not support text-only inputs"**
+→ Use `--backend llm` for Markdown and text files
+
+**"URL download timeout"**
+→ Increase timeout or download manually first
+
+**"Text input is empty"**
+→ Check file content and encoding
+
+**"Invalid DoclingDocument schema"**
+→ Verify `schema_name` and `version` fields
+
+### Support
+
+- **Documentation:** [https://ibm.github.io/docling-graph](https://ibm.github.io/docling-graph)
+- **GitHub Issues:** [https://github.com/IBM/docling-graph/issues](https://github.com/IBM/docling-graph/issues)
+- **Discussions:** [https://github.com/IBM/docling-graph/discussions](https://github.com/IBM/docling-graph/discussions)
+
+---
+
+## Next Steps
+
+1. **Try the [Quickstart](quickstart.md)** - Get hands-on experience
+2. **Explore [Input Formats](../04-pipeline-configuration/input-formats.md)** - Learn about all supported formats
+3. **Read [Advanced Topics](../10-advanced/index.md)** - Optimize your workflows
+
+---
+
+**Navigation:** [← Batch Processing](../08-api/batch-processing.md) | [Advanced Topics →](../10-advanced/index.md)

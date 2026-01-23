@@ -243,7 +243,7 @@ class InsurancePolicy(BaseModel):
 
 ## Processing
 
-### Using CLI (Remote API - Recommended)
+### Using CLI
 
 ```bash
 # Process with remote LLM (best for complex documents)
@@ -406,7 +406,7 @@ uv run docling-graph inspect outputs/insurance/
 
 ## Customization
 
-### Add Vehicle Information (Auto Insurance)
+### Add Vehicle Information
 
 ```python
 class Vehicle(BaseModel):

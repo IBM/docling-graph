@@ -1,6 +1,6 @@
 # Model Configuration
 
-**Navigation:** [← Backend Selection](backend-selection.md) | [Next: Processing Modes →](processing-modes.md)
+**Navigation:** [← Backend Selection](backend-selection.md) | [Processing Modes →](processing-modes.md)
 
 ---
 
@@ -195,7 +195,7 @@ config = PipelineConfig(
 
 ### Supported Remote Providers
 
-#### 1. OpenAI (Recommended)
+#### 1. OpenAI
 
 **Best for:** Highest quality, latest models
 
@@ -649,4 +649,4 @@ config = PipelineConfig(
 
 ---
 
-**Navigation:** [← Backend Selection](backend-selection.md) | [Next: Processing Modes →](processing-modes.md)
+**Navigation:** [← Backend Selection](backend-selection.md) | [Processing Modes →](processing-modes.md)

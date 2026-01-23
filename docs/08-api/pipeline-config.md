@@ -1,6 +1,6 @@
 # PipelineConfig
 
-**Navigation:** [← run_pipeline()](run-pipeline.md) | [Next: Programmatic Examples →](programmatic-examples.md)
+**Navigation:** [← run_pipeline()](run-pipeline.md) | [Programmatic Examples →](programmatic-examples.md)
 
 ---
 
@@ -672,4 +672,4 @@ See [Configuration Reference](../04-pipeline-configuration/index.md) for complet
 
 ---
 
-**Navigation:** [← run_pipeline()](run-pipeline.md) | [Next: Programmatic Examples →](programmatic-examples.md)
+**Navigation:** [← run_pipeline()](run-pipeline.md) | [Programmatic Examples →](programmatic-examples.md)

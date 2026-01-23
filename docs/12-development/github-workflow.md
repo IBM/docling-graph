@@ -1,6 +1,6 @@
 # GitHub Workflow
 
-**Navigation:** [← Development](index.md) | [Next: Release Process →](release-process.md)
+**Navigation:** [← Development](index.md) | [Release Process →](release-process.md)
 
 ---
 
@@ -466,4 +466,4 @@ git push origin feature/my-feature --force
 
 ---
 
-**Navigation:** [← Development](index.md) | [Next: Release Process →](release-process.md)
+**Navigation:** [← Development](index.md) | [Release Process →](release-process.md)

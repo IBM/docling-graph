@@ -1,6 +1,6 @@
 # Validation and Normalization
 
-**Navigation:** [← Relationships](relationships.md) | [Next: Advanced Patterns →](advanced-patterns.md)
+**Navigation:** [← Relationships](relationships.md) | [Advanced Patterns →](advanced-patterns.md)
 
 ---
 
@@ -751,4 +751,4 @@ def validator_name(self) -> Self:
 
 ---
 
-**Navigation:** [← Relationships](relationships.md) | [Next: Advanced Patterns →](advanced-patterns.md)
+**Navigation:** [← Relationships](relationships.md) | [Advanced Patterns →](advanced-patterns.md)

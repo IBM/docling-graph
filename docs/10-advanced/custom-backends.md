@@ -1,6 +1,6 @@
 # Custom Backends
 
-**Navigation:** [← Advanced Topics](index.md) | [Next: Custom Exporters →](custom-exporters.md)
+**Navigation:** [← Advanced Topics](index.md) | [Custom Exporters →](custom-exporters.md)
 
 ---
 
@@ -734,4 +734,4 @@ def _call_api_with_retry(self, *args, **kwargs):
 
 ---
 
-**Navigation:** [← Advanced Topics](index.md) | [Next: Custom Exporters →](custom-exporters.md)
+**Navigation:** [← Advanced Topics](index.md) | [Custom Exporters →](custom-exporters.md)

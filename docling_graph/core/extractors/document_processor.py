@@ -70,14 +70,15 @@ class DocumentProcessor:
                 }
             )
             rich_print(
-                "[blue][DocumentProcessor][/blue] Initialized with [magenta]VLM pipeline[/magenta]"
+                "[blue][DocumentProcessor][/blue] Initialized with [magenta]Vision pipeline[/magenta]"
             )
         else:
             # Default Pipeline - Most accurate with OCR for standard documents
             pipeline_options = PdfPipelineOptions()
             pipeline_options.do_ocr = True
             pipeline_options.do_table_structure = True
-            pipeline_options.table_structure_options.do_cell_matching = True
+            # Note: do_cell_matching attribute removed in docling v2.60.0+
+            # pipeline_options.table_structure_options.do_cell_matching = True
             pipeline_options.ocr_options.lang = ["en", "fr"]
             pipeline_options.accelerator_options = AcceleratorOptions(
                 num_threads=4, device=AcceleratorDevice.AUTO

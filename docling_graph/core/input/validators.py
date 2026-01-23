@@ -1,0 +1,354 @@
+"""
+Input validators for different input types.
+
+This module provides validation logic for various input formats
+to ensure they meet requirements before processing.
+"""
+
+import json
+from abc import ABC, abstractmethod
+from pathlib import Path
+from typing import Any, Union
+from urllib.parse import urlparse
+
+from ...exceptions import ConfigurationError, ValidationError
+
+
+class InputValidator(ABC):
+    """Base class for input validators."""
+
+    @abstractmethod
+    def validate(self, source: Any) -> None:
+        """
+        Validate input source.
+
+        Args:
+            source: Input source to validate
+
+        Raises:
+            ValidationError: If validation fails
+            ConfigurationError: If configuration is invalid
+        """
+
+
+class TextValidator(InputValidator):
+    """Validates text inputs (plain text, .txt, .md)."""
+
+    def validate(self, source: Union[str, Path]) -> None:
+        """
+        Validate text input.
+
+        Checks:
+        - Not empty
+        - Not only whitespace
+        - Readable encoding (for files)
+
+        Args:
+            source: Text string or path to text file
+
+        Raises:
+            ValidationError: If validation fails
+            ConfigurationError: If file not found
+        """
+        # Handle None input
+        if source is None:
+            raise ValidationError(
+                "Text input cannot be None",
+                details={"hint": "Provide valid text content or file path"},
+            )
+
+        # If it's a Path object, validate as file
+        if isinstance(source, Path):
+            self._validate_file(source)
+            return
+
+        # For strings, check if it's a file path that exists
+        source_str = str(source)
+
+        # Try to check if it's a file, but handle cases where the string
+        # is too long or invalid as a file path
+        try:
+            source_path = Path(source_str)
+            # Only treat as file if it actually exists and is a file
+            # This prevents treating empty strings or "." as file paths
+            if source_path.exists() and source_path.is_file():
+                self._validate_file(source_path)
+            else:
+                # Validate as raw text string
+                self._validate_string(source_str)
+        except (OSError, ValueError):
+            # If path checking fails (e.g., filename too long), treat as text
+            self._validate_string(source_str)
+
+    def _validate_string(self, text: str) -> None:
+        """Validate raw text string."""
+        if not text:
+            raise ValidationError(
+                "Text input is empty",
+                details={"hint": "Provide non-empty text content"},
+            )
+
+        if not text.strip():
+            raise ValidationError(
+                "Text input contains only whitespace",
+                details={"hint": "Provide text with actual content"},
+            )
+
+    def _validate_file(self, file_path: Path) -> None:
+        """Validate text file."""
+        if not file_path.exists():
+            raise ConfigurationError(
+                f"Text file not found: {file_path}",
+                details={"file": str(file_path)},
+            )
+
+        if not file_path.is_file():
+            raise ConfigurationError(
+                f"Not a file: {file_path}",
+                details={"file": str(file_path)},
+            )
+
+        # Check if file is empty
+        if file_path.stat().st_size == 0:
+            raise ValidationError(
+                f"Text file is empty: {file_path}",
+                details={"file": str(file_path)},
+            )
+
+        # Try to read file to check encoding
+        try:
+            with open(file_path, encoding="utf-8") as f:
+                content = f.read()
+
+            # Check if content is only whitespace
+            if not content.strip():
+                raise ValidationError(
+                    f"Text file contains only whitespace: {file_path}",
+                    details={"file": str(file_path)},
+                )
+
+        except UnicodeDecodeError as e:
+            raise ValidationError(
+                f"Text file has invalid encoding: {file_path}",
+                details={
+                    "file": str(file_path),
+                    "error": str(e),
+                    "hint": "File must be UTF-8 encoded",
+                },
+            ) from e
+        except Exception as e:
+            raise ValidationError(
+                f"Error reading text file: {file_path}",
+                details={"file": str(file_path), "error": str(e)},
+            ) from e
+
+
+class URLValidator(InputValidator):
+    """Validates URL inputs."""
+
+    def __init__(self, timeout: int = 30, max_size_mb: int = 100) -> None:
+        """
+        Initialize URL validator.
+
+        Args:
+            timeout: Timeout for URL checks in seconds
+            max_size_mb: Maximum allowed download size in MB
+        """
+        self.timeout = timeout
+        self.max_size_mb = max_size_mb
+
+    def validate(self, source: str) -> None:
+        """
+        Validate URL input.
+
+        Checks:
+        - Valid URL format
+        - Supported scheme (http/https)
+
+        Note: Reachability and size checks are done during download
+        to avoid duplicate requests.
+
+        Args:
+            source: URL string
+
+        Raises:
+            ValidationError: If validation fails
+        """
+        if not isinstance(source, str):
+            raise ValidationError(
+                "URL must be a string",
+                details={"type": type(source).__name__},
+            )
+
+        # Parse URL
+        try:
+            parsed = urlparse(source)
+        except Exception as e:
+            raise ValidationError(
+                f"Invalid URL format: {source}",
+                details={"url": source, "error": str(e)},
+            ) from e
+
+        # Check scheme
+        if parsed.scheme not in ("http", "https"):
+            raise ValidationError(
+                "URL must use http or https scheme",
+                details={
+                    "url": source,
+                    "scheme": parsed.scheme or "(none)",
+                    "supported_schemes": ["http", "https"],
+                },
+            )
+
+        # Check if URL has a netloc (domain)
+        if not parsed.netloc:
+            raise ValidationError(
+                f"Invalid URL (missing domain): {source}",
+                details={"url": source},
+            )
+
+
+class DoclingDocumentValidator(InputValidator):
+    """Validates DoclingDocument JSON files."""
+
+    def validate(self, source: Union[str, Path]) -> None:
+        """
+        Validate DoclingDocument JSON.
+
+        Checks:
+        - Valid JSON format
+        - Contains required DoclingDocument fields
+        - Schema compatibility
+
+        Args:
+            source: Path to DoclingDocument JSON file or JSON string
+
+        Raises:
+            ValidationError: If validation fails
+            ConfigurationError: If file not found
+        """
+        # Handle None input
+        if source is None:
+            raise ValidationError(
+                "DoclingDocument source cannot be None",
+                details={"hint": "Provide a file path or JSON string"},
+            )
+
+        # Handle both file paths and JSON strings
+        if isinstance(source, Path):
+            # It's a Path object - must be a file
+            source_path = source
+            if not source_path.exists():
+                raise ConfigurationError(
+                    f"DoclingDocument file not found: {source_path}",
+                    details={"file": str(source_path)},
+                )
+            if not source_path.is_file():
+                raise ConfigurationError(
+                    f"Not a file: {source_path}",
+                    details={"file": str(source_path)},
+                )
+            # Load JSON from file
+            if source_path.stat().st_size == 0:
+                raise ValidationError(
+                    f"DoclingDocument file is empty: {source_path}",
+                    details={"file": str(source_path)},
+                )
+            try:
+                with open(source_path, encoding="utf-8") as f:
+                    data = json.load(f)
+            except json.JSONDecodeError as e:
+                raise ValidationError(
+                    "Invalid JSON in DoclingDocument file",
+                    details={
+                        "file": str(source_path),
+                        "error": str(e),
+                        "line": e.lineno if hasattr(e, "lineno") else None,
+                    },
+                ) from e
+        elif isinstance(source, str):
+            # For strings, check if it looks like a file path
+            source_path = Path(source)
+
+            # Try to check if it's a file, but handle cases where the string
+            # is too long or invalid as a file path
+            try:
+                # If it exists as a file, load from file
+                if source_path.exists() and source_path.is_file():
+                    if source_path.stat().st_size == 0:
+                        raise ValidationError(
+                            f"DoclingDocument file is empty: {source_path}",
+                            details={"file": str(source_path)},
+                        )
+                    try:
+                        with open(source_path, encoding="utf-8") as f:
+                            data = json.load(f)
+                    except json.JSONDecodeError as e:
+                        raise ValidationError(
+                            "Invalid JSON in DoclingDocument file",
+                            details={
+                                "file": str(source_path),
+                                "error": str(e),
+                                "line": e.lineno if hasattr(e, "lineno") else None,
+                            },
+                        ) from e
+                else:
+                    # Treat as JSON string
+                    try:
+                        data = json.loads(source)
+                    except json.JSONDecodeError as e:
+                        raise ValidationError(
+                            "Invalid JSON in DoclingDocument",
+                            details={"error": str(e)},
+                        ) from e
+            except (OSError, ValueError):
+                # If path checking fails (e.g., string too long), treat as JSON string
+                try:
+                    data = json.loads(source)
+                except json.JSONDecodeError as e:
+                    raise ValidationError(
+                        "Invalid JSON in DoclingDocument",
+                        details={"error": str(e)},
+                    ) from e
+        else:
+            raise ValidationError(
+                "DoclingDocument source must be a file path or JSON string",
+                details={"type": type(source).__name__},
+            )
+
+        # Validate JSON structure
+        if not isinstance(data, dict):
+            raise ValidationError(
+                "DoclingDocument must be a JSON object",
+                details={"type": type(data).__name__},
+            )
+
+        # Check for required fields
+        if "schema_name" not in data:
+            raise ValidationError(
+                "Missing required field: schema_name",
+                details={"hint": "DoclingDocument must have 'schema_name' field"},
+            )
+
+        if data.get("schema_name") != "DoclingDocument":
+            raise ValidationError(
+                "schema_name must be 'DoclingDocument'",
+                details={
+                    "expected": "DoclingDocument",
+                    "actual": data.get("schema_name"),
+                },
+            )
+
+        if "version" not in data:
+            raise ValidationError(
+                "Missing required field: version",
+                details={"hint": "DoclingDocument must have 'version' field"},
+            )
+
+        # Validate pages structure if present
+        if "pages" in data:
+            if not isinstance(data["pages"], dict):
+                raise ValidationError(
+                    "Invalid 'pages' field in DoclingDocument",
+                    details={"error": "'pages' must be a dictionary"},
+                )

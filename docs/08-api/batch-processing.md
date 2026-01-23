@@ -1,6 +1,6 @@
 # Batch Processing
 
-**Navigation:** [← Programmatic Examples](programmatic-examples.md) | [Next: Examples →](../09-examples/index.md)
+**Navigation:** [← Programmatic Examples](programmatic-examples.md) | [Examples →](../09-examples/index.md)
 
 ---
 
@@ -809,4 +809,4 @@ with ThreadPoolExecutor(max_workers=4) as executor:
 
 ---
 
-**Navigation:** [← Programmatic Examples](programmatic-examples.md) | [Next: Examples →](../09-examples/index.md)
+**Navigation:** [← Programmatic Examples](programmatic-examples.md) | [Examples →](../09-examples/index.md)

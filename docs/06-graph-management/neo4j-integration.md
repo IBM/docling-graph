@@ -1,6 +1,6 @@
 # Neo4j Integration
 
-**Navigation:** [← Visualization](visualization.md) | [Next: Graph Analysis →](graph-analysis.md)
+**Navigation:** [← Visualization](visualization.md) | [Graph Analysis →](graph-analysis.md)
 
 ---
 
@@ -633,4 +633,4 @@ MATCH (n) DETACH DELETE n
 
 ---
 
-**Navigation:** [← Visualization](visualization.md) | [Next: Graph Analysis →](graph-analysis.md)
+**Navigation:** [← Visualization](visualization.md) | [Graph Analysis →](graph-analysis.md)

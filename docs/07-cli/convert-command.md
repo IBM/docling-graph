@@ -1,6 +1,6 @@
 # convert Command
 
-**Navigation:** [← init Command](init-command.md) | [Next: inspect Command →](inspect-command.md)
+**Navigation:** [← init Command](init-command.md) | [inspect Command →](inspect-command.md)
 
 ---
 
@@ -27,14 +27,29 @@ uv run docling-graph convert SOURCE --template TEMPLATE [OPTIONS]
 
 | Argument | Description |
 |----------|-------------|
-| `SOURCE` | Path to document (PDF, JPG, PNG) |
+| `SOURCE` | Path to document (PDF, JPG, PNG, TXT, MD), URL, or DoclingDocument JSON |
 | `--template`, `-t` | Dotted path to Pydantic template |
 
-### Example
+### Examples
 
 ```bash
+# PDF document
 uv run docling-graph convert invoice.pdf \
     --template "my_templates.Invoice"
+
+# Text file
+uv run docling-graph convert notes.txt \
+    --template "my_templates.Report" \
+    --backend llm
+
+# URL
+uv run docling-graph convert https://example.com/doc.pdf \
+    --template "my_templates.Invoice"
+
+# Markdown file
+uv run docling-graph convert README.md \
+    --template "my_templates.Documentation" \
+    --backend llm
 ```
 
 ---
@@ -722,4 +737,4 @@ uv run docling-graph convert SOURCE \
 
 ---
 
-**Navigation:** [← init Command](init-command.md) | [Next: inspect Command →](inspect-command.md)
+**Navigation:** [← init Command](init-command.md) | [inspect Command →](inspect-command.md)

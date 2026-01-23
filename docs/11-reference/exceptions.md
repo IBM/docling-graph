@@ -1,6 +1,6 @@
 # Exceptions
 
-**Navigation:** [← Protocols](protocols.md) | [Next: Converters →](converters.md)
+**Navigation:** [← Protocols](protocols.md) | [Converters →](converters.md)
 
 ---
 
@@ -604,4 +604,4 @@ except Exception as e:
 
 ---
 
-**Navigation:** [← Protocols](protocols.md) | [Next: Converters →](converters.md)
+**Navigation:** [← Protocols](protocols.md) | [Converters →](converters.md)

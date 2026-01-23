@@ -1,6 +1,6 @@
 # Processing Modes
 
-**Navigation:** [← Model Configuration](model-configuration.md) | [Next: Docling Settings →](docling-settings.md)
+**Navigation:** [← Model Configuration](model-configuration.md) | [Docling Settings →](docling-settings.md)
 
 ---
 
@@ -53,50 +53,7 @@ config = PipelineConfig(
 
 ### How It Works
 
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart LR
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-
-    %% 2. Define Nodes
-    A("PDF Document")
-    
-    B@{ shape: doc, label: "Page 1" }
-    C@{ shape: doc, label: "Page 2" }
-    D@{ shape: doc, label: "Page 3" }
-    
-    E@{ shape: tag-proc, label: "Extract 1" }
-    F@{ shape: tag-proc, label: "Extract 2" }
-    G@{ shape: tag-proc, label: "Extract 3" }
-    
-    H@{ shape: procs, label: "Model 1" }
-    I@{ shape: procs, label: "Model 2" }
-    J@{ shape: procs, label: "Model 3" }
-
-    %% 3. Define Connections
-    A --> B & C & D
-    
-    B --> E
-    C --> F
-    D --> G
-    
-    E --> H
-    F --> I
-    G --> J
-
-    %% 4. Apply Classes
-    class A input
-    class B,C,D data
-    class E,F,G operator
-    class H,I,J output
-```
+![One-to-One Mode](../assets/flowcharts/img/one_to_one_mode.png){width=600px}
 
 ### When to Use One-to-One
 
@@ -206,42 +163,7 @@ config = PipelineConfig(
 
 ### How It Works
 
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart LR
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-
-    %% 2. Define Nodes
-    A("PDF Document")
-    
-    B@{ shape: doc, label: "All Pages" }
-    C@{ shape: tag-proc, label: "Chunking" }
-    D@{ shape: procs, label: "Extract Chunks" }
-    E@{ shape: lin-proc, label: "Merge Results" }
-    
-    F@{ shape: procs, label: "Single Model" }
-
-    %% 3. Define Connections
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-
-    %% 4. Apply Classes
-    class A input
-    class B data
-    class C operator
-    class D,E process
-    class F output
-```
+![Many-to-One Mode](../assets/flowcharts/img/many_to_one_mode.png)
 
 ### When to Use Many-to-One
 
@@ -395,45 +317,7 @@ Many-to-One:
 
 ### Decision Tree
 
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart TD
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-
-    %% 2. Define Nodes
-    A("Start")
-    
-    B{"Are pages<br/>independent?"}
-    D{"Single entity<br/>across pages?"}
-    F{"Need page-level<br/>tracking?"}
-    
-    C@{ shape: tag-proc, label: "One-to-One" }
-    E@{ shape: tag-proc, label: "Many-to-One" }
-
-    %% 3. Define Connections
-    A --> B
-    
-    B -- Yes --> C
-    B -- No --> D
-    
-    D -- Yes --> E
-    D -- No --> F
-    
-    F -- Yes --> C
-    F -- No --> E
-
-    %% 4. Apply Classes
-    class A input
-    class B,D,F decision
-    class C,E output
-```
+![Processing Decision Tree](../assets/flowcharts/img/processing_mode_tree.png){width=400px}
 
 ### By Document Type
 
@@ -672,4 +556,4 @@ config = PipelineConfig(
 
 ---
 
-**Navigation:** [← Model Configuration](model-configuration.md) | [Next: Docling Settings →](docling-settings.md)
+**Navigation:** [← Model Configuration](model-configuration.md) | [Docling Settings →](docling-settings.md)

@@ -1,6 +1,6 @@
 # Custom Exporters
 
-**Navigation:** [← Custom Backends](custom-backends.md) | [Next: Custom Stages →](custom-stages.md)
+**Navigation:** [← Custom Backends](custom-backends.md) | [Custom Stages →](custom-stages.md)
 
 ---
 
@@ -630,4 +630,4 @@ def export_dot(self) -> None:
 
 ---
 
-**Navigation:** [← Custom Backends](custom-backends.md) | [Next: Custom Stages →](custom-stages.md)
+**Navigation:** [← Custom Backends](custom-backends.md) | [Custom Stages →](custom-stages.md)

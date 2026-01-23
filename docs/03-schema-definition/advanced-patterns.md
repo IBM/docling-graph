@@ -1,6 +1,6 @@
 # Advanced Patterns
 
-**Navigation:** [← Validation](validation.md) | [Next: Best Practices →](best-practices.md)
+**Navigation:** [← Validation](validation.md) | [Best Practices →](best-practices.md)
 
 ---
 
@@ -742,4 +742,4 @@ Now that you understand advanced patterns:
 
 ---
 
-**Navigation:** [← Validation](validation.md) | [Next: Best Practices →](best-practices.md)
+**Navigation:** [← Validation](validation.md) | [Best Practices →](best-practices.md)

@@ -1,6 +1,6 @@
 # Pipeline API
 
-**Navigation:** [← API Reference](index.md) | [Next: Configuration API →](config.md)
+**Navigation:** [← API Reference](index.md) | [Configuration API →](config.md)
 
 ---
 
@@ -419,4 +419,4 @@ with open(graph_path) as f:
 
 ---
 
-**Navigation:** [← API Reference](index.md) | [Next: Configuration API →](config.md)
+**Navigation:** [← API Reference](index.md) | [Configuration API →](config.md)

@@ -1,6 +1,6 @@
 # Export Formats
 
-**Navigation:** [← Graph Conversion](graph-conversion.md) | [Next: Visualization →](visualization.md)
+**Navigation:** [← Graph Conversion](graph-conversion.md) | [Visualization →](visualization.md)
 
 ---
 
@@ -672,4 +672,4 @@ cat outputs/graph.cypher | cypher-shell -u neo4j -p password
 
 ---
 
-**Navigation:** [← Graph Conversion](graph-conversion.md) | [Next: Visualization →](visualization.md)
+**Navigation:** [← Graph Conversion](graph-conversion.md) | [Visualization →](visualization.md)

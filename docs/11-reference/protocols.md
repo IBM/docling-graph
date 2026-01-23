@@ -1,6 +1,6 @@
 # Protocols
 
-**Navigation:** [← Configuration API](config.md) | [Next: Exceptions →](exceptions.md)
+**Navigation:** [← Configuration API](config.md) | [Exceptions →](exceptions.md)
 
 ---
 
@@ -587,4 +587,4 @@ if isinstance(my_backend, ExtractionBackendProtocol):
 
 ---
 
-**Navigation:** [← Configuration API](config.md) | [Next: Exceptions →](exceptions.md)
+**Navigation:** [← Configuration API](config.md) | [Exceptions →](exceptions.md)

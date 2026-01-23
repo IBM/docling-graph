@@ -1,6 +1,6 @@
 # API Reference
 
-**Navigation:** [← Advanced Topics](../10-advanced/index.md) | [Next: Pipeline API →](pipeline.md)
+**Navigation:** [← Advanced Topics](../10-advanced/index.md) | [Pipeline API →](pipeline.md)
 
 ---
 
@@ -392,4 +392,4 @@ See [Development Guide](../12-development/index.md) for:
 
 ---
 
-**Navigation:** [← Advanced Topics](../10-advanced/index.md) | [Next: Pipeline API →](pipeline.md)
+**Navigation:** [← Advanced Topics](../10-advanced/index.md) | [Pipeline API →](pipeline.md)

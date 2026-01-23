@@ -1,6 +1,6 @@
 # Schema Definition: Pydantic Templates
 
-**Navigation:** [← Installation](../02-installation/api-keys.md) | [Next: Template Basics →](template-basics.md)
+**Navigation:** [← Installation](../02-installation/api-keys.md) | [Template Basics →](template-basics.md)
 
 ---
 
@@ -257,4 +257,4 @@ Ready to create your first template?
 
 ---
 
-**Navigation:** [← Installation](../02-installation/api-keys.md) | [Next: Template Basics →](template-basics.md)
+**Navigation:** [← Installation](../02-installation/api-keys.md) | [Template Basics →](template-basics.md)

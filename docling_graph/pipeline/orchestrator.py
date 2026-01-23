@@ -7,7 +7,7 @@ of pipeline stages, handles errors, and manages resource cleanup.
 
 import gc
 import logging
-from typing import Any, Dict, Union
+from typing import Any, Dict, Literal, Union
 
 from ..core import PipelineConfig
 from ..exceptions import PipelineError
@@ -17,6 +17,7 @@ from .stages import (
     ExportStage,
     ExtractionStage,
     GraphConversionStage,
+    InputNormalizationStage,
     PipelineStage,
     TemplateLoadingStage,
     VisualizationStage,
@@ -33,15 +34,18 @@ class PipelineOrchestrator:
     stages, handling errors, and ensuring proper resource cleanup.
     """
 
-    def __init__(self, config: PipelineConfig) -> None:
+    def __init__(self, config: PipelineConfig, mode: Literal["cli", "api"] = "api") -> None:
         """
         Initialize orchestrator with configuration.
 
         Args:
             config: Pipeline configuration
+            mode: Execution mode - "cli" or "api"
         """
         self.config = config
+        self.mode = mode
         self.stages: list[PipelineStage] = [
+            InputNormalizationStage(mode=mode),  # NEW: First stage
             TemplateLoadingStage(),
             ExtractionStage(),
             DoclingExportStage(),
@@ -120,7 +124,9 @@ class PipelineOrchestrator:
             pass
 
 
-def run_pipeline(config: Union[PipelineConfig, Dict[str, Any]]) -> None:
+def run_pipeline(
+    config: Union[PipelineConfig, Dict[str, Any]], mode: Literal["cli", "api"] = "api"
+) -> None:
     """
     Run the extraction and graph conversion pipeline.
 
@@ -129,6 +135,7 @@ def run_pipeline(config: Union[PipelineConfig, Dict[str, Any]]) -> None:
 
     Args:
         config: Pipeline configuration as PipelineConfig or dict
+        mode: Execution mode - "cli" for CLI invocations, "api" for Python API (default: "api")
 
     Raises:
         PipelineError: If pipeline execution fails
@@ -142,9 +149,12 @@ def run_pipeline(config: Union[PipelineConfig, Dict[str, Any]]) -> None:
         ...     "inference": "remote"
         ... }
         >>> run_pipeline(config)
+
+        >>> # CLI mode (rejects plain text)
+        >>> run_pipeline(config, mode="cli")
     """
     if isinstance(config, dict):
         config = PipelineConfig(**config)
 
-    orchestrator = PipelineOrchestrator(config)
+    orchestrator = PipelineOrchestrator(config, mode=mode)
     orchestrator.run()

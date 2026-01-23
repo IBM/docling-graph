@@ -40,7 +40,7 @@ def verbose_callback(ctx: typer.Context, value: bool) -> bool:
 
 app = typer.Typer(
     name="docling-graph",
-    help="A tool to convert documents into knowledge graphs using configurable pipelines.",
+    help="A tool to convert documents (PDF, images, text, markdown, URLs) into knowledge graphs using configurable pipelines.",
     add_completion=False,
     pretty_exceptions_show_locals=False,
 )
@@ -77,7 +77,10 @@ app.command(
     help="Create a default config.yaml in the current directory with interactive setup.",
 )(init_command)
 
-app.command(name="convert", help="Convert a document to a knowledge graph.")(convert_command)
+app.command(
+    name="convert",
+    help="Convert a document (PDF, image, text, markdown, URL) to a knowledge graph.",
+)(convert_command)
 
 app.command(name="inspect", help="Visualize graph data in the browser.")(inspect_command)
 

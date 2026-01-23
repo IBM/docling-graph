@@ -10,18 +10,20 @@ Welcome to the **Docling Graph** documentation! This guide will help you transfo
 
 ## What is Docling Graph?
 
-Docling Graph converts documents into validated **Pydantic** objects and then into **directed knowledge graphs**, with exports to CSV or Cypher and both static and interactive visualizations.
+Docling-Graph turns documents into validated *Pydantic** objects, then builds a **directed knowledge graph** with explicit semantic relationships.
 
-This transformation enables precise semantic relationships essential for complex domains like **chemistry, finance, and legal** where AI systems must understand exact entity connections rather than approximate text vectors, **enabling explainable reasoning over technical document collections**.
+This transformation enables high-precision use cases in **chemistry, finance, and legal** domains, where AI must capture exact entity connections (compounds and reactions, instruments and dependencies, properties and measurements) **rather than rely on approximate text embeddings**.
+
+This toolkit supports two extraction paths: **local VLM extraction** via Docling, and **LLM-based extraction** using either local runtimes (vLLM, Ollama) or API providers (Mistral, OpenAI, Gemini, IBM WatsonX), all orchestrated through a flexible, config-driven pipeline.
 
 ### Key Features
 
-- **🧠 Flexible Extraction**: Local VLM (Docling) or LLM-based (vLLM, Ollama, Mistral, OpenAI, Gemini, WatsonX)
-- **🔨 Smart Graph Construction**: Convert Pydantic models to NetworkX graphs with stable node IDs
-- **📦 Multiple Export Formats**: CSV (Neo4j-compatible), Cypher scripts, JSON, Markdown
-- **📊 Rich Visualizations**: Interactive HTML and detailed Markdown reports
-- **⚙️ Type-Safe Configuration**: Pydantic-based configuration with validation
-- **🎯 Pipeline Architecture**: Modular, stage-based processing with error handling
+- **✍🏻 Multi-Format Input**: Ingest PDFs, images, URLs, raw text, Markdown and more.
+- **🧠 Flexible Extraction:** VLM or LLM-based (vLLM, Ollama, Mistral, Gemini, WatsonX, etc.)
+- **🔨 Smart Graphs:** Convert Pydantic models to NetworkX graphs with stable node IDs
+- **📦 Multiple Export:** CSV (Neo4j-compatible), Cypher scripts, JSON, Markdown
+- **📊 Rich Visualizations:** Interactive HTML and detailed Markdown reports
+- **⚙️ Type-Safe Configuration:** Pydantic-based validation
 
 ---
 
@@ -34,20 +36,12 @@ This transformation enables precise semantic relationships essential for complex
 - **[Installation →](02-installation/index.md)**
 
     Set up your environment with uv package manager
-    
-    ```bash
-    uv sync --extra all
-    ```
 
 - **[Quick Start →](09-examples/quickstart.md)**
 
     Run your first extraction in 5 minutes
-    
-    ```bash
-    uv run docling-graph init
-    ```
 
-- **[Architecture →](01-introduction/architecture-overview.md)**
+- **[Architecture →](01-introduction/architecture.md)**
 
     Understand the pipeline stages and components
 
@@ -155,57 +149,57 @@ uv run docling-graph inspect outputs/invoice
 
 The documentation follows the **docling-graph pipeline stages** for a logical, end-to-end learning experience:
 
-### Stage 1: Understanding (Introduction)
+### Stage 1: Introduction
 Learn what Docling Graph is, how it works, and its architecture.
 
 **[→ Go to Introduction](01-introduction/index.md)**
 
-### Stage 2: Setup (Installation)
+### Stage 2: Installation
 Install dependencies, configure your environment, and set up GPU support.
 
 **[→ Go to Installation](02-installation/index.md)**
 
-### Stage 3: Schema Design (Schema Definition)
+### Stage 3: Schema Definition
 Create Pydantic templates that define both extraction schema and graph structure.
 
 **[→ Go to Schema Definition](03-schema-definition/index.md)**
 
-### Stage 4: Configuration (Pipeline Configuration)
+### Stage 4: Pipeline Configuration
 Configure backends, models, processing modes, and export options.
 
 **[→ Go to Pipeline Configuration](04-pipeline-configuration/index.md)**
 
-### Stage 5: Extraction (Extraction Process)
+### Stage 5: Extraction Process
 Convert documents, chunk content, and extract structured data.
 
 **[→ Go to Extraction Process](05-extraction-process/index.md)**
 
-### Stage 6: Output (Graph Management)
+### Stage 6: Graph Management
 Export graphs to CSV/Cypher, visualize results, and integrate with Neo4j.
 
 **[→ Go to Graph Management](06-graph-management/index.md)**
 
-### Stage 7: Usage (CLI & API)
+### Stage 7: Usage - CLI & API
 Use the command-line interface or Python API for your workflows.
 
 **[→ CLI Reference](07-cli/index.md)** | **[→ Python API](08-api/index.md)**
 
-### Stage 8: Learning (Examples)
+### Stage 8: Learning
 Explore working examples and template gallery.
 
 **[→ Go to Examples](09-examples/index.md)**
 
-### Stage 9: Optimization (Advanced Topics)
+### Stage 9: Optimization
 Optimize performance, handle errors, and implement custom backends.
 
 **[→ Go to Advanced Topics](10-advanced/index.md)**
 
-### Stage 10: Reference (API Reference)
+### Stage 10: API Reference
 Detailed API documentation for all modules.
 
 **[→ Go to API Reference](11-reference/index.md)**
 
-### Stage 11: Contributing (Development)
+### Stage 11: Contributing
 Contribute to the project and understand the development workflow.
 
 **[→ Go to Development](12-development/index.md)**

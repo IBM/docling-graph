@@ -10,7 +10,7 @@ import importlib
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, Literal, cast
+from typing import Any, Dict, List, Literal, Tuple, cast
 
 from pydantic import BaseModel
 
@@ -23,6 +23,16 @@ from ..core import (
     InteractiveVisualizer,
     JSONExporter,
     ReportGenerator,
+)
+from ..core.input import (
+    DoclingDocumentHandler,
+    DoclingDocumentValidator,
+    InputType,
+    InputTypeDetector,
+    TextInputHandler,
+    TextValidator,
+    URLInputHandler,
+    URLValidator,
 )
 from ..exceptions import ConfigurationError, ExtractionError, PipelineError
 from ..llm_clients import BaseLlmClient, get_client
@@ -41,6 +51,11 @@ class PipelineStage(ABC):
     """
 
     @abstractmethod
+    def name(self) -> str:
+        """Return the name of this stage for logging."""
+        ...
+
+    @abstractmethod
     def execute(self, context: PipelineContext) -> PipelineContext:
         """
         Execute this stage and return updated context.
@@ -54,15 +69,218 @@ class PipelineStage(ABC):
         Raises:
             PipelineError: If stage execution fails
         """
+        ...
 
-    @abstractmethod
+
+class InputNormalizationStage(PipelineStage):
+    """
+    Normalize and validate input before processing.
+
+    This stage:
+    1. Detects input type (respecting CLI vs API mode)
+    2. Validates input
+    3. Loads and normalizes content
+    4. Sets processing flags in context
+    """
+
+    def __init__(self, mode: Literal["cli", "api"] = "api") -> None:
+        """
+        Initialize stage with execution mode.
+
+        Args:
+            mode: "cli" for CLI invocations, "api" for Python API
+        """
+        self.mode = mode
+
     def name(self) -> str:
-        """
-        Return stage name for logging.
+        return "Input Normalization"
 
-        Returns:
-            Human-readable stage name
+    def execute(self, context: PipelineContext) -> PipelineContext:
         """
+        Normalize input and set processing flags.
+
+        Updates context with:
+        - normalized_source: Processed input ready for extraction
+        - input_metadata: Processing hints (skip_ocr, etc.)
+        - input_type: Detected input type
+        """
+        logger.info(f"[{self.name()}] Detecting input type (mode: {self.mode})...")
+
+        # Detect input type with mode awareness
+        input_type = InputTypeDetector.detect(context.config.source, mode=self.mode)
+        logger.info(f"[{self.name()}] Detected: {input_type.value}")
+
+        # CLI mode: reject plain text input
+        if self.mode == "cli" and input_type == InputType.TEXT:
+            raise ConfigurationError(
+                "Plain text input is only supported via Python API",
+                details={
+                    "source": str(context.config.source),
+                    "mode": self.mode,
+                    "hint": "Use a file path (.txt, .md) or URL instead",
+                },
+            )
+
+        # Get appropriate validator and handler
+        validator = self._get_validator(input_type)
+        handler = self._get_handler(input_type)
+
+        # Validate input
+        logger.info(f"[{self.name()}] Validating input...")
+        validator.validate(context.config.source)
+
+        # Load and normalize
+        logger.info(f"[{self.name()}] Loading and normalizing input...")
+        normalized_content = handler.load(context.config.source)
+
+        # Build metadata based on input type
+        metadata = self._build_metadata(input_type, context.config.source, normalized_content)
+
+        # Update context
+        # Special handling for DoclingDocument: store in docling_document field
+        if input_type == InputType.DOCLING_DOCUMENT:
+            from docling_core.types import DoclingDocument
+
+            if isinstance(normalized_content, DoclingDocument):
+                context.docling_document = normalized_content
+                context.normalized_source = None  # Not needed for DoclingDocument
+                logger.info(f"[{self.name()}] Loaded DoclingDocument into context")
+            else:
+                raise ConfigurationError(
+                    "DoclingDocument handler did not return a DoclingDocument object",
+                    details={"returned_type": type(normalized_content).__name__},
+                )
+        else:
+            context.normalized_source = normalized_content
+
+        context.input_metadata = metadata
+        context.input_type = input_type
+
+        logger.info(f"[{self.name()}] Normalized successfully")
+        logger.info(
+            f"[{self.name()}] Processing flags: skip_ocr={metadata.get('skip_ocr', False)}, "
+            f"skip_segmentation={metadata.get('skip_segmentation', False)}"
+        )
+
+        return context
+
+    def _build_metadata(
+        self, input_type: InputType, source: Any, normalized_content: Any
+    ) -> Dict[str, Any]:
+        """Build metadata dictionary based on input type."""
+        from pathlib import Path
+
+        metadata: Dict[str, Any] = {}
+
+        if input_type == InputType.TEXT:
+            metadata = {
+                "input_type": "text",
+                "skip_ocr": True,
+                "skip_segmentation": True,
+                "original_source": "<raw_text>",
+                "is_file": False,
+            }
+        elif input_type == InputType.TEXT_FILE:
+            metadata = {
+                "input_type": "text_file",
+                "skip_ocr": True,
+                "skip_segmentation": True,
+                "original_source": str(source),
+                "is_file": True,
+            }
+        elif input_type == InputType.MARKDOWN:
+            metadata = {
+                "input_type": "markdown",
+                "skip_ocr": True,
+                "skip_segmentation": True,
+                "original_source": str(source),
+                "is_file": True,
+            }
+        elif input_type == InputType.URL:
+            # For URLs, normalized_content is a Path to downloaded file
+            if isinstance(normalized_content, Path):
+                # Detect the actual type of downloaded file
+                detected_type = InputTypeDetector._detect_from_file(normalized_content)
+                metadata = {
+                    "input_type": "url",
+                    "downloaded_path": str(normalized_content),
+                    "original_url": str(source),
+                    "detected_type": detected_type.value,
+                    "is_temporary": True,
+                }
+        elif input_type == InputType.DOCLING_DOCUMENT:
+            metadata = {
+                "input_type": "docling_document",
+                "skip_ocr": True,
+                "skip_segmentation": True,
+                "skip_document_conversion": True,
+                "original_source": str(source),
+                "is_file": True,
+            }
+        elif input_type in (InputType.PDF, InputType.IMAGE):
+            metadata = {
+                "input_type": "pdf_or_image",
+                "skip_ocr": False,
+                "skip_segmentation": False,
+                "original_source": str(source),
+            }
+
+        return metadata
+
+    def _get_validator(self, input_type: InputType) -> Any:
+        """Get appropriate validator for input type."""
+        if input_type in (InputType.TEXT, InputType.TEXT_FILE, InputType.MARKDOWN):
+            return TextValidator()
+        elif input_type == InputType.URL:
+            # Get URL config from context if available
+            return URLValidator()
+        elif input_type == InputType.DOCLING_DOCUMENT:
+            return DoclingDocumentValidator()
+        elif input_type in (InputType.PDF, InputType.IMAGE):
+            # PDF and images don't need special validation beyond file existence
+            # which is already done by InputTypeDetector
+            return _NoOpValidator()
+        else:
+            raise ConfigurationError(
+                f"No validator available for input type: {input_type.value}",
+                details={"input_type": input_type.value},
+            )
+
+    def _get_handler(self, input_type: InputType) -> Any:
+        """Get appropriate handler for input type."""
+        if input_type in (InputType.TEXT, InputType.TEXT_FILE, InputType.MARKDOWN):
+            return TextInputHandler()
+        elif input_type == InputType.URL:
+            # Get URL config from context if available
+            return URLInputHandler()
+        elif input_type == InputType.DOCLING_DOCUMENT:
+            return DoclingDocumentHandler()
+        elif input_type in (InputType.PDF, InputType.IMAGE):
+            # PDF and images are handled by existing document processor
+            # Return a pass-through handler
+            return _PassThroughHandler()
+        else:
+            raise ConfigurationError(
+                f"No handler available for input type: {input_type.value}",
+                details={"input_type": input_type.value},
+            )
+
+
+class _NoOpValidator:
+    """No-op validator for types that don't need validation."""
+
+    def validate(self, source: Any) -> None:
+        pass
+
+
+class _PassThroughHandler:
+    """Pass-through handler for types handled by existing pipeline."""
+
+    def load(self, source: Any) -> Any:
+        # For PDF/Image, just return the source path as-is
+        # The existing document processor will handle it
+        # Metadata is built separately by _build_metadata()
+        return source
 
 
 class TemplateLoadingStage(PipelineStage):
@@ -155,17 +373,39 @@ class ExtractionStage(PipelineStage):
 
     def execute(self, context: PipelineContext) -> PipelineContext:
         """Run extraction on source document."""
-        logger.info(f"[{self.name()}] Creating extractor...")
-
-        context.extractor = self._create_extractor(context)
-
-        logger.info(f"[{self.name()}] Extracting from: {context.config.source}")
         # Ensure template is not None before extraction
         if context.template is None:
             raise ExtractionError(
                 "Template is required for extraction",
                 details={"source": str(context.config.source)},
             )
+
+        # Check if we have pre-normalized input
+        if context.input_metadata:
+            input_type = context.input_metadata.get("input_type")
+
+            # Handle DoclingDocument input (already processed)
+            if input_type == "docling_document":
+                logger.info(f"[{self.name()}] Using pre-loaded DoclingDocument")
+                context.extracted_models = self._extract_from_docling_document(context)
+                # DoclingDocument is already in context.docling_document
+                logger.info(f"[{self.name()}] Extracted {len(context.extracted_models)} items")
+                return context
+
+            # Handle text-based inputs (plain text, .txt, .md)
+            elif input_type in ["text", "text_file", "markdown"]:
+                logger.info(f"[{self.name()}] Processing text input (type: {input_type})")
+                context.extracted_models = self._extract_from_text(context)
+                # No DoclingDocument for text inputs
+                context.docling_document = None
+                logger.info(f"[{self.name()}] Extracted {len(context.extracted_models)} items")
+                return context
+
+        # Default path: PDF/Image processing (existing behavior)
+        logger.info(f"[{self.name()}] Creating extractor...")
+        context.extractor = self._create_extractor(context)
+
+        logger.info(f"[{self.name()}] Extracting from: {context.config.source}")
         context.extracted_models, context.docling_document = context.extractor.extract(
             str(context.config.source), context.template
         )
@@ -266,6 +506,223 @@ class ExtractionStage(PipelineStage):
         """Initialize LLM client based on provider."""
         client_class = get_client(provider)
         return client_class(model=model)
+
+    def _extract_from_text(self, context: PipelineContext) -> List[Any]:
+        """
+        Extract from text-based inputs (plain text, .txt, .md).
+
+        Skips document conversion and directly uses LLM extraction.
+
+        Args:
+            context: Pipeline context with normalized text
+
+        Returns:
+            List of extracted Pydantic models
+
+        Raises:
+            ExtractionError: If extraction fails
+        """
+        if not context.normalized_source:
+            input_type = (
+                context.input_metadata.get("input_type") if context.input_metadata else "unknown"
+            )
+            raise ExtractionError(
+                "No normalized text content available",
+                details={"input_type": input_type},
+            )
+
+        # Only LLM backend supports text extraction
+        conf = context.config.to_dict()
+        backend = cast(Literal["vlm", "llm"], conf["backend"])
+
+        if backend == "vlm":
+            input_type = (
+                context.input_metadata.get("input_type") if context.input_metadata else "unknown"
+            )
+            raise ExtractionError(
+                "VLM backend does not support text-only inputs. Use LLM backend instead.",
+                details={
+                    "backend": backend,
+                    "input_type": input_type,
+                },
+            )
+
+        logger.info(f"[{self.name()}] Extracting from text using LLM backend...")
+
+        # Initialize LLM client
+        inference = cast(str, conf["inference"])
+
+        model_config = self._get_model_config(
+            conf["models"],
+            backend,
+            inference,
+            conf.get("model_override"),
+            conf.get("provider_override"),
+        )
+
+        llm_client = self._initialize_llm_client(model_config["provider"], model_config["model"])
+
+        # Import LlmBackend here to avoid circular imports
+        from ..core.extractors.backends.llm_backend import LlmBackend
+
+        llm_backend = LlmBackend(llm_client)
+
+        # Extract directly from text
+        # Type assertions for mypy
+        if not isinstance(context.normalized_source, str):
+            raise ExtractionError(
+                "Normalized source must be a string for text extraction",
+                details={"type": type(context.normalized_source).__name__},
+            )
+        if context.template is None:
+            raise ExtractionError(
+                "Template is required for extraction",
+                details={"template": None},
+            )
+
+        extracted_model = llm_backend.extract_from_markdown(
+            markdown=context.normalized_source,
+            template=context.template,
+            context="text input",
+            is_partial=False,
+        )
+
+        if not extracted_model:
+            raise ExtractionError(
+                "Failed to extract data from text input",
+                details={"text_length": len(context.normalized_source)},
+            )
+
+        return [extracted_model]
+
+    def _extract_from_docling_document(self, context: PipelineContext) -> List[Any]:
+        """
+        Extract from pre-loaded DoclingDocument.
+
+        For DoclingDocument inputs, we use the extractor's internal methods
+        to process the already-parsed document. This allows reprocessing of
+        DoclingDocuments with different templates.
+
+        Args:
+            context: Pipeline context with DoclingDocument
+
+        Returns:
+            List of extracted Pydantic models
+
+        Raises:
+            ExtractionError: If DoclingDocument is not available or extraction fails
+        """
+        if not context.docling_document:
+            raise ExtractionError(
+                "No DoclingDocument available in context",
+                details={"input_type": "docling_document"},
+            )
+
+        logger.info(f"[{self.name()}] Extracting from pre-loaded DoclingDocument")
+
+        # Create extractor if not already created
+        if not context.extractor:
+            logger.info(f"[{self.name()}] Creating extractor for DoclingDocument...")
+            context.extractor = self._create_extractor(context)
+
+        # Get the document processor and backend from the extractor
+        doc_processor = getattr(context.extractor, "doc_processor", None)
+        backend = getattr(context.extractor, "backend", None)
+
+        if not doc_processor:
+            raise ExtractionError(
+                "Extractor does not have a document processor",
+                details={"extractor_type": type(context.extractor).__name__},
+            )
+
+        if not backend:
+            raise ExtractionError(
+                "Extractor does not have a backend",
+                details={"extractor_type": type(context.extractor).__name__},
+            )
+
+        # Check if chunking is enabled
+        use_chunking = context.config.to_dict().get("use_chunking", True)
+
+        try:
+            if use_chunking and doc_processor.chunker:
+                # Use the extractor's chunk-based extraction method
+                logger.info(f"[{self.name()}] Using chunk-based extraction")
+
+                # Call the extractor's internal chunk extraction method if available
+                if hasattr(context.extractor, "_extract_with_chunks"):
+                    extracted_models: list[Any] = context.extractor._extract_with_chunks(
+                        backend, context.docling_document, context.template
+                    )
+                else:
+                    # Fallback: extract chunks and process them
+                    chunks = doc_processor.extract_chunks(context.docling_document)
+                    logger.info(f"[{self.name()}] Processing {len(chunks)} chunks")
+
+                    # Process chunks through backend
+                    partial_models = []
+                    for i, chunk in enumerate(chunks):
+                        logger.info(f"[{self.name()}] Extracting from chunk {i + 1}/{len(chunks)}")
+                        model = backend.extract_from_markdown(
+                            markdown=chunk,
+                            template=context.template,
+                            context=f"DoclingDocument chunk {i + 1}/{len(chunks)}",
+                            is_partial=True,
+                        )
+                        if model:
+                            partial_models.append(model)
+
+                    # Merge partial models
+                    if partial_models:
+                        from ..core.utils.dict_merger import merge_pydantic_models
+
+                        if context.template is None:
+                            raise ExtractionError(
+                                "Template is required for merging partial models",
+                                details={"input_type": "docling_document"},
+                            )
+                        merged_model = merge_pydantic_models(partial_models, context.template)
+                        extracted_models = [merged_model] if merged_model else partial_models[:1]
+                    else:
+                        extracted_models = []
+            else:
+                # No chunking - convert entire document to markdown
+                logger.info(f"[{self.name()}] Converting DoclingDocument to markdown")
+                markdown_text = context.docling_document.export_to_markdown()
+
+                # Extract from the full markdown
+                extracted_model = backend.extract_from_markdown(
+                    markdown=markdown_text,
+                    template=context.template,
+                    context="DoclingDocument",
+                    is_partial=False,
+                )
+
+                if not extracted_model:
+                    raise ExtractionError(
+                        "Failed to extract data from DoclingDocument",
+                        details={"markdown_length": len(markdown_text)},
+                    )
+
+                extracted_models = [extracted_model]
+
+            if not extracted_models:
+                raise ExtractionError(
+                    "No models extracted from DoclingDocument",
+                    details={"input_type": "docling_document"},
+                )
+
+            logger.info(
+                f"[{self.name()}] Extracted {len(extracted_models)} items from DoclingDocument"
+            )
+            return extracted_models
+
+        except Exception as e:
+            logger.error(f"[{self.name()}] Error extracting from DoclingDocument: {e}")
+            raise ExtractionError(
+                f"Failed to extract from DoclingDocument: {e!s}",
+                details={"input_type": "docling_document", "error": str(e)},
+            ) from e
 
 
 class DoclingExportStage(PipelineStage):

@@ -34,13 +34,9 @@ logger = logging.getLogger(__name__)
 
 def convert_command(
     source: Annotated[
-        Path,
+        str,
         typer.Argument(
-            help="Path to the source document (PDF, JPG, PNG).",
-            exists=True,
-            file_okay=True,
-            dir_okay=False,
-            readable=True,
+            help="Path to source document (PDF, JPG, PNG, TXT, MD), URL, or DoclingDocument JSON file.",
         ),
     ],
     template: Annotated[
@@ -178,9 +174,19 @@ def convert_command(
     logger.debug(f"Validated configuration - Backend: {backend_val}, Inference: {inference_val}")
     logger.debug(f"Processing mode: {processing_mode_val}, Export format: {export_format_val}")
 
+    # Detect and display input type
+    from docling_graph.core.input.types import InputTypeDetector
+
+    try:
+        detected_type = InputTypeDetector.detect(source, mode="cli")
+        input_type_display = detected_type.value.replace("_", " ").title()
+    except Exception:
+        input_type_display = "Unknown"
+
     # Display configuration
     rich_print("\n[bold]Configuration:[/bold]")
     rich_print(f" • Source: [cyan]{source}[/cyan]")
+    rich_print(f" • Input Type: [cyan]{input_type_display}[/cyan]")
     rich_print(f" • Template: [cyan]{template}[/cyan]")
     rich_print(f" • Docling Pipeline: [cyan]{docling_pipeline_val}[/cyan]")
     rich_print(f" • Processing: [cyan]{processing_mode_val}[/cyan]")
@@ -229,8 +235,8 @@ def convert_command(
     # Run pipeline with normalized/validated config
     logger.info("Starting pipeline execution")
     try:
-        logger.debug("Calling run_pipeline()")
-        run_pipeline(cfg)
+        logger.debug("Calling run_pipeline() in CLI mode")
+        run_pipeline(cfg, mode="cli")
         logger.info("--- Pipeline execution Completed Successfully ---")
         rich_print("\n[green]--- Conversion Completed Successfully ---[/green]")
     except ConfigurationError as e:

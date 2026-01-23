@@ -1,6 +1,6 @@
 # The Extraction Process
 
-**Navigation:** [← Pipeline Configuration](../04-pipeline-configuration/index.md) | [Next: Document Conversion →](document-conversion.md)
+**Navigation:** [← Pipeline Configuration](../04-pipeline-configuration/index.md) | [Document Conversion →](document-conversion.md)
 
 ---
 
@@ -19,41 +19,7 @@ The **Extraction Process** is the core of Docling Graph, transforming raw docume
 
 ## The Four-Stage Pipeline
 
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart LR
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-
-    %% 2. Define Nodes
-    A("Document")
-    
-    B@{ shape: procs, label: "Conversion" }
-    C@{ shape: tag-proc, label: "Chunking" }
-    D@{ shape: procs, label: "Extraction" }
-    E@{ shape: lin-proc, label: "Merging" }
-    
-    F@{ shape: db, label: "Knowledge Graph" }
-
-    %% 3. Define Connections
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-
-    %% 4. Apply Classes
-    class A input
-    class B,D,E process
-    class C operator
-    class F output
-```
+![Four-Stage Pipeline](../assets/flowcharts/img/four_stage_pipeline.png)
 
 ### Stage 1: Document Conversion
 
@@ -210,82 +176,7 @@ print(f"Graph has {context.graph_metadata.node_count} nodes")
 
 ### Complete Flow Diagram
 
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart TD
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-
-    %% 2. Define Nodes
-    Start("Document PDF")
-    
-    Convert@{ shape: procs, label: "Document Conversion" }
-    
-    CheckMode{"Processing Mode?"}
-    CheckChunk{"Use Chunking?"}
-    
-    PageExtract@{ shape: lin-proc, label: "Page-by-Page Extraction" }
-    FullDoc@{ shape: lin-proc, label: "Full Document Extraction" }
-    
-    Chunk@{ shape: tag-proc, label: "Structure-Aware Chunking" }
-    Batch@{ shape: tag-proc, label: "Batch Chunks" }
-    
-    Extract@{ shape: procs, label: "Extract from Batches" }
-    
-    CheckMerge{"Multiple Models?"}
-    
-    Merge@{ shape: lin-proc, label: "Programmatic Merge" }
-    Single@{ shape: doc, label: "Single Model" }
-    
-    CheckConsol{"LLM Consolidation?"}
-    Consol@{ shape: procs, label: "LLM Consolidation" }
-    
-    Final@{ shape: doc, label: "Final Model" }
-    Graph@{ shape: db, label: "Knowledge Graph" }
-
-    %% 3. Define Connections
-    Start --> Convert
-    Convert --> CheckMode
-    
-    CheckMode -- Many-to-One --> CheckChunk
-    CheckMode -- One-to-One --> PageExtract
-    
-    CheckChunk -- Yes --> Chunk
-    CheckChunk -- No --> FullDoc
-    
-    Chunk --> Batch
-    Batch --> Extract
-    
-    FullDoc --> Extract
-    PageExtract --> Extract
-    
-    Extract --> CheckMerge
-    CheckMerge -- Yes --> Merge
-    CheckMerge -- No --> Single
-    
-    Merge --> CheckConsol
-    CheckConsol -- Yes --> Consol
-    CheckConsol -- No --> Final
-    
-    Consol --> Final
-    Single --> Final
-    Final --> Graph
-
-    %% 4. Apply Classes
-    class Start input
-    class Convert,Extract,Consol process
-    class PageExtract,FullDoc,Merge process
-    class Chunk,Batch operator
-    class CheckMode,CheckChunk,CheckMerge,CheckConsol decision
-    class Single data
-    class Final,Graph output
-```
+![Extraction Flow](../assets/flowcharts/img/extraction_flow.png){width=600px}
 
 ---
 
@@ -612,4 +503,4 @@ Ready to dive deeper? Start with:
 
 ---
 
-**Navigation:** [← Pipeline Configuration](../04-pipeline-configuration/index.md) | [Next: Document Conversion →](document-conversion.md)
+**Navigation:** [← Pipeline Configuration](../04-pipeline-configuration/index.md) | [Document Conversion →](document-conversion.md)

@@ -409,7 +409,7 @@ Ready to implement your use case?
 
 1. **[Schema Definition](../03-schema-definition/index.md)** - Create your Pydantic templates
 2. **[Examples](../09-examples/index.md)** - See complete working examples
-3. **[Architecture Overview](architecture-overview.md)** - Understand the system design
+3. **[Architecture](architecture.md)** - Understand the system design
 
 ## Related Documentation
 

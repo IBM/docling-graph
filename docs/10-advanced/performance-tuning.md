@@ -1,6 +1,6 @@
 # Performance Tuning
 
-**Navigation:** [← Custom Stages](custom-stages.md) | [Next: Error Handling →](error-handling.md)
+**Navigation:** [← Custom Stages](custom-stages.md) | [Error Handling →](error-handling.md)
 
 ---
 
@@ -580,4 +580,4 @@ estimate_cost(num_pages=100, model="mistral-small-latest")
 
 ---
 
-**Navigation:** [← Custom Stages](custom-stages.md) | [Next: Error Handling →](error-handling.md)
+**Navigation:** [← Custom Stages](custom-stages.md) | [Error Handling →](error-handling.md)

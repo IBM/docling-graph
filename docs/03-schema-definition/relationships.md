@@ -1,6 +1,6 @@
 # Relationships: Edge Definitions
 
-**Navigation:** [← Field Definitions](field-definitions.md) | [Next: Validation →](validation.md)
+**Navigation:** [← Field Definitions](field-definitions.md) | [Validation →](validation.md)
 
 ---
 
@@ -714,4 +714,4 @@ field: List[TargetType] = edge(
 
 ---
 
-**Navigation:** [← Field Definitions](field-definitions.md) | [Next: Validation →](validation.md)
+**Navigation:** [← Field Definitions](field-definitions.md) | [Validation →](validation.md)

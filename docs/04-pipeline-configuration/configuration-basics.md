@@ -1,6 +1,6 @@
 # Configuration Basics
 
-**Navigation:** [← Pipeline Configuration](index.md) | [Next: Backend Selection →](backend-selection.md)
+**Navigation:** [← Pipeline Configuration](index.md) | [Backend Selection →](backend-selection.md)
 
 ---
 
@@ -740,4 +740,4 @@ config = PipelineConfig(
 
 ---
 
-**Navigation:** [← Pipeline Configuration](index.md) | [Next: Backend Selection →](backend-selection.md)
+**Navigation:** [← Pipeline Configuration](index.md) | [Backend Selection →](backend-selection.md)

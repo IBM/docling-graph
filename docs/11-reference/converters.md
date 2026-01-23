@@ -1,6 +1,6 @@
 # Converters API
 
-**Navigation:** [← Exceptions](exceptions.md) | [Next: Extractors →](extractors.md)
+**Navigation:** [← Exceptions](exceptions.md) | [Extractors →](extractors.md)
 
 ---
 
@@ -127,4 +127,4 @@ class GraphConverterConfig(BaseModel):
 
 ---
 
-**Navigation:** [← Exceptions](exceptions.md) | [Next: Extractors →](extractors.md)
+**Navigation:** [← Exceptions](exceptions.md) | [Extractors →](extractors.md)

@@ -1,6 +1,6 @@
 # Extractors API
 
-**Navigation:** [← Converters](converters.md) | [Next: Exporters →](exporters.md)
+**Navigation:** [← Converters](converters.md) | [Exporters →](exporters.md)
 
 ---
 
@@ -258,4 +258,4 @@ extractor = create_extractor(
 
 ---
 
-**Navigation:** [← Converters](converters.md) | [Next: Exporters →](exporters.md)
+**Navigation:** [← Converters](converters.md) | [Exporters →](exporters.md)

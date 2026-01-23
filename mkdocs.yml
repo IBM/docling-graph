@@ -79,7 +79,7 @@ nav:
   
   - 1. Introduction:
     - Overview: 01-introduction/index.md
-    - Architecture Overview: 01-introduction/architecture-overview.md
+    - Architecture: 01-introduction/architecture.md
     - Key Concepts: 01-introduction/key-concepts.md
     - Use Cases: 01-introduction/use-cases.md
   
@@ -103,6 +103,7 @@ nav:
   - 4. Pipeline Configuration:
     - Overview: 04-pipeline-configuration/index.md
     - Configuration Basics: 04-pipeline-configuration/configuration-basics.md
+    - Input Formats: 04-pipeline-configuration/input-formats.md
     - Backend Selection: 04-pipeline-configuration/backend-selection.md
     - Model Configuration: 04-pipeline-configuration/model-configuration.md
     - Processing Modes: 04-pipeline-configuration/processing-modes.md
@@ -143,10 +144,15 @@ nav:
   - 9. Examples:
     - Overview: 09-examples/index.md
     - Quick Start: 09-examples/quickstart.md
-    - Invoice Extraction: 09-examples/invoice-extraction.md
-    - ID Card: 09-examples/id-card.md
-    - Insurance Policy: 09-examples/insurance-policy.md
-    - Research Paper: 09-examples/research-paper.md
+    - By Input Format:
+      - URL Input: 09-examples/url-input.md
+      - Markdown Input: 09-examples/markdown-input.md
+      - DoclingDocument Input: 09-examples/docling-document-input.md
+    - By Domain:
+      - Invoice Extraction: 09-examples/invoice-extraction.md
+      - ID Card: 09-examples/id-card.md
+      - Insurance Policy: 09-examples/insurance-policy.md
+      - Research Paper: 09-examples/research-paper.md
   
   - 10. Advanced Topics:
     - Overview: 10-advanced/index.md
