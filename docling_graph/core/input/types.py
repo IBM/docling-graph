@@ -1,0 +1,221 @@
+"""
+Input type detection and classification.
+
+This module provides the InputType enum and InputTypeDetector class
+for identifying and classifying different input formats.
+"""
+
+import json
+from enum import Enum
+from pathlib import Path
+from typing import Literal, Union
+
+from ...exceptions import ConfigurationError
+
+
+class InputType(Enum):
+    """Supported input types for the pipeline."""
+
+    PDF = "pdf"
+    IMAGE = "image"
+    TEXT = "text"  # Raw text strings (Python API only)
+    TEXT_FILE = "text_file"
+    MARKDOWN = "markdown"
+    URL = "url"
+    DOCLING_DOCUMENT = "docling_document"
+
+
+class InputTypeDetector:
+    """Detects input type from source with mode awareness."""
+
+    # File extension mappings
+    PDF_EXTENSIONS = {".pdf"}
+    IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif"}
+    TEXT_EXTENSIONS = {".txt"}
+    MARKDOWN_EXTENSIONS = {".md", ".markdown"}
+    JSON_EXTENSIONS = {".json"}
+
+    @classmethod
+    def detect(
+        cls, source: Union[str, Path], mode: Literal["cli", "api"] = "api"
+    ) -> InputType:
+        """
+        Detect input type from source with mode awareness.
+
+        Args:
+            source: Input source (file path, URL, or text for API mode)
+            mode: Execution mode - "cli" or "api"
+                  CLI mode: Only accepts file paths and URLs
+                  API mode: Also accepts raw text strings
+
+        Returns:
+            InputType enum value
+
+        Raises:
+            ConfigurationError: If input type cannot be determined or is invalid for mode
+            ValueError: If mode is invalid
+        """
+        # Validate mode parameter
+        if mode not in ("cli", "api"):
+            raise ValueError(f"mode must be 'cli' or 'api', got: {mode}")
+
+        source_str = str(source)
+
+        # Check if it's a URL
+        if cls._is_url(source_str):
+            return InputType.URL
+
+        # In API mode, empty strings or whitespace-only strings are treated as text
+        if mode == "api" and not source_str.strip():
+            return InputType.TEXT
+
+        # Try to interpret as a file path
+        source_path = Path(source_str)
+
+        # CLI mode: must be an existing file
+        if mode == "cli":
+            if not source_path.exists():
+                raise ConfigurationError(
+                    f"File not found: {source_str}",
+                    details={
+                        "source": source_str,
+                        "mode": mode,
+                        "hint": "Provide a valid file path or URL. Plain text input is only supported via Python API.",
+                    },
+                )
+            if not source_path.is_file():
+                raise ConfigurationError(
+                    f"Not a file: {source_str}",
+                    details={"source": source_str, "mode": mode},
+                )
+            return cls._detect_from_file(source_path)
+
+        # API mode: check if file exists, otherwise treat as raw text
+        try:
+            if source_path.exists():
+                if source_path.is_file():
+                    return cls._detect_from_file(source_path)
+                else:
+                    # Path exists but is not a file (e.g., directory)
+                    # In API mode, treat as text
+                    return InputType.TEXT
+            else:
+                # In API mode, if not a file and not a URL, treat as raw text
+                return InputType.TEXT
+        except (OSError, ValueError):
+            # If path checking fails (e.g., invalid path), treat as text
+            return InputType.TEXT
+
+    @classmethod
+    def _is_url(cls, source: str) -> bool:
+        """
+        Check if source is a URL.
+
+        Args:
+            source: Source string to check
+
+        Returns:
+            True if source is a URL, False otherwise
+        """
+        return source.startswith(("http://", "https://"))
+
+    @classmethod
+    def _detect_from_file(cls, file_path: Path) -> InputType:
+        """
+        Detect input type from file extension and content.
+
+        Args:
+            file_path: Path to the file
+
+        Returns:
+            InputType enum value
+
+        Raises:
+            ConfigurationError: If file type is not supported
+        """
+        extension = file_path.suffix.lower()
+
+        # Check PDF
+        if extension in cls.PDF_EXTENSIONS:
+            return InputType.PDF
+
+        # Check images
+        if extension in cls.IMAGE_EXTENSIONS:
+            return InputType.IMAGE
+
+        # Check text files
+        if extension in cls.TEXT_EXTENSIONS:
+            return InputType.TEXT_FILE
+
+        # Check markdown
+        if extension in cls.MARKDOWN_EXTENSIONS:
+            return InputType.MARKDOWN
+
+        # Check JSON - need to peek inside to see if it's a DoclingDocument
+        if extension in cls.JSON_EXTENSIONS:
+            return cls._detect_json_type(file_path)
+
+        # Unsupported extension
+        raise ConfigurationError(
+            f"Unsupported file type: {extension}",
+            details={
+                "file": str(file_path),
+                "extension": extension,
+                "supported_extensions": (
+                    list(cls.PDF_EXTENSIONS)
+                    + list(cls.IMAGE_EXTENSIONS)
+                    + list(cls.TEXT_EXTENSIONS)
+                    + list(cls.MARKDOWN_EXTENSIONS)
+                    + list(cls.JSON_EXTENSIONS)
+                ),
+            },
+        )
+
+    @classmethod
+    def _detect_json_type(cls, file_path: Path) -> InputType:
+        """
+        Detect if JSON file is a DoclingDocument.
+
+        Args:
+            file_path: Path to JSON file
+
+        Returns:
+            InputType.DOCLING_DOCUMENT if it's a DoclingDocument, InputType.TEXT otherwise
+        """
+        if cls._is_docling_document(file_path):
+            return InputType.DOCLING_DOCUMENT
+
+        # Not a DoclingDocument - treat as regular text/JSON
+        # Return TEXT so it can be processed as plain text
+        return InputType.TEXT
+
+    @classmethod
+    def _is_docling_document(cls, file_path: Path) -> bool:
+        """
+        Check if a file is a DoclingDocument.
+
+        Args:
+            file_path: Path to file to check
+
+        Returns:
+            True if file is a DoclingDocument, False otherwise
+        """
+        try:
+            with open(file_path, encoding="utf-8") as f:
+                data = json.load(f)
+
+            # Check for DoclingDocument markers
+            if isinstance(data, dict):
+                # Check for common DoclingDocument fields
+                has_schema = "schema_name" in data or "version" in data
+                has_pages = "pages" in data
+                has_main_text = "main_text" in data
+
+                if has_schema or (has_pages and has_main_text):
+                    return True
+
+            return False
+
+        except (json.JSONDecodeError, Exception):
+            return False
+

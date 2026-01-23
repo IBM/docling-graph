@@ -8,7 +8,7 @@ share data without tight coupling.
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Dict, Optional, Union
 
 import networkx as nx
 from pydantic import BaseModel
@@ -37,6 +37,9 @@ class PipelineContext:
         graph_metadata: Graph statistics and metadata
         output_dir: Output directory path
         node_registry: Shared node ID registry for deterministic IDs
+        normalized_source: Normalized input ready for extraction (NEW)
+        input_metadata: Processing hints from input normalization (NEW)
+        input_type: Detected input type (NEW)
     """
 
     config: PipelineConfig
@@ -48,6 +51,11 @@ class PipelineContext:
     graph_metadata: GraphMetadata | None = None
     output_dir: Path | None = None
     node_registry: Any | None = None
+
+    # NEW: Input normalization fields
+    normalized_source: Union[str, Path, Any] | None = None
+    input_metadata: Dict[str, Any] | None = None
+    input_type: Any | None = None  # InputType enum, but avoid circular import
 
     def __post_init__(self) -> None:
         """Initialize node registry if not provided."""

@@ -81,6 +81,7 @@ models:
 | Document | Description | Time |
 |:---------|:------------|:-----|
 | **[Configuration Basics](configuration-basics.md)** | PipelineConfig fundamentals and required settings | 15 min |
+| **[Input Formats](input-formats.md)** | Supported input formats (PDF, images, text, URLs, etc.) | 20 min |
 | **[Backend Selection](backend-selection.md)** | Choosing between LLM and VLM backends | 15 min |
 | **[Model Configuration](model-configuration.md)** | Configuring models for local and remote inference | 20 min |
 | **[Processing Modes](processing-modes.md)** | One-to-one vs many-to-one extraction | 15 min |
@@ -88,7 +89,7 @@ models:
 | **[Export Configuration](export-configuration.md)** | Output formats and export options | 15 min |
 | **[Configuration Examples](configuration-examples.md)** | Complete configuration scenarios | 15 min |
 
-**Total Time:** ~2 hours
+**Total Time:** ~2.5 hours
 
 ---
 

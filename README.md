@@ -7,7 +7,6 @@
 # Docling Graph
 
 [![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://ibm.github.io/docling-graph)
-[![Docling](https://img.shields.io/badge/Docling-VLM-red)](https://github.com/docling-project/docling)
 [![PyPI version](https://img.shields.io/pypi/v/docling-graph?include_prereleases)](https://pypi.org/project/docling-graph/)
 [![Python 3.10 | 3.11 | 3.12](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -16,48 +15,47 @@
 [![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://pydantic.dev)
 [![Typer](https://img.shields.io/badge/Typer-CLI-purple)](https://typer.tiangolo.com/)
 [![Rich](https://img.shields.io/badge/Rich-terminal-purple)](https://github.com/Textualize/rich)
+[![Docling](https://img.shields.io/badge/Docling-VLM-red)](https://github.com/docling-project/docling)
 [![vLLM](https://img.shields.io/badge/vLLM-compatible-brightgreen)](https://vllm.ai/)
 [![Ollama](https://img.shields.io/badge/Ollama-compatible-brightgreen)](https://ollama.ai/)
 [![LF AI & Data](https://img.shields.io/badge/LF%20AI%20%26%20Data-003778?logo=linuxfoundation&logoColor=fff&color=0094ff&labelColor=003778)](https://lfaidata.foundation/projects/)
 [![License MIT](https://img.shields.io/github/license/IBM/docling-graph)](https://opensource.org/licenses/MIT)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11598/badge)](https://www.bestpractices.dev/projects/11598)
 
-Docling-Graph converts documents into validated **Pydantic** objects and then into a **directed knowledge graph**, with exports to CSV or Cypher and both static and interactive visualizations.
+Docling-Graph turns documents into validated *Pydantic** objects, then builds a **directed knowledge graph** with explicit semantic relationships.
 
-This transformation of unstructured documents into validated knowledge graphs with precise semantic relationships, essential for complex domains like **chemistry, finance, and legal** where AI systems must understand exact entity connections (e.g., chemical compounds and their reactions, financial instruments and their dependencies, physical properties and their measurements) rather than approximate text vectors, **enabling explainable reasoning over technical document collections**.
+This transformation enables high-precision use cases in **chemistry, finance, and legal** domains, where AI must capture exact entity connections (compounds and reactions, instruments and dependencies, properties and measurements) **rather than rely on approximate text embeddings**.
 
-The toolkit supports two extraction families: **local VLM** via Docling and **LLM-based extraction** via local (vLLM, Ollama) or API providers (Mistral, OpenAI, Gemini, IBM WatsonX), all orchestrated by a flexible, config-driven pipeline.
+This toolkit supports two extraction paths: **local VLM extraction** via Docling, and **LLM-based extraction** using either local runtimes (vLLM, Ollama) or API providers (Mistral, OpenAI, Gemini, IBM WatsonX), all orchestrated through a flexible, config-driven pipeline.
 
 
 
 ## Key Capabilities
 
-- **🧠 Extraction**:
-  - Local `VLM` (Docling's information extraction pipeline - ideal for small documents with key-value focus)  
-  - `LLM` (local via vLLM/Ollama or remote via Mistral/OpenAI/Gemini/IBM WatsonX API)
-  - `Hybrid Chunking` Leveraging Docling's segmentation with semantic LLM chunking for more context-aware extraction
-  - `Page-wise` or `whole-document` conversion strategies for flexible processing
-- **🔨 Graph Construction**:
-  - Markdown to Graph: Convert validated Pydantic instances to a `NetworkX DiGraph` with rich edge metadata and stable node IDs
-  - Smart Merge: Combine multi-page documents into a single Pydantic instance for unified processing
-  - Modular graph module with enhanced type safety and configuration
-- **📦 Export**:
-  - `Docling Document` exports (JSON format with full document structure)
-  - `Markdown` exports (full document and per-page options)
-  - `CSV` compatible with `Neo4j` admin import  
-  - `Cypher` script generation for bulk ingestion
-  - `JSON` export for general-purpose graph data
-- **📊 Visualization**:
-  - Interactive `HTML` visualization in full-page browser view with enhanced node/edge exploration
-  - Detailed `MARKDOWN` report with graph nodes content and edges
+- **🧠 Extraction**: Extract structured data using [VLM](docs/04-pipeline-configuration/backend-selection.md) or [LLM](docs/04-pipeline-configuration/backend-selection.md). Supports [intelligent chunking](docs/05-extraction-process/chunking.md) and flexible [processing modes](docs/04-pipeline-configuration/processing-modes.md).
+
+- **🔨 Graph Construction**: Convert validated Pydantic models into NetworkX [directed graphs](docs/06-graph-management/graph-conversion.md) with semantic relationships and stable node IDs, and rich edge metadata.
+
+- **📦 Export**: Save graphs in multiple formats [CSV](docs/06-graph-management/export-formats.md#csv-export) (Neo4j-compatible), and [Cypher](docs/06-graph-management/export-formats.md#cypher-export) for bulk import.
+
+- **📊 Visualization**: Explore graphs with [interactive HTML](docs/06-graph-management/visualization.md) visualizations, and detailed [Markdown reports](docs/06-graph-management/visualization.md#markdown-reports).
+
+### Latest Changes
+
+- **✍🏻 Input Formats**: Process [PDF and images](docs/04-pipeline-configuration/input-formats.md#pdf-documents), [text and Markdown files](docs/04-pipeline-configuration/input-formats.md#text-files), [URLs](docs/04-pipeline-configuration/input-formats.md#urls), [DoclingDocument](docs/04-pipeline-configuration/input-formats.md#docling-document-json), and [plain text](docs/08-api/programmatic-examples.md) strings.
 
 ### Coming Soon
 
 * 🪜 **Multi-Stage Extraction:** Define `extraction_stage` in templates to control multi-pass extraction.
+
 * 🧩 **Interactive Template Builder:** Guided workflows for building Pydantic templates.
+
 * 🧬 **Ontology-Based Templates:** Match content to the best Pydantic template using semantic similarity.
-* ✍🏻 **Flexible Inputs:** Accepts `text`, `markdown`, and `DoclingDocument` directly.
-* + **Batch Optimization:** Faster GPU inference with better memory handling.
+
+* 🔍 **External OCR Engine:** Pass custom OCR engine URL to convert documents before graph creation.
+
+* ⚡ **Batch Optimization:** Faster GPU inference with better memory handling.
+
 * 💾 **Graph Database Integration:** Export data straight into `Neo4j`, `ArangoDB`, and similar databases.
 
 
@@ -109,7 +107,7 @@ from docs.examples.templates.rheology_research import Research
 
 # Create configuration
 config = PipelineConfig(
-    source="docs/examples/data/research_paper/rheology.pdf",
+    source="https://arxiv.org/pdf/2207.02720",
     template=Research,
     backend="llm",
     inference="remote",
@@ -130,13 +128,13 @@ config.run()
 # Initialize configuration
 uv run docling-graph init
 
-# Convert document
-uv run docling-graph convert "document.pdf" \
-    --template "templates.MyTemplate" \
-    --output-dir "outputs/my_graph"
+# Convert document from URL
+uv run docling-graph convert "https://arxiv.org/pdf/2207.02720" \
+    --template "docs.examples.templates.rheology_research.Research" \
+    --processing-mode "many-to-one"
 
 # Visualize results
-uv run docling-graph inspect outputs/my_graph
+uv run docling-graph inspect outputs
 ```
 
 For more examples, see [Examples](docs/09-examples/index.md).
@@ -197,24 +195,6 @@ The documentation follows the docling-graph pipeline stages:
 10. [Advanced Topics](docs/10-advanced/index.md) - Performance, testing, error handling
 11. [API Reference](docs/11-reference/index.md) - Detailed API documentation
 12. [Development](docs/12-development/index.md) - Contributing and development guide
-
-
-
-## Examples
-
-Explore working examples in [docs/examples/](docs/examples/):
-
-- **VLM Extraction**: [Image](docs/examples/scripts/01_vlm_from_image.py) | [PDF](docs/examples/scripts/02_vlm_from_pdf_page.py)
-- **LLM Extraction**: [Remote API](docs/examples/scripts/03_llm_remote_api.py) | [Local Ollama](docs/examples/scripts/04_llm_local_ollama.py)
-- **Advanced**: [Consolidation](docs/examples/scripts/05_llm_with_consolidation.py) | [One-to-One](docs/examples/scripts/06_llm_one_to_one.py)
-- **CLI Recipes**: [Common Workflows](docs/examples/scripts/10_cli_recipes.md)
-
-### Example Templates
-
-- [Invoice](docs/examples/templates/invoice.py) - Financial document extraction
-- [ID Card](docs/examples/templates/id_card.py) - Identity document parsing
-- [Insurance](docs/examples/templates/insurance.py) - Insurance policy extraction
-- [Research Paper](docs/examples/templates/rheology_research.py) - Scientific document analysis
 
 
 
