@@ -1,6 +1,6 @@
 # Python API
 
-**Navigation:** [← CLI Recipes](../07-cli/cli-recipes.md) | [Next: Examples →](../09-examples/index.md)
+**Navigation:** [← CLI Recipes](../07-cli/cli-recipes.md) | [Examples →](../09-examples/index.md)
 
 ---
 
@@ -626,4 +626,4 @@ except PipelineError as e:
 
 ---
 
-**Navigation:** [← CLI Recipes](../07-cli/cli-recipes.md) | [Next: Examples →](../09-examples/index.md)
+**Navigation:** [← CLI Recipes](../07-cli/cli-recipes.md) | [Examples →](../09-examples/index.md)

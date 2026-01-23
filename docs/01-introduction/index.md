@@ -132,7 +132,7 @@ Before diving into the pipeline, familiarize yourself with these key concepts:
 
 - **[Key Concepts](key-concepts.md)**: Entities, components, nodes, edges, and graphs
 - **[Use Cases](use-cases.md)**: Domain-specific examples and patterns
-- **[Architecture Overview](architecture-overview.md)**: System design and component interaction
+- **[Architecture](architecture.md)**: System design and component interaction
 
 ## Quick Example
 

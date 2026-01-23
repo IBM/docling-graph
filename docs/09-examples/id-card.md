@@ -1,6 +1,6 @@
 # ID Card Extraction
 
-**Navigation:** [← Research Paper](research-paper.md) | [Next: Insurance Policy →](insurance-policy.md)
+**Navigation:** [← Research Paper](research-paper.md) | [Insurance Policy →](insurance-policy.md)
 
 ---
 
@@ -213,7 +213,7 @@ class IDCard(BaseModel):
 
 ## Processing
 
-### Using CLI (VLM - Recommended)
+### Using CLI
 
 ```bash
 # Process ID card image with VLM
@@ -535,4 +535,4 @@ docs/examples/templates/id_card.py
 
 ---
 
-**Navigation:** [← Research Paper](research-paper.md) | [Next: Insurance Policy →](insurance-policy.md)
+**Navigation:** [← Research Paper](research-paper.md) | [Insurance Policy →](insurance-policy.md)

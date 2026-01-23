@@ -1,6 +1,6 @@
 # Field Definitions
 
-**Navigation:** [← Entities vs Components](entities-vs-components.md) | [Next: Relationships →](relationships.md)
+**Navigation:** [← Entities vs Components](entities-vs-components.md) | [Relationships →](relationships.md)
 
 ---
 
@@ -722,4 +722,4 @@ field: str = Field("default", description="...", examples=[...])
 
 ---
 
-**Navigation:** [← Entities vs Components](entities-vs-components.md) | [Next: Relationships →](relationships.md)
+**Navigation:** [← Entities vs Components](entities-vs-components.md) | [Relationships →](relationships.md)

@@ -1,6 +1,6 @@
 # CLI Reference
 
-**Navigation:** [← Graph Analysis](../06-graph-management/graph-analysis.md) | [Next: Python API →](../08-api/index.md)
+**Navigation:** [← Graph Analysis](../06-graph-management/graph-analysis.md) | [Python API →](../08-api/index.md)
 
 ---
 
@@ -385,4 +385,4 @@ uv run docling-graph COMMAND --help
 
 ---
 
-**Navigation:** [← Graph Analysis](../06-graph-management/graph-analysis.md) | [Next: Python API →](../08-api/index.md)
+**Navigation:** [← Graph Analysis](../06-graph-management/graph-analysis.md) | [Python API →](../08-api/index.md)

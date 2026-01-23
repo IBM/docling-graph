@@ -1,6 +1,6 @@
 # Backend Selection: LLM vs VLM
 
-**Navigation:** [← Configuration Basics](configuration-basics.md) | [Next: Model Configuration →](model-configuration.md)
+**Navigation:** [← Configuration Basics](configuration-basics.md) | [Model Configuration →](model-configuration.md)
 
 ---
 
@@ -530,4 +530,4 @@ config = PipelineConfig(
 
 ---
 
-**Navigation:** [← Configuration Basics](configuration-basics.md) | [Next: Model Configuration →](model-configuration.md)
+**Navigation:** [← Configuration Basics](configuration-basics.md) | [Model Configuration →](model-configuration.md)

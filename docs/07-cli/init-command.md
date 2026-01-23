@@ -1,6 +1,6 @@
 # init Command
 
-**Navigation:** [← CLI Overview](index.md) | [Next: convert Command →](convert-command.md)
+**Navigation:** [← CLI Overview](index.md) | [convert Command →](convert-command.md)
 
 ---
 
@@ -546,4 +546,4 @@ uv sync --extra remote  # or local, watsonx, all
 
 ---
 
-**Navigation:** [← CLI Overview](index.md) | [Next: convert Command →](convert-command.md)
+**Navigation:** [← CLI Overview](index.md) | [convert Command →](convert-command.md)

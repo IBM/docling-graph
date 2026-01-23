@@ -1,6 +1,6 @@
 # Batch Processing
 
-**Navigation:** [← Model Merging](model-merging.md) | [Next: Graph Management →](../06-graph-management/index.md)
+**Navigation:** [← Model Merging](model-merging.md) | [Graph Management →](../06-graph-management/index.md)
 
 ---
 
@@ -691,4 +691,4 @@ for batch in batches:
 
 ---
 
-**Navigation:** [← Model Merging](model-merging.md) | [Next: Graph Management →](../06-graph-management/index.md)
+**Navigation:** [← Model Merging](model-merging.md) | [Graph Management →](../06-graph-management/index.md)

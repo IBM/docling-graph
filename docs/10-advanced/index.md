@@ -1,6 +1,6 @@
 # Advanced Topics
 
-**Navigation:** [← Examples](../09-examples/index.md) | [Next: Custom Backends →](custom-backends.md)
+**Navigation:** [← Examples](../09-examples/index.md) | [Custom Backends →](custom-backends.md)
 
 ---
 
@@ -134,7 +134,7 @@ Don't use when:
 
 ---
 
-## Architecture Overview
+## Architecture
 
 ### Extension Points
 
@@ -440,8 +440,8 @@ Choose a topic based on your needs:
 
 - **[Protocols](../11-reference/protocols.md)** - Protocol definitions
 - **[Exceptions](../11-reference/exceptions.md)** - Exception hierarchy
-- **[Pipeline Architecture](../01-introduction/architecture-overview.md)** - System design
+- **[Pipeline Architecture](../01-introduction/architecture.md)** - System design
 
 ---
 
-**Navigation:** [← Examples](../09-examples/index.md) | [Next: Custom Backends →](custom-backends.md)
+**Navigation:** [← Examples](../09-examples/index.md) | [Custom Backends →](custom-backends.md)

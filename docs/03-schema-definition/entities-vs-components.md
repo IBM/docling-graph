@@ -1,6 +1,6 @@
 # Entities vs Components
 
-**Navigation:** [← Template Basics](template-basics.md) | [Next: Field Definitions →](field-definitions.md)
+**Navigation:** [← Template Basics](template-basics.md) | [Field Definitions →](field-definitions.md)
 
 ---
 
@@ -724,4 +724,4 @@ class MyComponent(BaseModel):
 
 ---
 
-**Navigation:** [← Template Basics](template-basics.md) | [Next: Field Definitions →](field-definitions.md)
+**Navigation:** [← Template Basics](template-basics.md) | [Field Definitions →](field-definitions.md)

@@ -1,6 +1,6 @@
 # Visualization
 
-**Navigation:** [← Export Formats](export-formats.md) | [Next: Neo4j Integration →](neo4j-integration.md)
+**Navigation:** [← Export Formats](export-formats.md) | [Neo4j Integration →](neo4j-integration.md)
 
 ---
 
@@ -602,4 +602,4 @@ with open("outputs/graph_stats.json") as f:
 
 ---
 
-**Navigation:** [← Export Formats](export-formats.md) | [Next: Neo4j Integration →](neo4j-integration.md)
+**Navigation:** [← Export Formats](export-formats.md) | [Neo4j Integration →](neo4j-integration.md)

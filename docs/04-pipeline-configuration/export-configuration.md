@@ -1,6 +1,6 @@
 # Export Configuration
 
-**Navigation:** [← Docling Settings](docling-settings.md) | [Next: Configuration Examples →](configuration-examples.md)
+**Navigation:** [← Docling Settings](docling-settings.md) | [Configuration Examples →](configuration-examples.md)
 
 ---
 
@@ -718,4 +718,4 @@ config = PipelineConfig(
 
 ---
 
-**Navigation:** [← Docling Settings](docling-settings.md) | [Next: Configuration Examples →](configuration-examples.md)
+**Navigation:** [← Docling Settings](docling-settings.md) | [Configuration Examples →](configuration-examples.md)

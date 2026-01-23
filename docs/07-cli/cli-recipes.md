@@ -1,6 +1,6 @@
 # CLI Recipes
 
-**Navigation:** [← inspect Command](inspect-command.md) | [Next: Python API →](../08-api/index.md)
+**Navigation:** [← inspect Command](inspect-command.md) | [Python API →](../08-api/index.md)
 
 ---
 
@@ -639,4 +639,4 @@ done
 
 ---
 
-**Navigation:** [← inspect Command](inspect-command.md) | [Next: Python API →](../08-api/index.md)
+**Navigation:** [← inspect Command](inspect-command.md) | [Python API →](../08-api/index.md)

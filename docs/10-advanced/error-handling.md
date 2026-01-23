@@ -1,6 +1,6 @@
 # Error Handling
 
-**Navigation:** [← Performance Tuning](performance-tuning.md) | [Next: Testing →](testing.md)
+**Navigation:** [← Performance Tuning](performance-tuning.md) | [Testing →](testing.md)
 
 ---
 
@@ -17,7 +17,7 @@ Handle errors gracefully in docling-graph pipelines with structured exception ha
 - Best practices
 
 **Prerequisites:**
-- Understanding of [Pipeline Architecture](../01-introduction/architecture-overview.md)
+- Understanding of [Pipeline Architecture](../01-introduction/architecture.md)
 - Familiarity with [Python API](../08-api/index.md)
 - Basic Python exception handling
 
@@ -725,9 +725,9 @@ except:
 ## Related Documentation
 
 - **[Exceptions API](../11-reference/exceptions.md)** - Exception reference
-- **[Pipeline Architecture](../01-introduction/architecture-overview.md)** - System design
+- **[Pipeline Architecture](../01-introduction/architecture.md)** - System design
 - **[Extraction Process](../05-extraction-process/index.md)** - Extraction guide
 
 ---
 
-**Navigation:** [← Performance Tuning](performance-tuning.md) | [Next: Testing →](testing.md)
+**Navigation:** [← Performance Tuning](performance-tuning.md) | [Testing →](testing.md)

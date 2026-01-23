@@ -1,6 +1,6 @@
 # Model Merging
 
-**Navigation:** [← Extraction Backends](extraction-backends.md) | [Next: Batch Processing →](batch-processing.md)
+**Navigation:** [← Extraction Backends](extraction-backends.md) | [Batch Processing →](batch-processing.md)
 
 ---
 
@@ -718,4 +718,4 @@ final = backend.consolidate_from_pydantic_models(
 
 ---
 
-**Navigation:** [← Extraction Backends](extraction-backends.md) | [Next: Batch Processing →](batch-processing.md)
+**Navigation:** [← Extraction Backends](extraction-backends.md) | [Batch Processing →](batch-processing.md)

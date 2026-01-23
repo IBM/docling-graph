@@ -1,6 +1,6 @@
 # Extraction Backends
 
-**Navigation:** [← Chunking Strategies](chunking-strategies.md) | [Next: Model Merging →](model-merging.md)
+**Navigation:** [← Chunking Strategies](chunking-strategies.md) | [Model Merging →](model-merging.md)
 
 ---
 
@@ -790,4 +790,4 @@ config = PipelineConfig(
 
 ---
 
-**Navigation:** [← Chunking Strategies](chunking-strategies.md) | [Next: Model Merging →](model-merging.md)
+**Navigation:** [← Chunking Strategies](chunking-strategies.md) | [Model Merging →](model-merging.md)

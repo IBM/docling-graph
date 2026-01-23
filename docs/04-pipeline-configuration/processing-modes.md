@@ -1,6 +1,6 @@
 # Processing Modes
 
-**Navigation:** [← Model Configuration](model-configuration.md) | [Next: Docling Settings →](docling-settings.md)
+**Navigation:** [← Model Configuration](model-configuration.md) | [Docling Settings →](docling-settings.md)
 
 ---
 
@@ -672,4 +672,4 @@ config = PipelineConfig(
 
 ---
 
-**Navigation:** [← Model Configuration](model-configuration.md) | [Next: Docling Settings →](docling-settings.md)
+**Navigation:** [← Model Configuration](model-configuration.md) | [Docling Settings →](docling-settings.md)

@@ -333,7 +333,7 @@ Paper_AdvancedAI
 Now that you understand the core concepts:
 
 1. **[Use Cases](use-cases.md)** - See domain-specific examples
-2. **[Architecture Overview](architecture-overview.md)** - Understand system design
+2. **[Architecture](architecture.md)** - Understand system design
 3. **[Installation](../02-installation/index.md)** - Set up your environment
 
 ## Related Documentation

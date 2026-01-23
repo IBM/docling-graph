@@ -1,6 +1,6 @@
 # Docling Settings
 
-**Navigation:** [← Processing Modes](processing-modes.md) | [Next: Export Configuration →](export-configuration.md)
+**Navigation:** [← Processing Modes](processing-modes.md) | [Export Configuration →](export-configuration.md)
 
 ---
 
@@ -661,4 +661,4 @@ export_per_page_markdown=False # Export per-page markdown
 
 ---
 
-**Navigation:** [← Processing Modes](processing-modes.md) | [Next: Export Configuration →](export-configuration.md)
+**Navigation:** [← Processing Modes](processing-modes.md) | [Export Configuration →](export-configuration.md)

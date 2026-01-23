@@ -1,6 +1,6 @@
 # Custom Pipeline Stages
 
-**Navigation:** [← Custom Exporters](custom-exporters.md) | [Next: Performance Tuning →](performance-tuning.md)
+**Navigation:** [← Custom Exporters](custom-exporters.md) | [Performance Tuning →](performance-tuning.md)
 
 ---
 
@@ -16,7 +16,7 @@ Add custom stages to the docling-graph pipeline for specialized preprocessing, v
 - Error handling
 
 **Prerequisites:**
-- Understanding of [Pipeline Architecture](../01-introduction/architecture-overview.md)
+- Understanding of [Pipeline Architecture](../01-introduction/architecture.md)
 - Familiarity with [Python API](../08-api/index.md)
 - Knowledge of pipeline context
 
@@ -649,10 +649,10 @@ class MyStage:
 
 ## Related Documentation
 
-- **[Pipeline Architecture](../01-introduction/architecture-overview.md)** - System design
+- **[Pipeline Architecture](../01-introduction/architecture.md)** - System design
 - **[Python API](../08-api/index.md)** - Programmatic usage
 - **[Exceptions](../11-reference/exceptions.md)** - Exception hierarchy
 
 ---
 
-**Navigation:** [← Custom Exporters](custom-exporters.md) | [Next: Performance Tuning →](performance-tuning.md)
+**Navigation:** [← Custom Exporters](custom-exporters.md) | [Performance Tuning →](performance-tuning.md)

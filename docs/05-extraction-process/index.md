@@ -1,6 +1,6 @@
 # The Extraction Process
 
-**Navigation:** [← Pipeline Configuration](../04-pipeline-configuration/index.md) | [Next: Document Conversion →](document-conversion.md)
+**Navigation:** [← Pipeline Configuration](../04-pipeline-configuration/index.md) | [Document Conversion →](document-conversion.md)
 
 ---
 
@@ -612,4 +612,4 @@ Ready to dive deeper? Start with:
 
 ---
 
-**Navigation:** [← Pipeline Configuration](../04-pipeline-configuration/index.md) | [Next: Document Conversion →](document-conversion.md)
+**Navigation:** [← Pipeline Configuration](../04-pipeline-configuration/index.md) | [Document Conversion →](document-conversion.md)

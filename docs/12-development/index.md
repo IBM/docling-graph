@@ -1,6 +1,6 @@
 # Development Guide
 
-**Navigation:** [← API Reference](../11-reference/index.md) | [Next: GitHub Workflow →](github-workflow.md)
+**Navigation:** [← API Reference](../11-reference/index.md) | [GitHub Workflow →](github-workflow.md)
 
 ---
 
@@ -377,4 +377,4 @@ docling-graph/
 
 ---
 
-**Navigation:** [← API Reference](../11-reference/index.md) | [Next: GitHub Workflow →](github-workflow.md)
+**Navigation:** [← API Reference](../11-reference/index.md) | [GitHub Workflow →](github-workflow.md)

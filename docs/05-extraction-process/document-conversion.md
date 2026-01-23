@@ -1,6 +1,6 @@
 # Document Conversion
 
-**Navigation:** [← Extraction Process](index.md) | [Next: Chunking Strategies →](chunking-strategies.md)
+**Navigation:** [← Extraction Process](index.md) | [Chunking Strategies →](chunking-strategies.md)
 
 ---
 
@@ -635,4 +635,4 @@ processor.cleanup()
 
 ---
 
-**Navigation:** [← Extraction Process](index.md) | [Next: Chunking Strategies →](chunking-strategies.md)
+**Navigation:** [← Extraction Process](index.md) | [Chunking Strategies →](chunking-strategies.md)

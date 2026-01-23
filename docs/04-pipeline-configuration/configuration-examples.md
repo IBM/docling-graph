@@ -1,6 +1,6 @@
 # Complete Configuration Examples
 
-**Navigation:** [← Export Configuration](export-configuration.md) | [Next: Extraction Process →](../05-extraction-process/index.md)
+**Navigation:** [← Export Configuration](export-configuration.md) | [Extraction Process →](../05-extraction-process/index.md)
 
 ---
 
@@ -917,4 +917,4 @@ PipelineConfig(
 
 ---
 
-**Navigation:** [← Export Configuration](export-configuration.md) | [Next: Extraction Process →](../05-extraction-process/index.md)
+**Navigation:** [← Export Configuration](export-configuration.md) | [Extraction Process →](../05-extraction-process/index.md)

@@ -1,6 +1,6 @@
 # Research Paper Extraction
 
-**Navigation:** [← Invoice Extraction](invoice-extraction.md) | [Next: ID Card →](id-card.md)
+**Navigation:** [← Invoice Extraction](invoice-extraction.md) | [ID Card →](id-card.md)
 
 ---
 
@@ -421,4 +421,4 @@ docs/examples/templates/rheology_research.py
 
 ---
 
-**Navigation:** [← Invoice Extraction](invoice-extraction.md) | [Next: ID Card →](id-card.md)
+**Navigation:** [← Invoice Extraction](invoice-extraction.md) | [ID Card →](id-card.md)

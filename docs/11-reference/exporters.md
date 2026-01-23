@@ -1,6 +1,6 @@
 # Exporters API
 
-**Navigation:** [← Extractors](extractors.md) | [Next: LLM Clients →](llm-clients.md)
+**Navigation:** [← Extractors](extractors.md) | [LLM Clients →](llm-clients.md)
 
 ---
 
@@ -253,4 +253,4 @@ See [Custom Exporters Guide](../10-advanced/custom-exporters.md) for details.
 
 ---
 
-**Navigation:** [← Extractors](extractors.md) | [Next: LLM Clients →](llm-clients.md)
+**Navigation:** [← Extractors](extractors.md) | [LLM Clients →](llm-clients.md)

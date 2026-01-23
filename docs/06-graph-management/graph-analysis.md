@@ -1,6 +1,6 @@
 # Graph Analysis
 
-**Navigation:** [← Neo4j Integration](neo4j-integration.md) | [Next: CLI Guide →](../07-cli/index.md)
+**Navigation:** [← Neo4j Integration](neo4j-integration.md) | [CLI Guide →](../07-cli/index.md)
 
 ---
 
@@ -557,4 +557,4 @@ validate_graph_structure(graph, raise_on_error=True)
 
 ---
 
-**Navigation:** [← Neo4j Integration](neo4j-integration.md) | [Next: CLI Guide →](../07-cli/index.md)
+**Navigation:** [← Neo4j Integration](neo4j-integration.md) | [CLI Guide →](../07-cli/index.md)

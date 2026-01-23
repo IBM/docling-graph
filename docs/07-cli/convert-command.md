@@ -1,6 +1,6 @@
 # convert Command
 
-**Navigation:** [← init Command](init-command.md) | [Next: inspect Command →](inspect-command.md)
+**Navigation:** [← init Command](init-command.md) | [inspect Command →](inspect-command.md)
 
 ---
 
@@ -722,4 +722,4 @@ uv run docling-graph convert SOURCE \
 
 ---
 
-**Navigation:** [← init Command](init-command.md) | [Next: inspect Command →](inspect-command.md)
+**Navigation:** [← init Command](init-command.md) | [inspect Command →](inspect-command.md)

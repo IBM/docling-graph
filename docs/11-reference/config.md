@@ -1,6 +1,6 @@
 # Configuration API
 
-**Navigation:** [← Pipeline API](pipeline.md) | [Next: Protocols →](protocols.md)
+**Navigation:** [← Pipeline API](pipeline.md) | [Protocols →](protocols.md)
 
 ---
 
@@ -491,4 +491,4 @@ print(config.export_format)  # "csv"
 
 ---
 
-**Navigation:** [← Pipeline API](pipeline.md) | [Next: Protocols →](protocols.md)
+**Navigation:** [← Pipeline API](pipeline.md) | [Protocols →](protocols.md)

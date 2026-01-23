@@ -79,7 +79,7 @@ nav:
   
   - 1. Introduction:
     - Overview: 01-introduction/index.md
-    - Architecture Overview: 01-introduction/architecture-overview.md
+    - Architecture: 01-introduction/architecture.md
     - Key Concepts: 01-introduction/key-concepts.md
     - Use Cases: 01-introduction/use-cases.md
   

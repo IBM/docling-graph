@@ -1,6 +1,6 @@
 # Template Basics
 
-**Navigation:** [← Schema Definition](index.md) | [Next: Entities vs Components →](entities-vs-components.md)
+**Navigation:** [← Schema Definition](index.md) | [Entities vs Components →](entities-vs-components.md)
 
 ---
 
@@ -521,4 +521,4 @@ def edge(label: str, **kwargs: Any) -> Any:
 
 ---
 
-**Navigation:** [← Schema Definition](index.md) | [Next: Entities vs Components →](entities-vs-components.md)
+**Navigation:** [← Schema Definition](index.md) | [Entities vs Components →](entities-vs-components.md)

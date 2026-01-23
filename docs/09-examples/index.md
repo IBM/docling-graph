@@ -1,6 +1,6 @@
 # Examples
 
-**Navigation:** [← Batch Processing](../08-api/batch-processing.md) | [Next: Advanced Topics →](../10-advanced/index.md)
+**Navigation:** [← Batch Processing](../08-api/batch-processing.md) | [Advanced Topics →](../10-advanced/index.md)
 
 ---
 
@@ -392,4 +392,4 @@ cat outputs/edges.csv
 
 ---
 
-**Navigation:** [← Batch Processing](../08-api/batch-processing.md) | [Next: Advanced Topics →](../10-advanced/index.md)
+**Navigation:** [← Batch Processing](../08-api/batch-processing.md) | [Advanced Topics →](../10-advanced/index.md)

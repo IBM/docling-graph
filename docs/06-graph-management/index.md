@@ -1,6 +1,6 @@
 # Knowledge Graph Management
 
-**Navigation:** [← Extraction Process](../05-extraction-process/index.md) | [Next: Graph Conversion →](graph-conversion.md)
+**Navigation:** [← Extraction Process](../05-extraction-process/index.md) | [Graph Conversion →](graph-conversion.md)
 
 ---
 
@@ -543,4 +543,4 @@ CypherExporter().export(graph, output_file)
 
 ---
 
-**Navigation:** [← Extraction Process](../05-extraction-process/index.md) | [Next: Graph Conversion →](graph-conversion.md)
+**Navigation:** [← Extraction Process](../05-extraction-process/index.md) | [Graph Conversion →](graph-conversion.md)

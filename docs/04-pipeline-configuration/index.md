@@ -1,6 +1,6 @@
 # Pipeline Configuration
 
-**Navigation:** [← Schema Definition](../03-schema-definition/best-practices.md) | [Next: Configuration Basics →](configuration-basics.md)
+**Navigation:** [← Schema Definition](../03-schema-definition/best-practices.md) | [Configuration Basics →](configuration-basics.md)
 
 ---
 
@@ -477,4 +477,4 @@ uv run docling-graph convert document.pdf \
 
 ---
 
-**Navigation:** [← Schema Definition](../03-schema-definition/best-practices.md) | [Next: Configuration Basics →](configuration-basics.md)
+**Navigation:** [← Schema Definition](../03-schema-definition/best-practices.md) | [Configuration Basics →](configuration-basics.md)

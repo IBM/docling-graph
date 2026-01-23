@@ -1,6 +1,6 @@
 # Best Practices and Checklist
 
-**Navigation:** [← Advanced Patterns](advanced-patterns.md) | [Next: Pipeline Configuration →](../04-pipeline-configuration/index.md)
+**Navigation:** [← Advanced Patterns](advanced-patterns.md) | [Pipeline Configuration →](../04-pipeline-configuration/index.md)
 
 ---
 
@@ -595,4 +595,4 @@ Before moving to Pipeline Configuration, ensure:
 
 ---
 
-**Navigation:** [← Advanced Patterns](advanced-patterns.md) | [Next: Pipeline Configuration →](../04-pipeline-configuration/index.md)
+**Navigation:** [← Advanced Patterns](advanced-patterns.md) | [Pipeline Configuration →](../04-pipeline-configuration/index.md)

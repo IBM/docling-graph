@@ -1,6 +1,6 @@
 # run_pipeline()
 
-**Navigation:** [← Python API Overview](index.md) | [Next: PipelineConfig →](pipeline-config.md)
+**Navigation:** [← Python API Overview](index.md) | [PipelineConfig →](pipeline-config.md)
 
 ---
 
@@ -654,4 +654,4 @@ except PipelineError as e:
 
 ---
 
-**Navigation:** [← Python API Overview](index.md) | [Next: PipelineConfig →](pipeline-config.md)
+**Navigation:** [← Python API Overview](index.md) | [PipelineConfig →](pipeline-config.md)

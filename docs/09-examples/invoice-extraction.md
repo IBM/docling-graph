@@ -1,6 +1,6 @@
 # Invoice Extraction
 
-**Navigation:** [← Quickstart](quickstart.md) | [Next: Research Paper →](research-paper.md)
+**Navigation:** [← Quickstart](quickstart.md) | [Research Paper →](research-paper.md)
 
 ---
 
@@ -609,4 +609,4 @@ cat outputs/invoice/edges.csv
 
 ---
 
-**Navigation:** [← Quickstart](quickstart.md) | [Next: Research Paper →](research-paper.md)
+**Navigation:** [← Quickstart](quickstart.md) | [Research Paper →](research-paper.md)

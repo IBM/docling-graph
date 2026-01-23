@@ -1,6 +1,6 @@
 # Chunking Strategies
 
-**Navigation:** [← Document Conversion](document-conversion.md) | [Next: Extraction Backends →](extraction-backends.md)
+**Navigation:** [← Document Conversion](document-conversion.md) | [Extraction Backends →](extraction-backends.md)
 
 ---
 
@@ -38,7 +38,7 @@ LLMs have limited context windows:
 
 ## Chunking Approaches
 
-### Naive Chunking (❌ Don't Use)
+### ❌ Naive Chunking
 
 ```python
 # ❌ Bad - Breaks tables and structure
@@ -54,7 +54,7 @@ def naive_chunk(text, max_chars=1000):
 
 ---
 
-### Structure-Aware Chunking (✅ Use This)
+### ✅ Structure-Aware Chunking
 
 ```python
 # ✅ Good - Preserves structure
@@ -672,4 +672,4 @@ chunks = chunker.chunk_text_fallback(raw_text)
 
 ---
 
-**Navigation:** [← Document Conversion](document-conversion.md) | [Next: Extraction Backends →](extraction-backends.md)
+**Navigation:** [← Document Conversion](document-conversion.md) | [Extraction Backends →](extraction-backends.md)
