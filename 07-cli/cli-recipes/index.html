@@ -4485,10 +4485,10 @@
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span>--docling-pipeline<span class="w"> </span><span class="s2">&quot;vision&quot;</span>
 </code></pre></div></p>
 <p><strong>When to Use:</strong>
-- ✅ Single-page forms
-- ✅ ID cards or badges
-- ✅ Structured layouts
-- ✅ Image files (JPG, PNG)</p>
+<br>✅ Single-page forms
+<br>✅ ID cards or badges
+<br>✅ Structured layouts
+<br>✅ Image files (JPG, PNG)</p>
 <p><strong>Python Equivalent:</strong> <code>examples/scripts/01_vlm_from_image.py</code></p>
 <hr />
 <h2 id="recipe-2-vlm-from-pdf-page">Recipe 2: VLM from PDF Page<a class="headerlink" href="#recipe-2-vlm-from-pdf-page" title="Permanent link">&para;</a></h2>
@@ -4505,9 +4505,9 @@
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span>--docling-pipeline<span class="w"> </span><span class="s2">&quot;vision&quot;</span>
 </code></pre></div></p>
 <p><strong>When to Use:</strong>
-- ✅ Single-page PDFs
-- ✅ Forms in PDF format
-- ✅ High-quality scans</p>
+<br>✅ Single-page PDFs
+<br>✅ Forms in PDF format
+<br>✅ High-quality scans</p>
 <p><strong>Python Equivalent:</strong> <code>examples/scripts/02_vlm_from_pdf_page.py</code></p>
 <hr />
 <h2 id="recipe-3-remote-llm-mistral">Recipe 3: Remote LLM (Mistral)<a class="headerlink" href="#recipe-3-remote-llm-mistral" title="Permanent link">&para;</a></h2>
@@ -4529,10 +4529,10 @@
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span>--no-llm-consolidation
 </code></pre></div></p>
 <p><strong>When to Use:</strong>
-- ✅ Multi-page documents
-- ✅ Text-heavy content
-- ✅ No local GPU
-- ✅ Cloud-based processing</p>
+<br>✅ Multi-page documents
+<br>✅ Text-heavy content
+<br>✅ No local GPU
+<br>✅ Cloud-based processing</p>
 <p><strong>Cost:</strong> ~$0.01-0.10 per document (varies by model and length)</p>
 <p><strong>Python Equivalent:</strong> <code>examples/scripts/03_llm_remote_api.py</code></p>
 <hr />
@@ -4560,10 +4560,10 @@
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span>--no-llm-consolidation
 </code></pre></div></p>
 <p><strong>When to Use:</strong>
-- ✅ Privacy-sensitive documents
-- ✅ Offline processing
-- ✅ No API costs
-- ✅ Local development</p>
+<br>✅ Privacy-sensitive documents
+<br>✅ Offline processing
+<br>✅ No API costs
+<br>✅ Local development</p>
 <p><strong>Python Equivalent:</strong> <code>examples/scripts/04_llm_local_ollama.py</code></p>
 <hr />
 <h2 id="recipe-5-llm-with-consolidation">Recipe 5: LLM with Consolidation<a class="headerlink" href="#recipe-5-llm-with-consolidation" title="Permanent link">&para;</a></h2>
@@ -4584,14 +4584,14 @@
 <a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span>--llm-consolidation
 </code></pre></div></p>
 <p><strong>When to Use:</strong>
-- ✅ Complex documents
-- ✅ Accuracy &gt; speed
-- ✅ Conflicting information across pages
-- ✅ Quality matters more than cost</p>
+<br>✅ Complex documents
+<br>✅ Accuracy &gt; speed
+<br>✅ Conflicting information across pages
+<br>✅ Quality matters more than cost</p>
 <p><strong>Trade-offs:</strong>
-- ⚠️ Slower processing
-- ⚠️ Higher API costs
-- ✅ Better accuracy</p>
+<br>⚠️ Slower processing
+<br>⚠️ Higher API costs
+<br>✅ Better accuracy</p>
 <p><strong>Python Equivalent:</strong> <code>examples/scripts/05_llm_with_consolidation.py</code></p>
 <hr />
 <h2 id="recipe-6-one-to-one-processing">Recipe 6: One-to-One Processing<a class="headerlink" href="#recipe-6-one-to-one-processing" title="Permanent link">&para;</a></h2>
@@ -4611,10 +4611,10 @@
 <a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span>--use-chunking
 </code></pre></div></p>
 <p><strong>When to Use:</strong>
-- ✅ Independent pages
-- ✅ Page-level analysis
-- ✅ Faster processing
-- ✅ Parallel processing possible</p>
+<br>✅ Independent pages
+<br>✅ Page-level analysis
+<br>✅ Faster processing
+<br>✅ Parallel processing possible</p>
 <p><strong>Output:</strong> Multiple graphs (one per page)</p>
 <p><strong>Python Equivalent:</strong> <code>examples/scripts/06_llm_one_to_one.py</code></p>
 <hr />
@@ -4635,10 +4635,10 @@
 <a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">    </span>--no-use-chunking
 </code></pre></div></p>
 <p><strong>When to Use:</strong>
-- ✅ Small documents (&lt;5 pages)
-- ✅ Documents within context limit
-- ✅ Faster processing
-- ✅ Simpler pipeline</p>
+<br>✅ Small documents (&lt;5 pages)
+<br>✅ Documents within context limit
+<br>✅ Faster processing
+<br>✅ Simpler pipeline</p>
 <p><strong>Python Equivalent:</strong> <code>examples/scripts/07_llm_no_chunking.py</code></p>
 <hr />
 <h2 id="recipe-8-vision-pipeline-hybrid">Recipe 8: Vision Pipeline (Hybrid)<a class="headerlink" href="#recipe-8-vision-pipeline-hybrid" title="Permanent link">&para;</a></h2>
@@ -4663,10 +4663,10 @@
 <a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">    </span>--use-chunking
 </code></pre></div></p>
 <p><strong>When to Use:</strong>
-- ✅ Complex layouts
-- ✅ Tables and figures
-- ✅ Mixed content types
-- ✅ Better layout preservation</p>
+<br>✅ Complex layouts
+<br>✅ Tables and figures
+<br>✅ Mixed content types
+<br>✅ Better layout preservation</p>
 <p><strong>Python Equivalent:</strong> <code>examples/scripts/08_llm_with_vision_config.py</code></p>
 <hr />
 <h2 id="recipe-9-cypher-export">Recipe 9: Cypher Export<a class="headerlink" href="#recipe-9-cypher-export" title="Permanent link">&para;</a></h2>
@@ -4687,9 +4687,9 @@
 <a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>cat<span class="w"> </span>outputs/recipe_09/graph.cypher<span class="w"> </span><span class="p">|</span><span class="w"> </span>cypher-shell<span class="w"> </span>-u<span class="w"> </span>neo4j<span class="w"> </span>-p<span class="w"> </span>password
 </code></pre></div></p>
 <p><strong>When to Use:</strong>
-- ✅ Direct Neo4j import
-- ✅ Graph database workflows
-- ✅ Production deployments</p>
+<br>✅ Direct Neo4j import
+<br>✅ Graph database workflows
+<br>✅ Production deployments</p>
 <p><strong>Python Equivalent:</strong> <code>examples/scripts/09_export_to_cypher.py</code></p>
 <hr />
 <h2 id="recipe-10-batch-processing">Recipe 10: Batch Processing<a class="headerlink" href="#recipe-10-batch-processing" title="Permanent link">&para;</a></h2>
