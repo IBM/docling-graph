@@ -300,4 +300,3 @@ class TestValidatorErrorMessages:
         except ValidationError as e:
             assert "schema_name" in str(e).lower()
             assert e.details is not None
-

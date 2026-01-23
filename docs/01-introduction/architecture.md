@@ -12,7 +12,7 @@ This page provides a high-level overview of Docling Graph's architecture and how
 
 Docling Graph follows a modular, pipeline-based architecture with clear separation of concerns:
 
-![Docling Graph architecture](../assets/flowcharts/img/architecture.png)
+![Docling Graph architecture](../assets/flowcharts/img/architecture.png){width=600px}
 
 ## Core Components
 
@@ -75,45 +75,7 @@ Document → Markdown → Chunking → LLM Extraction → Consolidation → Vali
 **Purpose**: Unified interface for multiple LLM providers
 
 **Architecture**:
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart TB
- subgraph subGraph0["Client Implementations"]
-        B["VLLMClient"]
-        C["OllamaClient"]
-        D["MistralClient"]
-        E["OpenAIClient"]
-        F["GeminiClient"]
-        G["WatsonXClient"]
-  end
-    A["BaseLlmClient<br>Template Method Pattern"] --> subGraph0
-    subGraph0 --> H["ResponseHandler<br>JSON Parsing"] & I("Config<br>models.yaml")
-
-    B@{ shape: lin-proc}
-    C@{ shape: lin-proc}
-    D@{ shape: lin-proc}
-    E@{ shape: lin-proc}
-    F@{ shape: lin-proc}
-    G@{ shape: lin-proc}
-    A@{ shape: procs}
-    H@{ shape: tag-proc}
-     B:::process
-     C:::process
-     D:::process
-     E:::process
-     F:::process
-     G:::process
-     A:::process
-     H:::operator
-     I:::config
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-```
+![LLM Clients](../assets/flowcharts/img/llm_clients.png)
 
 **Key Features**:
 - Template method pattern for consistency
@@ -158,39 +120,7 @@ Result: [Merged Model]
 **Purpose**: Split large documents while preserving semantic coherence
 
 **Hybrid Chunking Strategy**:
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart LR
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-
-    %% 2. Define Nodes
-    A("Full Document")
-    
-    B@{ shape: procs, label: "Docling<br/>Segmentation" }
-    C@{ shape: lin-proc, label: "Semantic<br/>Boundaries" }
-    D@{ shape: tag-proc, label: "Token-Aware<br/>Splitting" }
-    
-    E("Chunks with<br/>Context")
-
-    %% 3. Define Connections
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-
-    %% 4. Apply Classes
-    class A input
-    class B,C process
-    class D operator
-    class E output
-```
+![Document Chunker](../assets/flowcharts/img/doc_chunker.png)
 
 **Features**:
 - Respects document structure (sections, tables)
@@ -230,41 +160,7 @@ flowchart LR
 **Purpose**: Transform Pydantic models to NetworkX graphs
 
 **Process**:
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart LR
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-
-    %% 2. Define Nodes
-    A("Pydantic Models")
-    
-    B@{ shape: lin-proc, label: "Node ID<br/>Generation" }
-    C@{ shape: lin-proc, label: "Node<br/>Creation" }
-    D@{ shape: lin-proc, label: "Edge<br/>Creation" }
-    E@{ shape: tag-proc, label: "Graph<br/>Validation" }
-    
-    F("NetworkX<br/>DiGraph")
-
-    %% 3. Define Connections
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-
-    %% 4. Apply Classes
-    class A input
-    class B,C,D process
-    class E operator
-    class F output
-```
+![Graph Converter](../assets/flowcharts/img/graph_converter.png)
 
 **Key Features**:
 - Stable, deterministic node IDs
@@ -301,51 +197,7 @@ Address(street="123 Main", city="Boston")
 
 **Purpose**: Export graphs in multiple formats
 
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart TB
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-
-    %% 2. Define Nodes
-    A("NetworkX Graph")
-    
-    subgraph "Export Modules"
-        B@{ shape: tag-proc, label: "CSV Exporter" }
-        C@{ shape: tag-proc, label: "Cypher Exporter" }
-        D@{ shape: tag-proc, label: "JSON Exporter" }
-        E@{ shape: tag-proc, label: "Docling Exporter" }
-    end
-    
-    subgraph "Generated Files"
-        F@{ shape: doc, label: "nodes.csv<br/>edges.csv" }
-        G@{ shape: doc, label: "graph.cypher" }
-        H@{ shape: doc, label: "graph.json" }
-        I@{ shape: doc, label: "document.json<br/>document.md" }
-    end
-
-    %% 3. Define Connections
-    A --> B
-    A --> C
-    A --> D
-    A --> E
-    
-    B --> F
-    C --> G
-    D --> H
-    E --> I
-
-    %% 4. Apply Classes
-    class A input
-    class B,C,D,E operator
-    class F,G,H,I output
-```
+![Exporters](../assets/flowcharts/img/exporters.png)
 
 **Exporters**:
 - **CSV**: Neo4j admin import
@@ -367,82 +219,8 @@ flowchart TB
 
 ### Complete Pipeline Flow
 
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart TB
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
+![Pipeline Flow](../assets/flowcharts/img/pipeline_flow.png){width=600px}
 
-    %% 2. Define Nodes
-    A("1. Document Input<br/>PDF/Image")
-    B@{ shape: procs, label: "2. Docling Conversion<br/>OCR or Vision" }
-    
-    C{"3. Backend"}
-    
-    D@{ shape: lin-proc, label: "4a. VLM Extraction<br/>Direct from Document" }
-    E@{ shape: lin-proc, label: "4b. Markdown Extraction" }
-    
-    F{"5. Chunking"}
-    
-    G@{ shape: tag-proc, label: "6a. Hybrid Chunking<br/>Semantic + Token-Aware" }
-    H@{ shape: tag-proc, label: "6b. Full Document" }
-    
-    I@{ shape: procs, label: "7. Batch Extraction<br/>Process Each Chunk" }
-    J@{ shape: tag-proc, label: "8. Pydantic Validation<br/>Type Checking" }
-    
-    K{"9. Consolidation"}
-    
-    L@{ shape: lin-proc, label: "10a. Smart Merge<br/>Rule-Based" }
-    M@{ shape: lin-proc, label: "10b. LLM Consolidation<br/>Intelligent" }
-    
-    N@{ shape: procs, label: "11. Graph Conversion<br/>Pydantic → NetworkX" }
-    O@{ shape: tag-proc, label: "12. Node ID Generation<br/>Stable Identifiers" }
-    
-    P@{ shape: tag-proc, label: "13. Export<br/>CSV/Cypher/JSON" }
-    Q@{ shape: tag-proc, label: "14. Visualization<br/>HTML + Reports" }
-
-    %% 3. Define Connections
-    A --> B
-    B --> C
-    
-    C -- VLM --> D
-    C -- LLM --> E
-    
-    E --> F
-    F -- Yes --> G
-    F -- No --> H
-    
-    G --> I
-    H --> I
-    
-    D --> J
-    I --> J
-    J --> K
-    
-    K -- Programmatic --> L
-    K -- LLM --> M
-    
-    L --> N
-    M --> N
-    
-    N --> O
-    O --> P
-    P --> Q
-
-    %% 4. Apply Classes
-    class A input
-    class B,I,N process
-    class D,E,L,M process
-    class C,F,K decision
-    class G,H,J,O operator
-    class P,Q output
-```
 
 ### Stage-by-Stage Breakdown
 

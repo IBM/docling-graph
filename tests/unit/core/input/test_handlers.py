@@ -190,6 +190,7 @@ class TestURLInputHandler:
     def test_handles_timeout(self, mock_get, handler):
         """Test handling of timeout errors."""
         import requests
+
         mock_get.side_effect = requests.Timeout("Connection timeout")
 
         with pytest.raises(ValidationError, match="timeout"):
@@ -199,6 +200,7 @@ class TestURLInputHandler:
     def test_handles_connection_error(self, mock_get, handler):
         """Test handling of connection errors."""
         import requests
+
         mock_get.side_effect = requests.ConnectionError("Connection failed")
 
         with pytest.raises(ValidationError, match="Failed to download"):
@@ -224,7 +226,7 @@ class TestURLInputHandler:
         mock_head_response.status_code = 200
         mock_head_response.headers = {
             "content-length": str(20 * 1024 * 1024),  # 20MB
-            "content-type": "application/pdf"
+            "content-type": "application/pdf",
         }
         mock_head.return_value = mock_head_response
 
@@ -233,7 +235,7 @@ class TestURLInputHandler:
         mock_response.status_code = 200
         mock_response.headers = {
             "content-length": str(20 * 1024 * 1024),  # 20MB
-            "content-type": "application/pdf"
+            "content-type": "application/pdf",
         }
         mock_response.iter_content = Mock(return_value=[b"content"])
         mock_get.return_value = mock_response
@@ -383,20 +385,9 @@ class TestDoclingDocumentHandler:
             "schema_name": "DoclingDocument",
             "version": "1.0.0",
             "name": "test_document",
-            "pages": {
-                "0": {
-                    "page_no": 0,
-                    "size": {"width": 612, "height": 792}
-                }
-            },
-            "furniture": {
-                "self_ref": "#/furniture",
-                "children": []
-            },
-            "body": {
-                "self_ref": "#/body",
-                "children": []
-            }
+            "pages": {"0": {"page_no": 0, "size": {"width": 612, "height": 792}}},
+            "furniture": {"self_ref": "#/furniture", "children": []},
+            "body": {"self_ref": "#/body", "children": []},
         }
         doc_file = temp_dir / "valid_doc.json"
         doc_file.write_text(json.dumps(doc_data, indent=2))
@@ -420,10 +411,7 @@ class TestDoclingDocumentHandler:
 
     def test_rejects_missing_schema_name(self, handler, temp_dir):
         """Test rejection of document without schema_name."""
-        doc_data = {
-            "version": "1.0.0",
-            "name": "test"
-        }
+        doc_data = {"version": "1.0.0", "name": "test"}
         doc_file = temp_dir / "no_schema.json"
         doc_file.write_text(json.dumps(doc_data))
 
@@ -432,10 +420,7 @@ class TestDoclingDocumentHandler:
 
     def test_rejects_wrong_schema_name(self, handler, temp_dir):
         """Test rejection of document with wrong schema_name."""
-        doc_data = {
-            "schema_name": "WrongSchema",
-            "version": "1.0.0"
-        }
+        doc_data = {"schema_name": "WrongSchema", "version": "1.0.0"}
         doc_file = temp_dir / "wrong_schema.json"
         doc_file.write_text(json.dumps(doc_data))
 
@@ -451,11 +436,7 @@ class TestDoclingDocumentHandler:
 
     def test_loads_minimal_document(self, handler, temp_dir):
         """Test loading minimal valid document."""
-        doc_data = {
-            "schema_name": "DoclingDocument",
-            "version": "1.0.0",
-            "name": "minimal_doc"
-        }
+        doc_data = {"schema_name": "DoclingDocument", "version": "1.0.0", "name": "minimal_doc"}
         doc_file = temp_dir / "minimal.json"
         doc_file.write_text(json.dumps(doc_data))
 
@@ -496,6 +477,7 @@ class TestHandlerErrorMessages:
     def test_url_handler_error_includes_url(self, mock_get):
         """Test that URLInputHandler errors include URL."""
         import requests
+
         mock_get.side_effect = requests.Timeout("timeout")
         handler = URLInputHandler()
         url = "https://example.com/doc.pdf"
@@ -516,4 +498,3 @@ class TestHandlerErrorMessages:
         except ValidationError as e:
             assert e.details is not None
             assert "Invalid JSON" in str(e)
-

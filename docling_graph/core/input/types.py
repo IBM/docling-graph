@@ -36,9 +36,7 @@ class InputTypeDetector:
     JSON_EXTENSIONS = {".json"}
 
     @classmethod
-    def detect(
-        cls, source: Union[str, Path], mode: Literal["cli", "api"] = "api"
-    ) -> InputType:
+    def detect(cls, source: Union[str, Path], mode: Literal["cli", "api"] = "api") -> InputType:
         """
         Detect input type from source with mode awareness.
 
@@ -218,4 +216,3 @@ class InputTypeDetector:
 
         except (json.JSONDecodeError, Exception):
             return False
-

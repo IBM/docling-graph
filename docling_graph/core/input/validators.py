@@ -352,4 +352,3 @@ class DoclingDocumentValidator(InputValidator):
                     "Invalid 'pages' field in DoclingDocument",
                     details={"error": "'pages' must be a dictionary"},
                 )
-

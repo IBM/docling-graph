@@ -2,6 +2,20 @@
 
 Docling Graph supports multiple input formats, allowing you to process various types of documents and data sources through the same pipeline.
 
+## Input Normalization Process
+
+The pipeline automatically detects and validates input types, routing them through the appropriate processing stages:
+
+![Input Normalization Flow](../assets/flowcharts/img/input_normalization.png)
+
+**Key Features**:
+- **Automatic Type Detection**: Identifies input format from file extension, URL, or content
+- **Validation**: Ensures input meets requirements (non-empty, correct format, etc.)
+- **Smart Routing**: Skips unnecessary stages based on input type
+  - Text/Markdown inputs skip OCR
+  - DoclingDocument inputs skip extraction and go directly to graph conversion
+  - URLs are downloaded and processed based on their content type
+
 ## Supported Input Formats
 
 ### 1. PDF Documents

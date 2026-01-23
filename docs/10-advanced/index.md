@@ -95,42 +95,42 @@ Before diving into advanced topics, ensure you understand:
 
 ### Custom Backends
 
-Use when:
-- ✅ You have a specialized model not supported by default
-- ✅ You need to integrate with a proprietary API
-- ✅ You want to implement custom preprocessing
-- ✅ You need fine-grained control over extraction
+Use when:<br>
+✅ You have a specialized model not supported by default<br>
+✅ You need to integrate with a proprietary API<br>
+✅ You want to implement custom preprocessing<br>
+✅ You need fine-grained control over extraction
 
-Don't use when:
-- ❌ Default backends meet your needs
-- ❌ You're just starting with docling-graph
-- ❌ You don't need custom logic
+Don't use when:<br>
+❌ Default backends meet your needs<br>
+❌ You're just starting with docling-graph<br>
+❌ You don't need custom logic
 
 ### Custom Exporters
 
-Use when:
-- ✅ You need a specialized output format
-- ✅ You're integrating with a specific database
-- ✅ You need custom data transformations
-- ✅ Default formats don't meet requirements
+Use when:<br>
+✅ You need a specialized output format<br>
+✅ You're integrating with a specific database<br>
+✅ You need custom data transformations<br>
+✅ Default formats don't meet requirements
 
-Don't use when:
-- ❌ CSV, Cypher, or JSON formats work
-- ❌ You can post-process existing exports
-- ❌ You're prototyping
+Don't use when:<br>
+❌ CSV, Cypher, or JSON formats work<br>
+❌ You can post-process existing exports<br>
+❌ You're prototyping
 
 ### Custom Stages
 
-Use when:
-- ✅ You need custom preprocessing
-- ✅ You want to add validation steps
-- ✅ You need custom post-processing
-- ✅ You're building a specialized pipeline
+Use when:<br>
+✅ You need custom preprocessing<br>
+✅ You want to add validation steps<br>
+✅ You need custom post-processing<br>
+✅ You're building a specialized pipeline
 
-Don't use when:
-- ❌ Default pipeline stages suffice
-- ❌ You can achieve goals with configuration
-- ❌ You're learning the system
+Don't use when:<br>
+❌ Default pipeline stages suffice<br>
+❌ You can achieve goals with configuration<br>
+❌ You're learning the system
 
 ---
 
@@ -138,48 +138,7 @@ Don't use when:
 
 ### Extension Points
 
-```mermaid
-%%{init: {'theme': 'redux', 'look': 'neo', 'layout': 'elk'}}%%
-flowchart TB
-    %% 1. Define Classes
-    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
-    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
-    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
-    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
-    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
-    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
-    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
-
-    %% 2. Define Nodes
-    A("Document Input")
-    
-    B@{ shape: lin-proc, label: "Custom Stage 1" }
-    C@{ shape: procs, label: "Docling Conversion" }
-    D@{ shape: tag-proc, label: "Custom Backend" }
-    E@{ shape: procs, label: "Extraction" }
-    F@{ shape: lin-proc, label: "Custom Stage 2" }
-    G@{ shape: procs, label: "Graph Conversion" }
-    H@{ shape: tag-proc, label: "Custom Exporter" }
-    
-    I@{ shape: doc, label: "Output" }
-
-    %% 3. Define Connections
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-
-    %% 4. Apply Classes
-    class A input
-    class B,F config
-    class C,E,G process
-    class D,H operator
-    class I output
-```
+![Extension Points](../assets/flowcharts/img/extension_points.png){width=300px}
 
 **Extension Points:**
 - **Custom Backends** (blue): Replace extraction logic

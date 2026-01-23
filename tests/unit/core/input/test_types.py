@@ -16,8 +16,13 @@ class TestInputType:
     def test_input_type_values(self):
         """Test that all expected input types are defined."""
         expected_types = {
-            "PDF", "IMAGE", "TEXT", "TEXT_FILE",
-            "MARKDOWN", "URL", "DOCLING_DOCUMENT"
+            "PDF",
+            "IMAGE",
+            "TEXT",
+            "TEXT_FILE",
+            "MARKDOWN",
+            "URL",
+            "DOCLING_DOCUMENT",
         }
         actual_types = {t.name for t in InputType}
         assert actual_types == expected_types
@@ -122,11 +127,7 @@ class TestInputTypeDetector:
         """Test DoclingDocument detection from JSON content."""
         import json
 
-        doc_data = {
-            "schema_name": "DoclingDocument",
-            "version": "1.0.0",
-            "name": "test"
-        }
+        doc_data = {"schema_name": "DoclingDocument", "version": "1.0.0", "name": "test"}
         doc_file = temp_dir / "doc.json"
         doc_file.write_text(json.dumps(doc_data))
 
@@ -165,7 +166,9 @@ class TestInputTypeDetector:
     def test_cli_mode_rejects_plain_text(self):
         """Test that CLI mode rejects plain text input."""
         text = "Plain text content"
-        with pytest.raises(ConfigurationError, match="Plain text input is only supported via Python API"):
+        with pytest.raises(
+            ConfigurationError, match="Plain text input is only supported via Python API"
+        ):
             InputTypeDetector.detect(text, mode="cli")
 
     def test_cli_mode_requires_file_existence(self, temp_dir):
@@ -277,10 +280,7 @@ class TestInputTypeDetectorHelpers:
         import json
 
         # Valid DoclingDocument
-        valid_doc = {
-            "schema_name": "DoclingDocument",
-            "version": "1.0.0"
-        }
+        valid_doc = {"schema_name": "DoclingDocument", "version": "1.0.0"}
         valid_file = temp_dir / "valid.json"
         valid_file.write_text(json.dumps(valid_doc))
         assert InputTypeDetector._is_docling_document(valid_file) is True
@@ -299,4 +299,3 @@ class TestInputTypeDetectorHelpers:
         txt_file = temp_dir / "test.txt"
         txt_file.write_text("text")
         assert InputTypeDetector._is_docling_document(txt_file) is False
-

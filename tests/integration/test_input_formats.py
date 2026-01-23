@@ -97,7 +97,9 @@ class TestTextInputFormats:
     def test_plain_text_rejected_cli_mode(self):
         """Test that plain text is rejected in CLI mode."""
         plain_text = "This is plain text content"
-        with pytest.raises(ConfigurationError, match="Plain text input is only supported via Python API"):
+        with pytest.raises(
+            ConfigurationError, match="Plain text input is only supported via Python API"
+        ):
             InputTypeDetector.detect(plain_text, mode="cli")
 
     def test_text_validator_accepts_valid_text(self):
@@ -221,6 +223,7 @@ class TestURLInputFormat:
     def test_url_handler_handles_timeout(self, mock_get):
         """Test URLInputHandler handles timeout errors."""
         import requests
+
         mock_get.side_effect = requests.Timeout("Connection timeout")
 
         handler = URLInputHandler()
@@ -231,6 +234,7 @@ class TestURLInputFormat:
     def test_url_handler_handles_network_error(self, mock_get):
         """Test URLInputHandler handles network errors."""
         import requests
+
         mock_get.side_effect = requests.RequestException("Network error")
 
         handler = URLInputHandler()
@@ -276,20 +280,9 @@ class TestDoclingDocumentInput:
             "schema_name": "DoclingDocument",
             "version": "1.0.0",
             "name": "test_document",
-            "pages": {
-                "0": {
-                    "page_no": 0,
-                    "size": {"width": 612, "height": 792}
-                }
-            },
-            "furniture": {
-                "self_ref": "#/furniture",
-                "children": []
-            },
-            "body": {
-                "self_ref": "#/body",
-                "children": []
-            }
+            "pages": {"0": {"page_no": 0, "size": {"width": 612, "height": 792}}},
+            "furniture": {"self_ref": "#/furniture", "children": []},
+            "body": {"self_ref": "#/body", "children": []},
         }
         doc_file = temp_dir / "valid_doc.json"
         doc_file.write_text(json.dumps(doc_data, indent=2))
@@ -298,10 +291,7 @@ class TestDoclingDocumentInput:
     @pytest.fixture
     def invalid_docling_doc(self, temp_dir):
         """Create an invalid DoclingDocument JSON file."""
-        doc_data = {
-            "invalid": "structure",
-            "missing": "required_fields"
-        }
+        doc_data = {"invalid": "structure", "missing": "required_fields"}
         doc_file = temp_dir / "invalid_doc.json"
         doc_file.write_text(json.dumps(doc_data, indent=2))
         return doc_file
@@ -358,34 +348,29 @@ class TestDoclingDocumentInput:
             "origin": {
                 "mimetype": "application/pdf",
                 "binary_hash": 12345,
-                "filename": "invoice.pdf"
+                "filename": "invoice.pdf",
             },
-            "pages": {
-                "1": {
-                    "page_no": 1,
-                    "size": {"width": 612, "height": 792}
-                }
-            },
+            "pages": {"1": {"page_no": 1, "size": {"width": 612, "height": 792}}},
             "furniture": {
                 "self_ref": "#/furniture",
                 "children": [],
                 "content_layer": "furniture",
                 "name": "furniture",
-                "label": "unspecified"
+                "label": "unspecified",
             },
             "body": {
                 "self_ref": "#/body",
                 "children": [],
                 "content_layer": "body",
                 "name": "body",
-                "label": "unspecified"
+                "label": "unspecified",
             },
             "groups": [],
             "texts": [],
             "pictures": [],
             "tables": [],
             "key_value_items": [],
-            "form_items": []
+            "form_items": [],
         }
 
         doc_file = temp_dir / "test_docling.json"
@@ -405,7 +390,7 @@ class TestDoclingDocumentInput:
         mock_model = Invoice(
             invoice_number="INV-001",
             total=100.0,
-            items=[InvoiceItem(description="Service", amount=100.0)]
+            items=[InvoiceItem(description="Service", amount=100.0)],
         )
         mock_extract.return_value = mock_model
 
@@ -446,34 +431,28 @@ class TestDoclingDocumentInput:
             "schema_name": "DoclingDocument",
             "version": "1.0.0",
             "name": "test_doc",
-            "origin": {
-                "mimetype": "application/pdf",
-                "binary_hash": 12345,
-                "filename": "doc.pdf"
-            },
-            "pages": {
-                "1": {"page_no": 1, "size": {"width": 612, "height": 792}}
-            },
+            "origin": {"mimetype": "application/pdf", "binary_hash": 12345, "filename": "doc.pdf"},
+            "pages": {"1": {"page_no": 1, "size": {"width": 612, "height": 792}}},
             "furniture": {
                 "self_ref": "#/furniture",
                 "children": [],
                 "content_layer": "furniture",
                 "name": "furniture",
-                "label": "unspecified"
+                "label": "unspecified",
             },
             "body": {
                 "self_ref": "#/body",
                 "children": [],
                 "content_layer": "body",
                 "name": "body",
-                "label": "unspecified"
+                "label": "unspecified",
             },
             "groups": [],
             "texts": [],
             "pictures": [],
             "tables": [],
             "key_value_items": [],
-            "form_items": []
+            "form_items": [],
         }
 
         doc_file = temp_dir / "chunked_doc.json"
@@ -485,10 +464,7 @@ class TestDoclingDocumentInput:
             summary: str = Field(description="Document summary")
 
         # Mock extraction - return partial results
-        mock_extract.return_value = SimpleDoc(
-            title="Test Document",
-            summary="Test summary"
-        )
+        mock_extract.return_value = SimpleDoc(title="Test Document", summary="Test summary")
 
         config = PipelineConfig(
             source=str(doc_file),
@@ -550,7 +526,9 @@ class TestPipelineWithNewInputs:
             export_format="csv",
         )
 
-        with pytest.raises((ExtractionError, PipelineError), match="VLM backend does not support text-only inputs"):
+        with pytest.raises(
+            (ExtractionError, PipelineError), match="VLM backend does not support text-only inputs"
+        ):
             run_pipeline(config, mode="api")
 
     @patch("docling_graph.core.extractors.backends.llm_backend.LlmBackend.extract_from_markdown")
@@ -572,9 +550,7 @@ class TestPipelineWithNewInputs:
             related: list[RelatedItem] = Field(default_factory=list, description="Related items")
 
         mock_model = MockModel(
-            title="Test",
-            content="Extracted content",
-            related=[RelatedItem(name="Related1")]
+            title="Test", content="Extracted content", related=[RelatedItem(name="Related1")]
         )
         mock_extract.return_value = mock_model
 
@@ -610,7 +586,10 @@ class TestPipelineWithNewInputs:
             export_format="csv",
         )
 
-        with pytest.raises((ConfigurationError, PipelineError), match="Plain text input is only supported via Python API"):
+        with pytest.raises(
+            (ConfigurationError, PipelineError),
+            match="Plain text input is only supported via Python API",
+        ):
             run_pipeline(config, mode="cli")
 
 
@@ -676,4 +655,3 @@ class TestInputFormatRegression:
         except Exception:
             # Allow failures from missing dependencies
             pass
-

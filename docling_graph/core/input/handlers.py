@@ -189,9 +189,7 @@ class URLInputHandler(InputHandler):
             extension = self._determine_extension(source, content_type)
 
             # Create temp file with appropriate extension
-            temp_file = tempfile.NamedTemporaryFile(
-                mode="wb", suffix=extension, delete=False
-            )
+            temp_file = tempfile.NamedTemporaryFile(mode="wb", suffix=extension, delete=False)
             temp_path = Path(temp_file.name)
 
             # Download with size limit
@@ -400,4 +398,3 @@ class DoclingDocumentHandler(InputHandler):
                 "Error loading DoclingDocument",
                 details={"file": str(file_path), "error": str(e), "type": type(e).__name__},
             ) from e
-
