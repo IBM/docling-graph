@@ -77,107 +77,104 @@ markdown_extensions:
 nav:
   - Home: index.md
   
-  - 1. Introduction:
-    - Overview: 01-introduction/index.md
-    - Architecture: 01-introduction/architecture.md
-    - Key Concepts: 01-introduction/key-concepts.md
-    - Use Cases: 01-introduction/use-cases.md
+  - Introduction:
+    - Overview: introduction/index.md
+    - Architecture: introduction/architecture.md
+    - Key Concepts: introduction/key-concepts.md
+    - Use Cases: introduction/use-cases.md
+    - Quick Start: introduction/quickstart.md
   
-  - 2. Installation:
-    - Overview: 02-installation/index.md
-    - Requirements: 02-installation/requirements.md
-    - Basic Setup: 02-installation/basic-setup.md
-    - GPU Setup: 02-installation/gpu-setup.md
-    - API Keys: 02-installation/api-keys.md
+  - Fundamentals:
+    - Overview: fundamentals/index.md
+    - Installation:
+      - Overview: fundamentals/installation/index.md
+      - Requirements: fundamentals/installation/requirements.md
+      - Basic Setup: fundamentals/installation/basic-setup.md
+      - GPU Setup: fundamentals/installation/gpu-setup.md
+      - API Keys: fundamentals/installation/api-keys.md
+    - Schema Definition:
+      - Overview: fundamentals/schema-definition/index.md
+      - Template Basics: fundamentals/schema-definition/template-basics.md
+      - Entities vs Components: fundamentals/schema-definition/entities-vs-components.md
+      - Field Definitions: fundamentals/schema-definition/field-definitions.md
+      - Relationships: fundamentals/schema-definition/relationships.md
+      - Validation: fundamentals/schema-definition/validation.md
+      - Advanced Patterns: fundamentals/schema-definition/advanced-patterns.md
+      - Best Practices: fundamentals/schema-definition/best-practices.md
+    - Pipeline Configuration:
+      - Overview: fundamentals/pipeline-configuration/index.md
+      - Configuration Basics: fundamentals/pipeline-configuration/configuration-basics.md
+      - Input Formats: fundamentals/pipeline-configuration/input-formats.md
+      - Backend Selection: fundamentals/pipeline-configuration/backend-selection.md
+      - Model Configuration: fundamentals/pipeline-configuration/model-configuration.md
+      - Processing Modes: fundamentals/pipeline-configuration/processing-modes.md
+      - Docling Settings: fundamentals/pipeline-configuration/docling-settings.md
+      - Export Configuration: fundamentals/pipeline-configuration/export-configuration.md
+      - Configuration Examples: fundamentals/pipeline-configuration/configuration-examples.md
+    - Extraction Process:
+      - Overview: fundamentals/extraction-process/index.md
+      - Document Conversion: fundamentals/extraction-process/document-conversion.md
+      - Chunking Strategies: fundamentals/extraction-process/chunking-strategies.md
+      - Extraction Backends: fundamentals/extraction-process/extraction-backends.md
+      - Model Merging: fundamentals/extraction-process/model-merging.md
+      - Batch Processing: fundamentals/extraction-process/batch-processing.md
+    - Graph Management:
+      - Overview: fundamentals/graph-management/index.md
+      - Graph Conversion: fundamentals/graph-management/graph-conversion.md
+      - Graph Analysis: fundamentals/graph-management/graph-analysis.md
+      - Export Formats: fundamentals/graph-management/export-formats.md
+      - Visualization: fundamentals/graph-management/visualization.md
+      - Neo4j Integration: fundamentals/graph-management/neo4j-integration.md
   
-  - 3. Schema Definition:
-    - Overview: 03-schema-definition/index.md
-    - Template Basics: 03-schema-definition/template-basics.md
-    - Entities vs Components: 03-schema-definition/entities-vs-components.md
-    - Field Definitions: 03-schema-definition/field-definitions.md
-    - Relationships: 03-schema-definition/relationships.md
-    - Validation: 03-schema-definition/validation.md
-    - Advanced Patterns: 03-schema-definition/advanced-patterns.md
-    - Best Practices: 03-schema-definition/best-practices.md
+  - Usage:
+    - Overview: usage/index.md
+    - CLI Reference:
+      - Overview: usage/cli/index.md
+      - init Command: usage/cli/init-command.md
+      - convert Command: usage/cli/convert-command.md
+      - inspect Command: usage/cli/inspect-command.md
+      - CLI Recipes: usage/cli/cli-recipes.md
+    - Python API:
+      - Overview: usage/api/index.md
+      - PipelineConfig: usage/api/pipeline-config.md
+      - run_pipeline: usage/api/run-pipeline.md
+      - Batch Processing: usage/api/batch-processing.md
+      - Programmatic Examples: usage/api/programmatic-examples.md
+    - Examples:
+      - Overview: usage/examples/index.md
+      - By Input Format:
+        - URL Input: usage/examples/url-input.md
+        - Markdown Input: usage/examples/markdown-input.md
+        - DoclingDocument Input: usage/examples/docling-document-input.md
+      - By Domain:
+        - Invoice Extraction: usage/examples/invoice-extraction.md
+        - ID Card: usage/examples/id-card.md
+        - Insurance Policy: usage/examples/insurance-policy.md
+        - Research Paper: usage/examples/research-paper.md
+    - Advanced Topics:
+      - Overview: usage/advanced/index.md
+      - Performance Tuning: usage/advanced/performance-tuning.md
+      - Custom Backends: usage/advanced/custom-backends.md
+      - Custom Stages: usage/advanced/custom-stages.md
+      - Custom Exporters: usage/advanced/custom-exporters.md
+      - Error Handling: usage/advanced/error-handling.md
+      - Testing: usage/advanced/testing.md
   
-  - 4. Pipeline Configuration:
-    - Overview: 04-pipeline-configuration/index.md
-    - Configuration Basics: 04-pipeline-configuration/configuration-basics.md
-    - Input Formats: 04-pipeline-configuration/input-formats.md
-    - Backend Selection: 04-pipeline-configuration/backend-selection.md
-    - Model Configuration: 04-pipeline-configuration/model-configuration.md
-    - Processing Modes: 04-pipeline-configuration/processing-modes.md
-    - Docling Settings: 04-pipeline-configuration/docling-settings.md
-    - Export Configuration: 04-pipeline-configuration/export-configuration.md
-    - Configuration Examples: 04-pipeline-configuration/configuration-examples.md
+  - Reference:
+    - Overview: reference/index.md
+    - Pipeline: reference/pipeline.md
+    - Config: reference/config.md
+    - Protocols: reference/protocols.md
+    - Exceptions: reference/exceptions.md
+    - Converters: reference/converters.md
+    - Extractors: reference/extractors.md
+    - Exporters: reference/exporters.md
+    - LLM Clients: reference/llm-clients.md
   
-  - 5. Extraction Process:
-    - Overview: 05-extraction-process/index.md
-    - Document Conversion: 05-extraction-process/document-conversion.md
-    - Chunking Strategies: 05-extraction-process/chunking-strategies.md
-    - Extraction Backends: 05-extraction-process/extraction-backends.md
-    - Model Merging: 05-extraction-process/model-merging.md
-    - Batch Processing: 05-extraction-process/batch-processing.md
-  
-  - 6. Graph Management:
-    - Overview: 06-graph-management/index.md
-    - Graph Conversion: 06-graph-management/graph-conversion.md
-    - Graph Analysis: 06-graph-management/graph-analysis.md
-    - Export Formats: 06-graph-management/export-formats.md
-    - Visualization: 06-graph-management/visualization.md
-    - Neo4j Integration: 06-graph-management/neo4j-integration.md
-  
-  - 7. CLI Reference:
-    - Overview: 07-cli/index.md
-    - init Command: 07-cli/init-command.md
-    - convert Command: 07-cli/convert-command.md
-    - inspect Command: 07-cli/inspect-command.md
-    - CLI Recipes: 07-cli/cli-recipes.md
-  
-  - 8. Python API:
-    - Overview: 08-api/index.md
-    - PipelineConfig: 08-api/pipeline-config.md
-    - run_pipeline: 08-api/run-pipeline.md
-    - Batch Processing: 08-api/batch-processing.md
-    - Programmatic Examples: 08-api/programmatic-examples.md
-  
-  - 9. Examples:
-    - Overview: 09-examples/index.md
-    - Quick Start: 09-examples/quickstart.md
-    - By Input Format:
-      - URL Input: 09-examples/url-input.md
-      - Markdown Input: 09-examples/markdown-input.md
-      - DoclingDocument Input: 09-examples/docling-document-input.md
-    - By Domain:
-      - Invoice Extraction: 09-examples/invoice-extraction.md
-      - ID Card: 09-examples/id-card.md
-      - Insurance Policy: 09-examples/insurance-policy.md
-      - Research Paper: 09-examples/research-paper.md
-  
-  - 10. Advanced Topics:
-    - Overview: 10-advanced/index.md
-    - Performance Tuning: 10-advanced/performance-tuning.md
-    - Custom Backends: 10-advanced/custom-backends.md
-    - Custom Stages: 10-advanced/custom-stages.md
-    - Custom Exporters: 10-advanced/custom-exporters.md
-    - Error Handling: 10-advanced/error-handling.md
-    - Testing: 10-advanced/testing.md
-  
-  - 11. API Reference:
-    - Overview: 11-reference/index.md
-    - Pipeline: 11-reference/pipeline.md
-    - Config: 11-reference/config.md
-    - Protocols: 11-reference/protocols.md
-    - Exceptions: 11-reference/exceptions.md
-    - Converters: 11-reference/converters.md
-    - Extractors: 11-reference/extractors.md
-    - Exporters: 11-reference/exporters.md
-    - LLM Clients: 11-reference/llm-clients.md
-  
-  - 12. Development:
-    - Overview: 12-development/index.md
-    - GitHub Workflow: 12-development/github-workflow.md
-    - Release Process: 12-development/release-process.md
+  - Community:
+    - Overview: community/index.md
+    - GitHub Workflow: community/github-workflow.md
+    - Release Process: community/release-process.md
 
 extra:
   social:

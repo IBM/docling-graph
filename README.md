@@ -9,18 +9,21 @@
 [![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://ibm.github.io/docling-graph)
 [![PyPI version](https://img.shields.io/pypi/v/docling-graph)](https://pypi.org/project/docling-graph/)
 [![Python 3.10 | 3.11 | 3.12](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/)
+[![codecov](https://codecov.io/gh/IBM/docling-graph/branch/main/graph/badge.svg)](https://codecov.io/gh/IBM/docling-graph)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![NetworkX](https://img.shields.io/badge/NetworkX-3.0+-red)](https://networkx.org/)
+[![License MIT](https://img.shields.io/github/license/IBM/docling-graph)](https://opensource.org/licenses/MIT)
 [![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://pydantic.dev)
-[![Typer](https://img.shields.io/badge/Typer-CLI-purple)](https://typer.tiangolo.com/)
-[![Rich](https://img.shields.io/badge/Rich-terminal-purple)](https://github.com/Textualize/rich)
 [![Docling](https://img.shields.io/badge/Docling-VLM-red)](https://github.com/docling-project/docling)
+[![NetworkX](https://img.shields.io/badge/NetworkX-3.0+-red)](https://networkx.org/)
 [![vLLM](https://img.shields.io/badge/vLLM-compatible-brightgreen)](https://vllm.ai/)
 [![Ollama](https://img.shields.io/badge/Ollama-compatible-brightgreen)](https://ollama.ai/)
+[![Typer](https://img.shields.io/badge/Typer-CLI-purple)](https://typer.tiangolo.com/)
+[![Rich](https://img.shields.io/badge/Rich-terminal-purple)](https://github.com/Textualize/rich)
 [![LF AI & Data](https://img.shields.io/badge/LF%20AI%20%26%20Data-003778?logo=linuxfoundation&logoColor=fff&color=0094ff&labelColor=003778)](https://lfaidata.foundation/projects/)
-[![License MIT](https://img.shields.io/github/license/IBM/docling-graph)](https://opensource.org/licenses/MIT)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11598/badge)](https://www.bestpractices.dev/projects/11598)
+
+
 
 Docling-Graph turns documents into validated **Pydantic** objects, then builds a **directed knowledge graph** with explicit semantic relationships.
 
@@ -32,17 +35,17 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 
 ## Key Capabilities
 
-- **🧠 Extraction**: Extract structured data using [VLM](docs/04-pipeline-configuration/backend-selection.md) or [LLM](docs/04-pipeline-configuration/backend-selection.md). Supports [intelligent chunking](docs/05-extraction-process/chunking.md) and flexible [processing modes](docs/04-pipeline-configuration/processing-modes.md).
+- **🧠 Extraction**: Extract structured data using [VLM](docs/fundamentals/pipeline-configuration/backend-selection.md) or [LLM](docs/fundamentals/pipeline-configuration/backend-selection.md). Supports [intelligent chunking](docs/fundamentals/extraction-process/chunking-strategies.md) and flexible [processing modes](docs/fundamentals/pipeline-configuration/processing-modes.md).
 
-- **🔨 Graph Construction**: Convert validated Pydantic models into NetworkX [directed graphs](docs/06-graph-management/graph-conversion.md) with semantic relationships and stable node IDs, and rich edge metadata.
+- **🔨 Graph Construction**: Convert validated Pydantic models into NetworkX [directed graphs](docs/fundamentals/graph-management/graph-conversion.md) with semantic relationships and stable node IDs, and rich edge metadata.
 
-- **📦 Export**: Save graphs in multiple formats [CSV](docs/06-graph-management/export-formats.md#csv-export) (Neo4j-compatible), and [Cypher](docs/06-graph-management/export-formats.md#cypher-export) for bulk import.
+- **📦 Export**: Save graphs in multiple formats [CSV](docs/fundamentals/graph-management/export-formats.md#csv-export) (Neo4j-compatible), and [Cypher](docs/fundamentals/graph-management/export-formats.md#cypher-export) for bulk import.
 
-- **📊 Visualization**: Explore graphs with [interactive HTML](docs/06-graph-management/visualization.md) visualizations, and detailed [Markdown reports](docs/06-graph-management/visualization.md#markdown-reports).
+- **📊 Visualization**: Explore graphs with [interactive HTML](docs/fundamentals/graph-management/visualization.md) visualizations, and detailed [Markdown reports](docs/fundamentals/graph-management/visualization.md#markdown-reports).
 
 ### Latest Changes
 
-- **✍🏻 Input Formats**: Process [PDF and images](docs/04-pipeline-configuration/input-formats.md#pdf-documents), [text and Markdown files](docs/04-pipeline-configuration/input-formats.md#text-files), [URLs](docs/04-pipeline-configuration/input-formats.md#urls), [DoclingDocument](docs/04-pipeline-configuration/input-formats.md#docling-document-json), and [plain text](docs/08-api/programmatic-examples.md) strings.
+- **✍🏻 Input Formats**: Process [PDF and images](docs/fundamentals/pipeline-configuration/input-formats.md#pdf-documents), [text and Markdown files](docs/fundamentals/pipeline-configuration/input-formats.md#text-files), [URLs](docs/fundamentals/pipeline-configuration/input-formats.md#urls), [DoclingDocument](docs/fundamentals/pipeline-configuration/input-formats.md#docling-document-json), and [plain text](docs/usage/api/programmatic-examples.md) strings.
 
 ### Coming Soon
 
@@ -82,7 +85,7 @@ uv sync --extra remote     # Remote APIs (Mistral, OpenAI, Gemini)
 uv sync --extra watsonx    # IBM WatsonX support
 ```
 
-For detailed installation instructions, see [Installation Guide](docs/02-installation/index.md).
+For detailed installation instructions, see [Installation Guide](docs/fundamentals/installation/index.md).
 
 ### API Key Setup (Remote Inference)
 
@@ -137,7 +140,7 @@ uv run docling-graph convert "https://arxiv.org/pdf/2207.02720" \
 uv run docling-graph inspect outputs
 ```
 
-For more examples, see [Examples](docs/09-examples/index.md).
+For more examples, see [Examples](docs/usage/examples/index.md).
 
 
 
@@ -169,8 +172,8 @@ class Organization(BaseModel):
 ```
 
 For complete guidance, see:
-- [Schema Definition Guide](docs/03-schema-definition/index.md)
-- [Pydantic Templates Tutorial](docs/03-schema-definition/pydantic-basics.md)
+- [Schema Definition Guide](docs/fundamentals/schema-definition/index.md)
+- [Template Basics](docs/fundamentals/schema-definition/template-basics.md)
 - [Example Templates](docs/examples/templates/)
 
 
@@ -183,18 +186,18 @@ Comprehensive documentation can be found on [Docling Graph's Page](https://ibm.g
 
 The documentation follows the docling-graph pipeline stages:
 
-1. [Introduction](docs/01-introduction/index.md) - Overview and core concepts
-2. [Installation](docs/02-installation/index.md) - Setup and environment configuration
-3. [Schema Definition](docs/03-schema-definition/index.md) - Creating Pydantic templates
-4. [Pipeline Configuration](docs/04-pipeline-configuration/index.md) - Configuring the extraction pipeline
-5. [Extraction Process](docs/05-extraction-process/index.md) - Document conversion and extraction
-6. [Graph Management](docs/06-graph-management/index.md) - Exporting and visualizing graphs
-7. [CLI Reference](docs/07-cli/index.md) - Command-line interface guide
-8. [Python API](docs/08-api/index.md) - Programmatic usage
-9. [Examples](docs/09-examples/index.md) - Working code examples
-10. [Advanced Topics](docs/10-advanced/index.md) - Performance, testing, error handling
-11. [API Reference](docs/11-reference/index.md) - Detailed API documentation
-12. [Development](docs/12-development/index.md) - Contributing and development guide
+1. [Introduction](docs/introduction/index.md) - Overview and core concepts
+2. [Installation](docs/fundamentals/installation/index.md) - Setup and environment configuration
+3. [Schema Definition](docs/fundamentals/schema-definition/index.md) - Creating Pydantic templates
+4. [Pipeline Configuration](docs/fundamentals/pipeline-configuration/index.md) - Configuring the extraction pipeline
+5. [Extraction Process](docs/fundamentals/extraction-process/index.md) - Document conversion and extraction
+6. [Graph Management](docs/fundamentals/graph-management/index.md) - Exporting and visualizing graphs
+7. [CLI Reference](docs/usage/cli/index.md) - Command-line interface guide
+8. [Python API](docs/usage/api/index.md) - Programmatic usage
+9. [Examples](docs/usage/examples/index.md) - Working code examples
+10. [Advanced Topics](docs/usage/advanced/index.md) - Performance, testing, error handling
+11. [API Reference](docs/reference/index.md) - Detailed API documentation
+12. [Community](docs/community/index.md) - Contributing and development guide
 
 
 
@@ -203,8 +206,8 @@ The documentation follows the docling-graph pipeline stages:
 We welcome contributions! Please see:
 
 - [Contributing Guidelines](.github/CONTRIBUTING.md) - How to contribute
-- [Development Guide](docs/12-development/index.md) - Development setup
-- [GitHub Workflow](docs/12-development/github-workflow.md) - Branch strategy and CI/CD
+- [Development Guide](docs/community/index.md) - Development setup
+- [GitHub Workflow](docs/community/github-workflow.md) - Branch strategy and CI/CD
 
 ### Development Setup
 
