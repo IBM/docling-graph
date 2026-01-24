@@ -33,19 +33,19 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 
 <div class="grid cards" markdown>
 
-- **[Installation →](02-installation/index.md)**
+- **[Installation →](fundamentals/installation/index.md)**
 
     Set up your environment with uv package manager
 
-- **[Quick Start →](09-examples/quickstart.md)**
+- **[Quick Start →](usage/examples/quickstart.md)**
 
     Run your first extraction in 5 minutes
 
-- **[Architecture →](01-introduction/architecture.md)**
+- **[Architecture →](introduction/architecture.md)**
 
     Understand the pipeline stages and components
 
-- **[Key Concepts →](01-introduction/key-concepts.md)**
+- **[Key Concepts →](introduction/key-concepts.md)**
 
     Learn how documents flow through the system
 
@@ -55,51 +55,23 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 
 <div class="grid cards" markdown>
 
-- **[1. Introduction](01-introduction/index.md)**
+- **[Introduction](introduction/index.md)**
 
     Overview, architecture, and core concepts
 
-- **[2. Installation](02-installation/index.md)**
+- **[Fundamentals](fundamentals/index.md)**
 
-    Setup, GPU support, and troubleshooting
+    Installation, schema definition, pipeline configuration, extraction, and more
 
-- **[3. Schema Definition](03-schema-definition/index.md)**
+- **[Usage](usage/index.md)**
 
-    Create Pydantic templates for extraction
+    CLI reference, Python API, examples, and advanced topics
 
-- **[4. Pipeline Configuration](04-pipeline-configuration/index.md)**
-
-    Configure backends, models, and processing
-
-- **[5. Extraction Process](05-extraction-process/index.md)**
-
-    Document conversion and extraction
-
-- **[6. Graph Management](06-graph-management/index.md)**
-
-    Export and visualize knowledge graphs
-
-- **[7. CLI Reference](07-cli/index.md)**
-
-    Command-line interface guide
-
-- **[8. Python API](08-api/index.md)**
-
-    Programmatic usage and integration
-
-- **[9. Examples](09-examples/index.md)**
-
-    Working code examples and templates
-
-- **[10. Advanced Topics](10-advanced/index.md)**
-
-    Performance, testing, and debugging
-
-- **[11. API Reference](11-reference/index.md)**
+- **[Reference](reference/index.md)**
 
     Detailed API documentation
 
-- **[12. Development](12-development/index.md)**
+- **[Community](community/index.md)**
 
     Contributing and development guide
 
@@ -147,62 +119,32 @@ uv run docling-graph inspect outputs/invoice
 
 ## Documentation Structure
 
-The documentation follows the **docling-graph pipeline stages** for a logical, end-to-end learning experience:
+The documentation is organized into **5 main sections** for a streamlined learning experience:
 
-### Stage 1: Introduction
+### 1. Introduction
 Learn what Docling Graph is, how it works, and its architecture.
 
-**[→ Go to Introduction](01-introduction/index.md)**
+**[→ Go to Introduction](introduction/index.md)**
 
-### Stage 2: Installation
-Install dependencies, configure your environment, and set up GPU support.
+### 2. Fundamentals
+Master the core concepts: installation, schema definition, pipeline configuration, extraction, and graph management.
 
-**[→ Go to Installation](02-installation/index.md)**
+**[→ Go to Fundamentals](fundamentals/index.md)**
 
-### Stage 3: Schema Definition
-Create Pydantic templates that define both extraction schema and graph structure.
+### 3. Usage
+Learn to use Docling Graph through CLI, Python API, examples, and advanced techniques.
 
-**[→ Go to Schema Definition](03-schema-definition/index.md)**
+**[→ Go to Usage](usage/index.md)**
 
-### Stage 4: Pipeline Configuration
-Configure backends, models, processing modes, and export options.
+### 4. Reference
+Detailed API documentation for all modules and components.
 
-**[→ Go to Pipeline Configuration](04-pipeline-configuration/index.md)**
+**[→ Go to Reference](reference/index.md)**
 
-### Stage 5: Extraction Process
-Convert documents, chunk content, and extract structured data.
-
-**[→ Go to Extraction Process](05-extraction-process/index.md)**
-
-### Stage 6: Graph Management
-Export graphs to CSV/Cypher, visualize results, and integrate with Neo4j.
-
-**[→ Go to Graph Management](06-graph-management/index.md)**
-
-### Stage 7: Usage - CLI & API
-Use the command-line interface or Python API for your workflows.
-
-**[→ CLI Reference](07-cli/index.md)** | **[→ Python API](08-api/index.md)**
-
-### Stage 8: Learning
-Explore working examples and template gallery.
-
-**[→ Go to Examples](09-examples/index.md)**
-
-### Stage 9: Optimization
-Optimize performance, handle errors, and implement custom backends.
-
-**[→ Go to Advanced Topics](10-advanced/index.md)**
-
-### Stage 10: API Reference
-Detailed API documentation for all modules.
-
-**[→ Go to API Reference](11-reference/index.md)**
-
-### Stage 11: Contributing
+### 5. Community
 Contribute to the project and understand the development workflow.
 
-**[→ Go to Development](12-development/index.md)**
+**[→ Go to Community](community/index.md)**
 
 ---
 
@@ -223,7 +165,7 @@ config = PipelineConfig(
 config.run()
 ```
 
-**[→ See Invoice Template](09-examples/invoice-extraction.md)**
+**[→ See Invoice Template](usage/examples/invoice-extraction.md)**
 
 ### Process Research Papers
 
@@ -238,7 +180,7 @@ config = PipelineConfig(
 config.run()
 ```
 
-**[→ See Research Template](09-examples/research-paper.md)**
+**[→ See Research Template](usage/examples/research-paper.md)**
 
 ### Extract ID Card Information
 
@@ -252,7 +194,7 @@ config = PipelineConfig(
 config.run()
 ```
 
-**[→ See ID Card Template](09-examples/id-card.md)**
+**[→ See ID Card Template](usage/examples/id-card.md)**
 
 ---
 
@@ -285,7 +227,7 @@ class Organization(BaseModel):
     employees: list[Person] = edge("EMPLOYS", description="Employees")
 ```
 
-**[→ Learn More About Templates](03-schema-definition/index.md)**
+**[→ Learn More About Templates](fundamentals/schema-definition/index.md)**
 
 ### Pipeline Stages
 
@@ -298,14 +240,14 @@ class Organization(BaseModel):
 7. **Export**: Generate CSV, Cypher, JSON outputs
 8. **Visualization**: Create interactive HTML and Markdown reports
 
-**[→ Learn More About Key Concepts](01-introduction/key-concepts.md)**
+**[→ Learn More About Key Concepts](introduction/key-concepts.md)**
 
 ### Extraction Backends
 
 - **VLM (Vision-Language Model)**: Local extraction using Docling's NuExtract
 - **LLM (Language Model)**: Text-based extraction using local (vLLM, Ollama) or remote APIs (Mistral, OpenAI, Gemini, WatsonX)
 
-**[→ Learn More About Backends](05-extraction-process/extraction-backends.md)**
+**[→ Learn More About Backends](fundamentals/extraction-process/extraction-backends.md)**
 
 ---
 
@@ -329,23 +271,23 @@ class Organization(BaseModel):
 
 ## Next Steps
 
-1. **[Install Docling Graph →](02-installation/index.md)**
-2. **[Follow the Quick Start →](09-examples/quickstart.md)**
-3. **[Create Your First Template →](03-schema-definition/index.md)**
-4. **[Explore Examples →](09-examples/index.md)**
+1. **[Install Docling Graph →](fundamentals/installation/index.md)**
+2. **[Follow the Quick Start →](usage/examples/quickstart.md)**
+3. **[Create Your First Template →](fundamentals/schema-definition/index.md)**
+4. **[Explore Examples →](usage/examples/index.md)**
 
 ---
 
 ## Need Help?
 
-- **Installation Issues**: See [Installation Guide](02-installation/index.md)
-- **Template Questions**: See [Schema Definition](03-schema-definition/index.md)
-- **Configuration Help**: See [Pipeline Configuration](04-pipeline-configuration/index.md)
-- **Error Messages**: See [Error Handling](10-advanced/error-handling.md)
+- **Installation Issues**: See [Installation Guide](fundamentals/installation/index.md)
+- **Template Questions**: See [Schema Definition](fundamentals/schema-definition/index.md)
+- **Configuration Help**: See [Pipeline Configuration](fundamentals/pipeline-configuration/index.md)
+- **Error Messages**: See [Error Handling](usage/advanced/error-handling.md)
 
 ---
 
 <p align="center">
   <strong>Ready to get started?</strong><br>
-  <a href="02-installation/index.md">Install Docling Graph →</a>
+  <a href="fundamentals/installation/index.md">Install Docling Graph →</a>
 </p>
