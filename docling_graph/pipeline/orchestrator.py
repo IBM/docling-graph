@@ -160,11 +160,26 @@ class PipelineOrchestrator:
                 }
                 
                 if self.include_trace and context.trace_data:
+                    # Build detailed intermediate graphs info
+                    intermediate_graphs_detail = [
+                        {
+                            "graph_id": g.graph_id,
+                            "source_type": g.source_type,
+                            "source_id": g.source_id,
+                            "nodes": g.node_count,
+                            "edges": g.edge_count,
+                        }
+                        for g in context.trace_data.intermediate_graphs
+                    ]
+                    
                     metadata["trace_summary"] = {
                         "pages": len(context.trace_data.pages),
                         "chunks": len(context.trace_data.chunks) if context.trace_data.chunks else 0,
                         "extractions": len(context.trace_data.extractions),
-                        "intermediate_graphs": len(context.trace_data.intermediate_graphs),
+                        "intermediate_graphs": {
+                            "count": len(context.trace_data.intermediate_graphs),
+                            "details": intermediate_graphs_detail,
+                        },
                     }
                 
                 context.output_manager.save_metadata(metadata)
