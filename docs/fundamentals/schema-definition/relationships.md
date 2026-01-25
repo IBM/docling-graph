@@ -569,7 +569,7 @@ Invoice-001
 
 ## Best Practices
 
-### 1. Use Descriptive Labels
+### 👍 Use Descriptive Labels
 
 ```python
 # ✅ Good - Clear and specific
@@ -581,7 +581,7 @@ issued_by: Organization = edge(label="HAS")
 contains_items: List[Item] = edge(label="RELATED_TO")
 ```
 
-### 2. Be Consistent
+### 👍 Be Consistent
 
 ```python
 # ✅ Good - Consistent pattern
@@ -595,7 +595,7 @@ works_at: Address = edge(label="WORKS_IN")
 located_at: Address = edge(label="HAS_LOCATION")
 ```
 
-### 3. Always Use default_factory for Lists
+### 👍 Always Use default_factory for Lists
 
 ```python
 # ✅ Good
@@ -608,7 +608,7 @@ items: List[Item] = edge(
 items: List[Item] = edge(label="CONTAINS_ITEM")
 ```
 
-### 4. Provide Clear Descriptions
+### 👍 Provide Clear Descriptions
 
 ```python
 # ✅ Good - Explains the relationship
@@ -625,7 +625,7 @@ issued_by: Organization = edge(label="ISSUED_BY")
 
 ## Common Mistakes
 
-### ❌ Mistake 1: Missing default_factory
+### ❌ Missing default_factory
 
 ```python
 # Wrong
@@ -638,7 +638,7 @@ items: List[Item] = edge(
 )
 ```
 
-### ❌ Mistake 2: Inconsistent Label Format
+### ❌ Inconsistent Label Format
 
 ```python
 # Wrong - Mixed formats
@@ -652,7 +652,7 @@ sent_to: Client = edge(label="SENT_TO")
 has_items: List[Item] = edge(label="CONTAINS_ITEM")
 ```
 
-### ❌ Mistake 3: Vague Labels
+### ❌ Vague Labels
 
 ```python
 # Wrong - Too vague
@@ -673,38 +673,3 @@ Now that you understand relationships:
 1. **[Validation →](validation.md)** - Add validators for data quality
 2. **[Advanced Patterns](advanced-patterns.md)** - Complex relationship patterns
 3. **[Best Practices](best-practices.md)** - Complete template checklist
-
----
-
-## Quick Reference
-
-### Edge Definition Template
-
-```python
-# Single edge
-field: TargetType = edge(
-    label="EDGE_LABEL",
-    description="Relationship description"
-)
-
-# Optional single edge
-field: Optional[TargetType] = edge(
-    label="EDGE_LABEL",
-    description="Relationship description"
-)
-
-# List edge
-field: List[TargetType] = edge(
-    label="EDGE_LABEL",
-    default_factory=list,  # Required!
-    description="Relationship description"
-)
-```
-
-### Common Label Patterns
-
-- Authorship: `ISSUED_BY`, `CREATED_BY`, `AUTHORED_BY`
-- Recipients: `SENT_TO`, `ADDRESSED_TO`, `DELIVERED_TO`
-- Location: `LOCATED_AT`, `LIVES_AT`, `BASED_AT`
-- Composition: `CONTAINS_ITEM`, `HAS_COMPONENT`, `INCLUDES_PART`
-- Membership: `BELONGS_TO`, `PART_OF`, `MEMBER_OF`

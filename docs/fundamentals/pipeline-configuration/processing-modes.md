@@ -133,7 +133,6 @@ Document: 10-page PDF
 
 One-to-One Processing:
 - Extractions: 10 (one per page)
-- Time: ~5 minutes (10 × 30 seconds)
 - Memory: Moderate (sequential processing)
 - Output: 10 separate models
 ```
@@ -409,7 +408,7 @@ config_many = PipelineConfig(
 
 ## Common Patterns
 
-### Pattern 1: Batch Processing with One-to-One
+### 📍 Batch Processing with One-to-One
 
 ```python
 # Process batch of documents
@@ -423,7 +422,7 @@ config = PipelineConfig(
 # Result: One invoice per page
 ```
 
-### Pattern 2: Single Document with Many-to-One
+### 📍 Single Document with Many-to-One
 
 ```python
 # Process single multi-page document
@@ -438,7 +437,7 @@ config = PipelineConfig(
 # Result: One contract with all pages
 ```
 
-### Pattern 3: Conditional Mode Selection
+### 📍 Conditional Mode Selection
 
 ```python
 def get_processing_mode(page_count: int, is_batch: bool):
@@ -461,7 +460,7 @@ config = PipelineConfig(
 
 ## Best Practices
 
-### 1. Match Mode to Document Structure
+### 👍 Match Mode to Document Structure
 
 ```python
 # ✅ Good - Mode matches document structure
@@ -477,7 +476,7 @@ config = PipelineConfig(
 )
 ```
 
-### 2. Enable Appropriate Settings
+### 👍 Enable Appropriate Settings
 
 ```python
 # ✅ Good - Settings match mode
@@ -498,7 +497,7 @@ else:
     )
 ```
 
-### 3. Consider Performance
+### 👍 Consider Performance
 
 ```python
 # ✅ Good - Consider document size
@@ -522,31 +521,3 @@ Now that you understand processing modes:
 1. **[Docling Settings →](docling-settings.md)** - Configure document conversion
 2. **[Export Configuration](export-configuration.md)** - Set output formats
 3. **[Configuration Examples](configuration-examples.md)** - See complete scenarios
-
----
-
-## Quick Reference
-
-### One-to-One Mode
-
-```python
-config = PipelineConfig(
-    source="batch.pdf",
-    template="my_templates.Invoice",
-    processing_mode="one-to-one"
-)
-```
-
-**Use for:** Independent pages, batch processing, page-level tracking
-
-### Many-to-One Mode
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    processing_mode="many-to-one"  # Default
-)
-```
-
-**Use for:** Single entity, multi-page documents, document-wide context

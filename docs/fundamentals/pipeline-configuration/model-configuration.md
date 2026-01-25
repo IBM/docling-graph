@@ -43,7 +43,7 @@ Local inference runs models on your own hardware (GPU or CPU). Best for privacy,
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -182,7 +182,7 @@ Remote inference uses cloud API providers. Best for quick setup, latest models, 
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -323,7 +323,7 @@ Docling Graph automatically categorizes models into capability tiers based on pa
 ### Automatic Detection
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Small model - Automatically uses SIMPLE tier
 config = PipelineConfig(
@@ -682,7 +682,7 @@ config = PipelineConfig(
 
 ## Best Practices
 
-### 1. Start with Remote for Testing
+### 👍 Start with Remote for Testing
 
 ```python
 # ✅ Good - Quick setup for testing
@@ -694,7 +694,7 @@ config = PipelineConfig(
 )
 ```
 
-### 2. Use Local for Production Volume
+### 👍 Use Local for Production Volume
 
 ```python
 # ✅ Good - Cost-effective for high volume
@@ -706,7 +706,7 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Match Model to Document Complexity
+### 👍 Match Model to Document Complexity
 
 ```python
 # ✅ Good - Use appropriate model
@@ -723,7 +723,7 @@ config = PipelineConfig(
 )
 ```
 
-### 4. Monitor Costs
+### 👍 Monitor Costs
 
 ```python
 # ✅ Good - Track API usage
@@ -732,7 +732,7 @@ import logging
 logging.info(f"Processing {document_count} documents")
 logging.info(f"Estimated cost: ${estimated_cost}")
 
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -755,9 +755,9 @@ config = PipelineConfig(
 ```
 
 **Benefits:**
-- ⚡ Fast processing (30-60s per document)
-- 💰 Zero API costs
-- 📊 85-90% accuracy (sufficient for most cases)
+
+- 🔵 Good Accuracy
+- ⚡ Fast Processing
 
 ### Critical Documents
 
@@ -775,9 +775,9 @@ config = PipelineConfig(
 ```
 
 **Benefits:**
-- 💎 95-98% accuracy
-- 🔄 Multi-turn consolidation
-- ✅ Best for legal/financial documents
+
+- 🟢 High Accuracy
+- 🌀 Multi-turn consolidation
 
 ### Balanced Approach
 
@@ -795,9 +795,9 @@ config = PipelineConfig(
 ```
 
 **Benefits:**
-- ⚖️ Good balance of speed and quality
-- 💰 Zero API costs
-- 📊 90-95% accuracy
+
+- 🔵 Good Accuracy
+- ⚖️ Good Balance of Speed and Quality
 
 ---
 
@@ -810,37 +810,3 @@ Now that you understand model configuration:
 3. **[Configuration Examples](configuration-examples.md)** - See complete scenarios
 4. **[Extraction Process](../extraction-process/index.md)** - Understand extraction
 5. **[Performance Tuning →](../../usage/advanced/performance-tuning.md)** - Optimize performance
-
----
-
-## Quick Reference
-
-### Local Inference (vLLM)
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    inference="local",
-    model_override="ibm-granite/granite-4.0-1b",
-    provider_override="vllm"
-)
-```
-
-### Remote Inference (OpenAI)
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    inference="remote",
-    model_override="gpt-4-turbo",
-    provider_override="openai"
-)
-```
-
-### Model Defaults
-
-- **LLM Local**: `ibm-granite/granite-4.0-1b` (vllm)
-- **LLM Remote**: `mistral-small-latest` (mistral)
-- **VLM Local**: `numind/NuExtract-2.0-8B` (docling)

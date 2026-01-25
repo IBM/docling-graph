@@ -610,7 +610,7 @@ for item in data:
 
 ## Common Mistakes
 
-### ❌ Mistake 1: Vague Descriptions
+### ❌ Vague Descriptions
 
 ```python
 # Bad
@@ -628,7 +628,7 @@ name: str = Field(
 )
 ```
 
-### ❌ Mistake 2: Missing Examples
+### ❌ Missing Examples
 
 ```python
 # Bad
@@ -642,7 +642,7 @@ email: str = Field(
 )
 ```
 
-### ❌ Mistake 3: Wrong List Defaults
+### ❌ Wrong List Defaults
 
 ```python
 # Bad - Creates shared mutable object
@@ -655,7 +655,7 @@ items: List[str] = Field(
 )
 ```
 
-### ❌ Mistake 4: Inconsistent Examples
+### ❌ Inconsistent Examples
 
 ```python
 # Bad - Examples don't match description
@@ -682,37 +682,3 @@ Now that you understand field definitions:
 1. **[Relationships →](relationships.md)** - Connect models with edges
 2. **[Validation](validation.md)** - Add validators for data quality
 3. **[Best Practices](best-practices.md)** - Follow the complete checklist
-
----
-
-## Quick Reference
-
-### Field Definition Template
-
-```python
-field_name: FieldType = Field(
-    default_or_required,  # ... or None or value
-    description=(
-        "Clear purpose. "
-        "Extraction hints (field names, patterns). "
-        "Parsing instructions (normalization)."
-    ),
-    examples=["Example 1", "Example 2", "Example 3"]
-)
-```
-
-### Common Patterns
-
-```python
-# Required field
-field: str = Field(..., description="...", examples=[...])
-
-# Optional field
-field: Optional[str] = Field(None, description="...", examples=[...])
-
-# List field
-field: List[str] = Field(default_factory=list, description="...", examples=[[...]])
-
-# Field with default
-field: str = Field("default", description="...", examples=[...])
-```

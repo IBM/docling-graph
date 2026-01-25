@@ -1,25 +1,21 @@
 # GPU Setup
 
-**Pipeline Stage**: 2 - Installation
-
-**Prerequisites**: 
-- [Installation Overview](index.md)
-- [System Requirements](requirements.md)
-- [Basic Setup](basic-setup.md)
-
-This page guides you through setting up GPU support for local inference with Docling Graph.
-
 ## Overview
 
 GPU acceleration significantly improves performance for:
+
 - **VLM Backend**: NuExtract models (4-8 GB VRAM)
 - **Local LLM**: vLLM inference (8-24 GB VRAM)
 
-**Note**: Remote LLM providers (OpenAI, Mistral, Gemini, WatsonX) do not require GPU.
+!!! info "Remote Inference"
+    Remote LLM providers (OpenAI, Mistral, Gemini, WatsonX) do not require a GPU, but using one could still improve Docling conversion performance.
 
 ## Important: Package Conflict Notice
 
-⚠️ **Current Limitation**: There is a package conflict preventing the use of PyTorch with GPU support via `uv` together with `docling[vlm]`. Installing GPU-enabled torch through `uv sync` alongside `docling[vlm]` causes dependency resolution failures.
+!!! warning "Workaround for Dependency Conflicts"
+    `uv` handles installing PyTorch with GPU support **automatically** in most cases. 
+    
+    **Only follow this guide as a workaround** if you are encountering a specific dependency conflict when using `docling[vlm]` alongside GPU-enabled torch.
 
 **Workaround**: Manual installation using `pip` (see below).
 
@@ -168,7 +164,8 @@ GPU name: NVIDIA GeForce RTX 3060
 
 ## CLI Usage with GPU Setup
 
-⚠️ **Important**: When using the manual GPU setup (pip-based virtual environment), **do not use `uv run`**. Instead, call commands directly:
+!!! warning "Important: Manual GPU Setup"
+    When using the manual GPU setup (pip-based virtual environment), **do not use `uv run`**. Instead, call commands directly:
 
 ### Correct Usage (with GPU setup)
 
@@ -251,7 +248,7 @@ docling-graph convert document.pdf \
 
 ## Troubleshooting
 
-### Issue: CUDA not available
+### 🐛 CUDA not available
 
 **Check**:
 ```bash
@@ -276,7 +273,7 @@ python -c "import torch; print(torch.cuda.is_available())"
    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
    ```
 
-### Issue: Out of memory
+### 🐛 Out of memory
 
 **Symptoms**:
 ```
@@ -314,7 +311,7 @@ RuntimeError: CUDA out of memory
    kill -9 <PID>
    ```
 
-### Issue: Slow performance
+### 🐛 Slow performance
 
 **Check GPU utilization**:
 ```bash
@@ -338,7 +335,7 @@ nvidia-smi
    - Increase batch size if memory allows
    - Monitor with `nvidia-smi`
 
-### Issue: Driver version mismatch
+### 🐛 Driver version mismatch
 
 **Symptoms**:
 ```
@@ -412,10 +409,3 @@ GPU setup complete! Now:
 1. **[API Keys](api-keys.md)** (optional) - Set up remote providers
 2. **[Schema Definition](../schema-definition/index.md)** - Create your first template
 3. **[Quick Start](../../introduction/quickstart.md)** - Run your first extraction
-
-## Related Documentation
-
-- **[Requirements](requirements.md)**: GPU requirements
-- **[Basic Setup](basic-setup.md)**: Installation without GPU
-- **[API Keys](api-keys.md)**: Remote provider setup (no GPU needed)
-- **[Troubleshooting](index.md#common-issues)**: Common issues

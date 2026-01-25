@@ -79,7 +79,7 @@ def normalize_email(cls, v: Any) -> Any:
 
 ### Pre-Validator Examples
 
-#### Example 1: Email Normalization
+#### 📍 Email Normalization
 
 ```python
 class Person(BaseModel):
@@ -102,7 +102,7 @@ Person(email="  John.Doe@EMAIL.COM  ")
 # Result: email="john.doe@email.com"
 ```
 
-#### Example 2: String to List Conversion
+#### 📍 String to List Conversion
 
 ```python
 class Person(BaseModel):
@@ -134,7 +134,7 @@ Person(given_names=["John", "Paul"])
 # Result: given_names=["John", "Paul"]
 ```
 
-#### Example 3: Phone Number Cleaning
+#### 📍 Phone Number Cleaning
 
 ```python
 class Contact(BaseModel):
@@ -185,7 +185,7 @@ def validate_currency_format(cls, v: Any) -> Any:
 
 ### Post-Validator Examples
 
-#### Example 1: Currency Code Validation
+#### 📍 Currency Code Validation
 
 ```python
 class MonetaryAmount(BaseModel):
@@ -204,7 +204,7 @@ class MonetaryAmount(BaseModel):
         return v
 ```
 
-#### Example 2: Range Validation
+#### 📍 Range Validation
 
 ```python
 class Product(BaseModel):
@@ -223,7 +223,7 @@ class Product(BaseModel):
         return v
 ```
 
-#### Example 3: Email Format Validation
+#### 📍 Email Format Validation
 
 ```python
 class Contact(BaseModel):
@@ -278,7 +278,7 @@ class Measurement(BaseModel):
 
 ### Model Validator Examples
 
-#### Example 1: Date Range Validation
+#### 📍 Date Range Validation
 
 ```python
 from datetime import date
@@ -298,7 +298,7 @@ class Event(BaseModel):
         return self
 ```
 
-#### Example 2: Conditional Required Fields
+#### 📍 Conditional Required Fields
 
 ```python
 class Document(BaseModel):
@@ -318,7 +318,7 @@ class Document(BaseModel):
         return self
 ```
 
-#### Example 3: Mutual Exclusivity
+#### 📍 Mutual Exclusivity
 
 ```python
 class Payment(BaseModel):
@@ -608,7 +608,7 @@ class Measurement(BaseModel):
 
 ## Best Practices
 
-### 1. Validate Early
+### 👍 Validate Early
 
 Use `mode='before'` for normalization, default mode for validation:
 
@@ -630,7 +630,7 @@ def validate_email(cls, v: Any) -> Any:
     return v
 ```
 
-### 2. Provide Clear Error Messages
+### 👍 Provide Clear Error Messages
 
 ```python
 # ✅ Good - Specific error message
@@ -650,7 +650,7 @@ def validate_quantity(cls, v: Any) -> Any:
     return v
 ```
 
-### 3. Handle None Values
+### 👍 Handle None Values
 
 ```python
 @field_validator("email")
@@ -664,7 +664,7 @@ def validate_email(cls, v: Any) -> Any:
     return v
 ```
 
-### 4. Use Type Guards
+### 👍 Use Type Guards
 
 ```python
 @field_validator("value", mode="before")
@@ -716,32 +716,3 @@ Now that you understand validation:
 1. **[Advanced Patterns →](advanced-patterns.md)** - Complex validation patterns
 2. **[Best Practices](best-practices.md)** - Complete template checklist
 3. **[Examples](../../usage/examples/index.md)** - See validators in action
-
----
-
-## Quick Reference
-
-### Field Validator Template
-
-```python
-@field_validator("field_name", mode="before")  # or default mode
-@classmethod
-def validator_name(cls, v: Any) -> Any:
-    """Docstring."""
-    # Validation/transformation logic
-    if not valid:
-        raise ValueError("Error message")
-    return v
-```
-
-### Model Validator Template
-
-```python
-@model_validator(mode="after")
-def validator_name(self) -> Self:
-    """Docstring."""
-    # Cross-field validation
-    if not valid:
-        raise ValueError("Error message")
-    return self
-```

@@ -249,7 +249,8 @@ config = PipelineConfig(
 run_pipeline(config, mode="api")  # mode="api" required
 ```
 
-**Note**: CLI does not accept plain text strings to avoid ambiguity with file paths.
+!!! note "CLI Input Restriction"
+    CLI does not accept plain text strings to avoid ambiguity with file paths.
 
 ---
 
@@ -382,7 +383,8 @@ Input → Validation → Graph Construction → Export
 | Plain Text | ✅ Yes | ❌ No |
 | DoclingDocument | ✅ Yes | ✅ Yes |
 
-**Note**: VLM (Vision Language Model) backend requires visual content. Use LLM backend for text-only inputs.
+!!! note "Backend Requirements"
+    VLM (Vision Language Model) backend requires visual content. Use LLM backend for text-only inputs.
 
 ---
 
@@ -416,13 +418,13 @@ Error: File not found: missing.pdf
 
 ## Best Practices
 
-### 1. Choose the Right Backend
+### 👍 Choose the Right Backend
 
 - **PDFs and Images**: Use VLM for complex layouts, LLM for text-heavy documents
 - **Text Files**: Always use LLM backend
 - **Mixed Workflows**: Use LLM backend for maximum compatibility
 
-### 2. Validate Input Files
+### 👍 Validate Input Files
 
 ```python
 from pathlib import Path
@@ -435,7 +437,7 @@ if source_path.stat().st_size == 0:
     raise ValueError("Input file is empty")
 ```
 
-### 3. Handle URLs Safely
+### 👍 Handle URLs Safely
 
 ```python
 from docling_graph.core.input.validators import URLValidator
@@ -447,7 +449,7 @@ except ValidationError as e:
     print(f"Invalid URL: {e.message}")
 ```
 
-### 4. Use Appropriate Processing Modes
+### 👍 Use Appropriate Processing Modes
 
 - **one-to-one**: Best for multi-page PDFs where each page is independent
 - **many-to-one**: Best for text files and single-entity documents
@@ -456,7 +458,7 @@ except ValidationError as e:
 
 ## Troubleshooting
 
-### Issue: "Plain text input is only supported via Python API"
+### 🐛 Plain text input is only supported via Python API
 
 **Cause**: Trying to pass plain text string via CLI
 
@@ -472,7 +474,7 @@ config.source = "temp.txt"
 run_pipeline(config, mode="cli")
 ```
 
-### Issue: "VLM backend does not support text-only inputs"
+### 🐛 VLM backend does not support text-only inputs
 
 **Cause**: Using VLM backend with text files
 
@@ -482,7 +484,7 @@ run_pipeline(config, mode="cli")
 docling-graph convert notes.txt -t templates.Report --backend llm
 ```
 
-### Issue: URL download timeout
+### 🐛 URL download timeout
 
 **Cause**: Slow network or large file
 

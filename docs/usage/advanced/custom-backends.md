@@ -5,13 +5,6 @@
 
 Create custom extraction backends to integrate specialized models, APIs, or processing logic into the docling-graph pipeline.
 
-**What You'll Learn:**
-- Backend protocol implementation
-- VLM backend example
-- LLM backend example
-- Integration with pipeline
-- Testing strategies
-
 **Prerequisites:**
 - Understanding of [Extraction Process](../../fundamentals/extraction-process/index.md)
 - Familiarity with [Python API](../api/index.md)
@@ -567,7 +560,7 @@ def test_backend_with_extractor():
 
 ## Best Practices
 
-### 1. Implement All Protocol Methods
+### 👍 Implement All Protocol Methods
 
 ```python
 # ✅ Good - Complete implementation
@@ -584,7 +577,7 @@ class MyBackend:
     # Missing other methods!
 ```
 
-### 2. Use Structured Exceptions
+### 👍 Use Structured Exceptions
 
 ```python
 # ✅ Good - Structured errors
@@ -604,7 +597,7 @@ def extract(self, ...):
     raise Exception("Something went wrong")
 ```
 
-### 3. Clean Up Resources
+### 👍 Clean Up Resources
 
 ```python
 # ✅ Good - Proper cleanup
@@ -627,7 +620,7 @@ class MyBackend:
         pass  # Resources leak!
 ```
 
-### 4. Validate Inputs
+### 👍 Validate Inputs
 
 ```python
 # ✅ Good - Input validation
@@ -648,9 +641,9 @@ def extract_from_markdown(self, markdown, template, ...):
 
 ## Troubleshooting
 
-### Issue: Protocol Not Recognized
+### 🐛 Protocol Not Recognized
 
-**Problem:** Backend not recognized by pipeline
+**🐛** Backend not recognized by pipeline
 
 **Solution:**
 ```python
@@ -667,9 +660,9 @@ class MyBackend(TextExtractionBackendProtocol):
     def cleanup(self): ...
 ```
 
-### Issue: Memory Leaks
+### 🐛 Memory Leaks
 
-**Problem:** Memory usage grows over time
+**🐛** Memory usage grows over time
 
 **Solution:**
 ```python
@@ -688,9 +681,9 @@ def cleanup(self):
     gc.collect()
 ```
 
-### Issue: API Rate Limits
+### 🐛 API Rate Limits
 
-**Problem:** API calls fail due to rate limits
+**🐛** API calls fail due to rate limits
 
 **Solution:**
 ```python
@@ -720,11 +713,3 @@ def _call_api_with_retry(self, *args, **kwargs):
 1. **[Custom Exporters →](custom-exporters.md)** - Create custom output formats
 2. **[Testing →](testing.md)** - Test your backend
 3. **[Error Handling →](error-handling.md)** - Handle errors gracefully
-
----
-
-## Related Documentation
-
-- **[Protocols Reference](../../reference/protocols.md)** - Protocol definitions
-- **[Exceptions Reference](../../reference/exceptions.md)** - Exception hierarchy
-- **[Extraction Process](../../fundamentals/extraction-process/index.md)** - How extraction works

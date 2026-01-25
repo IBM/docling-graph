@@ -1,13 +1,5 @@
 # API Keys Setup
 
-**Pipeline Stage**: 2 - Installation
-
-**Prerequisites**: 
-- [Installation Overview](index.md)
-- [Basic Setup](basic-setup.md)
-
-This page guides you through setting up API keys for remote LLM providers.
-
 ## Overview
 
 Remote LLM providers require API keys for authentication. This guide covers:
@@ -17,9 +9,11 @@ Remote LLM providers require API keys for authentication. This guide covers:
 - **Google Gemini** (Gemini Pro, Gemini Flash)
 - **IBM WatsonX** (Granite, Llama, Mixtral)
 
-**Note**: API keys are **not required** for:
-- Local VLM (NuExtract)
-- Local LLM (vLLM, Ollama)
+!!! info "API Keys Not Required"
+    API keys are **not required** for:
+    
+    - Local VLM (NuExtract)
+    - Local LLM (vLLM, Ollama)
 
 ## Quick Setup
 
@@ -261,7 +255,8 @@ uv run docling-graph convert document.pdf \
 | meta-llama/llama-3-70b-instruct | 8K | High quality |
 | mistralai/mixtral-8x7b-instruct-v01 | 32K | Complex tasks |
 
-**Note**: For detailed WatsonX configuration, refer to the [Model Configuration](../pipeline-configuration/model-configuration.md) guide.
+!!! tip "WatsonX Configuration"
+    For detailed WatsonX configuration, refer to the [Model Configuration](../pipeline-configuration/model-configuration.md) guide.
 
 ## Verification
 
@@ -404,7 +399,7 @@ For production:
 
 ## Troubleshooting
 
-### Issue: API key not recognized
+### 🐛 API key not recognized
 
 **Check**:
 ```bash
@@ -420,7 +415,7 @@ export OPENAI_API_KEY="sk-..."
 source ~/.bashrc
 ```
 
-### Issue: Authentication failed
+### 🐛 Authentication failed
 
 **Symptoms**:
 ```
@@ -444,7 +439,7 @@ Error: Invalid API key
    - Create new key
    - Update environment variable
 
-### Issue: Rate limit exceeded
+### 🐛 Rate limit exceeded
 
 **Symptoms**:
 ```
@@ -462,7 +457,7 @@ Error: Rate limit exceeded
 3. **Use different provider**:
    - Switch to provider with higher limits
 
-### Issue: Insufficient credits
+### 🐛 Insufficient credits
 
 **Symptoms**:
 ```
@@ -497,14 +492,3 @@ API keys configured! Now:
 1. **[Schema Definition](../schema-definition/index.md)** - Create your first template
 2. **[Pipeline Configuration](../pipeline-configuration/index.md)** - Configure extraction
 3. **[Quick Start](../../introduction/quickstart.md)** - Run your first extraction
-
-## Related Documentation
-
-- **[Installation Overview](index.md)**: Installation options
-- **[Basic Setup](basic-setup.md)**: Installation steps
-- **[Model Configuration](../pipeline-configuration/model-configuration.md)**: Model selection and WatsonX setup
-- **[Requirements](requirements.md)**: System requirements
-
----
-
-**API keys ready?** Continue to [schema definition](../schema-definition/index.md) to create your first template!

@@ -5,13 +5,6 @@
 
 Extract complete structured data from invoices including issuer, client, line items, and financial details.
 
-**What You'll Learn:**
-- Creating entity and component models
-- Defining graph relationships with `edge()`
-- Handling nested structures
-- Address and line item extraction
-- Graph visualization
-
 **Document Type:** Invoice (PDF/JPG)  
 **Time:** 15 minutes  
 **Backend:** VLM (recommended) or LLM
@@ -240,7 +233,7 @@ uv run docling-graph convert invoice.pdf \
 """Process invoice using Python API."""
 
 import os
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Set API key if using remote
 os.environ["MISTRAL_API_KEY"] = "your-key"
@@ -258,7 +251,7 @@ config = PipelineConfig(
 
 # Run extraction
 print("Processing invoice...")
-config.run()
+run_pipeline(config)
 print("✅ Complete! Check outputs/invoice/")
 ```
 
@@ -484,9 +477,9 @@ class Invoice(BaseModel):
 
 ## Troubleshooting
 
-### Issue: Missing Line Items
+### 🐛 Missing Line Items
 
-**Problem:** Line items not extracted
+**🐛** Line items not extracted
 
 **Solution:**
 ```python
@@ -497,9 +490,9 @@ contains_items: List[LineItem] = edge(
 )
 ```
 
-### Issue: Address Not Parsed
+### 🐛 Address Not Parsed
 
-**Problem:** Address fields empty
+**🐛** Address fields empty
 
 **Solution:**
 ```python
@@ -510,9 +503,9 @@ class Address(BaseModel):
     postal_code: str | None = Field(default=None, ...)
 ```
 
-### Issue: Wrong Currency
+### 🐛 Wrong Currency
 
-**Problem:** Currency extracted incorrectly
+**🐛** Currency extracted incorrectly
 
 **Solution:**
 ```python
@@ -528,7 +521,7 @@ currency: str = Field(
 
 ## Best Practices
 
-### 1. Clear Descriptions
+### 👍 Clear Descriptions
 
 ```python
 # ✅ Good - Specific and clear
@@ -541,7 +534,7 @@ invoice_number: str = Field(
 invoice_number: str = Field(description="Invoice number")
 ```
 
-### 2. Concrete Examples
+### 👍 Concrete Examples
 
 ```python
 # ✅ Good - Real examples
@@ -557,7 +550,7 @@ total: float = Field(
 )
 ```
 
-### 3. Appropriate Optionality
+### 👍 Appropriate Optionality
 
 ```python
 # ✅ Good - Core fields required, details optional
@@ -574,32 +567,3 @@ class Invoice(BaseModel):
 1. **[Research Paper →](research-paper.md)** - Complex scientific documents
 2. **[ID Card →](id-card.md)** - Vision-based extraction
 3. **[Schema Definition →](../../fundamentals/schema-definition/index.md)** - Advanced templates
-
----
-
-## Quick Reference
-
-### Run Extraction
-
-```bash
-# VLM (images)
-uv run docling-graph convert invoice.jpg \
-    -t "invoice_template.Invoice" \
-    --backend vlm
-
-# LLM (PDFs)
-uv run docling-graph convert invoice.pdf \
-    -t "invoice_template.Invoice" \
-    --backend llm
-```
-
-### View Results
-
-```bash
-# Visualize
-uv run docling-graph inspect outputs/invoice/
-
-# View data
-cat outputs/invoice/nodes.csv
-cat outputs/invoice/edges.csv
-```

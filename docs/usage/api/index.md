@@ -217,7 +217,7 @@ config = PipelineConfig(
 )
 
 try:
-    config.run()
+    run_pipeline(config)
 except ConfigurationError as e:
     print(f"Configuration error: {e.message}")
     print(f"Details: {e.details}")
@@ -268,7 +268,7 @@ config = PipelineConfig(
     template="templates.Invoice",
     inference="remote"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### Python Path
@@ -289,7 +289,7 @@ config = PipelineConfig(
     source="document.pdf",
     template=Invoice  # Pass class directly
 )
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -311,7 +311,7 @@ config = PipelineConfig(
     template="templates.Invoice",
     output_dir="outputs"
 )
-config.run()
+run_pipeline(config)
 
 # Read outputs
 nodes = pd.read_csv("outputs/nodes.csv")
@@ -359,7 +359,7 @@ def convert_document():
             template=template,
             output_dir=f"outputs/{temp_id}"
         )
-        config.run()
+        run_pipeline(config)
         
         return jsonify({
             "status": "success",
@@ -392,7 +392,7 @@ config = PipelineConfig(
     template="templates.Research",
     output_dir="outputs/research"
 )
-config.run()
+run_pipeline(config)
 
 # Cell 3: Analyze results
 nodes = pd.read_csv("outputs/research/nodes.csv")
@@ -421,7 +421,7 @@ def process_document(**context):
         template=context['params']['template'],
         output_dir=f"outputs/{context['ds']}"
     )
-    config.run()
+    run_pipeline(config)
 
 with DAG(
     'document_processing',
@@ -443,7 +443,7 @@ with DAG(
 
 ## Best Practices
 
-### 1. Use Type-Safe Configuration
+### 👍 Use Type-Safe Configuration
 
 ```python
 # ✅ Good - Type-safe with validation
@@ -463,7 +463,7 @@ config = {
 }
 ```
 
-### 2. Handle Errors Gracefully
+### 👍 Handle Errors Gracefully
 
 ```python
 # ✅ Good - Specific error handling
@@ -471,19 +471,19 @@ from docling_graph import PipelineConfig
 from docling_graph.exceptions import ExtractionError
 
 try:
-    config.run()
+    run_pipeline(config)
 except ExtractionError as e:
     logger.error(f"Extraction failed: {e.message}")
     # Implement retry logic or fallback
 
 # ❌ Avoid - Catching all exceptions
 try:
-    config.run()
+    run_pipeline(config)
 except Exception:
     pass  # Silent failure
 ```
 
-### 3. Organize Outputs
+### 👍 Organize Outputs
 
 ```python
 # ✅ Good - Organized structure
@@ -518,44 +518,3 @@ Explore the Python API in detail:
 Or continue to:
 - **[Examples →](../examples/index.md)** - Real-world examples
 - **[API Reference →](../../reference/index.md)** - Complete API docs
-
----
-
-## Quick Reference
-
-### Basic Usage
-
-```python
-from docling_graph import PipelineConfig
-
-config = PipelineConfig(
-    source="document.pdf",
-    template="templates.Invoice"
-)
-config.run()
-```
-
-### With Options
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="templates.Invoice",
-    backend="llm",
-    inference="remote",
-    provider_override="mistral",
-    output_dir="outputs"
-)
-config.run()
-```
-
-### Error Handling
-
-```python
-from docling_graph.exceptions import PipelineError
-
-try:
-    config.run()
-except PipelineError as e:
-    print(f"Error: {e.message}")
-```

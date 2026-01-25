@@ -33,7 +33,7 @@
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -42,7 +42,7 @@ config = PipelineConfig(
     output_dir="outputs"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Output Files
@@ -172,7 +172,7 @@ print(result)
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -181,7 +181,7 @@ config = PipelineConfig(
     output_dir="outputs"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Output Files
@@ -431,10 +431,10 @@ print(f"Found {len(invoices)} invoices")
 
 ## Complete Examples
 
-### Example 1: CSV for Analysis
+### 📍 CSV for Analysis
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import pandas as pd
 
 # Extract and export to CSV
@@ -445,7 +445,7 @@ config = PipelineConfig(
     output_dir="analysis"
 )
 
-config.run()
+run_pipeline(config)
 
 # Analyze with Pandas
 nodes = pd.read_csv("analysis/nodes.csv")
@@ -461,10 +461,10 @@ summary = nodes.groupby('label').size()
 summary.to_csv("analysis/summary.csv")
 ```
 
-### Example 2: Cypher for Neo4j
+### 📍 Cypher for Neo4j
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import subprocess
 
 # Extract and export to Cypher
@@ -475,7 +475,7 @@ config = PipelineConfig(
     output_dir="neo4j_import"
 )
 
-config.run()
+run_pipeline(config)
 
 # Import to Neo4j
 result = subprocess.run([
@@ -491,10 +491,10 @@ else:
     print(f"❌ Import failed: {result.stderr}")
 ```
 
-### Example 3: JSON for API
+### 📍 JSON for API
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import json
 import requests
 
@@ -506,7 +506,7 @@ config = PipelineConfig(
     output_dir="api_data"
 )
 
-config.run()
+run_pipeline(config)
 
 # Load JSON
 with open("api_data/extracted_data.json") as f:
@@ -526,7 +526,7 @@ print(f"API response: {response.status_code}")
 
 ## Best Practices
 
-### 1. Choose Format by Use Case
+### 👍 Choose Format by Use Case
 
 ```python
 # ✅ Good - Match format to use case
@@ -538,7 +538,7 @@ else:
     export_format = "csv"  # Default
 ```
 
-### 2. Organize Output Directories
+### 👍 Organize Output Directories
 
 ```python
 # ✅ Good - Structured outputs
@@ -555,13 +555,13 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Validate Exports
+### 👍 Validate Exports
 
 ```python
 # ✅ Good - Check exports exist
 import os
 
-config.run()
+run_pipeline(config)
 
 if export_format == "csv":
     assert os.path.exists(f"{output_dir}/nodes.csv")
@@ -576,7 +576,7 @@ print("✅ Exports validated")
 
 ## Troubleshooting
 
-### Issue: Empty CSV Files
+### 🐛 Empty CSV Files
 
 **Solution:**
 ```python
@@ -590,7 +590,7 @@ if stats["node_count"] == 0:
     print("No nodes in graph - check extraction")
 ```
 
-### Issue: Cypher Import Fails
+### 🐛 Cypher Import Fails
 
 **Solution:**
 ```bash
@@ -604,7 +604,7 @@ cypher-shell -u neo4j -p password "RETURN 1"
 cat outputs/graph.cypher | cypher-shell -u neo4j -p password 2>&1 | tee import.log
 ```
 
-### Issue: JSON Parsing Error
+### 🐛 JSON Parsing Error
 
 **Solution:**
 ```python
@@ -628,41 +628,3 @@ Now that you understand export formats:
 1. **[Visualization →](visualization.md)** - Visualize your graphs
 2. **[Neo4j Integration →](neo4j-integration.md)** - Deep dive into Neo4j
 3. **[Graph Analysis →](graph-analysis.md)** - Analyze graph structure
-
----
-
-## Quick Reference
-
-### CSV Export
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    export_format="csv"
-)
-```
-
-### Cypher Export
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    export_format="cypher"
-)
-```
-
-### Load CSV
-
-```python
-import pandas as pd
-nodes = pd.read_csv("outputs/nodes.csv")
-edges = pd.read_csv("outputs/edges.csv")
-```
-
-### Import Cypher
-
-```bash
-cat outputs/graph.cypher | cypher-shell -u neo4j -p password
-```

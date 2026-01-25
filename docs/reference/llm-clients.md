@@ -476,7 +476,7 @@ load_dotenv()
 Clients are automatically selected based on configuration:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Uses MistralClient automatically
 config = PipelineConfig(
@@ -487,7 +487,7 @@ config = PipelineConfig(
     provider_override="mistral",
     model_override="mistral-small-latest"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ---

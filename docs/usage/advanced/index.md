@@ -221,7 +221,7 @@ config = PipelineConfig(
 
 ## Best Practices
 
-### 1. Follow Protocols
+### 👍 Follow Protocols
 
 ```python
 # ✅ Good - Implement protocol
@@ -237,7 +237,7 @@ class MyBackend:
     def my_custom_method(self, ...): ...
 ```
 
-### 2. Handle Errors
+### 👍 Handle Errors
 
 ```python
 # ✅ Good - Use docling-graph exceptions
@@ -259,7 +259,7 @@ def extract(self, ...):
     raise Exception("Something went wrong")
 ```
 
-### 3. Write Tests
+### 👍 Write Tests
 
 ```python
 # ✅ Good - Comprehensive tests
@@ -279,7 +279,7 @@ def test_backend_cleanup():
 # (No tests written)
 ```
 
-### 4. Document Code
+### 👍 Document Code
 
 ```python
 # ✅ Good - Clear documentation
@@ -389,11 +389,3 @@ Choose a topic based on your needs:
 4. **[Performance Tuning →](performance-tuning.md)** - Optimize performance
 5. **[Error Handling →](error-handling.md)** - Handle errors gracefully
 6. **[Testing →](testing.md)** - Test your extensions
-
----
-
-## Related Documentation
-
-- **[Protocols](../../reference/protocols.md)** - Protocol definitions
-- **[Exceptions](../../reference/exceptions.md)** - Exception hierarchy
-- **[Pipeline Architecture](../../introduction/architecture.md)** - System design

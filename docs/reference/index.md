@@ -212,7 +212,7 @@ output_dir: Path
 import docling_graph
 
 # Get version
-print(docling_graph.__version__)  # e.g., "0.3.0"
+print(docling_graph.__version__)  # e.g., "v1.2.0"
 
 # Check available exports
 print(docling_graph.__all__)
@@ -223,7 +223,7 @@ print(docling_graph.__all__)
 
 ## API Stability
 
-### ✅ Stable APIs
+### 🟢 Stable APIs
 
 These APIs are stable and safe to use:
 
@@ -233,7 +233,7 @@ These APIs are stable and safe to use:
 - Exception hierarchy
 - Public protocols
 
-### ⚠️ Internal APIs
+### 🟣 Internal APIs
 
 These are internal and may change:
 
@@ -241,7 +241,7 @@ These are internal and may change:
 - `core.extractors.backends` internals
 - `core.utils` modules
 
-### 🧪 Experimental
+### 🟡 Experimental
 
 These are experimental:
 
@@ -337,7 +337,7 @@ config = PipelineConfig(
     inference="local"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Advanced Usage

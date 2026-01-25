@@ -369,8 +369,6 @@ extractor = create_extractor(
 
 ---
 
----
-
 ## New Features Summary
 
 ### Model Capability Detection

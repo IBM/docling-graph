@@ -187,7 +187,7 @@ else:
 
 ## Complete Examples
 
-### Example 1: Comprehensive Analysis
+### 📍 Comprehensive Analysis
 
 ```python
 from docling_graph.core.converters import GraphConverter
@@ -231,10 +231,10 @@ print(f"  Isolated nodes: {len(isolated)}")
 print(f"  Graph is connected: {nx.is_weakly_connected(graph)}")
 ```
 
-### Example 2: Batch Analysis
+### 📍 Batch Analysis
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pathlib import Path
 import json
 import pandas as pd
@@ -252,7 +252,7 @@ for pdf_file in Path("documents").glob("*.pdf"):
         output_dir=output_dir
     )
     
-    config.run()
+    run_pipeline(config)
     
     # Load statistics
     with open(f"{output_dir}/graph_stats.json") as f:
@@ -275,7 +275,7 @@ print(df.describe())
 df.to_csv("batch_analysis.csv", index=False)
 ```
 
-### Example 3: Quality Report
+### 📍 Quality Report
 
 ```python
 from docling_graph.core.converters import GraphConverter
@@ -429,7 +429,7 @@ print(f"Reduction: {(1 - optimized_size/graph_size) * 100:.1f}%")
 
 ## Best Practices
 
-### 1. Always Validate
+### 👍 Always Validate
 
 ```python
 # ✅ Good - Validate after creation
@@ -441,7 +441,7 @@ except ValueError as e:
     print(f"Validation failed: {e}")
 ```
 
-### 2. Check Statistics
+### 👍 Check Statistics
 
 ```python
 # ✅ Good - Review statistics
@@ -455,7 +455,7 @@ if metadata.density < 0.01:
     print("Warning: Very sparse graph")
 ```
 
-### 3. Monitor Quality
+### 👍 Monitor Quality
 
 ```python
 # ✅ Good - Regular quality checks
@@ -468,7 +468,7 @@ if len(isolated) > metadata.node_count * 0.1:
 
 ## Troubleshooting
 
-### Issue: Low Density
+### 🐛 Low Density
 
 **Solution:**
 ```python
@@ -480,7 +480,7 @@ class Invoice(BaseModel):
     line_items: List[LineItem]  # Creates edges
 ```
 
-### Issue: Many Isolated Nodes
+### 🐛 Many Isolated Nodes
 
 **Solution:**
 ```python
@@ -493,7 +493,7 @@ isolated = [n for n, d in graph.degree() if d == 0]
 graph.remove_nodes_from(isolated)
 ```
 
-### Issue: Disconnected Components
+### 🐛 Disconnected Components
 
 **Solution:**
 ```python
@@ -517,37 +517,3 @@ Now that you understand graph analysis:
 1. **[CLI Guide →](../../usage/cli/index.md)** - Use command-line tools
 2. **[API Reference →](../../usage/api/index.md)** - Programmatic access
 3. **[Examples →](../../usage/examples/index.md)** - Real-world examples
-
----
-
-## Quick Reference
-
-### Basic Metrics
-
-```python
-print(f"Nodes: {metadata.node_count}")
-print(f"Edges: {metadata.edge_count}")
-print(f"Density: {metadata.density:.3f}")
-```
-
-### Connectivity
-
-```python
-import networkx as nx
-is_connected = nx.is_weakly_connected(graph)
-components = list(nx.weakly_connected_components(graph))
-```
-
-### Quality Check
-
-```python
-isolated = [n for n, d in graph.degree() if d == 0]
-print(f"Isolated nodes: {len(isolated)}")
-```
-
-### Validation
-
-```python
-from docling_graph.core.utils import validate_graph_structure
-validate_graph_structure(graph, raise_on_error=True)
-```

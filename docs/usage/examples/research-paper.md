@@ -5,13 +5,6 @@
 
 Extract complex research data from scientific papers including experiments, measurements, materials, and results.
 
-**What You'll Learn:**
-- Complex ontology design
-- Enum normalization
-- Custom validators
-- Measurement parsing
-- Multi-page consolidation
-
 **Document Type:** Research Paper (PDF)  
 **Time:** 30 minutes  
 **Backend:** LLM with chunking
@@ -102,7 +95,7 @@ uv run docling-graph convert research.pdf \
 """Process research paper."""
 
 import os
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 os.environ["MISTRAL_API_KEY"] = "your-key"
 
@@ -121,7 +114,7 @@ config = PipelineConfig(
 )
 
 print("Processing research paper (may take several minutes)...")
-config.run()
+run_pipeline(config)
 print("✅ Complete!")
 ```
 
@@ -296,7 +289,7 @@ class Research(BaseModel):
 
 ## Troubleshooting
 
-### Issue: Extraction Takes Too Long
+### 🐛 Extraction Takes Too Long
 
 **Solution:**
 ```bash
@@ -309,7 +302,7 @@ uv run docling-graph convert research.pdf \
 --model mistral-small-latest
 ```
 
-### Issue: Missing Measurements
+### 🐛 Missing Measurements
 
 **Solution:**
 ```python
@@ -320,7 +313,7 @@ measurements: List[Measurement] = Field(
 )
 ```
 
-### Issue: Enum Validation Errors
+### 🐛 Enum Validation Errors
 
 **Solution:**
 ```python
@@ -337,7 +330,7 @@ geometry_type: GeometryType | None = Field(default=None)
 
 ## Best Practices
 
-### 1. Start Simple, Add Complexity
+### 👍 Start Simple, Add Complexity
 
 ```python
 # Phase 1: Basic structure
@@ -356,7 +349,7 @@ class Research(BaseModel):
 # Phase 3: Add measurements, validations, etc.
 ```
 
-### 2. Use Appropriate Chunking
+### 👍 Use Appropriate Chunking
 
 ```python
 # For papers > 10 pages
@@ -368,7 +361,7 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Provide Clear Examples
+### 👍 Provide Clear Examples
 
 ```python
 # ✅ Good - Domain-specific examples
@@ -387,31 +380,3 @@ viscosity: Measurement = Field(
 1. **[ID Card →](id-card.md)** - Vision-based extraction
 2. **[Advanced Patterns →](../../fundamentals/schema-definition/advanced-patterns.md)** - Complex templates
 3. **[Performance Tuning →](../advanced/performance-tuning.md)** - Optimization
-
----
-
-## Quick Reference
-
-### Process Research Paper
-
-```bash
-uv run docling-graph convert research.pdf \
-    -t "docs.examples.templates.rheology_research.Research" \
-    --backend llm \
-    --inference remote \
-    --use-chunking \
-    --llm-consolidation
-```
-
-### View Results
-
-```bash
-uv run docling-graph inspect outputs/research/
-cat outputs/research/graph_stats.json
-```
-
-### Template Location
-
-```
-docs/examples/templates/rheology_research.py
-```

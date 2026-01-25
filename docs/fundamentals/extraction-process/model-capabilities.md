@@ -59,9 +59,12 @@ The system uses a **3-tier priority system** for accurate capability detection:
 - \>4096 tokens → ADVANCED
 
 **Priority 3: Context Window** (Fallback)
+
 - Uses context limit only when other signals unavailable
-- ⚠️ **Note**: Modern small models can have large contexts (e.g., Granite 1B with 128K)
 - Includes warnings when using this heuristic
+
+!!! note "Context Window Caveat"
+    Modern small models can have large contexts (e.g., Granite 1B with 128K)
 
 **Registry Lookup:**
 - For known models in `models.yaml`, explicit capability is always used
@@ -94,7 +97,7 @@ The extraction system automatically adapts based on model capability:
 - `numind/NuExtract-2.0-2B`
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="invoice.pdf",
@@ -103,7 +106,7 @@ config = PipelineConfig(
     inference="local",
     model_override="ibm-granite/granite-4.0-1b"  # SIMPLE tier
 )
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -136,7 +139,7 @@ config = PipelineConfig(
     inference="local",
     model_override="meta-llama/Llama-3.1-8B"  # STANDARD tier
 )
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -172,7 +175,7 @@ config = PipelineConfig(
     model_override="gpt-4-turbo",  # ADVANCED tier
     llm_consolidation=True  # Enable Chain of Density
 )
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -198,7 +201,7 @@ config = PipelineConfig(
     llm_consolidation=True,  # Enables Chain of Density
     processing_mode="many-to-one"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### When to Use Chain of Density
@@ -286,7 +289,7 @@ See the full list of classified models in [`models.yaml`](https://github.com/IBM
 
 ## Best Practices
 
-### 1. Match Tier to Task Complexity
+### 👍 Match Tier to Task Complexity
 
 ```python
 # ✅ Good - Simple task, simple model
@@ -311,7 +314,7 @@ config = PipelineConfig(
 )
 ```
 
-### 2. Start Small, Scale Up
+### 👍 Start Small, Scale Up
 
 ```python
 # Start with SIMPLE tier
@@ -320,21 +323,21 @@ config = PipelineConfig(
     template="templates.MyTemplate",
     model_override="granite-4.0-1b"
 )
-result = config.run()
+result = run_pipeline(config)
 
 # If accuracy insufficient, upgrade to STANDARD
 if accuracy_check(result) < 0.90:
     config.model_override = "llama-3.1-8b"
-    result = config.run()
+    result = run_pipeline(config)
 
 # If still insufficient, upgrade to ADVANCED
 if accuracy_check(result) < 0.95:
     config.model_override = "gpt-4-turbo"
     config.llm_consolidation = True
-    result = config.run()
+    result = run_pipeline(config)
 ```
 
-### 3. Use Chain of Density Wisely
+### 👍 Use Chain of Density Wisely
 
 ```python
 # ✅ Good - Complex document with ADVANCED model
@@ -358,7 +361,7 @@ config = PipelineConfig(
 
 ## Troubleshooting
 
-### Issue: Model Not Detected Correctly
+### 🐛 Model Not Detected Correctly
 
 **Solution:**
 ```python
@@ -375,7 +378,7 @@ config = PipelineConfig(
 )
 ```
 
-### Issue: Poor Accuracy with SIMPLE Model
+### 🐛 Poor Accuracy with SIMPLE Model
 
 **Solution:**
 ```python
@@ -387,7 +390,7 @@ config = PipelineConfig(
 )
 ```
 
-### Issue: Slow Processing with ADVANCED Model
+### 🐛 Slow Processing with ADVANCED Model
 
 **Solution:**
 ```python
@@ -408,12 +411,3 @@ Now that you understand model capabilities:
 1. **[Extraction Backends →](extraction-backends.md)** - Learn about LLM and VLM backends
 2. **[Model Configuration →](../pipeline-configuration/model-configuration.md)** - Configure model settings
 3. **[Performance Tuning →](../../usage/advanced/performance-tuning.md)** - Optimize for your use case
-
----
-
-## Related Documentation
-
-- **[Model Configuration](../pipeline-configuration/model-configuration.md)** - Detailed model settings
-- **[Extraction Backends](extraction-backends.md)** - Backend selection guide
-- **[Performance Tuning](../../usage/advanced/performance-tuning.md)** - Optimization strategies
-- **[Model Merging](model-merging.md)** - Consolidation strategies

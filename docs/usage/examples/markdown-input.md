@@ -5,12 +5,6 @@
 
 This example demonstrates how to process Markdown documents directly, extracting structured data from formatted text without requiring OCR or visual processing.
 
-**What You'll Learn:**
-- Processing Markdown files
-- Text-only extraction workflow
-- LLM backend requirements
-- Structured text parsing
-
 **Time:** 10 minutes
 
 ---
@@ -132,7 +126,7 @@ uv run docling-graph convert LARGE_DOC.md \
 ### Basic Usage
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from templates.documentation import Documentation
 
 # Configure pipeline for Markdown input
@@ -146,14 +140,14 @@ config = PipelineConfig(
 )
 
 # Run pipeline
-config.run()
+run_pipeline(config)
 ```
 
 ### Processing Multiple Markdown Files
 
 ```python
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from templates.documentation import Documentation
 
 # Process all markdown files in a directory
@@ -173,7 +167,7 @@ for md_file in markdown_files:
     )
     
     try:
-        config.run()
+        run_pipeline(config)
         print(f"✅ Completed: {md_file}")
     except Exception as e:
         print(f"❌ Failed: {md_file} - {e}")
@@ -182,7 +176,7 @@ for md_file in markdown_files:
 ### With Custom Provider
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from templates.documentation import Documentation
 
 # Use specific LLM provider
@@ -197,7 +191,7 @@ config = PipelineConfig(
     output_dir="outputs/api_docs"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -274,7 +268,7 @@ Markdown files skip:
 
 ## Troubleshooting
 
-### Issue: VLM Backend Error
+### 🐛 VLM Backend Error
 
 **Error:**
 ```
@@ -289,7 +283,7 @@ uv run docling-graph convert README.md \
     --backend llm  # Required
 ```
 
-### Issue: Empty File
+### 🐛 Empty File
 
 **Error:**
 ```
@@ -306,7 +300,7 @@ file README.md  # Verify file type
 echo "# Documentation" > README.md
 ```
 
-### Issue: Encoding Problems
+### 🐛 Encoding Problems
 
 **Error:**
 ```
@@ -330,7 +324,7 @@ config = PipelineConfig(source="README_utf8.md", ...)
 
 ## Best Practices
 
-### 1. Use Descriptive Section Headers
+### 👍 Use Descriptive Section Headers
 
 ```markdown
 ✅ Good - Clear hierarchy
@@ -445,7 +439,7 @@ config = PipelineConfig(
     backend="llm",
     inference="remote"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### Extracting Specific Sections

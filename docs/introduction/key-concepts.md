@@ -335,13 +335,3 @@ Now that you understand the core concepts:
 1. **[Use Cases](use-cases.md)** - See domain-specific examples
 2. **[Architecture](architecture.md)** - Understand system design
 3. **[Installation](../fundamentals/installation/index.md)** - Set up your environment
-
-## Related Documentation
-
-- **[Schema Definition](../fundamentals/schema-definition/index.md)**: Deep dive into Pydantic templates
-- **[Pipeline Configuration](../fundamentals/pipeline-configuration/index.md)**: Configure extraction
-- **[Graph Management](../fundamentals/graph-management/index.md)**: Export and visualize graphs
-
----
-
-**Questions?** Check out the [examples](../usage/examples/index.md) or dive into [schema definition](../fundamentals/schema-definition/index.md)!

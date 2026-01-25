@@ -196,7 +196,6 @@ jobs:
 ### Status Checks
 
 Required checks before merge:
-
 <br>✅ Tests pass
 <br>✅ Code coverage ≥ 80%
 <br>✅ Linting passes
@@ -283,7 +282,6 @@ feat: add custom backend support (#123)
 ### Merge Requirements
 
 Before merging:
-
 <br>✅ All checks pass
 <br>✅ At least one approval
 <br>✅ No unresolved conversations
@@ -321,7 +319,7 @@ What you expected to happen.
 **Environment**
 - OS: [e.g., Ubuntu 22.04]
 - Python: [e.g., 3.10.12]
-- docling-graph: [e.g., 0.3.0]
+- docling-graph: [e.g., v1.2.0]
 ```
 
 **Feature Request:**

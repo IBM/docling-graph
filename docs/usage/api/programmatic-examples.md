@@ -37,7 +37,7 @@ Simple invoice extraction using remote LLM.
 
 import os
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Set API key
 os.environ["MISTRAL_API_KEY"] = "your-api-key"
@@ -55,7 +55,7 @@ config = PipelineConfig(
 
 # Run pipeline
 print("Processing invoice...")
-config.run()
+run_pipeline(config)
 print(f"✅ Complete! Results in: {config.output_dir}")
 
 # Read results
@@ -83,7 +83,7 @@ uv run python examples/simple_invoice.py
 Local document processing using Ollama.
 """
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Ensure Ollama is running:
 # ollama serve
@@ -104,7 +104,7 @@ config = PipelineConfig(
 
 print("Processing with Ollama...")
 try:
-    config.run()
+    run_pipeline(config)
     print("✅ Complete!")
 except Exception as e:
     print(f"❌ Error: {e}")
@@ -133,7 +133,7 @@ uv run python examples/local_ollama.py
 VLM extraction from image forms.
 """
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="documents/id_card.jpg",
@@ -146,7 +146,7 @@ config = PipelineConfig(
 )
 
 print("Extracting from image...")
-config.run()
+run_pipeline(config)
 print("✅ Complete!")
 
 # Display results
@@ -177,7 +177,7 @@ Research paper extraction with LLM consolidation.
 """
 
 import os
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 os.environ["MISTRAL_API_KEY"] = "your-api-key"
 
@@ -196,7 +196,7 @@ config = PipelineConfig(
 )
 
 print("Processing research paper (this may take a few minutes)...")
-config.run()
+run_pipeline(config)
 print("✅ Complete!")
 
 # Analyze results
@@ -228,7 +228,7 @@ Batch process multiple documents.
 """
 
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from tqdm import tqdm
 
 def process_batch(input_dir: str, template: str, output_base: str):
@@ -245,7 +245,7 @@ def process_batch(input_dir: str, template: str, output_base: str):
                 template=template,
                 output_dir=f"{output_base}/{doc.stem}"
             )
-            config.run()
+            run_pipeline(config)
             results["success"].append(doc.name)
             
         except Exception as e:
@@ -293,7 +293,7 @@ Production-ready document processing with error handling.
 import logging
 from pathlib import Path
 from typing import Optional
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import (
     ConfigurationError,
     ExtractionError,
@@ -339,7 +339,7 @@ def process_document(
                 output_dir=output_dir
             )
             
-            config.run()
+            run_pipeline(config)
             logger.info(f"✅ Successfully processed: {source}")
             return True
             
@@ -411,7 +411,7 @@ from pathlib import Path
 import uuid
 import os
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import DoclingGraphError
 
 app = Flask(__name__)
@@ -457,7 +457,7 @@ def process_document():
             output_dir=str(output_dir)
         )
         
-        config.run()
+        run_pipeline(config)
         
         return jsonify({
             "status": "success",
@@ -528,7 +528,7 @@ curl -O http://localhost:5000/download/{job_id}/nodes.csv
 
 ```python
 # Cell 1: Setup
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -543,7 +543,7 @@ config = PipelineConfig(
 )
 
 print("Processing document...")
-config.run()
+run_pipeline(config)
 print("✅ Complete!")
 
 # Cell 3: Load Results
@@ -622,7 +622,7 @@ jupyter notebook examples/notebook_analysis.ipynb
 
 ## Best Practices
 
-### 1. Use Environment Variables for Secrets
+### 👍 Use Environment Variables for Secrets
 
 ```python
 # ✅ Good - Environment variables
@@ -633,26 +633,26 @@ os.environ["MISTRAL_API_KEY"] = os.getenv("MISTRAL_API_KEY")
 os.environ["MISTRAL_API_KEY"] = "sk-1234..."  # Don't commit!
 ```
 
-### 2. Handle Errors Gracefully
+### 👍 Handle Errors Gracefully
 
 ```python
 # ✅ Good - Specific error handling
 from docling_graph.exceptions import ExtractionError
 
 try:
-    config.run()
+    run_pipeline(config)
 except ExtractionError as e:
     logger.error(f"Extraction failed: {e.message}")
     # Implement fallback
 
 # ❌ Avoid - Silent failures
 try:
-    config.run()
+    run_pipeline(config)
 except:
     pass
 ```
 
-### 3. Organize Outputs
+### 👍 Organize Outputs
 
 ```python
 # ✅ Good - Organized structure
@@ -680,47 +680,3 @@ config = PipelineConfig(
 1. **[Batch Processing →](batch-processing.md)** - Advanced batch patterns
 2. **[Examples →](../examples/index.md)** - Real-world examples
 3. **[Advanced Topics →](../advanced/index.md)** - Custom backends
-
----
-
-## Quick Reference
-
-### Run Examples
-
-```bash
-# Simple example
-uv run python examples/simple_invoice.py
-
-# With dependencies
-uv sync --extra remote
-uv run python examples/simple_invoice.py
-
-# Batch processing
-uv run python examples/batch_process.py
-```
-
-### Common Patterns
-
-```python
-# Basic processing
-config = PipelineConfig(
-    source="document.pdf",
-    template="templates.Invoice"
-)
-config.run()
-
-# With error handling
-try:
-    config.run()
-except Exception as e:
-    print(f"Error: {e}")
-
-# Batch processing
-for doc in Path("documents").glob("*.pdf"):
-    config = PipelineConfig(
-        source=str(doc),
-        template="templates.Invoice",
-        output_dir=f"outputs/{doc.stem}"
-    )
-    config.run()
-```

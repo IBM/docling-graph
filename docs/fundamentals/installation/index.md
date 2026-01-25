@@ -183,7 +183,7 @@ uv run docling-graph --help
 
 Expected output:
 ```
-Docling Graph v0.3.0
+Docling Graph v1.2.0
 Python 3.10+ 
 Usage: docling-graph [OPTIONS] COMMAND [ARGS]...
 ```
@@ -196,7 +196,7 @@ uv run python -c "import docling_graph; print(docling_graph.__version__)"
 
 Expected output:
 ```
-0.3.0
+v1.2.0
 ```
 
 ## Next Steps
@@ -252,7 +252,7 @@ uv run python script.py
 
 ## Performance Notes
 
-**New in v0.3.0**: Significant CLI performance improvements:
+**New in v1.2.0**: Significant CLI performance improvements:
 
 - **Init command**: 75-85% faster with intelligent dependency caching
   - First run: ~1-1.5s (checks dependencies)
@@ -303,14 +303,3 @@ rm -rf .venv
 cd ..
 rm -rf docling-graph
 ```
-
-## Related Documentation
-
-- **[Requirements](requirements.md)**: Detailed system requirements
-- **[GPU Setup](gpu-setup.md)**: Configure CUDA for local inference
-- **[API Keys](api-keys.md)**: Set up remote providers
-- **[Quick Start](../../introduction/quickstart.md)**: Your first extraction
-
----
-
-**Installation complete?** Move on to [schema definition](../schema-definition/index.md) to create your first template!

@@ -719,20 +719,3 @@ Now that you understand advanced patterns:
 1. **[Best Practices →](best-practices.md)** - Complete template checklist
 2. **[Examples](../../usage/examples/index.md)** - See patterns in production templates
 3. **[Pipeline Configuration](../pipeline-configuration/index.md)** - Configure extraction
-
----
-
-## Quick Reference
-
-### Pattern Checklist
-
-- [ ] Flexible measurements for scientific data
-- [ ] Nested lists with edges for complex structures
-- [ ] Multiple addresses with optional types
-- [ ] Optional edges for conditional relationships
-- [ ] Conditional fields with validators
-- [ ] Polymorphic fields for flexible values
-- [ ] Hierarchical structures for nested content
-- [ ] Reusable component library
-- [ ] String representations for all entities
-- [ ] Template composition for large projects

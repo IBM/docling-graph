@@ -5,13 +5,6 @@
 
 Extract personal information from ID cards and identity documents using vision-based extraction.
 
-**What You'll Learn:**
-- Vision-based extraction (VLM)
-- Date field handling
-- Address parsing
-- Field validators
-- Graph ID configuration
-
 **Document Type:** ID Card (Image)  
 **Time:** 15 minutes  
 **Backend:** VLM (recommended)
@@ -227,7 +220,7 @@ uv run docling-graph convert id_card.jpg \
 ```python
 """Process ID card."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="id_card.jpg",
@@ -240,7 +233,7 @@ config = PipelineConfig(
 )
 
 print("Processing ID card...")
-config.run()
+run_pipeline(config)
 print("✅ Complete!")
 ```
 
@@ -397,9 +390,9 @@ class IDCard(BaseModel):
 
 ## Troubleshooting
 
-### Issue: Dates Not Parsed
+### 🐛 Dates Not Parsed
 
-**Problem:** Date fields are None or incorrect
+**🐛** Date fields are None or incorrect
 
 **Solution:**
 ```python
@@ -411,9 +404,9 @@ date_of_birth: date | None = Field(
 )
 ```
 
-### Issue: Name Parsing
+### 🐛 Name Parsing
 
-**Problem:** Full name extracted as single string
+**🐛** Full name extracted as single string
 
 **Solution:**
 ```python
@@ -427,9 +420,9 @@ def split_names(cls, v):
     return v
 ```
 
-### Issue: Address Not Structured
+### 🐛 Address Not Structured
 
-**Problem:** Address extracted as single string
+**🐛** Address extracted as single string
 
 **Solution:**
 ```python
@@ -453,7 +446,7 @@ def parse_address(cls, v):
 
 ## Best Practices
 
-### 1. Use VLM for Images
+### 👍 Use VLM for Images
 
 ```bash
 # ✅ Good - VLM for image documents
@@ -465,7 +458,7 @@ uv run docling-graph convert id_card.jpg \
     --backend llm
 ```
 
-### 2. Make Fields Optional
+### 👍 Make Fields Optional
 
 ```python
 # ✅ Good - Optional fields for incomplete data
@@ -480,7 +473,7 @@ class Person(BaseModel):
     last_name: str
 ```
 
-### 3. Provide Date Format Examples
+### 👍 Provide Date Format Examples
 
 ```python
 # ✅ Good - Multiple format examples
@@ -498,34 +491,3 @@ date_of_birth: date | None = Field(
 1. **[Insurance Policy →](insurance-policy.md)** - Financial documents
 2. **[Validation Guide →](../../fundamentals/schema-definition/validation.md)** - Advanced validators
 3. **[VLM Backend →](../../fundamentals/extraction-process/extraction-backends.md)** - Vision models
-
----
-
-## Quick Reference
-
-### Process ID Card
-
-```bash
-# VLM (recommended)
-uv run docling-graph convert id_card.jpg \
-    -t "id_card_template.IDCard" \
-    --backend vlm
-
-# LLM (alternative)
-uv run docling-graph convert id_card.pdf \
-    -t "id_card_template.IDCard" \
-    --backend llm
-```
-
-### View Results
-
-```bash
-uv run docling-graph inspect outputs/id_card/
-cat outputs/id_card/nodes.csv
-```
-
-### Template Location
-
-```
-docs/examples/templates/id_card.py
-```

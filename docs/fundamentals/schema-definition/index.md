@@ -13,22 +13,6 @@ Pydantic templates are the **foundation** of knowledge graph extraction in Docli
 
 This section provides a complete guide to creating Pydantic templates optimized for LLM-based document extraction and automatic conversion to knowledge graphs.
 
-### Section Contents
-
-| Document | Description | Time |
-|:---------|:------------|:-----|
-| **[Template Basics](template-basics.md)** | File structure, imports, and the `edge()` helper | 10 min |
-| **[Entities vs Components](entities-vs-components.md)** | Critical distinction for graph construction | 15 min |
-| **[Field Definitions](field-definitions.md)** | Field types, descriptions, and examples | 20 min |
-| **[Relationships](relationships.md)** | Edge definitions and graph relationships | 15 min |
-| **[Validation](validation.md)** | Validators and data normalization | 20 min |
-| **[Advanced Patterns](advanced-patterns.md)** | Complex patterns and reusable components | 25 min |
-| **[Best Practices](best-practices.md)** | Template creation checklist and testing | 10 min |
-
-**Total Time:** ~2 hours
-
----
-
 ## Quick Example
 
 Here's a minimal template showing the key concepts:
@@ -164,7 +148,7 @@ Invoice (node)
 
 Docling Graph includes production-ready templates for various domains:
 
-### 📄 Invoice Template
+### 📍 Invoice Template
 - **Entities:** Invoice, Organization, Client
 - **Components:** Address, LineItem
 - **Use Case:** Financial document processing
@@ -191,7 +175,6 @@ Docling Graph includes production-ready templates for various domains:
 ## Prerequisites
 
 Before creating templates, ensure you have:
-
 <br>✅ **Python 3.10+** installed
 <br>✅ **Docling Graph** installed (`uv sync --extra all`)
 <br>✅ **Basic Pydantic knowledge** (recommended but not required)

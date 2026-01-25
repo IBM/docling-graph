@@ -37,7 +37,7 @@ Fast iteration during template development using local models.
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     # Source and template
@@ -63,7 +63,7 @@ config = PipelineConfig(
     output_dir="dev_outputs"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Prerequisites
@@ -108,7 +108,7 @@ Production deployment using remote API for reliability and scale.
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import os
 
 config = PipelineConfig(
@@ -140,7 +140,7 @@ config = PipelineConfig(
 # Set API key
 os.environ["MISTRAL_API_KEY"] = "your_api_key"
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Environment Setup
@@ -197,7 +197,7 @@ Maximum accuracy for complex documents using VLM.
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     # Source and template
@@ -223,7 +223,7 @@ config = PipelineConfig(
     output_dir="high_accuracy_outputs"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Prerequisites
@@ -267,7 +267,7 @@ Process multiple documents efficiently.
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pathlib import Path
 import logging
 
@@ -303,7 +303,7 @@ def process_batch(input_dir: str, template: str):
                 export_format="csv"
             )
             
-            config.run()
+            run_pipeline(config)
             results.append({"file": pdf_file.name, "status": "success"})
             
         except Exception as e:
@@ -351,7 +351,7 @@ Extract structured data from academic papers.
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     # Research paper
@@ -377,7 +377,7 @@ config = PipelineConfig(
     output_dir="research_outputs"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Template Example
@@ -430,7 +430,7 @@ Extract invoice data for accounting systems.
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     # Invoice document
@@ -454,7 +454,7 @@ config = PipelineConfig(
     output_dir="invoices/processed"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Template Example
@@ -534,7 +534,7 @@ Extract data from structured forms using VLM.
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     # Form document
@@ -556,7 +556,7 @@ config = PipelineConfig(
     output_dir="forms/processed"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Template Example
@@ -611,7 +611,7 @@ Process documents in multiple languages.
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     # Multi-language document
@@ -635,7 +635,7 @@ config = PipelineConfig(
     output_dir="multilingual_outputs"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### When to Use
@@ -653,7 +653,7 @@ config.run()
 ### Pattern 1: Error Handling
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import PipelineError, ExtractionError
 import logging
 
@@ -670,7 +670,7 @@ def safe_process(source: str, template: str) -> bool:
             inference="remote"
         )
         
-        config.run()
+        run_pipeline(config)
         logger.info(f"Successfully processed {source}")
         return True
         
@@ -690,7 +690,7 @@ def safe_process(source: str, template: str) -> bool:
 ### Pattern 2: Configuration Validation
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pydantic import ValidationError
 
 def validate_config(config_dict: dict) -> bool:
@@ -717,13 +717,13 @@ config_dict = {
 
 if validate_config(config_dict):
     config = PipelineConfig(**config_dict)
-    config.run()
+    run_pipeline(config)
 ```
 
 ### Pattern 3: Dynamic Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import os
 
 def get_config_for_document(doc_path: str) -> PipelineConfig:
@@ -760,14 +760,14 @@ def get_config_for_document(doc_path: str) -> PipelineConfig:
 
 # Use dynamic configuration
 config = get_config_for_document("documents/invoice_001.pdf")
-config.run()
+run_pipeline(config)
 ```
 
 ---
 
 ## Best Practices Summary
 
-### 1. Choose the Right Backend
+### 👍 Choose the Right Backend
 
 ```python
 # ✅ Good - Match backend to use case
@@ -781,7 +781,7 @@ else:
     inference = "remote"
 ```
 
-### 2. Organize Outputs
+### 👍 Organize Outputs
 
 ```python
 # ✅ Good - Structured output directories
@@ -791,12 +791,12 @@ timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 output_dir = f"outputs/{document_type}/{timestamp}"
 ```
 
-### 3. Handle Errors Gracefully
+### 👍 Handle Errors Gracefully
 
 ```python
 # ✅ Good - Comprehensive error handling
 try:
-    config.run()
+    run_pipeline(config)
 except ExtractionError:
     # Handle extraction failures
     pass
@@ -805,7 +805,7 @@ except PipelineError:
     pass
 ```
 
-### 4. Validate Before Running
+### 👍 Validate Before Running
 
 ```python
 # ✅ Good - Validate configuration
@@ -820,7 +820,7 @@ except ValidationError as e:
 
 ## Troubleshooting
 
-### Issue: Configuration Validation Fails
+### 🐛 Configuration Validation Fails
 
 **Solution:**
 ```python
@@ -834,7 +834,7 @@ except ValidationError as e:
         print(f"  {error['loc']}: {error['msg']}")
 ```
 
-### Issue: Extraction Produces No Results
+### 🐛 Extraction Produces No Results
 
 **Solution:**
 ```python
@@ -848,7 +848,7 @@ if stats["node_count"] == 0:
     print("No nodes extracted - check template and document")
 ```
 
-### Issue: Out of Memory
+### 🐛 Out of Memory
 
 **Solution:**
 ```python
@@ -872,42 +872,3 @@ Now that you understand complete configurations:
 1. **[Extraction Process →](../extraction-process/index.md)** - Learn how extraction works
 2. **[Graph Management](../graph-management/index.md)** - Work with extracted graphs
 3. **[CLI Guide](../../usage/cli/index.md)** - Use command-line interface
-
----
-
-## Quick Reference
-
-### Local Development
-```python
-PipelineConfig(
-    source="doc.pdf",
-    template="my_templates.Invoice",
-    backend="llm",
-    inference="local",
-    provider_override="ollama"
-)
-```
-
-### Production API
-```python
-PipelineConfig(
-    source="doc.pdf",
-    template="my_templates.Invoice",
-    backend="llm",
-    inference="remote",
-    provider_override="mistral",
-    llm_consolidation=True
-)
-```
-
-### High Accuracy
-```python
-PipelineConfig(
-    source="doc.pdf",
-    template="my_templates.Invoice",
-    backend="vlm",
-    inference="local",
-    processing_mode="one-to-one",
-    docling_config="vision"
-)
-```

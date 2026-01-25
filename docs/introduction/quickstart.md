@@ -82,7 +82,7 @@ Create `run_quickstart.py`:
 ```python
 """Quickstart extraction script."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Configure pipeline
 config = PipelineConfig(
@@ -93,7 +93,7 @@ config = PipelineConfig(
 
 # Run extraction
 print("Processing invoice...")
-config.run()
+run_pipeline(config)
 print("✅ Complete! Check quickstart_output/")
 ```
 
@@ -107,125 +107,20 @@ uv run python run_quickstart.py
 
 ## Step 4: View Results
 
-### Inspect Graph Visually
+### Interactive Visualization
 
 ```bash
-# Open interactive visualization
 uv run docling-graph inspect quickstart_output/
 ```
 
-This opens an HTML visualization in your browser showing:
-- Extracted nodes (invoice data)
-- Relationships (if any)
-- Interactive exploration
+Opens an HTML visualization showing extracted nodes, relationships, and interactive exploration.
 
-### View CSV Data
+### CSV Data
 
 ```bash
-# View nodes
 cat quickstart_output/nodes.csv
-
-# View edges
 cat quickstart_output/edges.csv
 ```
-
-**Example nodes.csv:**
-```csv
-id,label,type,invoice_number,date,total,currency
-invoice_1,SimpleInvoice,SimpleInvoice,INV-001,2024-01-15,1234.56,USD
-```
-
-### View Statistics
-
-```bash
-# View graph statistics
-cat quickstart_output/graph_stats.json
-```
-
-**Example output:**
-```json
-{
-  "node_count": 1,
-  "edge_count": 0,
-  "density": 0.0,
-  "avg_degree": 0.0,
-  "node_types": {
-    "SimpleInvoice": 1
-  },
-  "edge_types": {}
-}
-```
-
----
-
-## Complete Example
-
-Here's everything together:
-
-### 1. Create Template
-
-**File:** `simple_invoice.py`
-
-```python
-from pydantic import BaseModel, Field
-
-class SimpleInvoice(BaseModel):
-    """A simple invoice model."""
-    
-    invoice_number: str = Field(
-        description="The unique invoice identifier",
-        examples=["INV-001", "2024-001"]
-    )
-    
-    date: str = Field(
-        description="Invoice date",
-        examples=["2024-01-15"]
-    )
-    
-    total: float = Field(
-        description="Total amount",
-        examples=[1234.56]
-    )
-    
-    currency: str = Field(
-        description="Currency code",
-        examples=["USD", "EUR"]
-    )
-```
-
-### 2. Run Extraction
-
-**CLI:**
-```bash
-uv run docling-graph convert invoice.pdf \
-    --template "simple_invoice.SimpleInvoice" \
-    --output-dir "quickstart_output"
-```
-
-**Python:**
-```python
-from docling_graph import PipelineConfig
-
-config = PipelineConfig(
-    source="invoice.pdf",
-    template="simple_invoice.SimpleInvoice",
-    output_dir="quickstart_output"
-)
-config.run()
-```
-
-### 3. View Results
-
-```bash
-# Interactive visualization
-uv run docling-graph inspect quickstart_output/
-
-# View data
-cat quickstart_output/nodes.csv
-cat quickstart_output/graph_stats.json
-```
-
----
 
 ## Expected Output Structure
 
@@ -247,58 +142,24 @@ quickstart_output/
 
 ## Troubleshooting
 
-### Issue: Template Not Found
-
-**Error:**
-```
-ModuleNotFoundError: No module named 'simple_invoice'
-```
-
-**Solution:**
+**Template Not Found:**
 ```bash
-# Ensure template is in current directory
-ls simple_invoice.py
-
-# Or use absolute path
-uv run docling-graph convert invoice.pdf \
-    --template "$(pwd)/simple_invoice.SimpleInvoice"
+# Ensure template is in current directory or use absolute path
+uv run docling-graph convert invoice.pdf --template "$(pwd)/simple_invoice.SimpleInvoice"
 ```
 
-### Issue: No Data Extracted
-
-**Problem:** Empty nodes.csv
-
-**Solution:**
-1. Check template descriptions are clear
-2. Verify document is readable
-3. Try with verbose logging:
-
+**No Data Extracted:**
 ```bash
-uv run docling-graph --verbose convert invoice.pdf \
-    --template "simple_invoice.SimpleInvoice"
+# Use verbose logging to debug
+uv run docling-graph --verbose convert invoice.pdf --template simple_invoice.SimpleInvoice
 ```
 
-### Issue: API Key Error
-
-**Error:**
-```
-ConfigurationError: API key not found
-```
-
-**Solution:**
+**API Key Error:**
 ```bash
-# Use local inference (default)
-uv run docling-graph convert invoice.pdf \
-    --template "simple_invoice.SimpleInvoice" \
-    --inference local
-
-# Or set API key for remote
-export MISTRAL_API_KEY="your-key"
+# Use local inference (default) or set API key
+export MISTRAL_API_KEY='your-key'
 ```
 
----
-
-## Next Steps
 
 ### Improve Your Template
 
@@ -382,70 +243,6 @@ uv run docling-graph convert invoice.pdf \
 
 ## Learn More
 
-### Complete Examples
-
-- **[Invoice Extraction →](../usage/examples/invoice-extraction.md)** - Full invoice with relationships
-- **[Research Paper →](../usage/examples/research-paper.md)** - Complex scientific documents
-- **[ID Card →](../usage/examples/id-card.md)** - Vision-based extraction
-
-### Documentation
-
-- **[Schema Definition →](../fundamentals/schema-definition/index.md)** - Template creation guide
-- **[CLI Reference →](../usage/cli/index.md)** - All CLI commands
-- **[Python API →](../usage/api/index.md)** - Programmatic usage
-
-### Advanced Topics
-
-- **[Custom Backends →](../usage/advanced/custom-backends.md)** - Create custom extractors
-- **[Performance Tuning →](../usage/advanced/performance-tuning.md)** - Optimize processing
-- **[Testing →](../usage/advanced/testing.md)** - Test your templates
-
----
-
-## Quick Reference
-
-### Minimal Template
-
-```python
-from pydantic import BaseModel, Field
-
-class MyTemplate(BaseModel):
-    field1: str = Field(description="Description")
-    field2: float = Field(description="Description")
-```
-
-### Run Extraction
-
-```bash
-# CLI
-uv run docling-graph convert doc.pdf -t "template.MyTemplate"
-
-# Python
-from docling_graph import PipelineConfig
-config = PipelineConfig(source="doc.pdf", template="template.MyTemplate")
-config.run()
-```
-
-### View Results
-
-```bash
-# Visualize
-uv run docling-graph inspect outputs/
-
-# View data
-cat outputs/nodes.csv
-```
-
----
-
-## Summary
-
-You've learned:
-<br>✅ How to create a simple Pydantic template
-<br>✅ How to run extraction (CLI and Python)
-<br>✅ How to view and inspect results
-<br>✅ Basic troubleshooting
-
-**Time taken:** ~5 minutes
-
-**Next:** Try the [Invoice Extraction](../usage/examples/invoice-extraction.md) example for a more complete workflow!
+- **[Invoice Extraction](../usage/examples/invoice-extraction.md)** - Full invoice with relationships
+- **[Schema Definition](../fundamentals/schema-definition/index.md)** - Template creation guide
+- **[CLI Reference](../usage/cli/index.md)** - All CLI commands

@@ -35,7 +35,7 @@ CSV export creates **separate CSV files** for nodes and edges, making it easy to
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -99,7 +99,7 @@ Cypher export creates **Cypher statements** for direct import into Neo4j graph d
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -273,7 +273,7 @@ config = PipelineConfig(
 
 ## Complete Configuration Examples
 
-### Example 1: CSV Export with Full Outputs
+### 📍 CSV Export with Full Outputs
 
 ```python
 config = PipelineConfig(
@@ -293,7 +293,7 @@ config = PipelineConfig(
 )
 ```
 
-### Example 2: Cypher Export for Neo4j
+### 📍 Cypher Export for Neo4j
 
 ```python
 config = PipelineConfig(
@@ -311,7 +311,7 @@ config = PipelineConfig(
 )
 ```
 
-### Example 3: Batch Processing with Organized Outputs
+### 📍 Batch Processing with Organized Outputs
 
 ```python
 import os
@@ -328,7 +328,7 @@ for doc_path in Path("documents").glob("*.pdf"):
         output_dir=output_dir
     )
     
-    config.run()
+    run_pipeline(config)
 ```
 
 ---
@@ -477,7 +477,7 @@ config = PipelineConfig(
     output_dir="excel_analysis"
 )
 
-config.run()
+run_pipeline(config)
 
 # Open in Excel
 # File -> Open -> excel_analysis/nodes.csv
@@ -494,7 +494,7 @@ config = PipelineConfig(
     output_dir="neo4j_import"
 )
 
-config.run()
+run_pipeline(config)
 
 # Import to Neo4j
 # cat neo4j_import/graph.cypher | cypher-shell
@@ -511,7 +511,7 @@ config = PipelineConfig(
     output_dir="python_processing"
 )
 
-config.run()
+run_pipeline(config)
 
 # Load and process
 import pandas as pd
@@ -534,7 +534,7 @@ config = PipelineConfig(
     output_dir="api_data"
 )
 
-config.run()
+run_pipeline(config)
 
 # Load JSON for API
 import json
@@ -550,7 +550,7 @@ with open("api_data/extracted_data.json") as f:
 
 ## Best Practices
 
-### 1. Choose Format by Use Case
+### 👍 Choose Format by Use Case
 
 ```python
 # ✅ Good - Match format to use case
@@ -568,7 +568,7 @@ config = PipelineConfig(
 )
 ```
 
-### 2. Organize Output Directories
+### 👍 Organize Output Directories
 
 ```python
 # ✅ Good - Organized structure
@@ -584,7 +584,7 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Enable Useful Exports
+### 👍 Enable Useful Exports
 
 ```python
 # ✅ Good - Enable what you need
@@ -602,11 +602,11 @@ config = PipelineConfig(
 )
 ```
 
-### 4. Check Output Files
+### 👍 Check Output Files
 
 ```python
 # ✅ Good - Verify outputs
-config.run()
+run_pipeline(config)
 
 import os
 output_dir = config.output_dir
@@ -623,7 +623,7 @@ print("✅ All outputs generated successfully")
 
 ## Troubleshooting
 
-### Issue: Output Directory Not Created
+### 🐛 Output Directory Not Created
 
 **Solution:**
 ```python
@@ -638,12 +638,12 @@ config = PipelineConfig(
 )
 ```
 
-### Issue: CSV Files Empty
+### 🐛 CSV Files Empty
 
 **Solution:**
 ```python
 # Check extraction succeeded
-config.run()
+run_pipeline(config)
 
 # Verify graph has nodes
 import json
@@ -654,7 +654,7 @@ if stats["node_count"] == 0:
     print("Warning: No nodes extracted")
 ```
 
-### Issue: Cypher Import Fails
+### 🐛 Cypher Import Fails
 
 **Solution:**
 ```bash
@@ -674,41 +674,3 @@ Now that you understand export configuration:
 1. **[Configuration Examples →](configuration-examples.md)** - Complete scenarios
 2. **[Model Configuration](model-configuration.md)** - Model settings
 3. **[Graph Management](../graph-management/index.md)** - Working with graphs
-
----
-
-## Quick Reference
-
-### CSV Export (Default)
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    export_format="csv"
-)
-```
-
-**Output:** `nodes.csv`, `edges.csv`, JSON files
-
-### Cypher Export
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    export_format="cypher"
-)
-```
-
-**Output:** `graph.cypher`, JSON files
-
-### Custom Output Directory
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    output_dir="my_results/doc_001"
-)
-```

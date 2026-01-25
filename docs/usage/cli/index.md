@@ -286,7 +286,7 @@ uv run docling-graph --verbose convert document.pdf \
 
 ## Best Practices
 
-### 1. Use Configuration Files
+### 👍 Use Configuration Files
 
 ```bash
 # ✅ Good - Reusable configuration
@@ -302,7 +302,7 @@ uv run docling-graph convert document.pdf \
     --model mistral-large-latest
 ```
 
-### 2. Organize Output
+### 👍 Organize Output
 
 ```bash
 # ✅ Good - Organized by document
@@ -315,7 +315,7 @@ uv run docling-graph convert invoice_001.pdf \
     --template "templates.Invoice"
 ```
 
-### 3. Use Verbose for Development
+### 👍 Use Verbose for Development
 
 ```bash
 # ✅ Good - Debug during development
@@ -341,43 +341,3 @@ Explore each command in detail:
 Or continue to:
 - **[Python API →](../api/index.md)** - Programmatic usage
 - **[Examples →](../examples/index.md)** - Real-world examples
-
----
-
-## Quick Reference
-
-### Essential Commands
-
-```bash
-# Initialize
-uv run docling-graph init
-
-# Convert
-uv run docling-graph convert SOURCE -t TEMPLATE
-
-# Inspect
-uv run docling-graph inspect PATH
-
-# Help
-uv run docling-graph --help
-uv run docling-graph COMMAND --help
-```
-
-### Common Options
-
-```bash
-# Backend selection
---backend llm|vlm
-
-# Inference mode
---inference local|remote
-
-# Processing mode
---processing-mode one-to-one|many-to-one
-
-# Export format
---export-format csv|cypher
-
-# Output directory
---output-dir PATH
-```

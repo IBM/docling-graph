@@ -30,7 +30,7 @@ outputs/
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -38,7 +38,7 @@ config = PipelineConfig(
     output_dir="outputs"
 )
 
-config.run()
+run_pipeline(config)
 
 # Automatically generates:
 # - outputs/visualization.html
@@ -224,10 +224,10 @@ print(f"Most common node type: {most_common}")
 
 ## Complete Examples
 
-### Example 1: Basic Visualization
+### 📍 Basic Visualization
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Run pipeline (automatic visualization)
 config = PipelineConfig(
@@ -236,14 +236,14 @@ config = PipelineConfig(
     output_dir="outputs"
 )
 
-config.run()
+run_pipeline(config)
 
 # Open visualization
 import webbrowser
 webbrowser.open("file://outputs/visualization.html")
 ```
 
-### Example 2: Custom Visualization
+### 📍 Custom Visualization
 
 ```python
 from docling_graph.core.visualizers import InteractiveVisualizer
@@ -264,10 +264,10 @@ html_path = visualizer.save_cytoscape_graph(
 print(f"Visualization saved to {html_path}")
 ```
 
-### Example 3: Batch Visualization
+### 📍 Batch Visualization
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pathlib import Path
 
 # Process multiple documents
@@ -280,12 +280,12 @@ for pdf_file in Path("documents").glob("*.pdf"):
         output_dir=output_dir
     )
     
-    config.run()
+    run_pipeline(config)
     
     print(f"Visualization: {output_dir}/visualization.html")
 ```
 
-### Example 4: Report Analysis
+### 📍 Report Analysis
 
 ```python
 import json
@@ -391,11 +391,11 @@ for node_type, count in metadata.node_types.items():
 
 ## Integration Examples
 
-### Example 1: Web Dashboard
+### 📍 Web Dashboard
 
 ```python
 from flask import Flask, render_template
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import json
 
 app = Flask(__name__)
@@ -414,10 +414,10 @@ if __name__ == '__main__':
     app.run(debug=True)
 ```
 
-### Example 2: Automated Reports
+### 📍 Automated Reports
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pathlib import Path
 import smtplib
 from email.mime.text import MIMEText
@@ -431,7 +431,7 @@ def process_and_email(pdf_path, recipient):
         template="my_templates.Invoice",
         output_dir="temp_output"
     )
-    config.run()
+    run_pipeline(config)
     
     # Read report
     with open("temp_output/report.md") as f:
@@ -452,7 +452,7 @@ def process_and_email(pdf_path, recipient):
 
 ## Best Practices
 
-### 1. Always Generate Visualizations
+### 👍 Always Generate Visualizations
 
 ```python
 # ✅ Good - Keep visualizations enabled
@@ -463,7 +463,7 @@ config = PipelineConfig(
 )
 ```
 
-### 2. Check Statistics
+### 👍 Check Statistics
 
 ```python
 # ✅ Good - Verify graph quality
@@ -479,7 +479,7 @@ if stats["edge_count"] == 0:
     print("Warning: No relationships")
 ```
 
-### 3. Organize Visualizations
+### 👍 Organize Visualizations
 
 ```python
 # ✅ Good - Structured output
@@ -499,7 +499,7 @@ config = PipelineConfig(
 
 ## Troubleshooting
 
-### Issue: Visualization Not Opening
+### 🐛 Visualization Not Opening
 
 **Solution:**
 ```python
@@ -517,7 +517,7 @@ else:
     print(f"❌ File not found: {viz_path}")
 ```
 
-### Issue: Empty Visualization
+### 🐛 Empty Visualization
 
 **Solution:**
 ```python
@@ -531,7 +531,7 @@ if stats["node_count"] == 0:
     print("Graph is empty - check extraction")
 ```
 
-### Issue: Report Generation Fails
+### 🐛 Report Generation Fails
 
 **Solution:**
 ```python
@@ -555,44 +555,3 @@ Now that you understand visualization:
 1. **[Neo4j Integration →](neo4j-integration.md)** - Import into Neo4j
 2. **[Graph Analysis →](graph-analysis.md)** - Analyze graph structure
 3. **[CLI Guide →](../../usage/cli/index.md)** - Use command-line tools
-
----
-
-## Quick Reference
-
-### Automatic Visualization
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice"
-)
-config.run()
-# Generates: visualization.html, report.md, graph_stats.json
-```
-
-### Manual Visualization
-
-```python
-from docling_graph.core.visualizers import InteractiveVisualizer
-
-visualizer = InteractiveVisualizer()
-visualizer.save_cytoscape_graph(graph, "graph.html")
-```
-
-### Manual Report
-
-```python
-from docling_graph.core.visualizers import ReportGenerator
-
-generator = ReportGenerator()
-generator.visualize(graph, "report.md")
-```
-
-### Load Statistics
-
-```python
-import json
-with open("outputs/graph_stats.json") as f:
-    stats = json.load(f)
-```

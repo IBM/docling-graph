@@ -5,12 +5,6 @@
 
 This example demonstrates how to process documents directly from URLs, showcasing Docling Graph's ability to download and extract data from remote documents without manual file management.
 
-**What You'll Learn:**
-- Processing documents from URLs
-- Automatic content type detection
-- URL-based workflow integration
-- Remote document extraction
-
 **Time:** 10 minutes
 
 ---
@@ -134,7 +128,7 @@ uv run docling-graph convert "https://arxiv.org/pdf/2207.02720" \
 ### Basic Usage
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from templates.research import Research
 
 # Configure pipeline for URL input
@@ -148,13 +142,13 @@ config = PipelineConfig(
 )
 
 # Run pipeline
-config.run()
+run_pipeline(config)
 ```
 
 ### With Custom Settings
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from templates.research import Research
 
 # Advanced configuration
@@ -173,13 +167,13 @@ config = PipelineConfig(
 )
 
 # Run pipeline
-config.run()
+run_pipeline(config)
 ```
 
 ### Error Handling
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import ValidationError, ExtractionError
 from templates.research import Research
 
@@ -191,7 +185,7 @@ try:
         inference="remote",
         processing_mode="many-to-one"
     )
-    config.run()
+    run_pipeline(config)
     
 except ValidationError as e:
     print(f"URL validation failed: {e.message}")
@@ -312,7 +306,7 @@ handler = URLInputHandler(
 
 ## Troubleshooting
 
-### Issue: URL Download Timeout
+### 🐛 URL Download Timeout
 
 **Error:**
 ```
@@ -327,7 +321,7 @@ from docling_graph.core.input.handlers import URLInputHandler
 handler = URLInputHandler(timeout=120)  # 2 minutes
 ```
 
-### Issue: File Too Large
+### 🐛 File Too Large
 
 **Error:**
 ```
@@ -349,7 +343,7 @@ with open("document.pdf", "wb") as f:
 config = PipelineConfig(source="document.pdf", ...)
 ```
 
-### Issue: Unsupported URL Scheme
+### 🐛 Unsupported URL Scheme
 
 **Error:**
 ```
@@ -368,7 +362,7 @@ uv run docling-graph convert file.pdf --template "..."
 
 ## Best Practices
 
-### 1. Use HTTPS When Available
+### 👍 Use HTTPS When Available
 
 ```python
 # ✅ Good - Secure connection
@@ -378,13 +372,13 @@ source = "https://arxiv.org/pdf/2207.02720"
 source = "http://example.com/document.pdf"
 ```
 
-### 2. Handle Network Errors
+### 👍 Handle Network Errors
 
 ```python
 from docling_graph.exceptions import ValidationError
 
 try:
-    config.run()
+    run_pipeline(config)
 except ValidationError as e:
     if "timeout" in str(e).lower():
         print("Network timeout - retrying with longer timeout")
@@ -393,7 +387,7 @@ except ValidationError as e:
         print("Download failed - check URL and network connection")
 ```
 
-### 3. Verify URL Before Processing
+### 👍 Verify URL Before Processing
 
 ```python
 import requests
@@ -408,12 +402,12 @@ def verify_url(url: str) -> bool:
 
 if verify_url(url):
     config = PipelineConfig(source=url, ...)
-    config.run()
+    run_pipeline(config)
 else:
     print(f"URL not accessible: {url}")
 ```
 
-### 4. Cache Downloaded Files
+### 👍 Cache Downloaded Files
 
 ```python
 from pathlib import Path

@@ -5,13 +5,6 @@
 
 Extract structured information from insurance policy documents including coverage details, terms, and relationships.
 
-**What You'll Learn:**
-- Complex nested structures
-- Multiple entity relationships
-- Coverage modeling
-- Term extraction
-- Financial data handling
-
 **Document Type:** Insurance Policy (PDF)   
 **Time:** 20 minutes  
 **Backend:** LLM (recommended)
@@ -259,7 +252,7 @@ uv run docling-graph convert insurance_policy.pdf \
 ```python
 """Process insurance policy."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="insurance_policy.pdf",
@@ -273,7 +266,7 @@ config = PipelineConfig(
 )
 
 print("Processing insurance policy...")
-config.run()
+run_pipeline(config)
 print("✅ Complete!")
 ```
 
@@ -456,9 +449,9 @@ class InsurancePolicy(BaseModel):
 
 ## Troubleshooting
 
-### Issue: Coverage Not Extracted
+### 🐛 Coverage Not Extracted
 
-**Problem:** Coverage list is empty
+**🐛** Coverage list is empty
 
 **Solution:**
 ```python
@@ -476,9 +469,9 @@ coverages: List[Coverage] | None = edge(
 )
 ```
 
-### Issue: Amounts Not Parsed
+### 🐛 Amounts Not Parsed
 
-**Problem:** MonetaryAmount fields are None
+**🐛** MonetaryAmount fields are None
 
 **Solution:**
 ```python
@@ -500,9 +493,9 @@ class MonetaryAmount(BaseModel):
         return v
 ```
 
-### Issue: Dates Not Recognized
+### 🐛 Dates Not Recognized
 
-**Problem:** Date fields are None
+**🐛** Date fields are None
 
 **Solution:**
 ```python
@@ -521,7 +514,7 @@ effective_period: DateRange = Field(
 
 ## Best Practices
 
-### 1. Use Remote API for Complex Documents
+### 👍 Use Remote API for Complex Documents
 
 ```bash
 # ✅ Good - Remote API for multi-page policies
@@ -535,7 +528,7 @@ uv run docling-graph convert policy.pdf \
     --inference local
 ```
 
-### 2. Use Decimal for Money
+### 👍 Use Decimal for Money
 
 ```python
 # ✅ Good - Decimal for financial precision
@@ -549,7 +542,7 @@ class MonetaryAmount(BaseModel):
     amount: float  # 0.1 + 0.2 = 0.30000000000000004
 ```
 
-### 3. Make Lists Optional
+### 👍 Make Lists Optional
 
 ```python
 # ✅ Good - Optional lists with defaults
@@ -562,7 +555,7 @@ beneficiaries: List[Person] | None = edge(
 beneficiaries: List[Person] = edge(label="BENEFITS")
 ```
 
-### 4. Provide Clear Examples
+### 👍 Provide Clear Examples
 
 ```python
 # ✅ Good - Detailed examples
@@ -603,7 +596,7 @@ Or use Python:
 """Process multiple policies."""
 
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 policies_dir = Path("policies")
 output_base = Path("outputs")
@@ -619,7 +612,7 @@ for policy_file in policies_dir.glob("*.pdf"):
         output_dir=str(output_base / policy_file.stem)
     )
     
-    config.run()
+    run_pipeline(config)
     print(f"✅ {policy_file.name} complete!")
 ```
 
@@ -630,37 +623,3 @@ for policy_file in policies_dir.glob("*.pdf"):
 1. **[Examples Index](index.md)** - See all examples
 2. **[Graph Analysis →](../../fundamentals/graph-management/graph-analysis.md)** - Analyze extracted data
 3. **[Neo4j Integration →](../../fundamentals/graph-management/neo4j-integration.md)** - Load into database
-
----
-
-## Quick Reference
-
-### Process Policy
-
-```bash
-# Remote API (recommended)
-uv run docling-graph convert policy.pdf \
-    -t "insurance_template.InsurancePolicy" \
-    --backend llm \
-    --inference remote
-
-# Local (alternative)
-uv run docling-graph convert policy.pdf \
-    -t "insurance_template.InsurancePolicy" \
-    --backend llm \
-    --inference local
-```
-
-### View Results
-
-```bash
-uv run docling-graph inspect outputs/insurance/
-cat outputs/insurance/nodes.csv
-cat outputs/insurance/edges.csv
-```
-
-### Template Location
-
-```
-docs/examples/templates/insurance.py
-```

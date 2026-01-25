@@ -47,7 +47,7 @@ The **LLM (Language Model) backend** processes documents as text, using markdown
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -66,7 +66,7 @@ config = PipelineConfig(
 Docling Graph automatically detects model capabilities based on parameter count and adapts its behavior:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Small model (1B-7B) - Uses SIMPLE tier
 config = PipelineConfig(
@@ -287,7 +287,7 @@ The **VLM (Vision-Language Model) backend** processes documents visually, unders
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -378,7 +378,7 @@ print(f"Extracted {len(models)} models")
 #### With Pipeline
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="complex_form.pdf",
@@ -388,7 +388,7 @@ config = PipelineConfig(
     processing_mode="one-to-one"  # One model per page
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -420,7 +420,7 @@ config.run()
 ### Example 1: LLM Backend (Local)
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="invoice.pdf",
@@ -439,13 +439,13 @@ config = PipelineConfig(
     output_dir="outputs/llm_local"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
-### Example 2: LLM Backend (Remote)
+### 📍ample 2: LLM Backend (Remote)
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import os
 
 # Set API key
@@ -469,13 +469,13 @@ config = PipelineConfig(
     output_dir="outputs/llm_remote"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
-### Example 3: VLM Backend
+### 📍ample 3: VLM Backend
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="complex_form.pdf",
@@ -494,13 +494,13 @@ config = PipelineConfig(
     output_dir="outputs/vlm"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
-### Example 4: Hybrid Approach
+### 📍ample 4: Hybrid Approach
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 def process_document(doc_path: str, doc_type: str):
     """Process document with appropriate backend."""
@@ -524,7 +524,7 @@ def process_document(doc_path: str, doc_type: str):
         processing_mode=processing_mode
     )
     
-    config.run()
+    run_pipeline(config)
 
 # Process different document types
 process_document("invoice.pdf", "invoice")  # LLM
@@ -547,7 +547,7 @@ try:
         backend="llm",
         inference="remote"
     )
-    config.run()
+    run_pipeline(config)
     
 except ExtractionError as e:
     print(f"Extraction failed: {e.message}")
@@ -560,7 +560,7 @@ except ExtractionError as e:
         backend="llm",
         inference="local"
     )
-    config.run()
+    run_pipeline(config)
 ```
 
 ### VLM Backend Errors
@@ -574,7 +574,7 @@ try:
         template="my_templates.Invoice",
         backend="vlm"
     )
-    config.run()
+    run_pipeline(config)
     
 except ExtractionError as e:
     print(f"VLM extraction failed: {e.message}")
@@ -586,14 +586,14 @@ except ExtractionError as e:
         backend="llm",
         inference="local"
     )
-    config.run()
+    run_pipeline(config)
 ```
 
 ---
 
 ## Best Practices
 
-### 1. Match Backend to Document Type
+### 👍 Match Backend to Document Type
 
 ```python
 # ✅ Good - Choose based on document
@@ -603,7 +603,7 @@ elif document_is_standard:
     backend = "llm"
 ```
 
-### 2. Use Local for Development
+### 👍 Use Local for Development
 
 ```python
 # ✅ Good - Fast iteration
@@ -615,7 +615,7 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Use Remote for Production
+### 👍 Use Remote for Production
 
 ```python
 # ✅ Good - Reliable and scalable
@@ -627,7 +627,7 @@ config = PipelineConfig(
 )
 ```
 
-### 4. Cleanup Resources
+### 👍 Cleanup Resources
 
 ```python
 # ✅ Good - Always cleanup
@@ -650,11 +650,11 @@ finally:
     
     This ensures GPU memory is properly released, especially important for long-running processes.
 
-### 5. Use Real Tokenizers
+### 👍 Use Real Tokenizers
 
 ```python
 # ✅ Good - Accurate token counting
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     backend="llm",
@@ -674,7 +674,7 @@ config = PipelineConfig(
 
 ## Troubleshooting
 
-### Issue: LLM Returns Empty Results
+### 🐛 LLM Returns Empty Results
 
 **Solution:**
 ```python
@@ -689,7 +689,7 @@ if not markdown.strip():
     print("Markdown extraction failed")
 ```
 
-### Issue: VLM Out of Memory
+### 🐛 VLM Out of Memory
 
 **Solution:**
 ```python
@@ -702,7 +702,7 @@ config = PipelineConfig(
 )
 ```
 
-### Issue: Slow VLM Processing
+### 🐛 Slow VLM Processing
 
 **Solution:**
 ```python
@@ -724,7 +724,7 @@ config = PipelineConfig(
 Different LLM providers have different optimal batching strategies:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # OpenAI - Aggressive batching (90% merge threshold)
 config = PipelineConfig(
@@ -769,39 +769,3 @@ Now that you understand extraction backends:
 2. **[Model Merging →](model-merging.md)** - Learn how to consolidate extractions
 3. **[Batch Processing →](batch-processing.md)** - Optimize chunk processing
 4. **[Performance Tuning →](../../usage/advanced/performance-tuning.md)** - Advanced optimization
-
----
-
-## Quick Reference
-
-### LLM Backend (Local)
-
-```python
-config = PipelineConfig(
-    backend="llm",
-    inference="local",
-    provider_override="ollama",
-    model_override="llama3.1:8b"
-)
-```
-
-### LLM Backend (Remote)
-
-```python
-config = PipelineConfig(
-    backend="llm",
-    inference="remote",
-    provider_override="mistral",
-    model_override="mistral-large-latest"
-)
-```
-
-### VLM Backend
-
-```python
-config = PipelineConfig(
-    backend="vlm",
-    inference="local",
-    model_override="numind/NuExtract-2.0-8B"
-)
-```
