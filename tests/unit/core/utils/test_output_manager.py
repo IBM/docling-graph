@@ -87,8 +87,8 @@ class TestOutputDirectoryManager:
         consolidated_dir = manager.get_consolidated_graph_dir()
 
         assert consolidated_dir.exists()
-        assert consolidated_dir.name == "consolidated_graph"
-        assert consolidated_dir.parent == manager.get_document_dir()
+        assert consolidated_dir.name == "consolidated"
+        assert consolidated_dir.parent == manager.get_graphs_dir()
 
     def test_get_trace_dir(self, tmp_path):
         """Test get_trace_dir method."""
@@ -139,7 +139,7 @@ class TestOutputDirectoryManager:
 
         # Verify hierarchy
         assert docling_dir.parent == doc_dir
-        assert consolidated_dir.parent == doc_dir
+        assert consolidated_dir.parent == manager.get_graphs_dir()
         assert trace_dir.parent == doc_dir
         assert per_page_dir.parent == trace_dir
         assert per_chunk_dir.parent == trace_dir
@@ -196,6 +196,7 @@ class TestOutputDirectoryManager:
         """Test OutputDirectoryManager with relative path."""
         # Change to tmp_path and use relative path
         import os
+
         original_cwd = os.getcwd()
         try:
             os.chdir(tmp_path)
@@ -215,5 +216,6 @@ class TestOutputDirectoryManager:
         doc_dir = manager.get_document_dir()
         assert doc_dir.parent == custom_base
         assert custom_base.exists()
+
 
 # Made with Bob

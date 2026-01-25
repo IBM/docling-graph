@@ -91,6 +91,7 @@ def test_unknown_processing_mode():
     """Test that unknown processing mode raises error."""
     mock_client = MagicMock()
     mock_client.context_limit = 8192  # Set as integer to avoid TypeError
+    mock_client._max_new_tokens = None  # Set to None to avoid TypeError in comparison
     with pytest.raises(ValueError, match="Unknown processing_mode"):
         ExtractorFactory.create_extractor(
             processing_mode="unknown",

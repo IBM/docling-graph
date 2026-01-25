@@ -9,6 +9,7 @@ Trace data capture provides visibility into the extraction pipeline's intermedia
 - **Chunks**: Text chunks with page mappings (many-to-one mode)
 - **Extractions**: Extraction results with timing and errors
 - **Intermediate Graphs**: Per-chunk/per-page graphs before consolidation
+- **Performance Metrics**: Total pipeline processing time
 
 ---
 

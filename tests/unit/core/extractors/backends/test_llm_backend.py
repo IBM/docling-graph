@@ -198,7 +198,7 @@ def test_init_with_fallback_detection(mock_detect, mock_get_model_config, mock_l
 
     assert backend.model_config is not None
     assert backend.model_config.capability == ModelCapability.STANDARD
-    mock_detect.assert_called_once_with(8192, "")
+    mock_detect.assert_called_once_with(8192, "", None)
 
 
 @patch("docling_graph.core.extractors.backends.llm_backend.get_extraction_prompt")

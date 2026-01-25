@@ -96,12 +96,12 @@ class OutputDirectoryManager:
         safe = re.sub(r'[/\\:*?"<>|\[\](){}]', "_", safe)
         safe = safe.replace(" ", "_")
         safe = safe.strip("_")
-        
+
         # Truncate if needed (reserve 17 chars for timestamp)
         max_base = MAX_FILENAME_LENGTH - 17
         if len(safe) > max_base:
             safe = safe[:max_base]
-        
+
         # Use stored timestamp for consistency
         sanitized_name = f"{safe}_{self.timestamp}"
         doc_dir = self.base_output_dir / sanitized_name
@@ -203,5 +203,6 @@ class OutputDirectoryManager:
         path = self.get_trace_dir() / "per_chunk"
         path.mkdir(exist_ok=True)
         return path
+
 
 # Made with Bob

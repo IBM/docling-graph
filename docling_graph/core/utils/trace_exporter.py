@@ -55,22 +55,20 @@ class TraceExporter:
         page_dir = self.output_manager.get_page_dir(page_num)
 
         # Queue JSON
-        self.pending_writes.append((
-            page_dir / "docling.json",
-            {
-                "page_number": page_data.page_number,
-                "text_content": page_data.text_content,
-                "metadata": page_data.metadata,
-            },
-            "json"
-        ))
+        self.pending_writes.append(
+            (
+                page_dir / "docling.json",
+                {
+                    "page_number": page_data.page_number,
+                    "text_content": page_data.text_content,
+                    "metadata": page_data.metadata,
+                },
+                "json",
+            )
+        )
 
         # Queue Markdown
-        self.pending_writes.append((
-            page_dir / "docling.md",
-            page_data.text_content,
-            "text"
-        ))
+        self.pending_writes.append((page_dir / "docling.md", page_data.text_content, "text"))
 
     def queue_chunk_export(self, chunk_id: int, chunk_data: "ChunkData") -> None:
         """
@@ -83,11 +81,9 @@ class TraceExporter:
         chunks_dir = self.output_manager.get_chunks_dir()
 
         # Individual chunk markdown file
-        self.pending_writes.append((
-            chunks_dir / f"chunk_{chunk_id:03d}.md",
-            chunk_data.text_content,
-            "text"
-        ))
+        self.pending_writes.append(
+            (chunks_dir / f"chunk_{chunk_id:03d}.md", chunk_data.text_content, "text")
+        )
 
     def queue_chunks_metadata(self, chunks: List["ChunkData"]) -> None:
         """
@@ -105,17 +101,13 @@ class TraceExporter:
                     "chunk_id": c.chunk_id,
                     "page_numbers": c.page_numbers,
                     "token_count": c.token_count,
-                    "file": f"chunk_{c.chunk_id:03d}.md"
+                    "file": f"chunk_{c.chunk_id:03d}.md",
                 }
                 for c in chunks
-            ]
+            ],
         }
 
-        self.pending_writes.append((
-            chunks_dir / "chunks_metadata.json",
-            metadata,
-            "json"
-        ))
+        self.pending_writes.append((chunks_dir / "chunks_metadata.json", metadata, "json"))
 
     def queue_extraction_export(self, extraction: "ExtractionData") -> None:
         """
@@ -126,18 +118,22 @@ class TraceExporter:
         """
         extractions_dir = self.output_manager.get_extractions_dir()
 
-        self.pending_writes.append((
-            extractions_dir / f"extraction_{extraction.extraction_id:03d}.json",
-            {
-                "extraction_id": extraction.extraction_id,
-                "source_type": extraction.source_type,
-                "source_id": extraction.source_id,
-                "parsed_model": extraction.parsed_model.model_dump() if extraction.parsed_model else None,
-                "extraction_time": extraction.extraction_time,
-                "error": extraction.error,
-            },
-            "json"
-        ))
+        self.pending_writes.append(
+            (
+                extractions_dir / f"extraction_{extraction.extraction_id:03d}.json",
+                {
+                    "extraction_id": extraction.extraction_id,
+                    "source_type": extraction.source_type,
+                    "source_id": extraction.source_id,
+                    "parsed_model": extraction.parsed_model.model_dump()
+                    if extraction.parsed_model
+                    else None,
+                    "extraction_time": extraction.extraction_time,
+                    "error": extraction.error,
+                },
+                "json",
+            )
+        )
 
     def queue_graph_export(self, graph_data: "GraphData", mode: str) -> None:
         """
@@ -155,18 +151,12 @@ class TraceExporter:
         # Queue graph JSON
         graph_dict = nx.node_link_data(graph_data.graph)
 
-        self.pending_writes.append((
-            graph_dir / "graph.json",
-            graph_dict,
-            "json"
-        ))
+        self.pending_writes.append((graph_dir / "graph.json", graph_dict, "json"))
 
         # Queue pydantic model
-        self.pending_writes.append((
-            graph_dir / "pydantic_model.json",
-            graph_data.pydantic_model.model_dump(),
-            "json"
-        ))
+        self.pending_writes.append(
+            (graph_dir / "pydantic_model.json", graph_data.pydantic_model.model_dump(), "json")
+        )
 
     async def flush_async(self) -> None:
         """Write all queued files concurrently."""
@@ -188,5 +178,6 @@ class TraceExporter:
     def get_pending_count(self) -> int:
         """Get number of pending writes."""
         return len(self.pending_writes)
+
 
 # Made with Bob

@@ -36,12 +36,12 @@ class LlmBackend:
         model_attr = getattr(llm_client, "model_name", None) or getattr(
             llm_client, "model_id", None
         )
-        
+
         # Try to get config from registry (now works with all clients via .provider property)
         if hasattr(llm_client, "provider") and model_attr:
             provider = llm_client.provider
             self.model_config = get_model_config(provider, model_attr)
-            
+
             if self.model_config:
                 logger.info(
                     f"Loaded model config from registry: provider={provider}, "
@@ -61,18 +61,16 @@ class LlmBackend:
             )
             # Get max_new_tokens if available (better capability indicator)
             max_new_tokens = getattr(llm_client, "_max_new_tokens", None)
-            
+
             # Ensure model_name is a string for detect_model_capability
             model_name_str = str(model_name) if model_name else ""
-            
+
             logger.info(
                 f"Using fallback capability detection: context={context_limit}, "
                 f"model_name={model_name_str}, max_new_tokens={max_new_tokens}"
             )
-            
-            capability = detect_model_capability(
-                context_limit, model_name_str, max_new_tokens
-            )
+
+            capability = detect_model_capability(context_limit, model_name_str, max_new_tokens)
 
             # Create minimal config
             self.model_config = ModelConfig(

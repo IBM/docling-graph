@@ -13,6 +13,7 @@ from typing import Any, List
 
 try:
     import aiofiles  # type: ignore[import-untyped]
+
     AIOFILES_AVAILABLE = True
 except ImportError:
     AIOFILES_AVAILABLE = False
@@ -58,8 +59,7 @@ class OptimizedFileWriter:
         loop = asyncio.get_event_loop()
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             json_str = await loop.run_in_executor(
-                executor,
-                lambda: json.dumps(data, indent=2, ensure_ascii=False, default=str)
+                executor, lambda: json.dumps(data, indent=2, ensure_ascii=False, default=str)
             )
 
         # Write asynchronously (I/O-bound)

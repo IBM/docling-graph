@@ -18,22 +18,14 @@ class TestPageData:
 
     def test_page_data_creation(self):
         """Test basic PageData creation."""
-        page = PageData(
-            page_number=1,
-            text_content="Test content",
-            metadata={"key": "value"}
-        )
+        page = PageData(page_number=1, text_content="Test content", metadata={"key": "value"})
         assert page.page_number == 1
         assert page.text_content == "Test content"
         assert page.metadata == {"key": "value"}
 
     def test_page_data_with_empty_metadata(self):
         """Test PageData with empty metadata."""
-        page = PageData(
-            page_number=2,
-            text_content="Content",
-            metadata={}
-        )
+        page = PageData(page_number=2, text_content="Content", metadata={})
         assert page.page_number == 2
         assert page.metadata == {}
 
@@ -42,12 +34,7 @@ class TestPageData:
         page = PageData(
             page_number=1,
             text_content="Test",
-            metadata={
-                "page_size": 1024,
-                "has_tables": True,
-                "has_images": False,
-                "language": "en"
-            }
+            metadata={"page_size": 1024, "has_tables": True, "has_images": False, "language": "en"},
         )
         assert page.metadata["page_size"] == 1024
         assert page.metadata["has_tables"] is True
@@ -63,7 +50,7 @@ class TestChunkData:
             text_content="Chunk text",
             page_numbers=[1, 2],
             token_count=150,
-            metadata={"source": "test"}
+            metadata={"source": "test"},
         )
         assert chunk.chunk_id == 0
         assert chunk.text_content == "Chunk text"
@@ -77,7 +64,7 @@ class TestChunkData:
             text_content="Single page chunk",
             page_numbers=[3],
             token_count=100,
-            metadata={}
+            metadata={},
         )
         assert len(chunk.page_numbers) == 1
         assert chunk.page_numbers[0] == 3
@@ -89,7 +76,7 @@ class TestChunkData:
             text_content="Multi-page chunk",
             page_numbers=[1, 2, 3, 4],
             token_count=500,
-            metadata={}
+            metadata={},
         )
         assert len(chunk.page_numbers) == 4
         assert chunk.page_numbers == [1, 2, 3, 4]
@@ -113,7 +100,7 @@ class TestExtractionData:
             source_id=1,
             parsed_model=model,
             extraction_time=1.5,
-            error=None
+            error=None,
         )
 
         assert extraction.extraction_id == 0
@@ -131,7 +118,7 @@ class TestExtractionData:
             source_id=2,
             parsed_model=None,
             extraction_time=0.5,
-            error="Extraction failed: timeout"
+            error="Extraction failed: timeout",
         )
 
         assert extraction.extraction_id == 1
@@ -146,7 +133,7 @@ class TestExtractionData:
             source_id=0,
             parsed_model=None,
             extraction_time=2.0,
-            error=None
+            error=None,
         )
 
         assert extraction.source_type == "page"
@@ -174,7 +161,7 @@ class TestGraphData:
             graph=graph,
             pydantic_model=model,
             node_count=2,
-            edge_count=1
+            edge_count=1,
         )
 
         assert graph_data.graph_id == 0
@@ -195,7 +182,7 @@ class TestGraphData:
             graph=graph,
             pydantic_model=None,
             node_count=0,
-            edge_count=0
+            edge_count=0,
         )
 
         assert graph_data.node_count == 0
@@ -235,18 +222,10 @@ class TestTraceData:
         trace.chunks = []
 
         chunk1 = ChunkData(
-            chunk_id=0,
-            text_content="Chunk 1",
-            page_numbers=[1],
-            token_count=100,
-            metadata={}
+            chunk_id=0, text_content="Chunk 1", page_numbers=[1], token_count=100, metadata={}
         )
         chunk2 = ChunkData(
-            chunk_id=1,
-            text_content="Chunk 2",
-            page_numbers=[2],
-            token_count=150,
-            metadata={}
+            chunk_id=1, text_content="Chunk 2", page_numbers=[2], token_count=150, metadata={}
         )
 
         trace.chunks.append(chunk1)
@@ -266,7 +245,7 @@ class TestTraceData:
             source_id=0,
             parsed_model=None,
             extraction_time=1.0,
-            error=None
+            error=None,
         )
         extraction2 = ExtractionData(
             extraction_id=1,
@@ -274,7 +253,7 @@ class TestTraceData:
             source_id=1,
             parsed_model=None,
             extraction_time=1.5,
-            error=None
+            error=None,
         )
 
         trace.extractions.append(extraction1)
@@ -298,7 +277,7 @@ class TestTraceData:
             graph=graph1,
             pydantic_model=None,
             node_count=1,
-            edge_count=0
+            edge_count=0,
         )
 
         trace.intermediate_graphs.append(graph_data1)
@@ -316,27 +295,41 @@ class TestTraceData:
 
         # Add chunks
         trace.chunks = []
-        trace.chunks.append(ChunkData(
-            chunk_id=0, text_content="C1", page_numbers=[1], token_count=100, metadata={}
-        ))
+        trace.chunks.append(
+            ChunkData(chunk_id=0, text_content="C1", page_numbers=[1], token_count=100, metadata={})
+        )
 
         # Add extractions
-        trace.extractions.append(ExtractionData(
-            extraction_id=0, source_type="chunk", source_id=0,
-            parsed_model=None, extraction_time=1.0, error=None
-        ))
+        trace.extractions.append(
+            ExtractionData(
+                extraction_id=0,
+                source_type="chunk",
+                source_id=0,
+                parsed_model=None,
+                extraction_time=1.0,
+                error=None,
+            )
+        )
 
         # Add intermediate graphs
         graph = nx.DiGraph()
-        trace.intermediate_graphs.append(GraphData(
-            graph_id=0, source_type="chunk", source_id=0,
-            graph=graph, pydantic_model=None, node_count=0, edge_count=0
-        ))
+        trace.intermediate_graphs.append(
+            GraphData(
+                graph_id=0,
+                source_type="chunk",
+                source_id=0,
+                graph=graph,
+                pydantic_model=None,
+                node_count=0,
+                edge_count=0,
+            )
+        )
 
         # Verify all data is present
         assert len(trace.pages) == 2
         assert len(trace.chunks) == 1
         assert len(trace.extractions) == 1
         assert len(trace.intermediate_graphs) == 1
+
 
 # Made with Bob

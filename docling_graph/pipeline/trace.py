@@ -81,4 +81,5 @@ class TraceData:
     intermediate_graphs: list[GraphData] = field(default_factory=list)
     consolidation: ConsolidationData | None = None
 
+
 # Made with Bob

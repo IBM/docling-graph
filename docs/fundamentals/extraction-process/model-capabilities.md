@@ -45,11 +45,27 @@ print(capability)  # ModelCapability.SIMPLE
 
 ### Detection Logic
 
-The system uses pattern matching on model names:
+The system uses a **3-tier priority system** for accurate capability detection:
 
-1. **Size-based detection**: Extracts parameter count from model name (e.g., "8b", "13b")
-2. **Known model mapping**: Uses pre-classified list of 40+ popular models
-3. **Fallback heuristics**: Conservative defaults for unknown models
+**Priority 1: Model Name Pattern Matching** (Most Reliable)
+- Detects parameter count from model name (e.g., "1b", "8b", "70b")
+- Small models (1B-3B) → SIMPLE
+- Large models (70B+) → ADVANCED
+
+**Priority 2: Max Output Tokens** (Better Proxy)
+- Uses `max_new_tokens` as capability indicator
+- ≤2048 tokens → SIMPLE (limited output capacity)
+- ≤4096 tokens → STANDARD
+- \>4096 tokens → ADVANCED
+
+**Priority 3: Context Window** (Fallback)
+- Uses context limit only when other signals unavailable
+- ⚠️ **Note**: Modern small models can have large contexts (e.g., Granite 1B with 128K)
+- Includes warnings when using this heuristic
+
+**Registry Lookup:**
+- For known models in `models.yaml`, explicit capability is always used
+- Fallback detection only applies to unregistered models
 
 ---
 

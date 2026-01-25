@@ -7,8 +7,10 @@ of pipeline stages, handles errors, and manages resource cleanup.
 
 import gc
 import logging
+import time
 from typing import Any, Dict, Literal, Union
 
+from .. import __version__
 from ..core import PipelineConfig
 from ..exceptions import PipelineError
 from .context import PipelineContext
@@ -97,6 +99,9 @@ class PipelineOrchestrator:
         Raises:
             PipelineError: If any stage fails
         """
+        # Start timing the entire pipeline
+        pipeline_start_time = time.time()
+
         context = PipelineContext(config=self.config)
         current_stage = None
 
@@ -137,28 +142,39 @@ class PipelineOrchestrator:
                 logger.info(f"  Extractions: {len(context.trace_data.extractions)}")
                 logger.info(f"  Intermediate graphs: {len(context.trace_data.intermediate_graphs)}")
 
+            # Calculate total processing time
+            pipeline_end_time = time.time()
+            pipeline_processing_time = pipeline_end_time - pipeline_start_time
+
             # Save metadata.json if output_manager is available
             if context.output_manager and self.dump_to_disk:
                 from datetime import datetime
-                
+
                 metadata = {
-                    "pipeline_version": "1.0.0",
+                    "pipeline_version": __version__,
                     "timestamp": datetime.now().isoformat(),
-                    "source": str(self.config.source),
-                    "template": str(self.config.template),
-                    "processing_mode": self.config.processing_mode,
-                    "backend": self.config.backend,
-                    "docling_config": self.config.docling_config,
-                    "use_chunking": self.config.use_chunking,
-                    "llm_consolidation": self.config.llm_consolidation,
-                    "include_trace": self.include_trace,
+                    "input": {
+                        "source": str(self.config.source),
+                        "template": str(self.config.template),
+                    },
+                    "config": {
+                        "processing_mode": self.config.processing_mode,
+                        "backend": self.config.backend,
+                        "docling_config": self.config.docling_config,
+                        "use_chunking": self.config.use_chunking,
+                        "llm_consolidation": self.config.llm_consolidation,
+                        "include_trace": self.include_trace,
+                    },
+                    "processing_time_seconds": round(pipeline_processing_time, 2),
                     "results": {
                         "nodes": context.graph_metadata.node_count if context.graph_metadata else 0,
                         "edges": context.graph_metadata.edge_count if context.graph_metadata else 0,
-                        "extracted_models": len(context.extracted_models) if context.extracted_models else 0,
-                    }
+                        "extracted_models": len(context.extracted_models)
+                        if context.extracted_models
+                        else 0,
+                    },
                 }
-                
+
                 if self.include_trace and context.trace_data:
                     # Build detailed intermediate graphs info
                     intermediate_graphs_detail = [
@@ -171,21 +187,27 @@ class PipelineOrchestrator:
                         }
                         for g in context.trace_data.intermediate_graphs
                     ]
-                    
+
                     metadata["trace_summary"] = {
                         "pages": len(context.trace_data.pages),
-                        "chunks": len(context.trace_data.chunks) if context.trace_data.chunks else 0,
+                        "chunks": len(context.trace_data.chunks)
+                        if context.trace_data.chunks
+                        else 0,
                         "extractions": len(context.trace_data.extractions),
                         "intermediate_graphs": {
                             "count": len(context.trace_data.intermediate_graphs),
                             "details": intermediate_graphs_detail,
                         },
                     }
-                
-                context.output_manager.save_metadata(metadata)
-                logger.info(f"Saved metadata to {context.output_manager.get_document_dir() / 'metadata.json'}")
 
-            logger.info("--- Pipeline Completed Successfully ---")
+                context.output_manager.save_metadata(metadata)
+                logger.info(
+                    f"Saved metadata to {context.output_manager.get_document_dir() / 'metadata.json'}"
+                )
+
+            logger.info(
+                f"--- Pipeline Completed Successfully (took {pipeline_processing_time:.2f}s) ---"
+            )
             return context
 
         except Exception as e:
