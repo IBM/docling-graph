@@ -5,13 +5,6 @@
 
 Add custom stages to the docling-graph pipeline for specialized preprocessing, validation, or post-processing tasks.
 
-**What You'll Learn:**
-- Pipeline stage protocol
-- Stage implementation
-- Context management
-- Integration with pipeline
-- Error handling
-
 **Prerequisites:**
 - Understanding of [Pipeline Architecture](../../introduction/architecture.md)
 - Familiarity with [Python API](../api/index.md)
@@ -393,7 +386,7 @@ class PipelineLoggingStage:
 Wrap pipeline execution with custom stages.
 """
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.pipeline.context import PipelineContext
 from my_stages import DocumentValidationStage, QualityCheckStage
 
@@ -412,7 +405,7 @@ def run_pipeline_with_stages(config: PipelineConfig):
     validation_stage.execute(context)
     
     # Run main pipeline
-    config.run()
+    run_pipeline(config)
     
     # Post-processing stages
     # (Would need to load results from output_dir)
@@ -558,7 +551,7 @@ def test_stage_file_too_large(tmp_path):
 
 ## Best Practices
 
-### 1. Keep Stages Focused
+### 👍 Keep Stages Focused
 
 ```python
 # ✅ Good - Single responsibility
@@ -576,7 +569,7 @@ class ProcessingStage:
     def execute(self, context): ...
 ```
 
-### 2. Handle Errors Gracefully
+### 👍 Handle Errors Gracefully
 
 ```python
 # ✅ Good - Structured error handling
@@ -598,7 +591,7 @@ def execute(self, context):
         pass  # Error ignored!
 ```
 
-### 3. Update Context Metadata
+### 👍 Update Context Metadata
 
 ```python
 # ✅ Good - Track stage execution
@@ -619,7 +612,7 @@ def execute(self, context):
     pass
 ```
 
-### 4. Make Stages Configurable
+### 👍 Make Stages Configurable
 
 ```python
 # ✅ Good - Configurable behavior
@@ -641,11 +634,3 @@ class MyStage:
 1. **[Performance Tuning →](performance-tuning.md)** - Optimize pipeline
 2. **[Error Handling →](error-handling.md)** - Handle errors
 3. **[Testing →](testing.md)** - Test your stages
-
----
-
-## Related Documentation
-
-- **[Pipeline Architecture](../../introduction/architecture.md)** - System design
-- **[Python API](../api/index.md)** - Programmatic usage
-- **[Exceptions](../../reference/exceptions.md)** - Exception hierarchy

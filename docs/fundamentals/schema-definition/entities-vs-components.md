@@ -141,7 +141,7 @@ class Measurement(BaseModel):
 
 ### Entity Examples
 
-#### Example 1: Person Entity
+#### 📍 Person Entity
 
 ```python
 class Person(BaseModel):
@@ -187,7 +187,7 @@ Person(first_name="John", last_name="Doe", dob="1990-01-01", email="john@work.co
 → Same node (same ID fields, email difference ignored)
 ```
 
-#### Example 2: Document Entity
+#### 📍 Document Entity
 
 ```python
 class Invoice(BaseModel):
@@ -270,7 +270,7 @@ model_config = ConfigDict(is_entity=False)
 
 ### Component Examples
 
-#### Example 1: Address Component
+#### 📍 Address Component
 
 ```python
 class Address(BaseModel):
@@ -319,7 +319,7 @@ Address(street="123 Main St", city="Paris", postal_code="75002")
 → Different node (postal code differs)
 ```
 
-#### Example 2: Monetary Amount Component
+#### 📍 Monetary Amount Component
 
 ```python
 class MonetaryAmount(BaseModel):
@@ -392,7 +392,7 @@ Use this decision tree to classify your models:
 
 ## Real-World Examples
 
-### Example 1: Invoice Processing
+### 📍 Invoice Processing
 
 ```python
 # ENTITY: Invoice (unique document)
@@ -429,7 +429,7 @@ Invoice-002 --ISSUED_BY--> Tech Ltd --LOCATED_AT--> Address(123 Main St, Paris)
                                                       ↑ Same address node shared
 ```
 
-### Example 2: Research Paper
+### 📍 Research Paper
 
 ```python
 # ENTITY: Research (unique paper)
@@ -456,7 +456,7 @@ class Measurement(BaseModel):
     # Multiple experiments can have the same measurement
 ```
 
-### Example 3: ID Card
+### 📍 ID Card
 
 ```python
 # ENTITY: IDCard (unique document)
@@ -561,7 +561,7 @@ class Invoice(BaseModel):
 
 ## Common Mistakes
 
-### ❌ Mistake 1: Making Everything an Entity
+### ❌ Making Everything an Entity
 
 ```python
 # WRONG - Address as entity
@@ -574,7 +574,7 @@ class Address(BaseModel):
 
 **Fix:** Make Address a component.
 
-### ❌ Mistake 2: Making Everything a Component
+### ❌ Making Everything a Component
 
 ```python
 # WRONG - Person as component
@@ -587,7 +587,7 @@ class Person(BaseModel):
 
 **Fix:** Make Person an entity with appropriate `graph_id_fields`.
 
-### ❌ Mistake 3: Wrong ID Fields
+### ❌ Wrong ID Fields
 
 ```python
 # WRONG - Using non-stable fields
@@ -645,31 +645,3 @@ Now that you understand entities vs components:
 1. **[Field Definitions →](field-definitions.md)** - Learn to write effective field descriptions
 2. **[Relationships](relationships.md)** - Connect entities and components with edges
 3. **[Advanced Patterns](advanced-patterns.md)** - Complex entity/component patterns
-
----
-
-## Quick Reference
-
-### Entity Configuration
-
-```python
-class MyEntity(BaseModel):
-    """Entity description."""
-    model_config = ConfigDict(graph_id_fields=["field1", "field2"])
-    
-    field1: str = Field(...)
-    field2: str = Field(...)
-    other_field: Optional[str] = Field(None)  # Not part of ID
-```
-
-### Component Configuration
-
-```python
-class MyComponent(BaseModel):
-    """Component description."""
-    model_config = ConfigDict(is_entity=False)
-    
-    field1: str = Field(...)
-    field2: str = Field(...)
-    # All fields used for deduplication
-```

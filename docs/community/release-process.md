@@ -74,7 +74,7 @@ Following industry best practices:
 
 ## Release Types
 
-### Patch Release (0.3.0 → 0.3.1)
+### Patch Release (v1.2.0 → 0.3.1)
 
 **When:**
 - Bug fixes
@@ -90,7 +90,7 @@ git commit -m "fix(extractors): handle empty markdown"
 git tag v0.3.1
 ```
 
-### Minor Release (0.3.0 → 0.4.0)
+### Minor Release (v1.2.0 → 0.4.0)
 
 **When:**
 - New features
@@ -466,7 +466,7 @@ __version__ = "0.4.0"  # Update version
 ### Deprecated
 - Old configuration format (use PipelineConfig)
 
-## [0.3.0] - 2024-01-15
+## [v1.2.0] - 2024-01-15
 ...
 ```
 
@@ -643,7 +643,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 - VLM memory leak (#125)
 
-## [0.3.0] - 2024-01-15
+## [v1.2.0] - 2024-01-15
 ...
 ```
 
@@ -850,7 +850,7 @@ git checkout -b hotfix/0.4.1
 grep version pyproject.toml
 
 # Update version
-sed -i 's/version = "0.3.0"/version = "0.4.0"/' pyproject.toml
+sed -i 's/version = "v1.2.0"/version = "0.4.0"/' pyproject.toml
 ```
 
 ### Build and Publish

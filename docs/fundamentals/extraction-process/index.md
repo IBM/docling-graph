@@ -275,7 +275,7 @@ config = PipelineConfig(
 from docling_graph.exceptions import ExtractionError
 
 try:
-    config.run()
+    run_pipeline(config)
 except ExtractionError as e:
     print(f"Extraction failed: {e.message}")
     print(f"Details: {e.details}")
@@ -287,7 +287,7 @@ except ExtractionError as e:
 from docling_graph.exceptions import PipelineError
 
 try:
-    config.run()
+    run_pipeline(config)
 except PipelineError as e:
     print(f"Pipeline failed at stage: {e.details['stage']}")
 ```
@@ -364,10 +364,10 @@ Understand how pipeline stages are coordinated through the extraction process.
 
 ## Quick Examples
 
-### Example 1: Basic Extraction
+### 📍 Basic Extraction
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -376,10 +376,10 @@ config = PipelineConfig(
     inference="local"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
-### Example 2: High-Accuracy Extraction
+### 📍 High-Accuracy Extraction
 
 ```python
 config = PipelineConfig(
@@ -390,10 +390,10 @@ config = PipelineConfig(
     docling_config="vision"     # Vision pipeline
 )
 
-config.run()
+run_pipeline(config)
 ```
 
-### Example 3: Optimized for Large Documents
+### 📍 Optimized for Large Documents
 
 ```python
 config = PipelineConfig(
@@ -405,14 +405,14 @@ config = PipelineConfig(
     max_batch_size=3            # Smaller batches
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ---
 
 ## Best Practices
 
-### 1. Choose the Right Backend
+### 👍 Choose the Right Backend
 
 ```python
 # ✅ Good - Match backend to document type
@@ -422,7 +422,7 @@ else:
     backend = "llm"
 ```
 
-### 2. Enable Chunking for Large Documents
+### 👍 Enable Chunking for Large Documents
 
 ```python
 # ✅ Good - Use chunking for efficiency
@@ -433,7 +433,7 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Use LLM Consolidation for Accuracy
+### 👍 Use LLM Consolidation for Accuracy
 
 ```python
 # ✅ Good - Extra accuracy for critical data
@@ -448,7 +448,7 @@ config = PipelineConfig(
 
 ## Troubleshooting
 
-### Issue: Extraction Returns Empty Results
+### 🐛 Extraction Returns Empty Results
 
 **Solution:**
 ```python
@@ -461,7 +461,7 @@ if not markdown.strip():
     print("Document conversion failed")
 ```
 
-### Issue: Out of Memory
+### 🐛 Out of Memory
 
 **Solution:**
 ```python
@@ -474,7 +474,7 @@ config = PipelineConfig(
 )
 ```
 
-### Issue: Slow Extraction
+### 🐛 Slow Extraction
 
 **Solution:**
 ```python

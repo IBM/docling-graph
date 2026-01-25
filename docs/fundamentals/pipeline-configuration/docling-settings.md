@@ -253,7 +253,7 @@ export_per_page_markdown=False  # Default
 
 ## Complete Configuration Examples
 
-### Example 1: OCR with Full Exports
+### 📍 OCR with Full Exports
 
 ```python
 config = PipelineConfig(
@@ -271,7 +271,7 @@ config = PipelineConfig(
 )
 ```
 
-### Example 2: Vision with Minimal Exports
+### 📍 Vision with Minimal Exports
 
 ```python
 config = PipelineConfig(
@@ -289,7 +289,7 @@ config = PipelineConfig(
 )
 ```
 
-### Example 3: OCR with Page-Level Exports
+### 📍 OCR with Page-Level Exports
 
 ```python
 config = PipelineConfig(
@@ -447,7 +447,7 @@ config = PipelineConfig(
 
 ## Troubleshooting
 
-### Issue: Poor OCR Quality
+### 🐛 Poor OCR Quality
 
 **Symptoms:** Missing text, garbled characters
 
@@ -466,7 +466,7 @@ config = PipelineConfig(
 # - Deskew pages
 ```
 
-### Issue: Vision Pipeline Too Slow
+### 🐛 Vision Pipeline Too Slow
 
 **Symptoms:** Long processing times
 
@@ -483,7 +483,7 @@ config = PipelineConfig(
 # 3. Use more powerful GPU
 ```
 
-### Issue: Missing Tables
+### 🐛 Missing Tables
 
 **Symptoms:** Table data not extracted
 
@@ -501,7 +501,7 @@ config = PipelineConfig(
 
 ## Best Practices
 
-### 1. Start with OCR
+### 👍 Start with OCR
 
 ```python
 # ✅ Good - Start with faster option
@@ -514,7 +514,7 @@ config = PipelineConfig(
 # If accuracy insufficient, switch to vision
 ```
 
-### 2. Match Pipeline to Document
+### 👍 Match Pipeline to Document
 
 ```python
 # ✅ Good - Choose based on document type
@@ -530,7 +530,7 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Enable Appropriate Exports
+### 👍 Enable Appropriate Exports
 
 ```python
 # ✅ Good - Export what you need
@@ -555,40 +555,3 @@ Now that you understand Docling settings:
 1. **[Export Configuration →](export-configuration.md)** - Configure output formats
 2. **[Configuration Examples](configuration-examples.md)** - Complete scenarios
 3. **[Model Configuration](model-configuration.md)** - Model settings
-
----
-
-## Quick Reference
-
-### OCR Pipeline (Default)
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    docling_config="ocr"
-)
-```
-
-**Best for:** Standard documents, speed, no GPU
-
-### Vision Pipeline
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    docling_config="vision"
-)
-```
-
-**Best for:** Complex layouts, highest accuracy, GPU available
-
-### Export Settings
-
-```python
-export_docling=True           # Export Docling document
-export_docling_json=True      # Export as JSON
-export_markdown=True          # Export as markdown
-export_per_page_markdown=False # Export per-page markdown
-```

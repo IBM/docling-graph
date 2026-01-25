@@ -155,15 +155,14 @@ nav:
         - ID Card: usage/examples/id-card.md
         - Insurance Policy: usage/examples/insurance-policy.md
         - Research Paper: usage/examples/research-paper.md
-      - Debugging & Analysis:
-        - Trace Data Debugging: usage/advanced/trace-data-debugging.md
     - Advanced Topics:
       - Overview: usage/advanced/index.md
       - Performance Tuning: usage/advanced/performance-tuning.md
+      - Error Handling: usage/advanced/error-handling.md
+      - Trace Data Debugging: usage/advanced/trace-data-debugging.md
       - Custom Backends: usage/advanced/custom-backends.md
       - Custom Stages: usage/advanced/custom-stages.md
       - Custom Exporters: usage/advanced/custom-exporters.md
-      - Error Handling: usage/advanced/error-handling.md
       - Testing: usage/advanced/testing.md
   
   - Reference:

@@ -44,7 +44,7 @@ The LLM backend uses **language models** to extract structured data from **markd
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -123,7 +123,7 @@ The VLM backend uses **vision-language models** to extract structured data direc
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -352,7 +352,7 @@ def extract_with_fallback(document_path: str):
             backend="llm",
             inference="remote"
         )
-        config.run()
+        run_pipeline(config)
     except ExtractionError:
         # Fallback to VLM for better accuracy
         config = PipelineConfig(
@@ -361,7 +361,7 @@ def extract_with_fallback(document_path: str):
             backend="vlm",
             inference="local"
         )
-        config.run()
+        run_pipeline(config)
 ```
 
 ---
@@ -401,23 +401,23 @@ config = PipelineConfig(
 
 ## Common Questions
 
-### Q: Can I use VLM with remote inference?
+**Q: Can I use VLM with remote inference?**
 
 **A:** No, VLM currently only supports local inference. Use LLM backend for remote API support.
 
-### Q: Which backend is more accurate?
+**Q: Which backend is more accurate?**
 
 **A:** VLM is generally more accurate for complex layouts and visual documents. LLM is more accurate for simple text documents.
 
-### Q: Which backend is faster?
+**Q: Which backend is faster?**
 
 **A:** LLM is faster, especially with remote APIs. VLM requires more processing time due to image analysis.
 
-### Q: Can I switch backends mid-project?
+**Q: Can I switch backends mid-project?**
 
 **A:** Yes, backends are interchangeable. Just change the `backend` parameter in your config.
 
-### Q: Do I need different templates for different backends?
+**Q: Do I need different templates for different backends?**
 
 **A:** No, the same Pydantic template works with both backends.
 
@@ -430,33 +430,3 @@ Now that you understand backend selection:
 1. **[Model Configuration →](model-configuration.md)** - Configure models for your chosen backend
 2. **[Processing Modes](processing-modes.md)** - Choose processing strategy
 3. **[Configuration Examples](configuration-examples.md)** - See complete scenarios
-
----
-
-## Quick Reference
-
-### LLM Backend
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    backend="llm",
-    inference="local"  # or "remote"
-)
-```
-
-**Best for:** Text-heavy documents, standard layouts, remote processing
-
-### VLM Backend
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    backend="vlm",
-    inference="local"  # Only local supported
-)
-```
-
-**Best for:** Complex layouts, visual documents, highest accuracy

@@ -240,7 +240,7 @@ print(f"Removed {graph.number_of_nodes() - cleaned_graph.number_of_nodes()} phan
 
 ## Complete Examples
 
-### Example 1: Basic Conversion
+### 📍 Basic Conversion
 
 ```python
 from docling_graph.core.converters import GraphConverter
@@ -268,7 +268,7 @@ print(f"Edges: {metadata.edge_count}")
 print(f"Node types: {metadata.node_types}")
 ```
 
-### Example 2: With Reverse Edges
+### 📍 With Reverse Edges
 
 ```python
 from docling_graph.core.converters import GraphConverter
@@ -283,7 +283,7 @@ graph, metadata = converter.pydantic_list_to_graph(models)
 print(f"Total edges (with reverse): {metadata.edge_count}")
 ```
 
-### Example 3: Shared Registry for Batches
+### 📍 Shared Registry for Batches
 
 ```python
 from docling_graph.core.converters import GraphConverter, NodeIDRegistry
@@ -303,7 +303,7 @@ graph2, _ = converter2.pydantic_list_to_graph(batch2_models)
 print(f"Registry has {registry.get_stats()['total_entities']} unique entities")
 ```
 
-### Example 4: Custom Configuration
+### 📍 Custom Configuration
 
 ```python
 from docling_graph.core.converters import GraphConverter, GraphConfig
@@ -426,7 +426,7 @@ converter.registry.clear()
 
 ## Troubleshooting
 
-### Issue: Empty Graph
+### 🐛 Empty Graph
 
 **Solution:**
 ```python
@@ -437,7 +437,7 @@ for model in models:
         print(f"{model.__class__.__name__}: is_entity={is_entity}")
 ```
 
-### Issue: Missing Edges
+### 🐛 Missing Edges
 
 **Solution:**
 ```python
@@ -447,7 +447,7 @@ class Invoice(BaseModel):
     # Not: issued_by: dict  # Won't create edge
 ```
 
-### Issue: Duplicate Nodes
+### 🐛 Duplicate Nodes
 
 **Solution:**
 ```python
@@ -456,7 +456,7 @@ converter = GraphConverter(auto_cleanup=True)
 graph, metadata = converter.pydantic_list_to_graph(models)
 ```
 
-### Issue: Validation Fails
+### 🐛 Validation Fails
 
 **Solution:**
 ```python
@@ -473,7 +473,7 @@ for node_id, data in list(graph.nodes(data=True))[:5]:
 
 ## Best Practices
 
-### 1. Use Shared Registry for Batches
+### 👍 Use Shared Registry for Batches
 
 ```python
 # ✅ Good - Consistent IDs across batches
@@ -484,21 +484,21 @@ for batch in batches:
     graph, _ = converter.pydantic_list_to_graph(batch)
 ```
 
-### 2. Enable Auto Cleanup
+### 👍 Enable Auto Cleanup
 
 ```python
 # ✅ Good - Clean graphs
 converter = GraphConverter(auto_cleanup=True)
 ```
 
-### 3. Validate in Development
+### 👍 Validate in Development
 
 ```python
 # ✅ Good - Catch issues early
 converter = GraphConverter(validate_graph=True)
 ```
 
-### 4. Disable Validation in Production
+### 👍 Disable Validation in Production
 
 ```python
 # ✅ Good - Faster in production
@@ -514,35 +514,3 @@ Now that you understand graph conversion:
 1. **[Export Formats →](export-formats.md)** - Export graphs to CSV, Cypher, JSON
 2. **[Visualization →](visualization.md)** - Visualize your graphs
 3. **[Neo4j Integration →](neo4j-integration.md)** - Import into Neo4j
-
----
-
-## Quick Reference
-
-### Basic Conversion
-
-```python
-from docling_graph.core.converters import GraphConverter
-
-converter = GraphConverter()
-graph, metadata = converter.pydantic_list_to_graph(models)
-```
-
-### With Options
-
-```python
-converter = GraphConverter(
-    add_reverse_edges=True,
-    validate_graph=True,
-    auto_cleanup=True
-)
-```
-
-### Shared Registry
-
-```python
-from docling_graph.core.converters import NodeIDRegistry
-
-registry = NodeIDRegistry()
-converter = GraphConverter(registry=registry)
-```

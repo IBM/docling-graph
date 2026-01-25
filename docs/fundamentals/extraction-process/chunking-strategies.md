@@ -446,7 +446,7 @@ chunks = [
 ### Automatic Chunking
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -454,7 +454,7 @@ config = PipelineConfig(
     use_chunking=True  # Automatic chunking (default)
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Disable Chunking
@@ -471,7 +471,7 @@ config = PipelineConfig(
 
 ## Complete Examples
 
-### Example 1: Basic Chunking
+### 📍 Basic Chunking
 
 ```python
 from docling_graph.core.extractors import DocumentChunker, DocumentProcessor
@@ -489,7 +489,7 @@ for i, chunk in enumerate(chunks, 1):
     print(f"Chunk {i}: {len(chunk)} characters")
 ```
 
-### Example 2: With Statistics
+### 📍 With Statistics
 
 ```python
 from docling_graph.core.extractors import DocumentChunker, DocumentProcessor
@@ -513,7 +513,7 @@ if stats['max_tokens_in_chunk'] > 8000:
     print("Warning: Some chunks exceed token limit!")
 ```
 
-### Example 3: Custom Configuration
+### 📍 Custom Configuration
 
 ```python
 from docling_graph.core.extractors import DocumentChunker, DocumentProcessor
@@ -533,7 +533,7 @@ chunks = chunker.chunk_document(document)
 print(f"Created {len(chunks)} optimized chunks")
 ```
 
-### Example 4: Fallback Text Chunking
+### 📍 Fallback Text Chunking
 
 ```python
 from docling_graph.core.extractors import DocumentChunker
@@ -660,7 +660,7 @@ chunker = DocumentChunker(
 
 ## Troubleshooting
 
-### Issue: Chunks Too Large
+### 🐛 Chunks Too Large
 
 **Solution:**
 ```python
@@ -671,7 +671,7 @@ chunker = DocumentChunker(
 )
 ```
 
-### Issue: Too Many Chunks
+### 🐛 Too Many Chunks
 
 **Solution:**
 ```python
@@ -683,7 +683,7 @@ chunker = DocumentChunker(
 )
 ```
 
-### Issue: Tables Split Across Chunks
+### 🐛 Tables Split Across Chunks
 
 **Solution:**
 ```python
@@ -695,7 +695,7 @@ chunker = DocumentChunker(
 )
 ```
 
-### Issue: Out of Memory
+### 🐛 Out of Memory
 
 **Solution:**
 ```python
@@ -711,7 +711,7 @@ chunker = DocumentChunker(
 
 ## Best Practices
 
-### 1. Match Provider
+### 👍 Match Provider
 
 ```python
 # ✅ Good - Match chunker to LLM provider
@@ -721,7 +721,7 @@ elif using_openai:
     chunker = DocumentChunker(provider="openai")
 ```
 
-### 2. Enable Merge Peers
+### 👍 Enable Merge Peers
 
 ```python
 # ✅ Good - Better context
@@ -731,7 +731,7 @@ chunker = DocumentChunker(
 )
 ```
 
-### 3. Monitor Statistics
+### 👍 Monitor Statistics
 
 ```python
 # ✅ Good - Check chunk distribution
@@ -741,7 +741,7 @@ if stats['max_tokens_in_chunk'] > max_tokens * 0.95:
     print("Warning: Chunks near limit")
 ```
 
-### 4. Adjust for Schema Complexity
+### 👍 Adjust for Schema Complexity
 
 ```python
 # ✅ Good - Account for schema size
@@ -833,40 +833,3 @@ Now that you understand chunking:
 3. **[Batch Processing →](batch-processing.md)** - Optimize chunk processing
 4. **[Model Merging →](model-merging.md)** - Consolidate chunk extractions
 5. **[Performance Tuning →](../../usage/advanced/performance-tuning.md)** - Advanced optimization
-
----
-
-## Quick Reference
-
-### Basic Chunking
-
-```python
-from docling_graph.core.extractors import DocumentChunker
-
-chunker = DocumentChunker(provider="mistral")
-chunks = chunker.chunk_document(document)
-```
-
-### With Statistics
-
-```python
-chunks, stats = chunker.chunk_document_with_stats(document)
-print(f"Created {stats['total_chunks']} chunks")
-```
-
-### Custom Configuration
-
-```python
-chunker = DocumentChunker(
-    tokenizer_name="mistralai/Mistral-7B-Instruct-v0.2",
-    max_tokens=4096,
-    merge_peers=True,
-    schema_size=5000
-)
-```
-
-### Fallback Text Chunking
-
-```python
-chunks = chunker.chunk_text_fallback(raw_text)
-```

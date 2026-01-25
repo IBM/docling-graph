@@ -139,7 +139,7 @@ uv run docling-graph inspect outputs/ \
 
 ## Complete Examples
 
-### Example 1: Quick Visualization
+### 📍 Quick Visualization
 
 ```bash
 # Convert document
@@ -151,7 +151,7 @@ uv run docling-graph convert invoice.pdf \
 uv run docling-graph inspect outputs/invoice/
 ```
 
-### Example 2: Save for Later
+### 📍 Save for Later
 
 ```bash
 # Create visualization without opening
@@ -165,7 +165,7 @@ xdg-open graph_viz.html  # Linux
 start graph_viz.html  # Windows
 ```
 
-### Example 3: JSON Format
+### 📍 JSON Format
 
 ```bash
 # Visualize JSON graph
@@ -174,7 +174,7 @@ uv run docling-graph inspect outputs/graph.json \
     --output interactive_graph.html
 ```
 
-### Example 4: Batch Visualization
+### 📍 Batch Visualization
 
 ```bash
 # Create visualizations for multiple outputs
@@ -188,7 +188,7 @@ done
 echo "Created visualizations in visualizations/"
 ```
 
-### Example 5: Share Visualization
+### 📍 Share Visualization
 
 ```bash
 # Create self-contained HTML
@@ -305,7 +305,7 @@ uv run docling-graph inspect graph.json --format json
 
 ## Troubleshooting
 
-### Issue: Files Not Found
+### 🐛 Files Not Found
 
 **Error:**
 ```
@@ -328,7 +328,7 @@ uv run docling-graph inspect outputs/
 
 ---
 
-### Issue: Browser Doesn't Open
+### 🐛 Browser Doesn't Open
 
 **Error:**
 ```
@@ -350,9 +350,9 @@ start graph.html  # Windows
 
 ---
 
-### Issue: Large Graph Performance
+### 🐛 Large Graph Performance
 
-**Problem:** Visualization is slow with large graphs
+**🐛** Visualization is slow with large graphs
 
 **Solution:**
 ```bash
@@ -481,7 +481,7 @@ cat qa_output/markdown_report.md
 
 ## Best Practices
 
-### 1. Save Important Visualizations
+### 👍 Save Important Visualizations
 
 ```bash
 # ✅ Good - Save with descriptive name
@@ -493,7 +493,7 @@ uv run docling-graph inspect outputs/ \
 uv run docling-graph inspect outputs/
 ```
 
-### 2. Organize Visualizations
+### 👍 Organize Visualizations
 
 ```bash
 # ✅ Good - Organized structure
@@ -508,7 +508,7 @@ uv run docling-graph inspect outputs/ \
     --no-open
 ```
 
-### 3. Use for Development
+### 👍 Use for Development
 
 ```bash
 # ✅ Good - Quick feedback loop
@@ -526,52 +526,3 @@ uv run docling-graph inspect test/
 1. **[CLI Recipes →](cli-recipes.md)** - Common CLI patterns
 2. **[Visualization Guide →](../../fundamentals/graph-management/visualization.md)** - Advanced visualization
 3. **[Neo4j Integration →](../../fundamentals/graph-management/neo4j-integration.md)** - Database visualization
-
----
-
-## Quick Reference
-
-### Basic Commands
-
-```bash
-# Visualize CSV (default)
-uv run docling-graph inspect outputs/
-
-# Visualize JSON
-uv run docling-graph inspect graph.json --format json
-
-# Save to file
-uv run docling-graph inspect outputs/ --output viz.html
-
-# Don't open browser
-uv run docling-graph inspect outputs/ --no-open
-```
-
-### Common Patterns
-
-```bash
-# Convert and inspect
-uv run docling-graph convert doc.pdf -t "templates.Invoice" -o "out"
-uv run docling-graph inspect out/
-
-# Batch visualization
-for dir in outputs/*/; do
-    uv run docling-graph inspect "$dir" \
-        --output "viz/$(basename $dir).html" \
-        --no-open
-done
-
-# Share visualization
-uv run docling-graph inspect outputs/ \
-    --output shared.html \
-    --no-open
-```
-
-### All Options
-
-```bash
-uv run docling-graph inspect PATH \
-    --format {csv|json} \
-    --output PATH \
-    --open / --no-open
-```

@@ -127,7 +127,7 @@ raise ConfigurationError(
 **Usage:**
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import ConfigurationError
 
 try:
@@ -506,7 +506,7 @@ def my_function():
 
 ## Best Practices
 
-### 1. Use Specific Exceptions
+### 👍 Use Specific Exceptions
 
 ```python
 # ✅ Good - Specific exception
@@ -523,7 +523,7 @@ if not api_key:
     raise Exception("API key not found")
 ```
 
-### 2. Provide Details
+### 👍 Provide Details
 
 ```python
 # ✅ Good - Detailed error
@@ -543,7 +543,7 @@ raise ExtractionError(
 raise ExtractionError("Extraction failed")
 ```
 
-### 3. Chain Exceptions
+### 👍 Chain Exceptions
 
 ```python
 # ✅ Good - Chain exceptions
@@ -565,7 +565,7 @@ except requests.HTTPError:
     raise ClientError("API call failed")
 ```
 
-### 4. Log Before Raising
+### 👍 Log Before Raising
 
 ```python
 # ✅ Good - Log then raise

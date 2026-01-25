@@ -421,7 +421,7 @@ uv run python test_template_structure.py
 
 ## Common Mistakes
 
-### ❌ Mistake 1: Wrong edge() Definition
+### ❌ Wrong edge() Definition
 
 ```python
 # WRONG - Missing **kwargs
@@ -437,7 +437,7 @@ def edge(label: str, **kwargs: Any) -> Any:
     return Field(..., json_schema_extra={"edge_label": label}, **kwargs)
 ```
 
-### ❌ Mistake 2: Missing default_factory for Lists
+### ❌ Missing default_factory for Lists
 
 ```python
 # WRONG - List edge without default_factory
@@ -454,7 +454,7 @@ items: List[Item] = edge(
 )
 ```
 
-### ❌ Mistake 3: Inconsistent Organization
+### ❌ Inconsistent Organization
 
 ```python
 # WRONG - Root model at the top
@@ -485,33 +485,3 @@ Now that you understand template basics:
 1. **[Entities vs Components →](entities-vs-components.md)** - Learn the critical distinction
 2. **[Field Definitions](field-definitions.md)** - Master field descriptions and examples
 3. **[Example Templates](../../usage/examples/index.md)** - See complete working examples
-
----
-
-## Quick Reference
-
-### Required Elements Checklist
-
-- [ ] Module docstring
-- [ ] Standard imports (`BaseModel`, `ConfigDict`, `Field`, etc.)
-- [ ] `edge()` helper function (exact definition)
-- [ ] Organized structure (components → entities → root)
-- [ ] Model docstrings
-- [ ] Field descriptions and examples
-- [ ] Proper `model_config` for all models
-
-### File Template
-
-```python
-"""[Template description]"""
-
-from typing import Any, List, Optional
-from pydantic import BaseModel, ConfigDict, Field
-
-def edge(label: str, **kwargs: Any) -> Any:
-    return Field(..., json_schema_extra={"edge_label": label}, **kwargs)
-
-# Components (is_entity=False)
-# Entities (graph_id_fields=[...])
-# Root document
-```

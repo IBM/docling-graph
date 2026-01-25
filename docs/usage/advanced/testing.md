@@ -5,14 +5,6 @@
 
 Test Pydantic templates, custom backends, and pipeline configurations to ensure reliable extraction and graph generation.
 
-**What You'll Learn:**
-- Template validation testing
-- Mock backends for testing
-- Integration testing
-- CI/CD integration
-- Test fixtures
-- Best practices
-
 **Prerequisites:**
 - Understanding of [Schema Definition](../../fundamentals/schema-definition/index.md)
 - Familiarity with [Python API](../api/index.md)
@@ -282,7 +274,7 @@ def test_extraction_tracks_calls():
 
 import pytest
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 @pytest.fixture
 def sample_document(tmp_path):
@@ -308,7 +300,7 @@ def test_pipeline_execution(sample_document, output_dir):
     )
     
     # Should not raise
-    config.run()
+    run_pipeline(config)
     
     # Verify outputs exist
     assert (output_dir / "nodes.csv").exists()
@@ -322,7 +314,7 @@ def test_pipeline_with_invalid_source():
     )
     
     with pytest.raises(Exception):
-        config.run()
+        run_pipeline(config)
 ```
 
 ### Test with Real Documents
@@ -332,7 +324,7 @@ def test_pipeline_with_invalid_source():
 
 import pytest
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 @pytest.fixture
 def invoice_pdf():
@@ -355,7 +347,7 @@ def test_invoice_extraction(invoice_pdf, tmp_path):
         output_dir=str(tmp_path)
     )
     
-    config.run()
+    run_pipeline(config)
     
     # Verify invoice-specific outputs
     nodes_file = tmp_path / "nodes.csv"
@@ -378,7 +370,7 @@ def test_research_paper_extraction(research_paper_pdf, tmp_path):
         use_chunking=True  # Large document
     )
     
-    config.run()
+    run_pipeline(config)
     
     # Verify outputs
     assert (tmp_path / "nodes.csv").exists()
@@ -484,7 +476,7 @@ def test_person_validation(name, age, valid):
 ])
 def test_pipeline_configurations(backend, inference, tmp_path):
     """Test different pipeline configurations."""
-    from docling_graph import PipelineConfig
+    from docling_graph import run_pipeline, PipelineConfig
     
     config = PipelineConfig(
         source="test.pdf",
@@ -575,7 +567,7 @@ jobs:
 
 ## Best Practices
 
-### 1. Test Edge Cases
+### 👍 Test Edge Cases
 
 ```python
 # ✅ Good - Test edge cases
@@ -596,7 +588,7 @@ def test_person():
     assert person.name == "John"
 ```
 
-### 2. Use Descriptive Names
+### 👍 Use Descriptive Names
 
 ```python
 # ✅ Good - Descriptive test names
@@ -616,7 +608,7 @@ def test_extraction():
     pass
 ```
 
-### 3. Keep Tests Independent
+### 👍 Keep Tests Independent
 
 ```python
 # ✅ Good - Independent tests
@@ -642,7 +634,7 @@ def test_validate():
     assert person.name == "John"
 ```
 
-### 4. Mock External Dependencies
+### 👍 Mock External Dependencies
 
 ```python
 # ✅ Good - Mock external APIs
@@ -670,7 +662,7 @@ def test_with_real_api():
 
 ## Troubleshooting Tests
 
-### Issue: Tests Fail Locally But Pass in CI
+### 🐛 Tests Fail Locally But Pass in CI
 
 **Solution:**
 ```python
@@ -685,7 +677,7 @@ def test_file_operations(tmp_path):
 # ❌ test_file = Path("/tmp/test.txt")
 ```
 
-### Issue: Slow Tests
+### 🐛 Slow Tests
 
 **Solution:**
 ```python
@@ -699,7 +691,7 @@ def test_large_document():
 # pytest -m "not slow"
 ```
 
-### Issue: Flaky Tests
+### 🐛 Flaky Tests
 
 **Solution:**
 ```python
@@ -717,11 +709,3 @@ def test_api_call():
 1. **[Advanced Topics Index](index.md)** - Back to overview
 2. **[Custom Backends →](custom-backends.md)** - Test custom backends
 3. **[Error Handling →](error-handling.md)** - Test error scenarios
-
----
-
-## Related Documentation
-
-- **[Schema Definition](../../fundamentals/schema-definition/index.md)** - Template creation
-- **[Python API](../api/index.md)** - API usage
-- **[Examples](../examples/index.md)** - Example templates

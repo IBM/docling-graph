@@ -17,7 +17,7 @@
 ## Basic Usage
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Create configuration
 config = PipelineConfig(
@@ -28,7 +28,7 @@ config = PipelineConfig(
 )
 
 # Run pipeline
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -155,7 +155,7 @@ print(config_dict)
 
 ## Complete Examples
 
-### Example 1: Minimal Configuration (API Mode)
+### 📍 Minimal Configuration (API Mode)
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig
@@ -189,11 +189,11 @@ config = PipelineConfig(
 context = run_pipeline(config)
 ```
 
-### Example 2: Remote LLM
+### 📍 Remote LLM
 
 ```python
 import os
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Set API key
 os.environ["MISTRAL_API_KEY"] = "your-key"
@@ -212,13 +212,13 @@ config = PipelineConfig(
     output_dir="outputs/research"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
-### Example 3: Local VLM
+### 📍 Local VLM
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # VLM for form extraction
 config = PipelineConfig(
@@ -231,14 +231,14 @@ config = PipelineConfig(
     output_dir="outputs/form"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
-### Example 4: Template as Class
+### 📍 Template as Class
 
 ```python
 from pydantic import BaseModel, Field
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Define template inline
 class Invoice(BaseModel):
@@ -253,13 +253,13 @@ config = PipelineConfig(
     output_dir="outputs/invoice"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
-### Example 5: Custom Models Configuration
+### 📍 Custom Models Configuration
 
 ```python
-from docling_graph import PipelineConfig, ModelsConfig, ModelConfig
+from docling_graph import run_pipeline, PipelineConfig, ModelsConfig, ModelConfig
 
 # Custom models configuration
 models = ModelsConfig(
@@ -279,7 +279,7 @@ config = PipelineConfig(
     models=models
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -291,7 +291,7 @@ config.run()
 PipelineConfig validates parameters at creation:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # This raises ValidationError
 try:
@@ -309,7 +309,7 @@ except ValueError as e:
 VLM backend only supports local inference:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # This raises ValidationError
 try:
@@ -330,7 +330,7 @@ except ValueError as e:
 ### IDE Autocomplete
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -344,7 +344,7 @@ config = PipelineConfig(
 ### Type Checking
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # mypy will catch this error
 config = PipelineConfig(
@@ -361,7 +361,7 @@ config = PipelineConfig(
 ### Programmatic Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pathlib import Path
 
 def create_config(source: str, template: str, use_remote: bool = False):
@@ -377,13 +377,13 @@ def create_config(source: str, template: str, use_remote: bool = False):
 
 # Use factory
 config = create_config("document.pdf", "templates.Invoice", use_remote=True)
-config.run()
+run_pipeline(config)
 ```
 
 ### Configuration Templates
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Base configuration
 BASE_CONFIG = {
@@ -402,7 +402,7 @@ def process_invoice(source: str):
         **BASE_CONFIG,
         output_dir=f"outputs/invoices/{Path(source).stem}"
     )
-    config.run()
+    run_pipeline(config)
 
 def process_research(source: str):
     config = PipelineConfig(
@@ -412,13 +412,13 @@ def process_research(source: str):
         llm_consolidation=True,  # Override for research
         output_dir=f"outputs/research/{Path(source).stem}"
     )
-    config.run()
+    run_pipeline(config)
 ```
 
 ### Dynamic Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pathlib import Path
 
 def smart_config(source: str) -> PipelineConfig:
@@ -451,7 +451,7 @@ def smart_config(source: str) -> PipelineConfig:
 
 # Use smart configuration
 config = smart_config("document.pdf")
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -462,7 +462,7 @@ config.run()
 
 ```python
 import os
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 def get_config(source: str, template: str) -> PipelineConfig:
     """Get configuration based on environment."""
@@ -489,13 +489,13 @@ def get_config(source: str, template: str) -> PipelineConfig:
         )
 
 config = get_config("document.pdf", "templates.Invoice")
-config.run()
+run_pipeline(config)
 ```
 
 ### Pattern 2: Configuration Builder
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 class ConfigBuilder:
     """Builder pattern for PipelineConfig."""
@@ -538,18 +538,18 @@ config = (ConfigBuilder("document.pdf", "templates.Invoice")
     .with_output_dir("outputs/research")
     .build())
 
-config.run()
+run_pipeline(config)
 ```
 
 ---
 
 ## Best Practices
 
-### 1. Use Type-Safe Configuration
+### 👍 Use Type-Safe Configuration
 
 ```python
 # ✅ Good - Type-safe with validation
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -565,7 +565,7 @@ config = {
 }
 ```
 
-### 2. Use Defaults When Possible
+### 👍 Use Defaults When Possible
 
 ```python
 # ✅ Good - Rely on sensible defaults
@@ -587,7 +587,7 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Organize Output Directories
+### 👍 Organize Output Directories
 
 ```python
 # ✅ Good - Organized structure
@@ -612,7 +612,7 @@ config = PipelineConfig(
 
 ## Troubleshooting
 
-### Issue: Validation Error
+### 🐛 Validation Error
 
 **Error:**
 ```
@@ -631,7 +631,7 @@ config = PipelineConfig(
 )
 ```
 
-### Issue: VLM Remote Inference
+### 🐛 VLM Remote Inference
 
 **Error:**
 ```
@@ -656,40 +656,3 @@ config = PipelineConfig(
 1. **[Programmatic Examples →](programmatic-examples.md)** - More code examples
 2. **[Batch Processing →](batch-processing.md)** - Batch patterns
 3. **[API Reference →](../../reference/config.md)** - Complete API docs
-
----
-
-## Quick Reference
-
-### Minimal Configuration
-
-```python
-from docling_graph import PipelineConfig
-
-config = PipelineConfig(
-    source="document.pdf",
-    template="templates.Invoice"
-)
-config.run()
-```
-
-### Common Options
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="templates.Invoice",
-    backend="llm",
-    inference="remote",
-    provider_override="mistral",
-    model_override="mistral-large-latest",
-    processing_mode="many-to-one",
-    use_chunking=True,
-    llm_consolidation=True,
-    output_dir="outputs"
-)
-```
-
-### All Parameters
-
-See [Configuration Reference](../../fundamentals/pipeline-configuration/index.md) for complete parameter list.

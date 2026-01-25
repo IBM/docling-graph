@@ -19,7 +19,7 @@ The `PipelineConfig` class is the foundation of Docling Graph configuration. It 
 ### Core Components
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     # Required (at runtime)
@@ -301,7 +301,7 @@ config = PipelineConfig(
 ### Method 1: Direct Instantiation
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -311,13 +311,13 @@ config = PipelineConfig(
 )
 
 # Run the pipeline
-config.run()
+run_pipeline(config)
 ```
 
 ### Method 2: Programmatic Building
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Start with defaults
 config = PipelineConfig(
@@ -334,13 +334,13 @@ else:
     config.model_override = "gpt-4-turbo"
 
 # Run
-config.run()
+run_pipeline(config)
 ```
 
 ### Method 3: From Dictionary
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config_dict = {
     "source": "document.pdf",
@@ -350,7 +350,7 @@ config_dict = {
 }
 
 config = PipelineConfig(**config_dict)
-config.run()
+run_pipeline(config)
 ```
 
 ### Method 4: Using run_pipeline
@@ -376,7 +376,7 @@ run_pipeline({
 PipelineConfig validates settings automatically:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # This raises ValueError
 try:
@@ -505,7 +505,7 @@ config = PipelineConfig(
     source="test.pdf",
     template="my_templates.Invoice"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### Pattern 2: Production Remote
@@ -520,7 +520,7 @@ config = PipelineConfig(
     provider_override="openai",
     output_dir="production_outputs"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### Pattern 3: GPU-Accelerated Local
@@ -534,7 +534,7 @@ config = PipelineConfig(
     model_override="ibm-granite/granite-4.0-1b",
     provider_override="vllm"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### Pattern 4: Vision-Based Extraction
@@ -548,7 +548,7 @@ config = PipelineConfig(
     inference="local",
     docling_config="vision"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### Pattern 5: Page-by-Page Processing
@@ -561,7 +561,7 @@ config = PipelineConfig(
     processing_mode="one-to-one",
     export_per_page_markdown=True
 )
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -616,10 +616,10 @@ print(json_str)
 
 ## Best Practices
 
-### 1. Use Type Hints
+### 👍 Use Type Hints
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # ✅ Good - Type hints help catch errors
 config: PipelineConfig = PipelineConfig(
@@ -628,7 +628,7 @@ config: PipelineConfig = PipelineConfig(
 )
 ```
 
-### 2. Validate Early
+### 👍 Validate Early
 
 ```python
 # ✅ Good - Create and validate before processing
@@ -644,10 +644,10 @@ assert config.backend == "vlm"
 assert config.inference == "local"
 
 # Then run
-config.run()
+run_pipeline(config)
 ```
 
-### 3. Use Defaults
+### 👍 Use Defaults
 
 ```python
 # ✅ Good - Rely on sensible defaults
@@ -668,7 +668,7 @@ config = PipelineConfig(
 )
 ```
 
-### 4. Document Custom Configs
+### 👍 Document Custom Configs
 
 ```python
 # ✅ Good - Document why you override defaults
@@ -692,45 +692,3 @@ Now that you understand configuration basics:
 1. **[Backend Selection →](backend-selection.md)** - Choose between LLM and VLM
 2. **[Model Configuration](model-configuration.md)** - Configure models
 3. **[Configuration Examples](configuration-examples.md)** - See complete scenarios
-
----
-
-## Quick Reference
-
-### Minimal Configuration
-
-```python
-from docling_graph import PipelineConfig
-
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.MyTemplate"
-)
-config.run()
-```
-
-### Common Overrides
-
-```python
-# Remote API
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.MyTemplate",
-    inference="remote",
-    model_override="gpt-4-turbo"
-)
-
-# VLM extraction
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.MyTemplate",
-    backend="vlm"
-)
-
-# Page-by-page
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.MyTemplate",
-    processing_mode="one-to-one"
-)
-```

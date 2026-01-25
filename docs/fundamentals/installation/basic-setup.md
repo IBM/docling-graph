@@ -1,13 +1,5 @@
 # Basic Setup
 
-**Pipeline Stage**: 2 - Installation
-
-**Prerequisites**: 
-- [Installation Overview](index.md)
-- [System Requirements](requirements.md)
-
-This page provides step-by-step instructions for installing Docling Graph.
-
 ## Installation Methods
 
 ### Method 1: From Source (Recommended)
@@ -98,14 +90,15 @@ uv run python -c "import docling_graph; print(docling_graph.__version__)"
 
 Expected output:
 ```
-Docling Graph v0.3.0
+Docling Graph v1.2.0
 Usage: docling-graph [OPTIONS] COMMAND [ARGS]...
-0.3.0
+v1.2.0
 ```
 
 ### Method 2: From PyPI (Coming Soon)
 
-**Note**: PyPI installation will be available in a future release.
+!!! info "Coming Soon"
+    PyPI installation will be available in a future release.
 
 ```bash
 # Future release
@@ -211,7 +204,7 @@ uv run docling-graph init
 
 This creates a `config.yaml` file with your preferences.
 
-**New in v0.3.0**: Init command is 75-85% faster with intelligent caching!
+**New in v1.2.0**: Init command is 75-85% faster with intelligent caching!
 
 ### Verify Installation
 
@@ -293,7 +286,7 @@ uv sync --extra local
 
 ## Troubleshooting
 
-### Issue: `uv` command not found
+### 🐛 `uv` command not found
 
 **Cause**: uv not in PATH
 
@@ -306,7 +299,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### Issue: Permission denied
+### 🐛 Permission denied
 
 **Cause**: Insufficient permissions
 
@@ -318,7 +311,7 @@ rm -rf .venv
 uv sync --extra all
 ```
 
-### Issue: Import errors
+### 🐛 Import errors
 
 **Cause**: Not using `uv run`
 
@@ -331,7 +324,7 @@ python script.py
 uv run python script.py
 ```
 
-### Issue: Slow installation
+### 🐛 Slow installation
 
 **Cause**: Network or disk speed
 
@@ -346,13 +339,13 @@ uv sync --extra remote     # Then remote
 uv sync --extra local      # Then local
 ```
 
-### Issue: CUDA not found (for GPU users)
+### 🐛 CUDA not found (for GPU users)
 
 **Cause**: CUDA not installed or not in PATH
 
 **Solution**: See [GPU Setup Guide](gpu-setup.md)
 
-### Issue: Out of disk space
+### 🐛 Out of disk space
 
 **Cause**: Insufficient disk space
 
@@ -383,7 +376,7 @@ After installation, verify:
 
 ### Installation Speed
 
-**New in v0.3.0**:
+**New in v1.2.0**:
 - First install: ~2-5 minutes (depending on extras)
 - Subsequent updates: ~30-60 seconds
 - Dependency caching: 90-95% faster validation
@@ -454,14 +447,3 @@ Installation complete! Now:
 2. **[API Keys](api-keys.md)** (if using remote) - Set up API keys
 3. **[Schema Definition](../schema-definition/index.md)** - Create your first template
 4. **[Quick Start](../../introduction/quickstart.md)** - Run your first extraction
-
-## Related Documentation
-
-- **[Requirements](requirements.md)**: System requirements
-- **[GPU Setup](gpu-setup.md)**: CUDA configuration
-- **[API Keys](api-keys.md)**: Remote provider setup
-- **[Installation Overview](index.md)**: Installation options
-
----
-
-**Installation successful?** Continue to [GPU setup](gpu-setup.md) or [API keys](api-keys.md) depending on your use case!

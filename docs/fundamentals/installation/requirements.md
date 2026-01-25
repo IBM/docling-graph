@@ -1,12 +1,5 @@
 # System Requirements
 
-**Pipeline Stage**: 2 - Installation
-
-**Prerequisites**: 
-- [Installation Overview](index.md)
-
-This page details the system requirements for running Docling Graph.
-
 ## Python Requirements
 
 ### Supported Versions
@@ -133,7 +126,8 @@ xcode-select --install
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-**Note**: GPU acceleration not available on macOS (Apple Silicon or Intel). Use remote LLM for best performance.
+!!! warning "macOS GPU Limitation"
+    GPU acceleration not available on macOS (Apple Silicon or Intel). Use remote LLM for best performance.
 
 ### Windows
 
@@ -312,9 +306,10 @@ Graph Construction:     ~100 MB per 1000 nodes
 | LLM (Remote APIs) | ✅ | ✅ | ✅ | No |
 
 Legend:
-<br>✅ Fully supported
-<br>⚠️ Supported with limitations
-<br>❌ Not supported
+
+- ✅ Fully supported
+- ⚠️ Supported with limitations
+- ❌ Not supported
 
 ### Provider Compatibility
 
@@ -340,18 +335,7 @@ Before proceeding with installation, verify:
 - [ ] Network connection (if using remote LLM)
 - [ ] API keys ready (if using remote LLM)
 
-## Performance Expectations
-
-### Document Processing Speed
-
-| Configuration | Small Doc (1-2 pages) | Large Doc (10+ pages) |
-|---------------|----------------------|----------------------|
-| VLM (GPU) | 5-10 seconds | 30-60 seconds |
-| VLM (CPU) | 30-60 seconds | 3-5 minutes |
-| LLM Local (GPU) | 10-30 seconds | 1-3 minutes |
-| LLM Remote | 5-15 seconds | 30-90 seconds |
-
-### Memory Usage
+## Expected Memory Usage
 
 | Configuration | Peak Memory | Sustained Memory |
 |---------------|-------------|------------------|
@@ -400,13 +384,3 @@ Requirements verified? Continue with:
 1. **[Basic Setup](basic-setup.md)** - Install Docling Graph
 2. **[GPU Setup](gpu-setup.md)** - Configure CUDA (if using GPU)
 3. **[API Keys](api-keys.md)** - Set up remote providers (if using APIs)
-
-## Related Documentation
-
-- **[Installation Overview](index.md)**: Installation options
-- **[GPU Setup](gpu-setup.md)**: Detailed GPU configuration
-- **[Troubleshooting](index.md#common-issues)**: Common installation issues
-
----
-
-**Questions about requirements?** Check the [installation overview](index.md) or proceed to [basic setup](basic-setup.md)!

@@ -5,13 +5,6 @@
 
 Create custom exporters to output knowledge graphs in specialized formats for your specific use case or database system.
 
-**What You'll Learn:**
-- Exporter protocol implementation
-- Graph data access
-- Custom format generation
-- Registration and usage
-- Testing strategies
-
 **Prerequisites:**
 - Understanding of [Graph Management](../../fundamentals/graph-management/index.md)
 - Familiarity with NetworkX graphs
@@ -322,7 +315,7 @@ class TurtleExporter(BaseExporter):
 """Export after pipeline completes."""
 
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from my_exporters import GraphMLExporter, TurtleExporter
 
 # Run pipeline
@@ -331,7 +324,7 @@ config = PipelineConfig(
     template="templates.MyTemplate",
     output_dir="outputs"
 )
-config.run()
+run_pipeline(config)
 
 # Load the generated graph
 import json
@@ -461,7 +454,7 @@ def test_statistics(sample_graph, tmp_path):
 
 ## Best Practices
 
-### 1. Handle Errors Gracefully
+### 👍 Handle Errors Gracefully
 
 ```python
 # ✅ Good - Structured error handling
@@ -485,7 +478,7 @@ def export(self):
         pass  # Error ignored!
 ```
 
-### 2. Validate Graph Data
+### 👍 Validate Graph Data
 
 ```python
 # ✅ Good - Validate before export
@@ -508,7 +501,7 @@ def export(self):
     pass
 ```
 
-### 3. Provide Progress Feedback
+### 👍 Provide Progress Feedback
 
 ```python
 # ✅ Good - Progress updates
@@ -530,7 +523,7 @@ def export(self):
     pass
 ```
 
-### 4. Make Exporters Configurable
+### 👍 Make Exporters Configurable
 
 ```python
 # ✅ Good - Configurable options
@@ -616,11 +609,3 @@ def export_dot(self) -> None:
 1. **[Custom Stages →](custom-stages.md)** - Add pipeline stages
 2. **[Testing →](testing.md)** - Test your exporter
 3. **[Graph Management →](../../fundamentals/graph-management/index.md)** - Learn about graphs
-
----
-
-## Related Documentation
-
-- **[Export Formats](../../fundamentals/graph-management/export-formats.md)** - Built-in formats
-- **[Graph Conversion](../../fundamentals/graph-management/graph-conversion.md)** - How graphs are built
-- **[Exporters API](../../reference/exporters.md)** - API reference

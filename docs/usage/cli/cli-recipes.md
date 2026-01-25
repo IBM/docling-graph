@@ -554,7 +554,7 @@ tar -czf "archive_$(date +%Y%m%d).tar.gz" production/$(date +%Y%m%d)
 
 ## Best Practices
 
-### 1. Use Configuration Files
+### 👍 Use Configuration Files
 
 ```bash
 # ✅ Good - Reusable configuration
@@ -566,7 +566,7 @@ uv run docling-graph convert doc.pdf -t "templates.Invoice" \
     --backend llm --inference remote --provider mistral
 ```
 
-### 2. Organize Outputs
+### 👍 Organize Outputs
 
 ```bash
 # ✅ Good - Organized by document
@@ -579,7 +579,7 @@ uv run docling-graph convert invoice_001.pdf \
     --template "templates.Invoice"
 ```
 
-### 3. Use Appropriate Backend
+### 👍 Use Appropriate Backend
 
 ```bash
 # ✅ Good - VLM for forms
@@ -600,36 +600,3 @@ uv run docling-graph convert research.pdf \
 1. **[Python API →](../api/index.md)** - Programmatic usage
 2. **[Examples →](../examples/index.md)** - Real-world examples
 3. **[Advanced Topics →](../advanced/index.md)** - Custom backends
-
----
-
-## Quick Reference
-
-### Common Patterns
-
-```bash
-# VLM from image
-uv run docling-graph convert image.jpg -t "templates.Form" --backend vlm
-
-# Remote LLM
-uv run docling-graph convert doc.pdf -t "templates.Invoice" \
-    --backend llm --inference remote
-
-# Local LLM
-uv run docling-graph convert doc.pdf -t "templates.Invoice" \
-    --backend llm --inference local --provider ollama
-
-# With consolidation
-uv run docling-graph convert doc.pdf -t "templates.Research" \
-    --llm-consolidation
-
-# Cypher export
-uv run docling-graph convert doc.pdf -t "templates.Invoice" \
-    --export-format cypher
-
-# Batch processing
-for pdf in docs/*.pdf; do
-    uv run docling-graph convert "$pdf" -t "templates.Invoice" \
-        --output-dir "outputs/$(basename $pdf .pdf)"
-done
-```

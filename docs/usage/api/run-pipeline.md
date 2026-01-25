@@ -207,7 +207,7 @@ except PipelineError as e:
 
 ## Complete Examples
 
-### Example 1: Minimal Configuration (API Mode)
+### 📍 Minimal Configuration (API Mode)
 
 ```python
 from docling_graph import run_pipeline
@@ -224,7 +224,7 @@ invoice = context.pydantic_model
 print(f"Extracted invoice with {graph.number_of_nodes()} entities")
 ```
 
-### Example 2: With File Exports
+### 📍 With File Exports
 
 ```python
 from docling_graph import run_pipeline
@@ -242,7 +242,7 @@ graph = context.knowledge_graph
 # Files also written to outputs/invoice/
 ```
 
-### Example 3: Remote LLM
+### 📍 Remote LLM
 
 ```python
 import os
@@ -269,7 +269,7 @@ graph = context.knowledge_graph
 print(f"Research paper: {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges")
 ```
 
-### Example 4: Local VLM
+### 📍 Local VLM
 
 ```python
 from docling_graph import run_pipeline
@@ -289,7 +289,7 @@ id_card = context.pydantic_model
 print(f"Name: {id_card.first_name} {id_card.last_name}")
 ```
 
-### Example 5: With Error Handling
+### 📍 With Error Handling
 
 ```python
 from docling_graph import run_pipeline, PipelineContext
@@ -341,7 +341,7 @@ if context:
     print(f"Graph has {context.knowledge_graph.number_of_nodes()} nodes")
 ```
 
-### Example 6: Batch Processing (Memory-Efficient)
+### 📍 Batch Processing (Memory-Efficient)
 
 ```python
 from pathlib import Path
@@ -658,7 +658,7 @@ process_task = PythonOperator(
 
 ## Best Practices
 
-### 1. Use PipelineConfig for Type Safety
+### 👍 Use PipelineConfig for Type Safety
 
 ```python
 # ✅ Good - Type-safe with validation
@@ -679,7 +679,7 @@ run_pipeline({
 })
 ```
 
-### 2. Handle Errors Explicitly
+### 👍 Handle Errors Explicitly
 
 ```python
 # ✅ Good - Specific error handling
@@ -698,7 +698,7 @@ except:
     pass
 ```
 
-### 3. Organize Outputs
+### 👍 Organize Outputs
 
 ```python
 # ✅ Good - Unique output directories
@@ -723,7 +723,7 @@ run_pipeline({
 
 ## Troubleshooting
 
-### Issue: Template Not Found
+### 🐛 Template Not Found
 
 **Error:**
 ```
@@ -747,7 +747,7 @@ run_pipeline({
 })
 ```
 
-### Issue: API Key Not Found
+### 🐛 API Key Not Found
 
 **Error:**
 ```
@@ -777,41 +777,3 @@ run_pipeline({
 1. **[PipelineConfig →](pipeline-config.md)** - Configuration class
 2. **[Programmatic Examples →](programmatic-examples.md)** - More examples
 3. **[Batch Processing →](batch-processing.md)** - Batch patterns
-
----
-
-## Quick Reference
-
-### Basic Call
-
-```python
-from docling_graph import run_pipeline
-
-run_pipeline({
-    "source": "document.pdf",
-    "template": "templates.Invoice"
-})
-```
-
-### With Options
-
-```python
-run_pipeline({
-    "source": "document.pdf",
-    "template": "templates.Invoice",
-    "backend": "llm",
-    "inference": "remote",
-    "output_dir": "outputs"
-})
-```
-
-### Error Handling
-
-```python
-from docling_graph.exceptions import PipelineError
-
-try:
-    run_pipeline(config)
-except PipelineError as e:
-    print(f"Error: {e.message}")
-```

@@ -34,7 +34,7 @@ The **OCR (Optical Character Recognition) pipeline** is the default and most acc
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -77,7 +77,7 @@ The **Vision pipeline** uses Vision-Language Models (VLMs) to understand documen
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -313,7 +313,7 @@ from docling.datamodel.accelerator_options import AcceleratorDevice
 
 ## Complete Examples
 
-### Example 1: Basic OCR Conversion
+### 📍 Basic OCR Conversion
 
 ```python
 from docling_graph.core.extractors import DocumentProcessor
@@ -331,7 +331,7 @@ print(f"Converted {document.num_pages()} pages")
 print(f"Markdown length: {len(markdown)} characters")
 ```
 
-### Example 2: Vision Pipeline for Complex Layout
+### 📍 Vision Pipeline for Complex Layout
 
 ```python
 from docling_graph.core.extractors import DocumentProcessor
@@ -349,7 +349,7 @@ for i, page in enumerate(pages, 1):
     print(f"Page {i}: {len(page)} characters")
 ```
 
-### Example 3: Batch Processing
+### 📍 Batch Processing
 
 ```python
 from docling_graph.core.extractors import DocumentProcessor
@@ -382,7 +382,7 @@ processor.cleanup()
 When using PipelineConfig, conversion happens automatically:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -390,7 +390,7 @@ config = PipelineConfig(
     docling_config="ocr"  # Conversion happens automatically
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ### Manual Conversion
@@ -482,7 +482,7 @@ pipeline_options.accelerator_options = AcceleratorOptions(
 
 ## Troubleshooting
 
-### Issue: Conversion Fails
+### 🐛 Conversion Fails
 
 **Solution:**
 ```python
@@ -495,7 +495,7 @@ except Exception as e:
     # Try with different pipeline
 ```
 
-### Issue: Poor OCR Quality
+### 🐛 Poor OCR Quality
 
 **Solution:**
 ```python
@@ -504,7 +504,7 @@ processor = DocumentProcessor(docling_config="vision")
 document = processor.convert_to_docling_doc("document.pdf")
 ```
 
-### Issue: Slow Conversion
+### 🐛 Slow Conversion
 
 **Solution:**
 ```python
@@ -515,7 +515,7 @@ processor = DocumentProcessor(docling_config="ocr")
 # ... batch processing code ...
 ```
 
-### Issue: Out of Memory
+### 🐛 Out of Memory
 
 **Solution:**
 ```python
@@ -539,7 +539,7 @@ processor.cleanup()
 
 ## Best Practices
 
-### 1. Choose the Right Pipeline
+### 👍 Choose the Right Pipeline
 
 ```python
 # ✅ Good - Match pipeline to document type
@@ -549,7 +549,7 @@ else:
     docling_config = "vision"  # More accurate
 ```
 
-### 2. Cleanup Resources
+### 👍 Cleanup Resources
 
 ```python
 # ✅ Good - Always cleanup
@@ -561,7 +561,7 @@ finally:
     processor.cleanup()
 ```
 
-### 3. Reuse Processor for Batch Processing
+### 👍 Reuse Processor for Batch Processing
 
 ```python
 # ✅ Good - Reuse processor
@@ -574,7 +574,7 @@ for pdf_file in pdf_files:
 processor.cleanup()
 ```
 
-### 4. Export for Debugging
+### 👍 Export for Debugging
 
 ```python
 # ✅ Good - Export markdown for inspection
@@ -595,37 +595,3 @@ Now that you understand document conversion:
 1. **[Chunking Strategies →](chunking-strategies.md)** - Learn intelligent document splitting
 2. **[Extraction Backends →](extraction-backends.md)** - Choose LLM or VLM backend
 3. **[Model Merging →](model-merging.md)** - Consolidate extractions
-
----
-
-## Quick Reference
-
-### OCR Pipeline (Default)
-
-```python
-processor = DocumentProcessor(docling_config="ocr")
-document = processor.convert_to_docling_doc("document.pdf")
-```
-
-### Vision Pipeline
-
-```python
-processor = DocumentProcessor(docling_config="vision")
-document = processor.convert_to_docling_doc("document.pdf")
-```
-
-### Extract Markdown
-
-```python
-# Full document
-markdown = processor.extract_full_markdown(document)
-
-# Per page
-pages = processor.extract_page_markdowns(document)
-```
-
-### Cleanup
-
-```python
-processor.cleanup()
-```

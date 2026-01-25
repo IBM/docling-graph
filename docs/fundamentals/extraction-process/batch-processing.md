@@ -284,7 +284,7 @@ batcher = ChunkBatcher(
 
 ## Complete Examples
 
-### Example 1: Basic Batching
+### 📍 Basic Batching
 
 ```python
 from docling_graph.core.extractors import ChunkBatcher, DocumentChunker, DocumentProcessor
@@ -312,7 +312,7 @@ print(f"Reduced to {len(batches)} batches")
 print(f"API call reduction: {(1 - len(batches)/len(chunks)) * 100:.0f}%")
 ```
 
-### Example 2: With Custom Tokenizer
+### 📍 With Custom Tokenizer
 
 ```python
 from docling_graph.core.extractors import ChunkBatcher
@@ -331,7 +331,7 @@ batches = batcher.batch_chunks(chunks, tokenizer_fn=count_tokens)
 print(f"Accurate batching: {len(batches)} batches")
 ```
 
-### Example 3: Integration with Extraction
+### 📍 Integration with Extraction
 
 ```python
 from docling_graph.core.extractors.backends import LlmBackend
@@ -363,10 +363,10 @@ for batch in batches:
 print(f"Extracted {len(models)} models from {len(batches)} batches")
 ```
 
-### Example 4: Automatic Batching in Pipeline
+### 📍 Automatic Batching in Pipeline
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Batching happens automatically
 config = PipelineConfig(
@@ -377,7 +377,7 @@ config = PipelineConfig(
     use_chunking=True  # Enables automatic batching
 )
 
-config.run()
+run_pipeline(config)
 
 # ChunkBatcher is used internally to optimize API calls
 ```
@@ -448,7 +448,7 @@ batcher = ChunkBatcher(
 
 ## Best Practices
 
-### 1. Match Context Limit to Model
+### 👍 Match Context Limit to Model
 
 ```python
 # ✅ Good - Use actual model limits
@@ -462,7 +462,7 @@ elif model == "llama3.1:8b":
 batcher = ChunkBatcher(context_limit=context_limit)
 ```
 
-### 2. Leave Adequate Buffer
+### 👍 Leave Adequate Buffer
 
 ```python
 # ✅ Good - Conservative buffers
@@ -480,7 +480,7 @@ batcher = ChunkBatcher(
 )
 ```
 
-### 3. Use Merge Threshold Wisely
+### 👍 Use Merge Threshold Wisely
 
 ```python
 # ✅ Good - Balance efficiency and fit
@@ -499,7 +499,7 @@ batcher = ChunkBatcher(
 )
 ```
 
-### 4. Monitor Batch Statistics
+### 👍 Monitor Batch Statistics
 
 ```python
 # ✅ Good - Check batching effectiveness
@@ -516,9 +516,9 @@ if reduction < 50:
 
 ## Troubleshooting
 
-### Issue: Too Many Batches
+### 🐛 Too Many Batches
 
-**Problem:** Batching not reducing API calls enough
+**🐛** Batching not reducing API calls enough
 
 **Solution:**
 ```python
@@ -534,9 +534,9 @@ batcher = ChunkBatcher(
 )
 ```
 
-### Issue: Batches Too Large
+### 🐛 Batches Too Large
 
-**Problem:** Batches exceeding context limit
+**🐛** Batches exceeding context limit
 
 **Solution:**
 ```python
@@ -548,9 +548,9 @@ batcher = ChunkBatcher(
 )
 ```
 
-### Issue: Low Utilization
+### 🐛 Low Utilization
 
-**Problem:** Batches not filling context window
+**🐛** Batches not filling context window
 
 **Solution:**
 ```python
@@ -613,40 +613,3 @@ Now that you understand batch processing:
 1. **[Graph Management →](../graph-management/index.md)** - Work with knowledge graphs
 2. **[Export Formats →](../graph-management/export-formats.md)** - Export graphs
 3. **[Visualization →](../graph-management/visualization.md)** - Visualize graphs
-
----
-
-## Quick Reference
-
-### Basic Batching
-
-```python
-from docling_graph.core.extractors import ChunkBatcher
-
-batcher = ChunkBatcher(
-    context_limit=8000,
-    system_prompt_tokens=500,
-    response_buffer_tokens=500,
-    merge_threshold=0.85
-)
-
-batches = batcher.batch_chunks(chunks)
-```
-
-### With Custom Tokenizer
-
-```python
-batches = batcher.batch_chunks(chunks, tokenizer_fn=count_tokens)
-```
-
-### Process Batches
-
-```python
-for batch in batches:
-    model = backend.extract_from_markdown(
-        markdown=batch.combined_text,
-        template=template,
-        context=f"batch {batch.batch_id}",
-        is_partial=True
-    )
-```

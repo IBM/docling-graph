@@ -51,9 +51,9 @@ final_model = merge(model_1, model_2, model_3)
 
 | Strategy | Speed | Accuracy | Cost | Use Case |
 |:---------|:------|:---------|:-----|:---------|
-| **Programmatic** | ⚡ Fast | 🟡 Good (90%) | Free | Default, simple merging |
-| **LLM (Standard)** | 🐢 Slow | 🟢 Better (95%) | $ API cost | High accuracy needs |
-| **LLM (Chain of Density)** | 🐌 Very Slow | 💎 Best (98%) | $$$ 3x API cost | Critical documents |
+| **Programmatic** | ⚡ Fast | 🟡 Good | Free | Default, simple merging |
+| **LLM (Standard)** | 🐢 Slow | 🟢 Better | $ API cost | High accuracy needs |
+| **LLM (Chain of Density)** | 🐌 Slower | 💎 Best | $$$ 3x API cost | Critical documents |
 
 !!! info "Zero Data Loss"
     All merging strategies now implement zero data loss - if merging fails, the system returns partial models instead of empty results.
@@ -292,7 +292,7 @@ config = PipelineConfig(
 ### Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -302,7 +302,7 @@ config = PipelineConfig(
     llm_consolidation=True  # Enable LLM consolidation
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -422,7 +422,7 @@ The LLM receives:
 
 ## Complete Examples
 
-### Example 1: Basic Programmatic Merge
+### 📍 Basic Programmatic Merge
 
 ```python
 from docling_graph.core.utils import merge_pydantic_models
@@ -457,10 +457,10 @@ print(f"Line items: {len(merged.line_items)}")
 print(f"Total: ${merged.total}")
 ```
 
-### Example 2: With LLM Consolidation
+### 📍 With LLM Consolidation
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="contract.pdf",
@@ -479,10 +479,10 @@ config = PipelineConfig(
     output_dir="outputs/consolidated"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
-### Example 3: Manual Consolidation
+### 📍 Manual Consolidation
 
 ```python
 from docling_graph.core.extractors.backends import LlmBackend
@@ -512,7 +512,7 @@ final = backend.consolidate_from_pydantic_models(
 print(f"Consolidated {len(models)} models into 1")
 ```
 
-### Example 4: Handling Merge Failures
+### 📍 Handling Merge Failures
 
 ```python
 from docling_graph.core.utils import merge_pydantic_models
@@ -605,7 +605,7 @@ config = PipelineConfig(
 ### Example: Handling Partial Results
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -613,7 +613,7 @@ config = PipelineConfig(
     processing_mode="many-to-one"
 )
 
-results = config.run()
+results = run_pipeline(config)
 
 # Check if we got merged or partial models
 if len(results) == 1:
@@ -709,7 +709,7 @@ Organization(
 
 ## Best Practices
 
-### 1. Use Programmatic by Default
+### 👍 Use Programmatic by Default
 
 ```python
 # ✅ Good - Fast and free
@@ -720,7 +720,7 @@ config = PipelineConfig(
 )
 ```
 
-### 2. Enable Standard LLM for High Accuracy
+### 👍 Enable Standard LLM for High Accuracy
 
 ```python
 # ✅ Good - Better accuracy for important documents
@@ -734,7 +734,7 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Use Chain of Density for Critical Documents
+### 👍 Use Chain of Density for Critical Documents
 
 ```python
 # ✅ Good - Highest accuracy for critical data
@@ -756,7 +756,7 @@ config = PipelineConfig(
     
     Use only when accuracy justifies the cost.
 
-### 3. Validate Merged Results
+### 👍 Validate Merged Results
 
 ```python
 # ✅ Good - Always validate
@@ -770,7 +770,7 @@ if not merged.line_items:
     print("Warning: No line items")
 ```
 
-### 4. Handle Empty Model Lists
+### 👍 Handle Empty Model Lists
 
 ```python
 # ✅ Good - Handle edge cases
@@ -785,7 +785,7 @@ else:
 
 ## Troubleshooting
 
-### Issue: Duplicate Entities
+### 🐛 Duplicate Entities
 
 **Solution:**
 ```python
@@ -798,7 +798,7 @@ class Organization(BaseModel):
     address: Address | None = None
 ```
 
-### Issue: Lost Information
+### 🐛 Lost Information
 
 **Solution:**
 ```python
@@ -812,7 +812,7 @@ config = PipelineConfig(
 )
 ```
 
-### Issue: Merge Validation Fails
+### 🐛 Merge Validation Fails
 
 **Solution:**
 ```python
@@ -827,7 +827,7 @@ except ValidationError as e:
     print(f"Raw data: {dicts}")
 ```
 
-### Issue: Slow Consolidation
+### 🐛 Slow Consolidation
 
 **Solution:**
 ```python
@@ -908,35 +908,3 @@ Now that you understand model merging:
 3. **[Extraction Backends →](extraction-backends.md)** - Understand backends
 4. **[Performance Tuning →](../../usage/advanced/performance-tuning.md)** - Optimize consolidation
 5. **[Graph Management →](../graph-management/index.md)** - Work with knowledge graphs
-
----
-
-## Quick Reference
-
-### Programmatic Merge
-
-```python
-from docling_graph.core.utils import merge_pydantic_models
-
-merged = merge_pydantic_models(models, template)
-```
-
-### With LLM Consolidation
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    llm_consolidation=True
-)
-```
-
-### Manual LLM Consolidation
-
-```python
-final = backend.consolidate_from_pydantic_models(
-    raw_models=models,
-    programmatic_model=programmatic,
-    template=template
-)
-```

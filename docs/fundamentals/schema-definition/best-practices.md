@@ -227,7 +227,7 @@ if __name__ == "__main__":
 
 ## Common Pitfalls to Avoid
 
-### ❌ Pitfall 1: Wrong edge() Definition
+### ❌ Wrong edge() Definition
 
 ```python
 # WRONG - Missing **kwargs
@@ -239,7 +239,7 @@ def edge(label: str, **kwargs: Any) -> Any:
     return Field(..., json_schema_extra={"edge_label": label}, **kwargs)
 ```
 
-### ❌ Pitfall 2: Missing default_factory for Lists
+### ❌ Missing default_factory for Lists
 
 ```python
 # WRONG
@@ -252,7 +252,7 @@ items: List[Item] = edge(
 )
 ```
 
-### ❌ Pitfall 3: Mutable Default Values
+### ❌ Mutable Default Values
 
 ```python
 # WRONG - Shared mutable object
@@ -262,7 +262,7 @@ items: List[str] = Field([])
 items: List[str] = Field(default_factory=list)
 ```
 
-### ❌ Pitfall 4: Vague Descriptions
+### ❌ Vague Descriptions
 
 ```python
 # WRONG
@@ -280,7 +280,7 @@ name: str = Field(
 )
 ```
 
-### ❌ Pitfall 5: Inconsistent Edge Labels
+### ❌ Inconsistent Edge Labels
 
 ```python
 # WRONG - Mixed formats
@@ -294,7 +294,7 @@ sent_to: Client = edge(label="SENT_TO")
 has_items: List[Item] = edge(label="CONTAINS_ITEM")
 ```
 
-### ❌ Pitfall 6: Wrong Entity/Component Classification
+### ❌ Wrong Entity/Component Classification
 
 ```python
 # WRONG - Address as entity (creates duplicate nodes)
@@ -306,7 +306,7 @@ class Address(BaseModel):
     model_config = ConfigDict(is_entity=False)
 ```
 
-### ❌ Pitfall 7: Unstable ID Fields
+### ❌ Unstable ID Fields
 
 ```python
 # WRONG - Email can change
@@ -320,7 +320,7 @@ class Person(BaseModel):
     )
 ```
 
-### ❌ Pitfall 8: Missing Validators
+### ❌ Missing Validators
 
 ```python
 # WRONG - No validation
@@ -580,12 +580,12 @@ Congratulations! You've completed the Schema Definition guide. Now:
 
 Before moving to Pipeline Configuration, ensure:
 
-<br>✅ Template structure follows best practices
-<br>✅ All entities have appropriate `graph_id_fields`
-<br>✅ All components have `is_entity=False`
-<br>✅ Edge labels are consistent and descriptive
-<br>✅ Field descriptions are LLM-friendly
-<br>✅ Examples are realistic and diverse
-<br>✅ Validators ensure data quality
-<br>✅ Tests pass successfully
-<br>✅ Template tested with sample documents
+- [ ] Template structure follows best practices
+- [ ] All entities have appropriate `graph_id_fields`
+- [ ] All components have `is_entity=False`
+- [ ] Edge labels are consistent and descriptive
+- [ ] Field descriptions are LLM-friendly
+- [ ] Examples are realistic and diverse
+- [ ] Validators ensure data quality
+- [ ] Tests pass successfully
+- [ ] Template tested with sample documents

@@ -294,7 +294,7 @@ Default configuration uses:
 
 ## Complete Examples
 
-### Example 1: First-Time Setup
+### 📍 First-Time Setup
 
 ```bash
 # Initialize configuration
@@ -319,7 +319,7 @@ uv run docling-graph convert test.pdf \
     --template "templates.Invoice"
 ```
 
-### Example 2: Local Development Setup
+### 📍 Local Development Setup
 
 ```bash
 # Initialize for local development
@@ -347,7 +347,7 @@ uv run docling-graph convert test.pdf \
     --template "templates.Invoice"
 ```
 
-### Example 3: VLM Setup
+### 📍 VLM Setup
 
 ```bash
 # Initialize for VLM
@@ -416,7 +416,7 @@ nano config.yaml
 
 ## Troubleshooting
 
-### Issue: Interactive Mode Not Available
+### 🐛 Interactive Mode Not Available
 
 **Error:**
 ```
@@ -428,7 +428,7 @@ Interactive mode not available. Using default configuration.
 - Default configuration will be used
 - Manually edit `config.yaml` if needed
 
-### Issue: Permission Denied
+### 🐛 Permission Denied
 
 **Error:**
 ```
@@ -445,7 +445,7 @@ cd ~/projects/my-project
 uv run docling-graph init
 ```
 
-### Issue: Invalid Configuration
+### 🐛 Invalid Configuration
 
 **Error:**
 ```
@@ -461,7 +461,7 @@ Error creating config: Invalid backend type
 
 ## Best Practices
 
-### 1. Initialize Per Project
+### 👍 Initialize Per Project
 
 ```bash
 # ✅ Good - One config per project
@@ -476,7 +476,7 @@ cd ~/
 uv run docling-graph init
 ```
 
-### 2. Version Control
+### 👍 Version Control
 
 ```bash
 # ✅ Good - Track configuration
@@ -487,7 +487,7 @@ git commit -m "Add docling-graph configuration"
 echo "config.yaml" >> .gitignore
 ```
 
-### 3. Environment-Specific Configs
+### 👍 Environment-Specific Configs
 
 ```bash
 # Development
@@ -510,33 +510,3 @@ Now that you have a configuration:
 1. **[convert Command →](convert-command.md)** - Convert documents
 2. **[CLI Recipes →](cli-recipes.md)** - Common patterns
 3. **[Configuration Guide →](../../fundamentals/pipeline-configuration/index.md)** - Advanced config
-
----
-
-## Quick Reference
-
-### Basic Command
-
-```bash
-uv run docling-graph init
-```
-
-### Overwrite Existing
-
-```bash
-# Will prompt for confirmation
-uv run docling-graph init
-```
-
-### Check Generated Config
-
-```bash
-cat config.yaml
-```
-
-### Validate Dependencies
-
-```bash
-# After init, install as prompted
-uv sync --extra remote  # or local, watsonx, all
-```

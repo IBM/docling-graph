@@ -14,211 +14,47 @@ Docling Graph follows a modular, pipeline-based architecture with clear separati
 
 ![Architecture](../assets/screenshots/architecture.png)
 
+
 ## Core Components
 
-### 1. Document Processor
+### Document Processor
 
-**Location**: `docling_graph/core/extractors/document_processor.py`
+Converts documents to structured format using Docling with OCR or Vision pipelines.
 
-**Purpose**: Converts documents to structured format using Docling
+**Location:** `docling_graph/core/extractors/document_processor.py`
 
-**Key Features**:
-- Supports OCR and Vision pipelines
-- Extracts full markdown or per-page markdown
-- Preserves document structure (sections, tables, lists)
-- Stateless operation for scalability
+### Extraction Backends
 
-**Pipeline Options**:
-- **OCR Pipeline**: Classic OCR (most accurate for standard documents)
-- **Vision Pipeline**: VLM-based (best for complex layouts)
+**VLM Backend:** Direct extraction from images using vision-language models (local only)
+**LLM Backend:** Text-based extraction supporting local (vLLM, Ollama) and remote APIs
 
-### 2. Extraction Backends
+**Location:** `docling_graph/core/extractors/backends/`
 
-#### VLM Backend
+### Processing Strategies
 
-**Location**: `docling_graph/core/extractors/backends/vlm_backend.py`
+**One-to-One:** Each page produces a separate model (invoice batches, ID cards)
+**Many-to-One:** Multiple pages merged into single model (research papers, reports)
 
-**Purpose**: Direct extraction from document images using vision-language models
+**Location:** `docling_graph/core/extractors/strategies/`
 
-**Characteristics**:
-- Processes documents directly (no markdown needed)
-- Uses Docling's NuExtract models
-- Local inference only
-- Ideal for structured forms
+### Document Chunker
 
-**Flow**:
-```
-Document → VLM Model → Pydantic Validation → Validated Models
-```
+Splits large documents while preserving semantic coherence and respecting structure.
 
-#### LLM Backend
+**Location:** `docling_graph/core/extractors/document_chunker.py`
 
-**Location**: `docling_graph/core/extractors/backends/llm_backend.py`
+### Graph Converter
 
-**Purpose**: Extraction from markdown using language models
+Transforms Pydantic models to NetworkX graphs with stable node IDs and automatic deduplication.
 
-**Characteristics**:
-- Requires markdown conversion first
-- Supports local (vLLM, Ollama) and remote (OpenAI, Mistral, Gemini, WatsonX)
-- Includes chunking for large documents
-- Better for complex narratives
+**Location:** `docling_graph/core/converters/graph_converter.py`
 
-**Flow**:
-```
-Document → Markdown → Chunking → LLM Extraction → Consolidation → Validated Models
-```
+### Exporters & Visualizers
 
-### 3. LLM Clients
+Export graphs in CSV, Cypher, JSON formats and generate interactive HTML visualizations.
 
-**Location**: `docling_graph/llm_clients/`
+**Location:** `docling_graph/core/exporters/`, `docling_graph/core/visualizers/`
 
-**Purpose**: Unified interface for multiple LLM providers
-
-**Architecture**:
-
---8<-- "docs/assets/flowcharts/llm_clients.md"
-
-**Key Features**:
-- Template method pattern for consistency
-- Centralized JSON parsing
-- YAML-based model configuration
-- Easy to add new providers
-
-### 4. Processing Strategies
-
-**Location**: `docling_graph/core/extractors/strategies/`
-
-**Purpose**: Handle multi-page documents differently
-
-#### One-to-One Strategy
-
-```
-Page 1 → Extract → Model 1
-Page 2 → Extract → Model 2
-Page 3 → Extract → Model 3
-
-Result: [Model 1, Model 2, Model 3]
-```
-
-**Use Case**: Independent pages (invoice batches, ID card scans)
-
-#### Many-to-One Strategy
-
-```
-Page 1 ┐
-Page 2 ├→ Extract → Merge → Single Model
-Page 3 ┘
-
-Result: [Merged Model]
-```
-
-**Use Case**: Related content across pages (research papers, reports)
-
-### 5. Document Chunker
-
-**Location**: `docling_graph/core/extractors/document_chunker.py`
-
-**Purpose**: Split large documents while preserving semantic coherence
-
-**Hybrid Chunking Strategy**:
-
---8<-- "docs/assets/flowcharts/doc_chunker.md"
-
-**Features**:
-- Respects document structure (sections, tables)
-- Semantic boundary detection
-- Token limit awareness
-- Context preservation
-
-### 6. Consolidation
-
-**Location**: `docling_graph/core/extractors/backends/llm_backend.py`
-
-**Purpose**: Merge results from multiple chunks
-
-#### Programmatic Merge (Fast)
-
-```python
-# Rules:
-# - Lists: Concatenate + deduplicate
-# - Scalars: First non-null wins
-# - Objects: Recursive merge
-```
-
-#### LLM Consolidation (Intelligent)
-
-```python
-# LLM receives:
-# - All partial models
-# - Template schema
-# - Consolidation prompt
-# Returns: Intelligently merged model
-```
-
-### 7. Graph Converter
-
-**Location**: `docling_graph/core/converters/graph_converter.py`
-
-**Purpose**: Transform Pydantic models to NetworkX graphs
-
-**Process**:
-
---8<-- "docs/assets/flowcharts/graph_converter.md"
-
-**Key Features**:
-- Stable, deterministic node IDs
-- Entity vs component handling
-- Automatic deduplication
-- Rich metadata preservation
-
-### 8. Node ID Registry
-
-**Location**: `docling_graph/core/converters/node_id_registry.py`
-
-**Purpose**: Ensure stable, unique node identifiers
-
-**Features**:
-- Deterministic ID generation
-- Collision detection
-- Cross-batch consistency
-- Type tracking
-
-**ID Generation**:
-```python
-# For entities (with graph_id_fields)
-Person(name="John", dob="1990-01-15")
-→ "Person_John_1990-01-15"
-
-# For components (content-based)
-Address(street="123 Main", city="Boston")
-→ "Address_{content_hash}"
-```
-
-### 9. Exporters
-
-**Location**: `docling_graph/core/exporters/`
-
-**Purpose**: Export graphs in multiple formats
-
---8<-- "docs/assets/flowcharts/exporters.md"
-
-**Exporters**:
-- **CSV**: Neo4j admin import
-- **Cypher**: Neo4j script execution
-- **JSON**: General-purpose data
-- **Docling**: Original document preservation
-
-### 10. Visualizers
-
-**Location**: `docling_graph/core/visualizers/`
-
-**Purpose**: Generate human-readable outputs
-
-**Components**:
-- **Interactive Visualizer**: Cytoscape.js HTML graphs
-- **Report Generator**: Detailed markdown reports
-
-## Data Flow
 
 ### Complete Pipeline Flow
 
@@ -275,6 +111,7 @@ cypher_exporter.export(graph, output_dir)
 json_exporter.export(graph, output_dir)
 ```
 
+
 ## Protocol-Based Design
 
 Docling Graph uses Python Protocols for type-safe, flexible interfaces:
@@ -283,22 +120,10 @@ Docling Graph uses Python Protocols for type-safe, flexible interfaces:
 class ExtractionBackendProtocol(Protocol):
     """Protocol for extraction backends"""
     def extract_from_document(self, source: str, template: Type[BaseModel]) -> List[BaseModel]: ...
-    def cleanup(self) -> None: ...
-
-class LLMClientProtocol(Protocol):
-    """Protocol for LLM clients"""
-    @property
-    def context_limit(self) -> int: ...
-    def get_json_response(self, prompt: str, schema_json: str) -> Dict[str, Any]: ...
 ```
 
-**Benefits**:
-- Type safety without rigid inheritance
-- Easy mocking for tests
-- Clear interface contracts
-- Flexible implementations
+**Benefits:** Type safety, easy mocking, clear contracts, flexible implementations
 
-## Configuration System
 
 **Location**: `docling_graph/config.py`
 
@@ -344,77 +169,20 @@ except ClientError as e:
     print(f"Cause: {e.cause}")
 ```
 
-## Performance Considerations
 
-### Memory Management
-- **GPU Memory**: Automatic cleanup after extraction
-- **Stateless Design**: No internal caching
-- **Batch Processing**: Configurable batch sizes
+## Extensibility
 
-### Optimization Strategies
-- **Chunking**: Reduces memory footprint
-- **Lazy Loading**: Import modules on-demand
-- **Resource Pooling**: Reuse LLM clients
-- **Parallel Processing**: Future optimization for one-to-one mode
+Docling Graph is designed for extension:
 
-## Extensibility Points
+- **LLM Providers:** Extend `BaseLlmClient`
+- **Pipeline Stages:** Implement `PipelineStage`
+- **Export Formats:** Extend `BaseExporter`
 
-### Adding New LLM Providers
+See [Custom Backends](../usage/advanced/custom-backends.md) for details.
 
-```python
-from docling_graph.llm_clients.base import BaseLlmClient
-
-class MyClient(BaseLlmClient):
-    def _provider_id(self) -> str:
-        return "my_provider"
-    
-    def _setup_client(self, **kwargs):
-        self.api_key = self._get_required_env("MY_API_KEY")
-        self.client = MyAPI(api_key=self.api_key)
-    
-    def _call_api(self, messages, **params):
-        return self.client.call(messages)
-```
-
-### Adding Custom Pipeline Stages
-
-```python
-from docling_graph.pipeline import PipelineStage, PipelineContext
-
-class ValidationStage(PipelineStage):
-    def name(self) -> str:
-        return "Validation"
-    
-    def execute(self, context: PipelineContext) -> PipelineContext:
-        # Custom validation logic
-        return context
-```
-
-### Adding New Export Formats
-
-```python
-from docling_graph.core.exporters.base import BaseExporter
-
-class MyExporter(BaseExporter):
-    def export(self, graph: nx.DiGraph, output_dir: str) -> None:
-        # Custom export logic
-        pass
-```
-
-## Next Steps
 
 Now that you understand the architecture:
 
 1. **[Installation](../fundamentals/installation/index.md)** - Set up your environment
 2. **[Schema Definition](../fundamentals/schema-definition/index.md)** - Create Pydantic templates
 3. **[Pipeline Configuration](../fundamentals/pipeline-configuration/index.md)** - Configure the pipeline
-
-## Related Documentation
-
-- **[Key Concepts](key-concepts.md)**: Core terminology
-- **[Use Cases](use-cases.md)**: Domain-specific examples
-- **[API Reference](../reference/index.md)**: Detailed API documentation
-
----
-
-**Ready to dive deeper?** Start with [installation](../fundamentals/installation/index.md) or explore [examples](../usage/examples/index.md)!

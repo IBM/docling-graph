@@ -93,7 +93,7 @@ for doc in tqdm(documents, desc="Processing"):
     )
     
     try:
-        config.run()
+        run_pipeline(config)
     except Exception as e:
         tqdm.write(f"❌ {doc.name}: {e}")
 ```
@@ -287,7 +287,7 @@ def batch_with_stats(input_dir: str, template: str, output_base: str):
                 template=template,
                 output_dir=str(output_dir)
             )
-            config.run()
+            run_pipeline(config)
             
             # Load statistics
             stats_file = output_dir / "graph_stats.json"
@@ -372,7 +372,7 @@ def smart_batch_process(input_dir: str, output_base: str):
         )
         
         try:
-            config.run()
+            run_pipeline(config)
             print(f"✅ {doc.name}")
         except Exception as e:
             print(f"❌ {doc.name}: {e}")
@@ -404,7 +404,7 @@ def process_with_retry(
                 template=template,
                 output_dir=output_dir
             )
-            config.run()
+            run_pipeline(config)
             return {"status": "success", "attempts": attempt}
             
         except Exception as e:
@@ -486,7 +486,7 @@ def batch_with_checkpoint(
                 template=template,
                 output_dir=f"{output_base}/{doc.stem}"
             )
-            config.run()
+            run_pipeline(config)
             
             # Update checkpoint
             checkpoint["processed"].append(doc.name)
@@ -544,7 +544,7 @@ def batch_with_memory_management(
         )
         
         try:
-            config.run()
+            run_pipeline(config)
             print(f"✅ {doc.name}")
         except Exception as e:
             print(f"❌ {doc.name}: {e}")
@@ -646,7 +646,7 @@ class BatchProcessor:
                     output_dir=str(self.output_base / doc_path.stem)
                 )
                 
-                config.run()
+                run_pipeline(config)
                 
                 # Load statistics
                 stats_file = self.output_base / doc_path.stem / "graph_stats.json"
@@ -760,21 +760,21 @@ uv run python batch_processor.py
 
 ## Best Practices
 
-### 1. Use Progress Tracking
+### 👍 Use Progress Tracking
 
 ```python
 # ✅ Good - Visual progress
 from tqdm import tqdm
 
 for doc in tqdm(documents, desc="Processing"):
-    config.run()
+    run_pipeline(config)
 
 # ❌ Avoid - No feedback
 for doc in documents:
-    config.run()
+    run_pipeline(config)
 ```
 
-### 2. Implement Error Recovery
+### 👍 Implement Error Recovery
 
 ```python
 # ✅ Good - Checkpoint and resume
@@ -790,7 +790,7 @@ for doc in documents:
     process(doc)
 ```
 
-### 3. Aggregate Results
+### 👍 Aggregate Results
 
 ```python
 # ✅ Good - Collect statistics
@@ -814,39 +814,3 @@ for doc in documents:
 1. **[Examples →](../examples/index.md)** - Real-world examples
 2. **[Advanced Topics →](../advanced/index.md)** - Custom backends
 3. **[API Reference →](../../reference/index.md)** - Complete API docs
-
----
-
-## Quick Reference
-
-### Basic Batch
-
-```python
-for doc in Path("documents").glob("*.pdf"):
-    config = PipelineConfig(
-        source=str(doc),
-        template="templates.Invoice",
-        output_dir=f"outputs/{doc.stem}"
-    )
-    config.run()
-```
-
-### With Progress
-
-```python
-from tqdm import tqdm
-
-for doc in tqdm(documents, desc="Processing"):
-    config.run()
-```
-
-### Parallel Processing
-
-```python
-from concurrent.futures import ThreadPoolExecutor
-
-with ThreadPoolExecutor(max_workers=4) as executor:
-    futures = [executor.submit(process, doc) for doc in documents]
-    for future in as_completed(futures):
-        result = future.result()
-```

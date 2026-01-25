@@ -378,7 +378,7 @@ uv run docling-graph convert document.pdf \
 
 ## Complete Examples
 
-### Example 1: Simple Invoice (VLM)
+### 📍 Simple Invoice (VLM)
 
 ```bash
 uv run docling-graph convert invoice.jpg \
@@ -388,7 +388,7 @@ uv run docling-graph convert invoice.jpg \
     --output-dir "outputs/invoice"
 ```
 
-### Example 2: Research Paper (Remote LLM)
+### 📍 Research Paper (Remote LLM)
 
 ```bash
 export MISTRAL_API_KEY="your-key"
@@ -405,7 +405,7 @@ uv run docling-graph convert research.pdf \
     --output-dir "outputs/research"
 ```
 
-### Example 3: Local Processing (Ollama)
+### 📍 Local Processing (Ollama)
 
 ```bash
 # Start Ollama server first
@@ -422,7 +422,7 @@ uv run docling-graph convert document.pdf \
     --output-dir "outputs/local"
 ```
 
-### Example 4: Cypher Export for Neo4j
+### 📍 Cypher Export for Neo4j
 
 ```bash
 uv run docling-graph convert document.pdf \
@@ -436,7 +436,7 @@ uv run docling-graph convert document.pdf \
 cat outputs/neo4j/graph.cypher | cypher-shell
 ```
 
-### Example 5: Minimal Processing
+### 📍 Minimal Processing
 
 ```bash
 uv run docling-graph convert small_doc.pdf \
@@ -580,7 +580,7 @@ export MISTRAL_API_KEY="your-key"
 
 ## Troubleshooting
 
-### Issue: Template Not Found
+### 🐛 Template Not Found
 
 **Error:**
 ```
@@ -597,7 +597,7 @@ uv run docling-graph convert document.pdf \
     --template "my_project.templates.Invoice"
 ```
 
-### Issue: Out of Memory
+### 🐛 Out of Memory
 
 **Error:**
 ```
@@ -617,7 +617,7 @@ uv run docling-graph convert document.pdf \
     --model "ibm-granite/granite-4.0-1b"
 ```
 
-### Issue: Slow Processing
+### 🐛 Slow Processing
 
 **Solution:**
 ```bash
@@ -636,7 +636,7 @@ uv run docling-graph convert document.pdf \
 
 ## Best Practices
 
-### 1. Use Configuration Files
+### 👍 Use Configuration Files
 
 ```bash
 # ✅ Good - Reusable configuration
@@ -649,7 +649,7 @@ uv run docling-graph convert document.pdf \
     --backend llm --inference remote --provider mistral
 ```
 
-### 2. Organize Outputs
+### 👍 Organize Outputs
 
 ```bash
 # ✅ Good - Organized by document
@@ -662,7 +662,7 @@ uv run docling-graph convert invoice_001.pdf \
     --template "templates.Invoice"
 ```
 
-### 3. Use Appropriate Backend
+### 👍 Use Appropriate Backend
 
 ```bash
 # ✅ Good - VLM for forms
@@ -683,50 +683,3 @@ uv run docling-graph convert research.pdf \
 1. **[inspect Command →](inspect-command.md)** - Visualize results
 2. **[CLI Recipes →](cli-recipes.md)** - Common patterns
 3. **[Examples →](../examples/index.md)** - Real-world examples
-
----
-
-## Quick Reference
-
-### Minimal Command
-
-```bash
-uv run docling-graph convert SOURCE -t TEMPLATE
-```
-
-### Common Options
-
-```bash
-# Backend and inference
---backend llm --inference remote
-
-# Processing
---processing-mode many-to-one --use-chunking
-
-# Export
---export-format csv --output-dir PATH
-
-# Model
---provider mistral --model mistral-large-latest
-```
-
-### All Options
-
-```bash
-uv run docling-graph convert SOURCE \
-    --template TEMPLATE \
-    --backend {llm|vlm} \
-    --inference {local|remote} \
-    --processing-mode {one-to-one|many-to-one} \
-    --docling-pipeline {ocr|vision} \
-    --provider PROVIDER \
-    --model MODEL \
-    --use-chunking / --no-use-chunking \
-    --llm-consolidation / --no-llm-consolidation \
-    --export-format {csv|cypher} \
-    --export-docling-json / --no-docling-json \
-    --export-markdown / --no-markdown \
-    --export-per-page / --no-per-page \
-    --reverse-edges \
-    --output-dir PATH
-```

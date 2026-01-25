@@ -45,7 +45,7 @@ context = run_pipeline(config)
 
 ## Quick Start Examples
 
-### Example 1: Debug Extraction Errors
+### 📍 Debug Extraction Errors
 
 Enable trace data to diagnose extraction problems:
 
@@ -71,7 +71,7 @@ if context.trace_data:
             print(f"   Error: {extraction.error}")
 ```
 
-### Example 2: Analyze Page Content
+### 📍 Analyze Page Content
 
 Access raw page content for analysis:
 
@@ -93,7 +93,7 @@ if context.trace_data:
         print(f"  Has tables: {page.metadata.get('has_tables', False)}")
 ```
 
-### Example 3: Profile Extraction Performance
+### 📍 Profile Extraction Performance
 
 Profile extraction performance:
 
@@ -328,19 +328,9 @@ def test_extraction_quality():
     slow = [e for e in context.trace_data.extractions if e.extraction_time > 10.0]
     assert len(slow) == 0, f"Found {len(slow)} slow extractions"
 ```
-
 ---
 
-## Related Documentation
-
-- **[Configuration API](../../reference/config.md#trace-data-capture)** - `include_trace` field
-- **[Pipeline API](../../reference/pipeline.md#trace-data-structure)** - Trace data structure
-- **[Error Handling](../advanced/error-handling.md)** - Debugging strategies
-- **[Performance Tuning](../advanced/performance-tuning.md)** - Optimization tips
-
----
-
-## See Also
+## Next Steps
 
 - **[Output Directory Structure](../../reference/pipeline.md#output-structure)** - File organization
 - **[Testing Guide](../advanced/testing.md)** - Using trace data in tests

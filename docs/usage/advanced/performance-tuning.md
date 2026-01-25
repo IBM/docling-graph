@@ -5,15 +5,6 @@
 
 Optimize docling-graph pipeline performance for speed, memory efficiency, and resource utilization.
 
-**What You'll Learn:**
-- Model selection strategies
-- Batch size optimization
-- Memory management
-- GPU utilization
-- Provider-specific batching
-- Real tokenizer integration
-- Profiling techniques
-
 **Prerequisites:**
 - Understanding of [Pipeline Configuration](../../fundamentals/pipeline-configuration/index.md)
 - Familiarity with [Extraction Process](../../fundamentals/extraction-process/index.md)
@@ -92,7 +83,7 @@ model_override="mistral-small-latest"  # Accurate (remote)
 Docling Graph automatically detects model capabilities and optimizes performance:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Small model (1B-7B) - SIMPLE tier
 # - Minimal prompts (fewer tokens)
@@ -144,7 +135,7 @@ See [Model Capabilities](../../fundamentals/extraction-process/model-capabilitie
 Different providers have different optimal batching strategies:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # OpenAI - Aggressive batching (90% merge threshold)
 # Best for: High-volume processing with reliable API
@@ -263,11 +254,11 @@ def log_memory_usage():
         print("No GPU detected")
 
 # Use during pipeline
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 log_memory_usage()  # Before
 config = PipelineConfig(...)
-config.run()
+run_pipeline(config)
 log_memory_usage()  # After
 ```
 
@@ -296,7 +287,7 @@ config = PipelineConfig(
 ```python
 """Properly clean up after processing."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import gc
 import torch
 
@@ -308,7 +299,7 @@ def process_with_cleanup(source: str):
     )
     
     try:
-        config.run()
+        run_pipeline(config)
     finally:
         # Force garbage collection
         gc.collect()
@@ -382,7 +373,7 @@ if torch.cuda.is_available():
 
 import os
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 def process_on_gpu(source: str, gpu_id: int):
     """Process document on specific GPU."""
@@ -394,7 +385,7 @@ def process_on_gpu(source: str, gpu_id: int):
         template="templates.MyTemplate",
         output_dir=f"outputs/gpu_{gpu_id}"
     )
-    config.run()
+    run_pipeline(config)
 
 # Process documents in parallel on different GPUs
 from concurrent.futures import ThreadPoolExecutor
@@ -421,7 +412,7 @@ with ThreadPoolExecutor(max_workers=2) as executor:
 Docling Graph now uses real tokenizers for accurate token counting:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # ✅ Good - Real tokenizer with safety margin
 config = PipelineConfig(
@@ -489,7 +480,7 @@ config = PipelineConfig(
 ```python
 """Configure chunking for optimal performance."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # For fast processing (may sacrifice accuracy)
 config = PipelineConfig(
@@ -587,7 +578,7 @@ config = PipelineConfig(
 """Profile pipeline to identify bottlenecks."""
 
 import time
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 def profile_pipeline(source: str):
     """Profile pipeline execution."""
@@ -604,7 +595,7 @@ def profile_pipeline(source: str):
         template="templates.MyTemplate"
     )
     
-    config.run()
+    run_pipeline(config)
     
     total_time = time.time() - start
     
@@ -739,7 +730,7 @@ estimate_cost(num_pages=100, model="mistral-small-latest")
 
 ## Troubleshooting
 
-### Issue: Slow Processing
+### 🐛 Slow Processing
 
 **Solutions:**
 1. Use smaller model
@@ -748,7 +739,7 @@ estimate_cost(num_pages=100, model="mistral-small-latest")
 4. Use local inference
 5. Increase batch size
 
-### Issue: Out of Memory
+### 🐛 Out of Memory
 
 **Solutions:**
 1. Reduce batch size
@@ -757,7 +748,7 @@ estimate_cost(num_pages=100, model="mistral-small-latest")
 4. Process one-to-one instead of many-to-one
 5. Clean up between documents
 
-### Issue: GPU Not Utilized
+### 🐛 GPU Not Utilized
 
 **Solutions:**
 1. Verify GPU installation: `torch.cuda.is_available()`
@@ -792,13 +783,3 @@ estimate_cost(num_pages=100, model="mistral-small-latest")
 2. **[Error Handling →](error-handling.md)** - Handle errors gracefully
 3. **[Testing →](testing.md)** - Test performance optimizations
 4. **[GPU Setup →](../../fundamentals/installation/gpu-setup.md)** - Configure GPU
-
----
-
-## Related Documentation
-
-- **[Pipeline Configuration](../../fundamentals/pipeline-configuration/index.md)** - Configuration options
-- **[Extraction Process](../../fundamentals/extraction-process/index.md)** - How extraction works
-- **[Model Capabilities](../../fundamentals/extraction-process/model-capabilities.md)** - Adaptive prompting
-- **[Extraction Backends](../../fundamentals/extraction-process/extraction-backends.md)** - Backend selection
-- **[GPU Setup](../../fundamentals/installation/gpu-setup.md)** - GPU configuration

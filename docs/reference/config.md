@@ -115,7 +115,7 @@ config = PipelineConfig(
     source="document.pdf",
     template="templates.MyTemplate"
 )
-config.run()
+run_pipeline(config)
 ```
 
 #### to_dict()
@@ -280,13 +280,13 @@ class ExtractorConfig(BaseModel):
 ### Basic Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
     template="templates.MyTemplate"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### Custom Backend
@@ -300,7 +300,7 @@ config = PipelineConfig(
     model_override="gpt-4-turbo",
     provider_override="openai"
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### Custom Processing
@@ -313,7 +313,7 @@ config = PipelineConfig(
     use_chunking=False,
     llm_consolidation=True
 )
-config.run()
+run_pipeline(config)
 ```
 
 ### Custom Export
@@ -410,7 +410,7 @@ context = run_pipeline(config)
 ### Complete Configuration
 
 ```python
-from docling_graph import PipelineConfig, LLMConfig, ModelConfig
+from docling_graph import run_pipeline, PipelineConfig, LLMConfig, ModelConfig
 
 config = PipelineConfig(
     # Source
@@ -444,7 +444,7 @@ config = PipelineConfig(
     output_dir="outputs/custom"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -502,7 +502,7 @@ config = PipelineConfig(
 All fields have proper type hints:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pathlib import Path
 
 # Type checker knows these are valid

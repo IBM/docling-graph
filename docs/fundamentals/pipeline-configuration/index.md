@@ -31,7 +31,7 @@ You can configure the pipeline in three ways:
 #### 1. Python API (Recommended)
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -41,7 +41,7 @@ config = PipelineConfig(
     output_dir="outputs"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 #### 2. CLI with Flags
@@ -73,29 +73,13 @@ models:
 
 ---
 
-## Section Contents
-
-| Document | Description | Time |
-|:---------|:------------|:-----|
-| **[Configuration Basics](configuration-basics.md)** | PipelineConfig fundamentals and required settings | 15 min |
-| **[Input Formats](input-formats.md)** | Supported input formats (PDF, images, text, URLs, etc.) | 20 min |
-| **[Backend Selection](backend-selection.md)** | Choosing between LLM and VLM backends | 15 min |
-| **[Model Configuration](model-configuration.md)** | Configuring models for local and remote inference | 20 min |
-| **[Processing Modes](processing-modes.md)** | One-to-one vs many-to-one extraction | 15 min |
-| **[Docling Settings](docling-settings.md)** | Document conversion configuration | 10 min |
-| **[Export Configuration](export-configuration.md)** | Output formats and export options | 15 min |
-| **[Configuration Examples](configuration-examples.md)** | Complete configuration scenarios | 15 min |
-
-**Total Time:** ~2.5 hours
-
----
 
 ## Quick Start
 
 ### Minimal Configuration
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Minimal config - uses all defaults
 config = PipelineConfig(
@@ -103,7 +87,7 @@ config = PipelineConfig(
     template="my_templates.MyTemplate"
 )
 
-config.run()
+run_pipeline(config)
 ```
 
 **Defaults:**
@@ -248,7 +232,7 @@ PipelineConfig
 PipelineConfig validates your configuration:
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # This will raise ValidationError
 try:
@@ -364,7 +348,7 @@ config = PipelineConfig(
 ### 3. Use Type Hints
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # ✅ Good - Type hints help catch errors
 config: PipelineConfig = PipelineConfig(
@@ -389,7 +373,7 @@ print(f"Backend: {config.backend}")
 print(f"Inference: {config.inference}")
 
 # Then run
-config.run()
+run_pipeline(config)
 ```
 
 ---
@@ -401,33 +385,3 @@ Ready to configure your pipeline?
 1. **[Configuration Basics →](configuration-basics.md)** - Learn PipelineConfig fundamentals
 2. **[Backend Selection](backend-selection.md)** - Choose the right backend
 3. **[Configuration Examples](configuration-examples.md)** - See complete scenarios
-
----
-
-## Quick Reference
-
-### Minimal Configuration
-
-```python
-from docling_graph import PipelineConfig
-
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.MyTemplate"
-)
-config.run()
-```
-
-### CLI Equivalent
-
-```bash
-uv run docling-graph convert document.pdf \
-    --template "my_templates.MyTemplate"
-```
-
-### Key Settings
-
-- **backend**: `"llm"` (text) or `"vlm"` (vision)
-- **inference**: `"local"` (GPU) or `"remote"` (API)
-- **processing_mode**: `"one-to-one"` or `"many-to-one"`
-- **export_format**: `"csv"` or `"cypher"`

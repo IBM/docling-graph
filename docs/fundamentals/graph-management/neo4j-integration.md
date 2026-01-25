@@ -92,7 +92,7 @@ cypher-shell -u neo4j -p password "RETURN 1"
 ### Generate Cypher Script
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="document.pdf",
@@ -101,7 +101,7 @@ config = PipelineConfig(
     output_dir="neo4j_import"
 )
 
-config.run()
+run_pipeline(config)
 
 # Generates: neo4j_import/graph.cypher
 ```
@@ -164,7 +164,7 @@ print("✅ Imported to Neo4j")
 ### Method 4: Automated Import
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import subprocess
 
 # Extract and export
@@ -175,7 +175,7 @@ config = PipelineConfig(
     output_dir="neo4j_import"
 )
 
-config.run()
+run_pipeline(config)
 
 # Import to Neo4j
 result = subprocess.run([
@@ -327,10 +327,10 @@ RETURN o.name, count(DISTINCT i1) as issued, count(DISTINCT i2) as received
 
 ## Complete Examples
 
-### Example 1: Import and Query
+### 📍 Import and Query
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from neo4j import GraphDatabase
 
 # 1. Extract and export
@@ -341,7 +341,7 @@ config = PipelineConfig(
     output_dir="neo4j_data"
 )
 
-config.run()
+run_pipeline(config)
 
 # 2. Import to Neo4j
 driver = GraphDatabase.driver(
@@ -370,10 +370,10 @@ with driver.session() as session:
 driver.close()
 ```
 
-### Example 2: Batch Import
+### 📍 Batch Import
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pathlib import Path
 import subprocess
 
@@ -389,7 +389,7 @@ for pdf_file in Path("documents").glob("*.pdf"):
         output_dir=f"neo4j_batch/{pdf_file.stem}"
     )
     
-    config.run()
+    run_pipeline(config)
     
     # Import
     cypher_file = f"neo4j_batch/{pdf_file.stem}/graph.cypher"
@@ -403,7 +403,7 @@ for pdf_file in Path("documents").glob("*.pdf"):
 print("✅ Batch import complete")
 ```
 
-### Example 3: Query and Export
+### 📍 Query and Export
 
 ```python
 from neo4j import GraphDatabase
@@ -439,7 +439,7 @@ driver.close()
 
 ## Best Practices
 
-### 1. Clear Database Before Import
+### 👍 Clear Database Before Import
 
 ```cypher
 // Delete all nodes and relationships
@@ -451,7 +451,7 @@ MATCH (n)
 RETURN count(n)
 ```
 
-### 2. Create Indexes
+### 👍 Create Indexes
 
 ```cypher
 // Create index on invoice number
@@ -464,7 +464,7 @@ CREATE INDEX org_name_idx FOR (o:Organization) ON (o.name)
 SHOW INDEXES
 ```
 
-### 3. Use Constraints
+### 👍 Use Constraints
 
 ```cypher
 // Unique constraint on invoice number
@@ -474,7 +474,7 @@ CREATE CONSTRAINT invoice_unique FOR (i:Invoice) REQUIRE i.invoice_number IS UNI
 CREATE CONSTRAINT invoice_number_exists FOR (i:Invoice) REQUIRE i.invoice_number IS NOT NULL
 ```
 
-### 4. Batch Imports
+### 👍 Batch Imports
 
 ```python
 # ✅ Good - Import in batches
@@ -500,7 +500,7 @@ driver.close()
 
 ## Troubleshooting
 
-### Issue: Connection Refused
+### 🐛 Connection Refused
 
 **Solution:**
 ```bash
@@ -514,7 +514,7 @@ systemctl status neo4j
 docker restart neo4j
 ```
 
-### Issue: Authentication Failed
+### 🐛 Authentication Failed
 
 **Solution:**
 ```bash
@@ -526,7 +526,7 @@ cypher-shell -u neo4j -p neo4j
 docker run -e NEO4J_AUTH=neo4j/newpassword neo4j
 ```
 
-### Issue: Import Fails
+### 🐛 Import Fails
 
 **Solution:**
 ```bash
@@ -540,7 +540,7 @@ head -100 neo4j_import/graph.cypher | cypher-shell -u neo4j -p password
 docker logs neo4j
 ```
 
-### Issue: Slow Queries
+### 🐛 Slow Queries
 
 **Solution:**
 ```cypher
@@ -595,35 +595,3 @@ Now that you understand Neo4j integration:
 1. **[Graph Analysis →](graph-analysis.md)** - Analyze graph structure
 2. **[CLI Guide →](../../usage/cli/index.md)** - Use command-line tools
 3. **[API Reference →](../../usage/api/index.md)** - Programmatic access
-
----
-
-## Quick Reference
-
-### Export for Neo4j
-
-```python
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    export_format="cypher"
-)
-```
-
-### Import to Neo4j
-
-```bash
-cat graph.cypher | cypher-shell -u neo4j -p password
-```
-
-### Basic Query
-
-```cypher
-MATCH (n) RETURN n LIMIT 10
-```
-
-### Clear Database
-
-```cypher
-MATCH (n) DETACH DELETE n
-```

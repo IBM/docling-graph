@@ -91,7 +91,7 @@ cat graph.cypher | cypher-shell -u neo4j -p password
 ### Complete Pipeline
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Run complete pipeline
 config = PipelineConfig(
@@ -103,7 +103,7 @@ config = PipelineConfig(
     output_dir="outputs"
 )
 
-config.run()
+run_pipeline(config)
 
 # Outputs:
 # - outputs/nodes.csv
@@ -229,7 +229,7 @@ Advanced graph management techniques covered in other sections.
 ### Workflow 1: CSV Analysis
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Extract and export to CSV
 config = PipelineConfig(
@@ -239,7 +239,7 @@ config = PipelineConfig(
     output_dir="analysis"
 )
 
-config.run()
+run_pipeline(config)
 
 # Analyze in Python
 import pandas as pd
@@ -255,7 +255,7 @@ print(f"Total invoices: {len(nodes[nodes['label'] == 'Invoice'])}")
 ### Workflow 2: Neo4j Import
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Extract and export to Cypher
 config = PipelineConfig(
@@ -265,7 +265,7 @@ config = PipelineConfig(
     output_dir="neo4j_import"
 )
 
-config.run()
+run_pipeline(config)
 
 # Import to Neo4j
 # cat neo4j_import/graph.cypher | cypher-shell
@@ -276,7 +276,7 @@ config.run()
 ### Workflow 3: Programmatic Access
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 import json
 
 # Extract and access programmatically
@@ -286,7 +286,7 @@ config = PipelineConfig(
     output_dir="data"
 )
 
-config.run()
+run_pipeline(config)
 
 # Load graph data
 with open("data/graph_data.json") as f:
@@ -362,7 +362,7 @@ outputs/
 
 ## Best Practices
 
-### 1. Choose the Right Format
+### 👍 Choose the Right Format
 
 ```python
 # ✅ Good - Match format to use case
@@ -374,7 +374,7 @@ else:
     export_format = "csv"  # Default
 ```
 
-### 2. Validate Graph Structure
+### 👍 Validate Graph Structure
 
 ```python
 # ✅ Good - Enable validation
@@ -382,7 +382,7 @@ converter = GraphConverter(validate_graph=True)
 graph, metadata = converter.pydantic_list_to_graph(models)
 ```
 
-### 3. Use Automatic Cleanup
+### 👍 Use Automatic Cleanup
 
 ```python
 # ✅ Good - Enable cleanup
@@ -390,7 +390,7 @@ converter = GraphConverter(auto_cleanup=True)
 graph, metadata = converter.pydantic_list_to_graph(models)
 ```
 
-### 4. Check Statistics
+### 👍 Check Statistics
 
 ```python
 # ✅ Good - Verify graph quality
@@ -405,7 +405,7 @@ if metadata.edge_count == 0:
 
 ## Troubleshooting
 
-### Issue: Empty Graph
+### 🐛 Empty Graph
 
 **Solution:**
 ```python
@@ -418,7 +418,7 @@ for model in models:
     print(f"Model: {model}")
 ```
 
-### Issue: Missing Relationships
+### 🐛 Missing Relationships
 
 **Solution:**
 ```python
@@ -429,7 +429,7 @@ class Organization(BaseModel):
     model_config = {"is_entity": True}
 ```
 
-### Issue: Export Fails
+### 🐛 Export Fails
 
 **Solution:**
 ```python
@@ -451,43 +451,3 @@ Ready to dive deeper? Start with:
 1. **[Graph Conversion →](graph-conversion.md)** - Learn graph conversion
 2. **[Export Formats →](export-formats.md)** - Choose export format
 3. **[Visualization →](visualization.md)** - Visualize your graphs
-
----
-
-## Quick Reference
-
-### Run Complete Pipeline
-
-```python
-from docling_graph import PipelineConfig
-
-config = PipelineConfig(
-    source="document.pdf",
-    template="my_templates.Invoice",
-    export_format="csv",
-    output_dir="outputs"
-)
-
-config.run()
-```
-
-### Manual Graph Conversion
-
-```python
-from docling_graph.core.converters import GraphConverter
-
-converter = GraphConverter()
-graph, metadata = converter.pydantic_list_to_graph(models)
-```
-
-### Export Graph
-
-```python
-from docling_graph.core.exporters import CSVExporter, CypherExporter
-
-# CSV
-CSVExporter().export(graph, output_dir)
-
-# Cypher
-CypherExporter().export(graph, output_file)
-```

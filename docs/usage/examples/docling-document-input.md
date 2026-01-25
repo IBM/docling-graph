@@ -5,12 +5,6 @@
 
 This example demonstrates how to process pre-converted DoclingDocument JSON files, enabling reprocessing of documents without re-running OCR or document conversion.
 
-**What You'll Learn:**
-- Using DoclingDocument JSON files
-- Skipping document conversion
-- Reprocessing workflows
-- Integration with external Docling pipelines
-
 **Time:** 10 minutes
 
 ---
@@ -176,7 +170,7 @@ done
 ### Basic Usage
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from templates.invoice import Invoice
 
 # Configure pipeline for DoclingDocument input
@@ -190,13 +184,13 @@ config = PipelineConfig(
 )
 
 # Run pipeline (skips document conversion)
-config.run()
+run_pipeline(config)
 ```
 
 ### Two-Stage Processing
 
 ```python
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from templates.invoice import BasicInvoice, DetailedInvoice
 
 # Stage 1: Initial extraction with basic template
@@ -225,7 +219,7 @@ stage2_config.run()
 
 ```python
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from templates.invoice import Invoice
 
 # Find all DoclingDocument files
@@ -243,7 +237,7 @@ for doc_file in docling_files:
     )
     
     try:
-        config.run()
+        run_pipeline(config)
         print(f"✅ Completed: {doc_file}")
     except Exception as e:
         print(f"❌ Failed: {doc_file} - {e}")
@@ -322,7 +316,7 @@ The pipeline validates:
 
 ## Troubleshooting
 
-### Issue: Invalid Schema
+### 🐛 Invalid Schema
 
 **Error:**
 ```
@@ -338,7 +332,7 @@ ValidationError: schema_name must be 'DoclingDocument', got 'CustomDocument'
 }
 ```
 
-### Issue: Missing Version
+### 🐛 Missing Version
 
 **Error:**
 ```
@@ -354,7 +348,7 @@ ValidationError: Missing required field: version
 }
 ```
 
-### Issue: Invalid JSON
+### 🐛 Invalid JSON
 
 **Error:**
 ```
@@ -370,7 +364,7 @@ python -m json.tool invoice_docling.json
 jq . invoice_docling.json
 ```
 
-### Issue: File Not Found
+### 🐛 File Not Found
 
 **Error:**
 ```
@@ -392,7 +386,7 @@ uv run docling-graph convert /full/path/to/invoice_docling.json ...
 
 ## Best Practices
 
-### 1. Version Your DoclingDocuments
+### 👍 Version Your DoclingDocuments
 
 ```python
 # Add version to filename
@@ -407,7 +401,7 @@ doc = DoclingDocument(
 )
 ```
 
-### 2. Store Metadata
+### 👍 Store Metadata
 
 ```json
 {
@@ -424,7 +418,7 @@ doc = DoclingDocument(
 }
 ```
 
-### 3. Validate Before Processing
+### 👍 Validate Before Processing
 
 ```python
 from docling_graph.core.input.validators import DoclingDocumentValidator
@@ -443,7 +437,7 @@ except ValidationError as e:
     print(f"❌ Invalid: {e.message}")
 ```
 
-### 4. Archive Original PDFs
+### 👍 Archive Original PDFs
 
 ```python
 from pathlib import Path
@@ -558,7 +552,7 @@ for template in templates:
         template=template,
         output_dir=f"outputs/{template.split('.')[-1]}"
     )
-    config.run()
+    run_pipeline(config)
 ```
 
 ### 2. A/B Testing Extraction Strategies
@@ -572,7 +566,7 @@ for backend in ["llm", "vlm"]:
         backend=backend,
         output_dir=f"outputs/{backend}"
     )
-    config.run()
+    run_pipeline(config)
 ```
 
 ### 3. Incremental Processing
@@ -592,7 +586,7 @@ for stage_name, template in stages:
         template=template,
         output_dir=f"outputs/{stage_name}"
     )
-    config.run()
+    run_pipeline(config)
 ```
 
 ---

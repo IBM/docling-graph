@@ -5,15 +5,6 @@
 
 Handle errors gracefully in docling-graph pipelines with structured exception handling, retry logic, and debugging strategies.
 
-**What You'll Learn:**
-- Exception hierarchy
-- Error recovery strategies
-- Zero data loss patterns
-- Retry mechanisms
-- Logging and debugging
-- Validation errors
-- Best practices
-
 **Prerequisites:**
 - Understanding of [Pipeline Architecture](../../introduction/architecture.md)
 - Familiarity with [Python API](../api/index.md)
@@ -61,7 +52,7 @@ from docling_graph.exceptions import (
 ```python
 """Handle configuration errors."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import ConfigurationError
 
 try:
@@ -71,7 +62,7 @@ try:
         backend="vlm",
         inference="remote"  # VLM doesn't support remote!
     )
-    config.run()
+    run_pipeline(config)
     
 except ConfigurationError as e:
     print(f"Configuration error: {e.message}")
@@ -83,7 +74,7 @@ except ConfigurationError as e:
         backend="vlm",
         inference="local"  # Corrected
     )
-    config.run()
+    run_pipeline(config)
 ```
 
 ### 2. Client Errors (API)
@@ -91,7 +82,7 @@ except ConfigurationError as e:
 ```python
 """Handle API client errors."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import ClientError
 import time
 
@@ -106,7 +97,7 @@ def process_with_retry(source: str, max_retries: int = 3):
                 backend="llm",
                 inference="remote"
             )
-            config.run()
+            run_pipeline(config)
             print("✅ Processing successful")
             return
             
@@ -141,7 +132,7 @@ process_with_retry("document.pdf")
 ```python
 """Handle extraction errors."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import ExtractionError
 
 def process_with_fallback(source: str):
@@ -156,7 +147,7 @@ def process_with_fallback(source: str):
             backend="vlm",
             inference="local"
         )
-        config.run()
+        run_pipeline(config)
         print("✅ VLM extraction successful")
         return
         
@@ -172,7 +163,7 @@ def process_with_fallback(source: str):
             backend="llm",
             inference="local"
         )
-        config.run()
+        run_pipeline(config)
         print("✅ LLM extraction successful")
         
     except ExtractionError as e:
@@ -190,7 +181,7 @@ process_with_fallback("document.pdf")
 """Handle validation errors."""
 
 from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import ValidationError
 
 class StrictTemplate(BaseModel):
@@ -207,7 +198,7 @@ def process_with_validation_handling(source: str):
             source=source,
             template="templates.StrictTemplate"
         )
-        config.run()
+        run_pipeline(config)
         
     except ValidationError as e:
         print(f"Validation failed: {e.message}")
@@ -226,7 +217,7 @@ def process_with_validation_handling(source: str):
             source=source,
             template="templates.LenientTemplate"
         )
-        config.run()
+        run_pipeline(config)
 
 # Usage
 process_with_validation_handling("document.pdf")
@@ -237,7 +228,7 @@ process_with_validation_handling("document.pdf")
 ```python
 """Handle graph construction errors."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import GraphError
 
 def process_with_graph_validation(source: str):
@@ -249,7 +240,7 @@ def process_with_graph_validation(source: str):
             template="templates.MyTemplate",
             export_format="cypher"
         )
-        config.run()
+        run_pipeline(config)
         
     except GraphError as e:
         print(f"Graph error: {e.message}")
@@ -262,7 +253,7 @@ def process_with_graph_validation(source: str):
             template="templates.MyTemplate",
             export_format="csv"  # Fallback format
         )
-        config.run()
+        run_pipeline(config)
 
 # Usage
 process_with_graph_validation("document.pdf")
@@ -334,7 +325,7 @@ def process_document():
         backend="llm",
         inference="remote"
     )
-    config.run()
+    run_pipeline(config)
 
 retry_with_backoff(process_document, max_retries=3)
 ```
@@ -377,7 +368,7 @@ def process_with_conditional_retry(source: str, max_retries: int = 3):
                 source=source,
                 template="templates.MyTemplate"
             )
-            config.run()
+            run_pipeline(config)
             return
             
         except Exception as e:
@@ -398,7 +389,7 @@ def process_with_conditional_retry(source: str, max_retries: int = 3):
 """Configure logging for debugging."""
 
 import logging
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 # Configure logging
 logging.basicConfig(
@@ -418,7 +409,7 @@ try:
         source="document.pdf",
         template="templates.MyTemplate"
     )
-    config.run()
+    run_pipeline(config)
     
 except Exception as e:
     logger.error(f"Pipeline failed: {e}", exc_info=True)
@@ -430,7 +421,7 @@ except Exception as e:
 ```python
 """Run pipeline in debug mode."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import DoclingGraphError
 
 def debug_pipeline(source: str):
@@ -441,7 +432,7 @@ def debug_pipeline(source: str):
             source=source,
             template="templates.MyTemplate"
         )
-        config.run()
+        run_pipeline(config)
         
     except DoclingGraphError as e:
         print("\n" + "="*60)
@@ -535,7 +526,7 @@ context = debug_with_trace("problematic_document.pdf")
 ```python
 """Handle extraction with zero data loss."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from pathlib import Path
 import json
 
@@ -550,7 +541,7 @@ def process_with_zero_data_loss(source: str):
     )
     
     try:
-        results = config.run()
+        results = run_pipeline(config)
         
         # Check result type
         if len(results) == 1:
@@ -609,7 +600,7 @@ else:
 ```python
 """Work with partial models when merging fails."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from typing import List, Dict, Any
 
 def extract_with_partial_handling(source: str) -> Dict[str, Any]:
@@ -622,7 +613,7 @@ def extract_with_partial_handling(source: str) -> Dict[str, Any]:
         llm_consolidation=True  # Try LLM consolidation
     )
     
-    results = config.run()
+    results = run_pipeline(config)
     
     if len(results) == 1:
         # Success: single merged model
@@ -683,7 +674,7 @@ if result['completeness'] < 100:
 ```python
 """Degrade gracefully on errors."""
 
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import ExtractionError
 
 def process_with_degradation(source: str):
@@ -712,7 +703,7 @@ def process_with_degradation(source: str):
                 template="templates.MyTemplate",
                 **config_overrides
             )
-            models = config.run()
+            models = run_pipeline(config)
             
             results["success"] = True
             results["method"] = method_name
@@ -740,7 +731,7 @@ def process_with_degradation(source: str):
 
 from pathlib import Path
 import json
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 
 def process_with_partial_success(source: str):
     """Process and handle partial results."""
@@ -751,7 +742,7 @@ def process_with_partial_success(source: str):
             template="templates.MyTemplate",
             output_dir="outputs"
         )
-        models = config.run()
+        models = run_pipeline(config)
         
         # Check completeness
         if len(models) == 1:
@@ -800,7 +791,7 @@ def process_with_partial_success(source: str):
 """Validate before processing."""
 
 from pathlib import Path
-from docling_graph import PipelineConfig
+from docling_graph import run_pipeline, PipelineConfig
 from docling_graph.exceptions import ConfigurationError
 
 def validate_and_process(source: str, template: str):
@@ -838,19 +829,19 @@ def validate_and_process(source: str, template: str):
         source=source,
         template=template
     )
-    config.run()
+    run_pipeline(config)
 ```
 
 ---
 
 ## Best Practices
 
-### 1. Use Specific Exceptions
+### 👍 Use Specific Exceptions
 
 ```python
 # ✅ Good - Catch specific exceptions
 try:
-    config.run()
+    run_pipeline(config)
 except ClientError as e:
     # Handle API errors
     pass
@@ -860,12 +851,12 @@ except ExtractionError as e:
 
 # ❌ Avoid - Catch all exceptions
 try:
-    config.run()
+    run_pipeline(config)
 except Exception:
     pass  # What went wrong?
 ```
 
-### 2. Provide Context
+### 👍 Provide Context
 
 ```python
 # ✅ Good - Detailed error context
@@ -891,7 +882,7 @@ except Exception as e:
     raise Exception("Extraction failed")
 ```
 
-### 3. Log Before Raising
+### 👍 Log Before Raising
 
 ```python
 # ✅ Good - Log then raise
@@ -899,31 +890,31 @@ import logging
 logger = logging.getLogger(__name__)
 
 try:
-    config.run()
+    run_pipeline(config)
 except ExtractionError as e:
     logger.error(f"Extraction failed: {e}", exc_info=True)
     raise
 
 # ❌ Avoid - Silent failures
 try:
-    config.run()
+    run_pipeline(config)
 except ExtractionError:
     pass  # Error lost!
 ```
 
-### 4. Clean Up Resources
+### 👍 Clean Up Resources
 
 ```python
 # ✅ Good - Always clean up
 try:
-    config.run()
+    run_pipeline(config)
 finally:
     # Clean up even if error occurs
     cleanup_resources()
 
 # ❌ Avoid - No cleanup on error
 try:
-    config.run()
+    run_pipeline(config)
     cleanup_resources()  # Not called if error!
 except:
     pass
@@ -951,7 +942,7 @@ except:
 
 ```python
 # ✅ Good - Check if merge succeeded
-results = config.run()
+results = run_pipeline(config)
 
 if len(results) == 1:
     # Merged successfully
@@ -980,7 +971,7 @@ def get_invoice_number(models: List) -> str:
 import logging
 logger = logging.getLogger(__name__)
 
-results = config.run()
+results = run_pipeline(config)
 if len(results) > 1:
     logger.warning(f"Got {len(results)} partial models instead of 1")
     logger.info("Data preserved despite merge failure")
@@ -990,7 +981,7 @@ if len(results) > 1:
 
 ```python
 # ✅ Good - Inform users about partial results
-results = config.run()
+results = run_pipeline(config)
 
 if len(results) == 1:
     print("✅ Extraction complete")
@@ -1007,12 +998,3 @@ else:
 2. **[Testing →](testing.md)** - Test error handling
 3. **[Exceptions Reference →](../../reference/exceptions.md)** - Full exception API
 4. **[Extraction Process →](../../fundamentals/extraction-process/index.md)** - Extraction guide
-
----
-
-## Related Documentation
-
-- **[Model Merging](../../fundamentals/extraction-process/model-merging.md)** - Zero data loss details
-- **[Exceptions API](../../reference/exceptions.md)** - Exception reference
-- **[Pipeline Architecture](../../introduction/architecture.md)** - System design
-- **[Extraction Process](../../fundamentals/extraction-process/index.md)** - Extraction guide
