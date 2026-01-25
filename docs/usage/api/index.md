@@ -242,7 +242,8 @@ except PipelineError as e:
 | **Configuration** | YAML + flags | PipelineConfig objects |
 | **Best For** | Quick tasks, scripts | Applications, notebooks, workflows |
 
-**Note:** Python API defaults to `dump_to_disk=False` for memory efficiency. Set `dump_to_disk=True` to enable file exports.
+!!! note "Python API export behavior"
+    Python API defaults to dump_to_disk=False for memory efficiency. Set dump_to_disk=True to enable file exports.
 
 ---
 

@@ -462,7 +462,8 @@ class Document(BaseModel):
     )
 ```
 
-**Note:** Pydantic requires forward references for recursive models. Use string quotes for the type hint.
+!!! note "Pydantic forward references"
+    Pydantic requires forward references for recursive models. Use string quotes for the type hint.
 
 ---
 

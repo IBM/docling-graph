@@ -555,7 +555,8 @@ class BillingDocument(BaseModel):
     items: List[LineItem] = Field(default_factory=list)
 ```
 
-**Note:** If you want line items as nodes, use `edge()` and decide if they're entities or components.
+!!! note "Line items as nodes"
+    If you want line items as nodes, use edge() and decide if they're entities or components.
 
 ---
 

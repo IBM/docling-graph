@@ -423,7 +423,8 @@ context = run_pipeline({
 # Returns data only, even if output_dir is set
 ```
 
-**Note:** CLI mode defaults to `dump_to_disk=True`, API mode defaults to `dump_to_disk=False`.
+!!! note "CLI vs API defaults"
+    CLI mode defaults to dump_to_disk=True, API mode defaults to dump_to_disk=False.
 
 ### Custom Models Configuration
 

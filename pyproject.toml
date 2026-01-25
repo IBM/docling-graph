@@ -238,8 +238,8 @@ prerelease = false
 # Custom commit parser to cap BREAKING CHANGE at minor releases
 [tool.semantic_release.commit_parser_options]
 allowed_tags = ["feat", "fix", "perf", "refactor", "docs", "style", "test", "build", "ci", "chore"]
-minor_tags = ["feat", "refactor"]
-patch_tags = ["fix", "perf"]
+minor_tags = ["feat"]
+patch_tags = ["fix", "perf", "refactor"]
 
 [tool.semantic_release.changelog]
 exclude_commit_patterns = []

@@ -43,13 +43,13 @@ Our CI/CD automatically handles routine releases:
 
 | Commit Type | Version Bump | Example |
 |-------------|--------------|---------|
-| `fix:` | Patch (1.0.0 → 1.0.1) | `fix: handle null values` |
 | `feat:` | Minor (1.0.0 → 1.1.0) | `feat: add CSV export` |
-| `refactor:` | Minor (1.0.0 → 1.1.0) | `refactor: improve parser` |
+| `refactor:` | Patch (1.0.0 → 1.0.1) | `refactor: improve parser` |
+| `fix:` | Patch (1.0.0 → 1.0.1) | `fix: handle null values` |
 | `perf:` | Patch (1.0.0 → 1.0.1) | `perf: optimize graph build` |
-| `BREAKING CHANGE:` | Minor (1.0.0 → 1.1.0) | **Capped at minor, not major** |
 
-**Note:** BREAKING CHANGE commits will trigger minor releases, not major. This allows you to accumulate breaking changes and release them together as a planned major version.
+!!! note "Breaking changes and releases"
+    BREAKING CHANGE commits trigger minor releases (not major). This lets you accumulate breaking changes and ship them together later as a planned major version.
 
 ### Manual Releases (Git Tags)
 
@@ -142,7 +142,8 @@ See CHANGELOG.md for full details and migration guide."
 git push origin v2.0.0
 ```
 
-**Note:** Even if you use `BREAKING CHANGE:` in commits, semantic-release will only bump to the next minor version. Major bumps require manual tags.
+!!! note "Semantic-release major bumps"
+    Even if you use BREAKING CHANGE: in commits, semantic-release will only bump to the next minor version. Major bumps require manual tags.
 
 ---
 ## Creating a Major Release (Detailed Guide)

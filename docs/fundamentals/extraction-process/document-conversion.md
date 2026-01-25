@@ -283,7 +283,8 @@ Currently configured for:
 - English (en)
 - French (fr)
 
-**Note:** Language configuration is set in the DocumentProcessor initialization and can be extended by modifying the source code.
+!!! note "Language configuration"
+    Language configuration is set in the DocumentProcessor initialization and can be extended by modifying the source code.
 
 ---
 

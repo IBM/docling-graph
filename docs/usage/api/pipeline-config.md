@@ -125,7 +125,8 @@ graph = context.knowledge_graph
 
 **Raises:** `PipelineError`, `ConfigurationError`, `ExtractionError`
 
-**Note:** Use `run_pipeline(config)` instead of `config.run()` to access return values.
+!!! note "Accessing pipeline return values"
+    Use run_pipeline(config) instead of config.run() to access return values.
 
 ---
 

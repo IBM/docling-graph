@@ -217,7 +217,8 @@ class VLMConfig(BaseModel):
 |-------|------|---------------|------------------|
 | `local` | `ModelConfig` | `numind/NuExtract-2.0-8B` | `docling` |
 
-**Note:** VLM only supports local inference.
+!!! note "VLM inference"
+    VLM only supports local inference.
 
 ---
 
