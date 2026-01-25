@@ -404,7 +404,7 @@ class ExtractionStage(PipelineStage):
         # Default path: PDF/Image processing (existing behavior)
         logger.info(f"[{self.name()}] Creating extractor...")
         context.extractor = self._create_extractor(context)
-        
+
         # Pass trace_data to extractor if available
         if context.trace_data:
             context.extractor.trace_data = context.trace_data
@@ -427,16 +427,16 @@ class ExtractionStage(PipelineStage):
 
             for page_no in sorted(context.docling_document.pages.keys()):
                 page_md = context.docling_document.export_to_markdown(page_no=page_no)
-                
+
                 # Check if page has tables by examining document-level tables array
                 # Tables are stored at document level with prov array indicating page numbers
                 has_tables = False
-                if hasattr(context.docling_document, 'tables') and context.docling_document.tables:
+                if hasattr(context.docling_document, "tables") and context.docling_document.tables:
                     has_tables = any(
                         any(prov.page_no == page_no for prov in table.prov)
                         for table in context.docling_document.tables
                     )
-                
+
                 page_data = PageData(
                     page_number=page_no,
                     text_content=page_md,
@@ -954,7 +954,7 @@ class VisualizationStage(PipelineStage):
             output_dir = context.output_manager.get_visualizations_dir()
         elif context.output_dir:
             output_dir = context.output_dir
-        
+
         # Ensure output_dir and extracted_models are not None
         if output_dir is None:
             raise PipelineError(

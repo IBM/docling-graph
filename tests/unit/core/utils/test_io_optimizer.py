@@ -192,10 +192,7 @@ class TestOptimizedFileWriter:
             "boolean": True,
             "null": None,
             "list": [1, 2, 3],
-            "nested": {
-                "key": "value",
-                "list": ["a", "b", "c"]
-            }
+            "nested": {"key": "value", "list": ["a", "b", "c"]},
         }
 
         await writer.write_json_async(test_file, complex_data)
@@ -273,5 +270,6 @@ class TestOptimizedFileWriter:
         for i in range(10):
             test_file = tmp_path / f"concurrent_{i}.json"
             assert test_file.exists()
+
 
 # Made with Bob

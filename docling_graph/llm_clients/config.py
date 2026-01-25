@@ -404,16 +404,14 @@ def detect_model_capability(
     # Small models (1B-3B parameters)
     if any(size in name_lower for size in ["1b", "350m", "500m", "2b", "3b"]):
         logger.info(
-            f"Detected SIMPLE capability from model name: {model_name} "
-            "(small parameter count)"
+            f"Detected SIMPLE capability from model name: {model_name} (small parameter count)"
         )
         return ModelCapability.SIMPLE
 
     # Large models (70B+ parameters)
     if any(size in name_lower for size in ["70b", "65b", "405b"]):
         logger.info(
-            f"Detected ADVANCED capability from model name: {model_name} "
-            "(large parameter count)"
+            f"Detected ADVANCED capability from model name: {model_name} (large parameter count)"
         )
         return ModelCapability.ADVANCED
 
@@ -427,9 +425,7 @@ def detect_model_capability(
             )
             return ModelCapability.SIMPLE
         elif max_new_tokens <= 4096:
-            logger.info(
-                f"Detected STANDARD capability from max_new_tokens: {max_new_tokens}"
-            )
+            logger.info(f"Detected STANDARD capability from max_new_tokens: {max_new_tokens}")
             return ModelCapability.STANDARD
         else:
             logger.info(

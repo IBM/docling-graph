@@ -12,6 +12,7 @@ from docling_graph.pipeline.orchestrator import PipelineOrchestrator, run_pipeli
 
 class SimpleTestModel(BaseModel):
     """Simple test model for integration tests."""
+
     name: str
     value: int
 
@@ -24,7 +25,7 @@ class TestTraceModes:
         config = PipelineConfig(
             source="test.txt",  # Use text to avoid document processing
             template=SimpleTestModel,
-            output_dir=str(tmp_path)
+            output_dir=str(tmp_path),
         )
 
         orchestrator = PipelineOrchestrator(config, mode="cli")
@@ -36,9 +37,7 @@ class TestTraceModes:
     def test_api_mode_excludes_trace_by_default(self, tmp_path):
         """Test that API mode excludes trace by default."""
         config = PipelineConfig(
-            source="test.txt",
-            template=SimpleTestModel,
-            output_dir=str(tmp_path)
+            source="test.txt", template=SimpleTestModel, output_dir=str(tmp_path)
         )
 
         orchestrator = PipelineOrchestrator(config, mode="api")
@@ -54,7 +53,7 @@ class TestTraceModes:
             template=SimpleTestModel,
             include_trace=True,
             dump_to_disk=False,  # In memory only
-            output_dir=str(tmp_path)
+            output_dir=str(tmp_path),
         )
 
         orchestrator = PipelineOrchestrator(config, mode="api")
@@ -69,7 +68,7 @@ class TestTraceModes:
             source="test.txt",
             template=SimpleTestModel,
             include_trace=False,
-            output_dir=str(tmp_path)
+            output_dir=str(tmp_path),
         )
 
         orchestrator = PipelineOrchestrator(config, mode="cli")
@@ -80,9 +79,7 @@ class TestTraceModes:
     def test_cli_mode_has_trace_export_stage(self, tmp_path):
         """Test that CLI mode includes TraceExportStage."""
         config = PipelineConfig(
-            source="test.txt",
-            template=SimpleTestModel,
-            output_dir=str(tmp_path)
+            source="test.txt", template=SimpleTestModel, output_dir=str(tmp_path)
         )
 
         orchestrator = PipelineOrchestrator(config, mode="cli")
@@ -94,9 +91,7 @@ class TestTraceModes:
     def test_api_mode_no_trace_export_stage(self, tmp_path):
         """Test that API mode doesn't include TraceExportStage by default."""
         config = PipelineConfig(
-            source="test.txt",
-            template=SimpleTestModel,
-            output_dir=str(tmp_path)
+            source="test.txt", template=SimpleTestModel, output_dir=str(tmp_path)
         )
 
         orchestrator = PipelineOrchestrator(config, mode="api")
@@ -112,7 +107,7 @@ class TestTraceModes:
             template=SimpleTestModel,
             include_trace=True,
             dump_to_disk=True,
-            output_dir=str(tmp_path)
+            output_dir=str(tmp_path),
         )
 
         orchestrator = PipelineOrchestrator(config, mode="api")
@@ -128,7 +123,7 @@ class TestTraceModes:
             template=SimpleTestModel,
             include_trace=True,
             dump_to_disk=False,  # No disk export
-            output_dir=str(tmp_path)
+            output_dir=str(tmp_path),
         )
 
         orchestrator = PipelineOrchestrator(config, mode="api")
@@ -148,7 +143,7 @@ class TestTraceModes:
             source="test.txt",
             template=SimpleTestModel,
             dump_to_disk=False,
-            output_dir=str(tmp_path)
+            output_dir=str(tmp_path),
         )
 
         orchestrator = PipelineOrchestrator(config, mode="api")
@@ -164,9 +159,7 @@ class TestTraceModes:
     def test_cli_mode_stage_order(self, tmp_path):
         """Test that stages are in correct order in CLI mode."""
         config = PipelineConfig(
-            source="test.txt",
-            template=SimpleTestModel,
-            output_dir=str(tmp_path)
+            source="test.txt", template=SimpleTestModel, output_dir=str(tmp_path)
         )
 
         orchestrator = PipelineOrchestrator(config, mode="cli")
@@ -193,7 +186,7 @@ class TestTraceModes:
             template=SimpleTestModel,
             include_trace=True,
             dump_to_disk=True,
-            output_dir=str(tmp_path)
+            output_dir=str(tmp_path),
         )
 
         orchestrator = PipelineOrchestrator(config, mode="api")
@@ -209,9 +202,7 @@ class TestTraceModes:
     def test_mode_parameter_validation(self, tmp_path):
         """Test that mode parameter is validated."""
         config = PipelineConfig(
-            source="test.txt",
-            template=SimpleTestModel,
-            output_dir=str(tmp_path)
+            source="test.txt", template=SimpleTestModel, output_dir=str(tmp_path)
         )
 
         # Valid modes
@@ -227,7 +218,7 @@ class TestTraceModes:
             source="test.txt",
             template=SimpleTestModel,
             include_trace=True,
-            output_dir=str(tmp_path)
+            output_dir=str(tmp_path),
         )
 
         orchestrator = PipelineOrchestrator(config, mode="api")
@@ -239,6 +230,7 @@ class TestTraceModes:
         # This would happen in orchestrator.run()
         if orchestrator.include_trace:
             from docling_graph.pipeline.trace import TraceData
+
             context.trace_data = TraceData()
 
             assert context.trace_data is not None
@@ -251,7 +243,7 @@ class TestTraceModes:
             source="test.txt",
             template=SimpleTestModel,
             include_trace=False,
-            output_dir=str(tmp_path)
+            output_dir=str(tmp_path),
         )
 
         orchestrator = PipelineOrchestrator(config, mode="api")
@@ -269,11 +261,11 @@ class TestTraceConfiguration:
         """Test all valid combinations of trace and dump settings."""
         combinations = [
             # (include_trace, dump_to_disk, mode, expected_trace, expected_dump)
-            (None, None, "cli", True, True),      # CLI defaults
-            (None, None, "api", False, False),    # API defaults
-            (True, True, "api", True, True),      # Explicit enable all
-            (True, False, "api", True, False),    # Trace in memory only
-            (False, True, "cli", False, True),    # Dump without trace
+            (None, None, "cli", True, True),  # CLI defaults
+            (None, None, "api", False, False),  # API defaults
+            (True, True, "api", True, True),  # Explicit enable all
+            (True, False, "api", True, False),  # Trace in memory only
+            (False, True, "cli", False, True),  # Dump without trace
             (False, False, "api", False, False),  # All disabled
         ]
 
@@ -283,14 +275,17 @@ class TestTraceConfiguration:
                 template=SimpleTestModel,
                 include_trace=include_trace,
                 dump_to_disk=dump_to_disk,
-                output_dir=str(tmp_path)
+                output_dir=str(tmp_path),
             )
 
             orchestrator = PipelineOrchestrator(config, mode=mode)
 
-            assert orchestrator.include_trace == exp_trace, \
+            assert orchestrator.include_trace == exp_trace, (
                 f"Failed for {include_trace}, {dump_to_disk}, {mode}"
-            assert orchestrator.dump_to_disk == exp_dump, \
+            )
+            assert orchestrator.dump_to_disk == exp_dump, (
                 f"Failed for {include_trace}, {dump_to_disk}, {mode}"
+            )
+
 
 # Made with Bob

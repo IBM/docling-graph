@@ -438,6 +438,54 @@ outputs/
         │       └── ...
         │
         └── chunks_metadata.json      # Chunk metadata (many-to-one mode)
+        │
+        └── metadata.json             # Pipeline metadata and performance metrics
+```
+
+### metadata.json Structure
+
+The `metadata.json` file contains pipeline configuration, results, and performance metrics:
+
+```json
+{
+  "pipeline_version": "1.1.0",
+  "timestamp": "2026-01-25T12:30:45.123456",
+  "input": {
+    "source": "document.pdf",
+    "template": "templates.Invoice"
+  },
+  "config": {
+    "processing_mode": "many-to-one",
+    "backend": "llm",
+    "docling_config": "ocr",
+    "use_chunking": true,
+    "llm_consolidation": true,
+    "include_trace": true
+  },
+  "processing_time_seconds": 15.42,
+  "results": {
+    "nodes": 25,
+    "edges": 18,
+    "extracted_models": 4
+  },
+  "trace_summary": {
+    "pages": 3,
+    "chunks": 4,
+    "extractions": 4,
+    "intermediate_graphs": {
+      "count": 4,
+      "details": [
+        {
+          "graph_id": 0,
+          "source_type": "chunk",
+          "source_id": 0,
+          "nodes": 6,
+          "edges": 4
+        }
+      ]
+    }
+  }
+}
 ```
 
 ### Output Directory Manager

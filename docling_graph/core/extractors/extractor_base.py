@@ -11,7 +11,7 @@ from pydantic import BaseModel
 
 class BaseExtractor(ABC):
     """Abstract base class for all extraction strategies."""
-    
+
     def __init__(self) -> None:
         """Initialize base extractor with optional trace data."""
         self.trace_data: Any = None  # Will be set by pipeline if trace is enabled
