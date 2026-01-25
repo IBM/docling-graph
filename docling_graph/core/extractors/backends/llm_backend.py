@@ -32,10 +32,8 @@ class LlmBackend:
 
         # Get model configuration from centralized registry
         self.model_config = None
-        # Support both model_name and model_id attributes
-        model_attr = getattr(llm_client, "model_name", None) or getattr(
-            llm_client, "model_id", None
-        )
+        # Get model from client (all clients use self.model)
+        model_attr = getattr(llm_client, "model", None) or getattr(llm_client, "model_id", None)
 
         # Try to get config from registry (now works with all clients via .provider property)
         if hasattr(llm_client, "provider") and model_attr:
@@ -55,12 +53,20 @@ class LlmBackend:
 
         # Fallback: auto-detect from model characteristics
         if not self.model_config:
-            context_limit = getattr(llm_client, "context_limit", 8000)
-            model_name = getattr(llm_client, "model_name", None) or getattr(
-                llm_client, "model_id", ""
-            )
+            # Use context_limit property if available, otherwise _context_limit attribute
+            context_limit_raw = getattr(llm_client, "context_limit", None)
+            if context_limit_raw is None:
+                context_limit_raw = getattr(llm_client, "_context_limit", 8000)
+
+            # Ensure context_limit is an int for type safety
+            context_limit: int = int(context_limit_raw) if context_limit_raw is not None else 8000
+
+            model_name = getattr(llm_client, "model", None)
             # Get max_new_tokens if available (better capability indicator)
-            max_new_tokens = getattr(llm_client, "_max_new_tokens", None)
+            max_new_tokens = getattr(llm_client, "_max_tokens", None)
+            # Ensure max_new_tokens is None or int (not MagicMock)
+            if max_new_tokens is not None and not isinstance(max_new_tokens, int):
+                max_new_tokens = None
 
             # Ensure model_name is a string for detect_model_capability
             model_name_str = str(model_name) if model_name else ""
@@ -74,7 +80,7 @@ class LlmBackend:
 
             # Create minimal config
             self.model_config = ModelConfig(
-                model_id=model_name or "unknown",
+                model_id=model_name_str or "unknown",
                 context_limit=context_limit,
                 capability=capability,
             )

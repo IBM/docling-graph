@@ -455,12 +455,21 @@ The `metadata.json` file contains pipeline configuration, results, and performan
     "template": "templates.Invoice"
   },
   "config": {
-    "processing_mode": "many-to-one",
-    "backend": "llm",
-    "docling_config": "ocr",
-    "use_chunking": true,
-    "llm_consolidation": true,
-    "include_trace": true
+    "pipeline": {
+      "processing_mode": "many-to-one",
+      "include_trace": true,
+      "reverse_edges": false,
+      "docling": "ocr"
+    },
+    "extraction": {
+      "backend": "llm",
+      "inference": "remote",
+      "model": "mistral-small-latest",
+      "provider": "mistral",
+      "use_chunking": true,
+      "llm_consolidation": true,
+      "max_batch_size": 1
+    }
   },
   "processing_time_seconds": 15.42,
   "results": {
