@@ -150,6 +150,31 @@ class PipelineOrchestrator:
             if context.output_manager and self.dump_to_disk:
                 from datetime import datetime
 
+                # Determine actual model and provider used
+                actual_model = self.config.model_override
+                actual_provider = self.config.provider_override
+
+                # If no overrides, get from models config based on backend and inference
+                if not actual_model or not actual_provider:
+                    if self.config.backend == "llm":
+                        if self.config.inference == "local":
+                            actual_model = (
+                                actual_model or self.config.models.llm.local.default_model
+                            )
+                            actual_provider = (
+                                actual_provider or self.config.models.llm.local.provider
+                            )
+                        else:  # remote
+                            actual_model = (
+                                actual_model or self.config.models.llm.remote.default_model
+                            )
+                            actual_provider = (
+                                actual_provider or self.config.models.llm.remote.provider
+                            )
+                    else:  # vlm
+                        actual_model = actual_model or self.config.models.vlm.local.default_model
+                        actual_provider = actual_provider or self.config.models.vlm.local.provider
+
                 metadata = {
                     "pipeline_version": __version__,
                     "timestamp": datetime.now().isoformat(),
@@ -158,12 +183,21 @@ class PipelineOrchestrator:
                         "template": str(self.config.template),
                     },
                     "config": {
-                        "processing_mode": self.config.processing_mode,
-                        "backend": self.config.backend,
-                        "docling_config": self.config.docling_config,
-                        "use_chunking": self.config.use_chunking,
-                        "llm_consolidation": self.config.llm_consolidation,
-                        "include_trace": self.include_trace,
+                        "pipeline": {
+                            "processing_mode": self.config.processing_mode,
+                            "include_trace": self.include_trace,
+                            "reverse_edges": self.config.reverse_edges,
+                            "docling": self.config.docling_config,
+                        },
+                        "extraction": {
+                            "backend": self.config.backend,
+                            "inference": self.config.inference,
+                            "model": actual_model,
+                            "provider": actual_provider,
+                            "use_chunking": self.config.use_chunking,
+                            "llm_consolidation": self.config.llm_consolidation,
+                            "max_batch_size": self.config.max_batch_size,
+                        },
                     },
                     "processing_time_seconds": round(pipeline_processing_time, 2),
                     "results": {
