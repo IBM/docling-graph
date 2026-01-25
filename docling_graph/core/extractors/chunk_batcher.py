@@ -59,7 +59,7 @@ class ChunkBatcher:
     TOKENIZER_RATIOS = {
         "llama": 3.5,  # Llama/Mistral family
         "gpt": 4.0,  # GPT family
-        "small_model": 2.5,  # 1B-5B models (more verbose tokenization)
+        "small_model": 2.5,  # 1B-7B models (more verbose tokenization)
         "multilingual": 3.0,  # Multilingual models
         "default": 3.0,  # Conservative default
     }

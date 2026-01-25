@@ -211,3 +211,29 @@ class OutputDirectoryManager:
         path = self.get_debug_dir() / "per_chunk"
         path.mkdir(exist_ok=True)
         return path
+
+    def is_directory_empty(self) -> bool:
+        """
+        Check if the document directory is empty (no files, only empty subdirs allowed).
+
+        Returns:
+            True if directory contains no files, False otherwise
+        """
+        for item in self.document_dir.rglob("*"):
+            if item.is_file():
+                return False
+        return True
+
+    def cleanup_if_empty(self) -> bool:
+        """
+        Remove the document directory if it's empty.
+
+        Returns:
+            True if directory was removed, False if kept (contains files)
+        """
+        if self.is_directory_empty():
+            import shutil
+
+            shutil.rmtree(self.document_dir)
+            return True
+        return False

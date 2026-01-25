@@ -206,7 +206,7 @@ class TestModelCapability:
         assert ModelCapability.ADVANCED.value == "advanced"
 
     def test_detect_model_capability_simple(self):
-        """Test capability detection for simple models (1B-5B)."""
+        """Test capability detection for simple models (1B-7B)."""
         from docling_graph.llm_clients.config import ModelCapability, detect_model_capability
 
         # Small context limits indicate simple models

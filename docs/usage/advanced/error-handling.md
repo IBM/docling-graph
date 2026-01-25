@@ -515,6 +515,55 @@ context = debug_with_trace("problematic_document.pdf")
 
 ```
 
+### Automatic Cleanup on Failure
+
+When `dump_to_disk=True`, the pipeline automatically cleans up empty output directories if processing fails:
+
+```python
+"""Automatic cleanup of empty directories on failure."""
+
+from docling_graph import run_pipeline, PipelineConfig
+from docling_graph.exceptions import PipelineError
+
+config = PipelineConfig(
+    source="document.pdf",
+    template="templates.MyTemplate",
+    dump_to_disk=True,
+    output_dir="outputs"
+)
+
+try:
+    context = run_pipeline(config)
+except PipelineError as e:
+    # If the pipeline fails before writing any files,
+    # the empty output directory is automatically removed
+    print(f"Pipeline failed: {e.message}")
+    # No empty artifact directories left in outputs/
+```
+
+**Cleanup Behavior:**
+
+- **Empty directories are removed** - If the pipeline fails before writing any files, the output directory is automatically deleted
+- **Partial results are preserved** - If any files were written before the failure, the directory is kept
+- **Only when dump_to_disk=True** - Cleanup only runs when file exports are enabled
+- **Logged for transparency** - Cleanup actions are logged for visibility
+
+**Example Scenarios:**
+
+```python
+# Scenario 1: Failure during template loading (before any files)
+# → Output directory is removed (empty)
+
+# Scenario 2: Failure during extraction (after docling conversion)
+# → Output directory is kept (contains docling/ files)
+
+# Scenario 3: dump_to_disk=False
+# → No cleanup needed (no directory created)
+```
+
+This ensures your `outputs/` folder stays clean without manual intervention.
+
+
 ---
 
 ## Error Recovery Patterns

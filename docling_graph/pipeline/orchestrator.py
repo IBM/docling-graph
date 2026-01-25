@@ -257,6 +257,21 @@ class PipelineOrchestrator:
             stage_name = current_stage.name() if current_stage else "Unknown"
             logger.error(f"Pipeline failed at stage: {stage_name}")
 
+            # Cleanup empty output directory if dump_to_disk was enabled
+            if self.dump_to_disk and context.output_manager:
+                try:
+                    if context.output_manager.cleanup_if_empty():
+                        logger.info(
+                            f"Removed empty output directory: {context.output_manager.get_document_dir()}"
+                        )
+                    else:
+                        logger.info(
+                            f"Kept output directory with partial results: {context.output_manager.get_document_dir()}"
+                        )
+                except Exception as cleanup_error:
+                    # Don't let cleanup errors mask the original error
+                    logger.warning(f"Failed to cleanup output directory: {cleanup_error}")
+
             if isinstance(e, PipelineError):
                 raise
 

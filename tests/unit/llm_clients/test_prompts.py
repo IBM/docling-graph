@@ -144,7 +144,7 @@ def test_get_consolidation_prompt_empty_raw(sample_schema_json):
 
 
 def test_get_extraction_prompt_with_simple_model():
-    """Test extraction prompt for simple models (1B-5B)."""
+    """Test extraction prompt for simple models (1B-7B)."""
     from docling_graph.llm_clients.config import ModelCapability, ModelConfig
 
     markdown = "Test document"
