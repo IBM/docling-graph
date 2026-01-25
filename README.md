@@ -34,11 +34,11 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 
 ## Key Capabilities
 
-- **🧠 Extraction**: Extract structured data using [VLM](docs/fundamentals/pipeline-configuration/backend-selection.md) or [LLM](docs/fundamentals/pipeline-configuration/backend-selection.md). Supports [intelligent chunking](docs/fundamentals/extraction-process/chunking-strategies.md) and flexible [processing modes](docs/fundamentals/pipeline-configuration/processing-modes.md).
+- **🧠 Data Extraction**: Extract structured data using [VLM](docs/fundamentals/pipeline-configuration/backend-selection.md) or [LLM](docs/fundamentals/pipeline-configuration/backend-selection.md). Supports [intelligent chunking](docs/fundamentals/extraction-process/chunking-strategies.md) and flexible [processing modes](docs/fundamentals/pipeline-configuration/processing-modes.md).
 
-- **🔨 Graph Construction**: Convert validated Pydantic models into NetworkX [directed graphs](docs/fundamentals/graph-management/graph-conversion.md) with semantic relationships and stable node IDs, and rich edge metadata.
+- **💎 Graph Construction**: Convert validated Pydantic models into NetworkX [directed graphs](docs/fundamentals/graph-management/graph-conversion.md) with semantic relationships and stable node IDs, and rich edge metadata.
 
-- **📦 Export**: Save graphs in multiple formats [CSV](docs/fundamentals/graph-management/export-formats.md#csv-export) (Neo4j-compatible), and [Cypher](docs/fundamentals/graph-management/export-formats.md#cypher-export) for bulk import.
+- **📦 Export**: Save graphs in multiple Neo4j-compatible formats [CSV](docs/fundamentals/graph-management/export-formats.md#csv-export), and [Cypher](docs/fundamentals/graph-management/export-formats.md#cypher-export) for bulk import.
 
 - **📊 Visualization**: Explore graphs with [interactive HTML](docs/fundamentals/graph-management/visualization.md) visualizations, and detailed [Markdown reports](docs/fundamentals/graph-management/visualization.md#markdown-reports).
 
@@ -46,7 +46,9 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 
 - **✍🏻 Input Formats**: Process [PDF and images](docs/fundamentals/pipeline-configuration/input-formats.md#pdf-documents), [text and Markdown files](docs/fundamentals/pipeline-configuration/input-formats.md#text-files), [URLs](docs/fundamentals/pipeline-configuration/input-formats.md#urls), [DoclingDocument](docs/fundamentals/pipeline-configuration/input-formats.md#docling-document-json), and [plain text](docs/usage/api/programmatic-examples.md) strings.
 
-- **⚡ Batch Optimization**: [Provider-specific batching](docs/usage/advanced/performance-tuning.md#provider-specific-batching) with [real tokenizers](docs/usage/advanced/performance-tuning.md#real-tokenizer-integration) and [improved GPU utilization](docs/usage/advanced/performance-tuning.md#clean-up-resources) for faster inference and better memory handling.
+- **✨ Batch Optimization**: [Provider-specific batching](docs/usage/advanced/performance-tuning.md#provider-specific-batching) with [real tokenizers](docs/usage/advanced/performance-tuning.md#real-tokenizer-integration) and [improved GPU utilization](docs/usage/advanced/performance-tuning.md#clean-up-resources) for faster inference and better memory handling.
+
+- **🐛 Trace Capture**: [Comprehensive debug data](docs/usage/advanced/trace-data-debugging.md) via [`TraceData`](docling_graph/pipeline/trace.py) captures pages, chunks and intermediate schemas and graphs.
 
 ### Coming Soon
 
@@ -54,7 +56,7 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 
 * 🧩 **Interactive Template Builder:** Guided workflows for building Pydantic templates.
 
-* 🧬 **Ontology-Based Templates:** Match content to the best Pydantic template using semantic similarity.
+* 🧲 **Ontology-Based Templates:** Match content to the best Pydantic template using semantic similarity.
 
 * 🔍 **External OCR Engine:** Pass custom OCR engine URL to convert documents before graph creation.
 
