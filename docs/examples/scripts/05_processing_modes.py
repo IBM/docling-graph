@@ -175,8 +175,12 @@ def main() -> None:
 
         console.print("\n[bold]🔍 Compare Results:[/bold]")
         console.print("  [cyan]# Count nodes in each mode[/cyan]")
-        console.print("  [dim]wc -l outputs/05_processing_modes/one_to_one/docling_graph/nodes.csv[/dim]")
-        console.print("  [dim]wc -l outputs/05_processing_modes/many_to_one/docling_graph/nodes.csv[/dim]")
+        console.print(
+            "  [dim]wc -l outputs/05_processing_modes/one_to_one/docling_graph/nodes.csv[/dim]"
+        )
+        console.print(
+            "  [dim]wc -l outputs/05_processing_modes/many_to_one/docling_graph/nodes.csv[/dim]"
+        )
 
         console.print("\n[bold]🎯 Expected Results:[/bold]")
         console.print("  • One-to-One: 3 separate ID card nodes (one per page)")

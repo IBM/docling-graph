@@ -107,9 +107,15 @@ def main() -> None:
         console.print(
             f"  1. View interactive graph: [cyan]uv run docling-graph inspect {OUTPUT_DIR}[/cyan]"
         )
-        console.print(f"  2. Check extracted data: [cyan]cat {OUTPUT_DIR}/docling_graph/nodes.csv[/cyan]")
-        console.print(f"  3. View relationships: [cyan]cat {OUTPUT_DIR}/docling_graph/edges.csv[/cyan]")
-        console.print(f"  4. Read summary report: [cyan]cat {OUTPUT_DIR}/docling_graph/report.md[/cyan]")
+        console.print(
+            f"  2. Check extracted data: [cyan]cat {OUTPUT_DIR}/docling_graph/nodes.csv[/cyan]"
+        )
+        console.print(
+            f"  3. View relationships: [cyan]cat {OUTPUT_DIR}/docling_graph/edges.csv[/cyan]"
+        )
+        console.print(
+            f"  4. Read summary report: [cyan]cat {OUTPUT_DIR}/docling_graph/report.md[/cyan]"
+        )
 
         console.print("\n[bold]💡 What Happened:[/bold]")
         console.print("  • Image was processed by Docling's vision model")

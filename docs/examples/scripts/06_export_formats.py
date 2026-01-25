@@ -130,24 +130,11 @@ def main() -> None:
         table.add_column("Best For")
         table.add_column("Neo4j Import")
 
+        table.add_row("CSV", "nodes.csv, edges.csv", "Production bulk import", "neo4j-admin import")
         table.add_row(
-            "CSV",
-            "nodes.csv, edges.csv",
-            "Production bulk import",
-            "neo4j-admin import"
+            "Cypher", "graph.cypher", "Development, incremental", "cypher-shell < file.cypher"
         )
-        table.add_row(
-            "Cypher",
-            "graph.cypher",
-            "Development, incremental",
-            "cypher-shell < file.cypher"
-        )
-        table.add_row(
-            "JSON",
-            "graph.json",
-            "API integration, archival",
-            "Custom import script"
-        )
+        table.add_row("JSON", "graph.json", "API integration, archival", "Custom import script")
 
         console.print(table)
 
@@ -177,11 +164,17 @@ def main() -> None:
         console.print("\n[bold]🔧 Neo4j Import Examples:[/bold]")
         console.print("\n[cyan]CSV Bulk Import:[/cyan]")
         console.print("  [dim]neo4j-admin database import full \\[/dim]")
-        console.print("    [dim]--nodes=outputs/06_export_formats/csv/docling_graph/nodes.csv \\[/dim]")
-        console.print("    [dim]--relationships=outputs/06_export_formats/csv/docling_graph/edges.csv[/dim]")
+        console.print(
+            "    [dim]--nodes=outputs/06_export_formats/csv/docling_graph/nodes.csv \\[/dim]"
+        )
+        console.print(
+            "    [dim]--relationships=outputs/06_export_formats/csv/docling_graph/edges.csv[/dim]"
+        )
 
         console.print("\n[cyan]Cypher Script:[/cyan]")
-        console.print("  [dim]cat outputs/06_export_formats/cypher/docling_graph/graph.cypher | \\[/dim]")
+        console.print(
+            "  [dim]cat outputs/06_export_formats/cypher/docling_graph/graph.cypher | \\[/dim]"
+        )
         console.print("    [dim]cypher-shell -u neo4j -p password[/dim]")
 
     except Exception as e:

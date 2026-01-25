@@ -158,7 +158,7 @@ def main() -> None:
     table.add_row("Successful", f"[green]{successful}[/green]")
     table.add_row("Failed", f"[red]{failed}[/red]" if failed > 0 else "0")
     table.add_row(
-        "Success Rate", f"{(successful/len(documents)*100):.1f}%" if documents else "N/A"
+        "Success Rate", f"{(successful / len(documents) * 100):.1f}%" if documents else "N/A"
     )
 
     console.print(table)

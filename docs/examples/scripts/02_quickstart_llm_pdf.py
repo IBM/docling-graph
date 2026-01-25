@@ -126,7 +126,9 @@ def main() -> None:
         console.print(
             f"  1. View interactive graph: [cyan]uv run docling-graph inspect {OUTPUT_DIR}[/cyan]"
         )
-        console.print(f"  2. Check extracted data: [cyan]cat {OUTPUT_DIR}/docling_graph/nodes.csv[/cyan]")
+        console.print(
+            f"  2. Check extracted data: [cyan]cat {OUTPUT_DIR}/docling_graph/nodes.csv[/cyan]"
+        )
         console.print(f"  3. View markdown: [cyan]cat {OUTPUT_DIR}/docling/document.md[/cyan]")
         console.print(f"  4. Read summary: [cyan]cat {OUTPUT_DIR}/docling_graph/report.md[/cyan]")
 
@@ -156,7 +158,9 @@ def main() -> None:
         console.print("\n[yellow]Troubleshooting:[/yellow]")
 
         if "api" in error_msg or "key" in error_msg or "auth" in error_msg:
-            console.print("  • Set your Mistral API key: [cyan]export MISTRAL_API_KEY='your-key'[/cyan]")
+            console.print(
+                "  • Set your Mistral API key: [cyan]export MISTRAL_API_KEY='your-key'[/cyan]"
+            )
             console.print("  • Get a key at: https://console.mistral.ai/")
             console.print("  • Or use local inference: see Example 07")
         else:

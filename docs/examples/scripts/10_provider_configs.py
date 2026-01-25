@@ -172,30 +172,10 @@ def main() -> None:
     table.add_column("Strengths")
     table.add_column("Pricing")
 
-    table.add_row(
-        "OpenAI",
-        "GPT-4 Turbo",
-        "Highest quality, best reasoning",
-        "$$$ (Premium)"
-    )
-    table.add_row(
-        "Mistral",
-        "Mistral Large",
-        "Good balance, fast",
-        "$$ (Moderate)"
-    )
-    table.add_row(
-        "Gemini",
-        "Gemini 1.5 Pro",
-        "Long context, multimodal",
-        "$$ (Moderate)"
-    )
-    table.add_row(
-        "WatsonX",
-        "Granite",
-        "Enterprise, compliance",
-        "$ (Enterprise)"
-    )
+    table.add_row("OpenAI", "GPT-4 Turbo", "Highest quality, best reasoning", "$$$ (Premium)")
+    table.add_row("Mistral", "Mistral Large", "Good balance, fast", "$$ (Moderate)")
+    table.add_row("Gemini", "Gemini 1.5 Pro", "Long context, multimodal", "$$ (Moderate)")
+    table.add_row("WatsonX", "Granite", "Enterprise, compliance", "$ (Enterprise)")
 
     console.print(table)
 

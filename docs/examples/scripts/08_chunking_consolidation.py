@@ -190,12 +190,16 @@ def main() -> None:
         console.print("  • Final production extraction")
 
         console.print("\n[bold]📊 Output Locations:[/bold]")
-        console.print("  • Programmatic: [cyan]outputs/08_chunking_consolidation/programmatic/[/cyan]")
+        console.print(
+            "  • Programmatic: [cyan]outputs/08_chunking_consolidation/programmatic/[/cyan]"
+        )
         console.print("  • LLM: [cyan]outputs/08_chunking_consolidation/llm_consolidation/[/cyan]")
 
         console.print("\n[bold]🔍 Compare Results:[/bold]")
         console.print("  [cyan]# Compare node counts[/cyan]")
-        console.print("  [dim]wc -l outputs/08_chunking_consolidation/*/docling_graph/nodes.csv[/dim]")
+        console.print(
+            "  [dim]wc -l outputs/08_chunking_consolidation/*/docling_graph/nodes.csv[/dim]"
+        )
 
     except Exception as e:
         error_msg = str(e).lower()

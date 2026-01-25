@@ -129,7 +129,9 @@ def main() -> None:
         console.print(
             f"  1. View interactive graph: [cyan]uv run docling-graph inspect {OUTPUT_DIR}[/cyan]"
         )
-        console.print(f"  2. Check extracted data: [cyan]cat {OUTPUT_DIR}/docling_graph/nodes.csv[/cyan]")
+        console.print(
+            f"  2. Check extracted data: [cyan]cat {OUTPUT_DIR}/docling_graph/nodes.csv[/cyan]"
+        )
         console.print(f"  3. View cached PDF: [cyan]ls {OUTPUT_DIR}/docling/[/cyan]")
         console.print(f"  4. Read markdown: [cyan]cat {OUTPUT_DIR}/docling/document.md[/cyan]")
 
@@ -147,12 +149,8 @@ def main() -> None:
         console.print("  • Supports arXiv, PubMed, and direct PDF URLs")
 
         console.print("\n[bold]🔄 Reprocessing Tip:[/bold]")
-        console.print(
-            "  To reprocess without re-downloading, use the cached PDF:"
-        )
-        console.print(
-            f"  [cyan]uv run docling-graph convert {OUTPUT_DIR}/docling/*.pdf ...[/cyan]"
-        )
+        console.print("  To reprocess without re-downloading, use the cached PDF:")
+        console.print(f"  [cyan]uv run docling-graph convert {OUTPUT_DIR}/docling/*.pdf ...[/cyan]")
 
     except FileNotFoundError:
         console.print(f"\n[red]✗ Error:[/red] Could not download from URL: {SOURCE_URL}")
@@ -173,7 +171,9 @@ def main() -> None:
             console.print("  • Try again (network might be slow)")
             console.print("  • Download PDF manually and use local path")
         elif "api" in error_msg or "key" in error_msg or "auth" in error_msg:
-            console.print("  • Set your Mistral API key: [cyan]export MISTRAL_API_KEY='your-key'[/cyan]")
+            console.print(
+                "  • Set your Mistral API key: [cyan]export MISTRAL_API_KEY='your-key'[/cyan]"
+            )
             console.print("  • Get a key at: https://console.mistral.ai/")
         else:
             console.print("  • Ensure dependencies: [cyan]uv sync --extra remote[/cyan]")
