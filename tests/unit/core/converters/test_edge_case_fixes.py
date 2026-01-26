@@ -23,8 +23,10 @@ from docling_graph.core.utils.graph_cleaner import GraphCleaner, is_meaningful_v
 # Test Models
 # ============================================================================
 
+
 class Address(BaseModel):
     """Component model for testing."""
+
     model_config = ConfigDict(is_entity=False)
 
     street: str = Field(...)
@@ -33,6 +35,7 @@ class Address(BaseModel):
 
 class Person(BaseModel):
     """Entity model for testing."""
+
     model_config = ConfigDict(graph_id_fields=["name"])
 
     name: str = Field(...)
@@ -41,6 +44,7 @@ class Person(BaseModel):
 
 class Organization(BaseModel):
     """Entity model with lists for testing."""
+
     model_config = ConfigDict(graph_id_fields=["name"])
 
     name: str = Field(...)
@@ -51,6 +55,7 @@ class Organization(BaseModel):
 
 class PersonEntity(BaseModel):
     """Similar name to Person for collision testing."""
+
     model_config = ConfigDict(graph_id_fields=["name"])
 
     name: str = Field(...)
@@ -59,6 +64,7 @@ class PersonEntity(BaseModel):
 # ============================================================================
 # Issue #1: Empty List Handling Tests
 # ============================================================================
+
 
 class TestEmptyListHandling:
     """Test that empty lists are handled correctly without IndexError."""
@@ -69,7 +75,7 @@ class TestEmptyListHandling:
             name="Test Corp",
             employees=[],  # Empty list
             addresses=[],
-            tags=[]
+            tags=[],
         )
 
         # Disable validation for graphs with no edges
@@ -91,7 +97,7 @@ class TestEmptyListHandling:
             name="Test Corp",
             employees=[],
             addresses=[],  # Empty list of components
-            tags=["tag1"]
+            tags=["tag1"],
         )
 
         converter = GraphConverter(auto_cleanup=False, validate_graph=False)
@@ -109,7 +115,7 @@ class TestEmptyListHandling:
             name="Test Corp",
             employees=[],
             addresses=[],
-            tags=[]  # Empty list of strings
+            tags=[],  # Empty list of strings
         )
 
         converter = GraphConverter(auto_cleanup=False, validate_graph=False)
@@ -129,8 +135,8 @@ class TestEmptyListHandling:
         org = Organization(
             name="Test Corp",
             employees=[person1],  # Populated
-            addresses=[addr1],    # Populated
-            tags=[]               # Empty
+            addresses=[addr1],  # Populated
+            tags=[],  # Empty
         )
 
         converter = GraphConverter()
@@ -150,6 +156,7 @@ class TestEmptyListHandling:
 # ============================================================================
 # Issue #2: Error Handling Tests
 # ============================================================================
+
 
 class TestErrorHandling:
     """Test improved error handling in graph cleaner."""
@@ -190,6 +197,7 @@ class TestErrorHandling:
 # ============================================================================
 # Issue #3: Phantom Node Detection Tests
 # ============================================================================
+
 
 class TestPhantomNodeDetection:
     """Test improved phantom node detection with whitespace handling."""
@@ -248,6 +256,7 @@ class TestPhantomNodeDetection:
 # ============================================================================
 # Issue #4: Node ID Collision Detection Tests
 # ============================================================================
+
 
 class TestNodeIDCollisionDetection:
     """Test improved node ID collision detection."""
@@ -312,6 +321,7 @@ class TestNodeIDCollisionDetection:
 # Integration Tests
 # ============================================================================
 
+
 class TestIntegration:
     """Integration tests combining multiple fixes."""
 
@@ -324,7 +334,7 @@ class TestIntegration:
             addresses=[
                 Address(street="   ", city="Paris"),  # Whitespace (Issue #3)
             ],
-            tags=[]
+            tags=[],
         )
 
         # Disable validation for graphs with no edges
@@ -339,10 +349,7 @@ class TestIntegration:
         """Test that pipeline recovers from errors gracefully."""
         # Create valid model
         org = Organization(
-            name="Test Corp",
-            employees=[Person(name="Alice")],
-            addresses=[],
-            tags=["tag1"]
+            name="Test Corp", employees=[Person(name="Alice")], addresses=[], tags=["tag1"]
         )
 
         converter = GraphConverter(auto_cleanup=True)

@@ -363,6 +363,79 @@ class TestURLInputHandler:
         # Should default to .bin since extension is invalid and no content-type
         assert result.suffix == ".bin"
 
+    @patch("requests.head")
+    @patch("requests.get")
+    def test_sends_user_agent_in_requests(self, mock_get, mock_head, handler):
+        """Test that User-Agent header is sent in both HEAD and GET requests."""
+        # Setup HEAD mock
+        mock_head_response = Mock()
+        mock_head_response.headers = {"content-type": "application/pdf"}
+        mock_head.return_value = mock_head_response
+
+        # Setup GET mock
+        mock_get_response = Mock()
+        mock_get_response.status_code = 200
+        mock_get_response.headers = {"content-type": "application/pdf"}
+        mock_get_response.iter_content = Mock(return_value=[b"pdf content"])
+        mock_get.return_value = mock_get_response
+
+        # Execute
+        result = handler.load("https://example.com/doc.pdf")
+
+        # Verify HEAD request includes User-Agent
+        mock_head.assert_called_once()
+        head_call_kwargs = mock_head.call_args[1]
+        assert "headers" in head_call_kwargs
+        assert "User-Agent" in head_call_kwargs["headers"]
+        assert "docling-graph" in head_call_kwargs["headers"]["User-Agent"]
+
+        # Verify GET request includes User-Agent
+        mock_get.assert_called_once()
+        get_call_kwargs = mock_get.call_args[1]
+        assert "headers" in get_call_kwargs
+        assert "User-Agent" in get_call_kwargs["headers"]
+        assert "docling-graph" in get_call_kwargs["headers"]["User-Agent"]
+
+        assert result.exists()
+
+    def test_user_agent_format(self, handler):
+        """Test that User-Agent follows expected format."""
+        assert hasattr(handler, "headers")
+        assert "User-Agent" in handler.headers
+        user_agent = handler.headers["User-Agent"]
+        
+        # Verify format: docling-graph/{version} (https://github.com/...)
+        assert "docling-graph/" in user_agent
+        assert "github.com" in user_agent
+        assert user_agent.startswith("docling-graph/")
+
+    @patch("requests.head")
+    @patch("requests.get")
+    def test_user_agent_sent_even_when_head_fails(self, mock_get, mock_head, handler):
+        """Test that User-Agent is sent in GET request even when HEAD fails."""
+        import requests
+        
+        # Make HEAD fail with RequestException (which is caught)
+        mock_head.side_effect = requests.RequestException("HEAD failed")
+        
+        # Setup GET mock to succeed
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.headers = {"content-type": "application/pdf"}
+        mock_response.iter_content = Mock(return_value=[b"content"])
+        mock_get.return_value = mock_response
+
+        # Execute (HEAD will fail internally but be caught)
+        result = handler.load("https://example.com/doc.pdf")
+
+        # Verify GET request still includes User-Agent
+        mock_get.assert_called_once()
+        get_call_kwargs = mock_get.call_args[1]
+        assert "headers" in get_call_kwargs
+        assert "User-Agent" in get_call_kwargs["headers"]
+        assert result.exists()
+
+
 
 class TestDoclingDocumentHandler:
     """Test DoclingDocumentHandler class."""

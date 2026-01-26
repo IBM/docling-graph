@@ -185,11 +185,12 @@ class ItemIdentifierType(str, Enum):
 
 class PostalAddress(BaseModel):
     """
-    Physical postal address component.
-    Deduplicated by content - identical addresses share the same graph node.
+    Physical postal address entity.
+    Uniquely identified by street, postal code, city, and country.
+    Enables queries like "all parties at this address".
     """
 
-    model_config = ConfigDict(is_entity=False)
+    model_config = ConfigDict(graph_id_fields=["street_lines", "postal_code", "city", "country"])
 
     street_lines: List[str] = Field(
         default_factory=list,
@@ -266,13 +267,14 @@ class PostalAddress(BaseModel):
         return ", ".join(p for p in parts if p)
 
 
-class ContactPoint(BaseModel):
+class EmailAddress(BaseModel):
     """
-    Contact information component.
-    Deduplicated by content - identical contact info shares the same node.
+    Email address entity.
+    Uniquely identified by email address.
+    Enables queries like "all parties with this email".
     """
 
-    model_config = ConfigDict(is_entity=False)
+    model_config = ConfigDict(graph_id_fields=["email"])
 
     email: str | None = Field(
         None,
@@ -280,30 +282,10 @@ class ContactPoint(BaseModel):
             "Email address. "
             "Look for text containing '@' symbol. "
             "Common labels: 'Email', 'E-mail', 'Contact', 'Courriel'. "
-            "Normalize to lowercase."
+            "Normalize to lowercase. "
+            "Can be None if not present in document."
         ),
         examples=["contact@company.com", "info@organization.fr", "support@business.co.uk"],
-    )
-
-    phone: str | None = Field(
-        None,
-        description=(
-            "Phone number with country code if present. "
-            "Look for phone numbers, preserve formatting. "
-            "Common labels: 'Phone', 'Tel', 'Telephone', 'Mobile', 'Tél'. "
-            "Include country code prefix like +33, +44, +1."
-        ),
-        examples=["+33 1 23 45 67 89", "+44 20 7123 4567", "+1 (555) 123-4567"],
-    )
-
-    website: str | None = Field(
-        None,
-        description=(
-            "Website URL. "
-            "Look for web addresses starting with http://, https://, or www. "
-            "Common labels: 'Website', 'Web', 'URL', 'Site Web'."
-        ),
-        examples=["https://www.company.com", "www.organization.fr", "https://business.co.uk"],
     )
 
     @field_validator("email", mode="before")
@@ -314,17 +296,72 @@ class ContactPoint(BaseModel):
             return v.lower().strip()
         return v
 
+    def __str__(self) -> str:
+        """Format email for display."""
+        return self.email or ""
+
+
+class PhoneNumber(BaseModel):
+    """
+    Phone number entity.
+    Uniquely identified by phone number.
+    Enables queries like "all parties with this phone".
+    """
+
+    model_config = ConfigDict(graph_id_fields=["phone"])
+
+    phone: str = Field(
+        ...,
+        description=(
+            "Phone number with country code if present. "
+            "Look for phone numbers, preserve formatting. "
+            "Common labels: 'Phone', 'Tel', 'Telephone', 'Mobile', 'Tél'. "
+            "Include country code prefix like +33, +44, +1."
+        ),
+        examples=["+33 1 23 45 67 89", "+44 20 7123 4567", "+1 (555) 123-4567"],
+    )
+
+    def __str__(self) -> str:
+        """Format phone for display."""
+        return self.phone
+
+
+class Website(BaseModel):
+    """
+    Website URL entity.
+    Uniquely identified by URL.
+    Enables queries like "all parties with this website".
+    """
+
+    model_config = ConfigDict(graph_id_fields=["url"])
+
+    url: str = Field(
+        ...,
+        description=(
+            "Website URL. "
+            "Look for web addresses starting with http://, https://, or www. "
+            "Common labels: 'Website', 'Web', 'URL', 'Site Web'."
+        ),
+        examples=["https://www.company.com", "www.organization.fr", "https://business.co.uk"],
+    )
+
+    def __str__(self) -> str:
+        """Format website for display."""
+        return self.url
+
 
 class ElectronicAddress(BaseModel):
     """
-    Electronic invoicing routing endpoint component.
+    Electronic invoicing routing endpoint entity.
+    Uniquely identified by scheme and value.
     Used for e-invoicing systems like Peppol.
+    Enables queries like "all parties with this Peppol ID".
     """
 
-    model_config = ConfigDict(is_entity=False)
+    model_config = ConfigDict(graph_id_fields=["scheme", "value"])
 
-    scheme: str | None = Field(
-        None,
+    scheme: str = Field(
+        ...,
         description=(
             "Electronic address scheme identifier. "
             "Look for e-invoicing identifiers, Peppol IDs, EDI codes. "
@@ -333,8 +370,8 @@ class ElectronicAddress(BaseModel):
         examples=["Peppol", "GLN", "DUNS", "EDI"],
     )
 
-    value: str | None = Field(
-        None,
+    value: str = Field(
+        ...,
         description=(
             "Electronic address value or identifier. "
             "The actual routing address or participant ID. "
@@ -342,6 +379,10 @@ class ElectronicAddress(BaseModel):
         ),
         examples=["9482:123456789", "1234567890123", "123456789"],
     )
+
+    def __str__(self) -> str:
+        """Format electronic address for display."""
+        return f"{self.scheme}:{self.value}"
 
 
 class MonetaryAmount(BaseModel):
@@ -379,15 +420,15 @@ class MonetaryAmount(BaseModel):
     def coerce_positive(cls, v: Any) -> Any:
         """
         Coerce negative values to positive (use absolute value).
-        
+
         Allowances and discounts are often represented as negative in accounting,
         but should be stored as positive amounts. The charge_indicator field
         (in AllowanceCharge) indicates direction: false=allowance, true=charge.
-        
+
         This validator is lenient - it coerces instead of rejecting to prevent
         extraction failures due to semantic differences in how amounts are represented.
         """
-        if isinstance(v, (int, float)) and v < 0:
+        if isinstance(v, int | float) and v < 0:
             logger.warning(
                 f"Negative monetary value {v} coerced to positive {abs(v)}. "
                 "Allowances/discounts should be positive amounts."
@@ -400,16 +441,16 @@ class MonetaryAmount(BaseModel):
     def normalize_currency(cls, v: Any) -> Any:
         """
         Normalize currency to ISO 4217 format (3 uppercase letters).
-        
+
         Accepts lowercase, mixed case, or common currency symbols and converts them.
         This validator is lenient to prevent extraction failures.
         """
         if not v:
             return v
-        
+
         # Convert to string and strip whitespace
         v_str = str(v).strip()
-        
+
         # Common currency symbol mappings
         symbol_map = {
             "€": "EUR",
@@ -432,18 +473,18 @@ class MonetaryAmount(BaseModel):
             "₲": "PYG",
             "₵": "GHS",
         }
-        
+
         # Check if it's a symbol
         if v_str in symbol_map:
             return symbol_map[v_str]
-        
+
         # Normalize to uppercase
         v_upper = v_str.upper()
-        
+
         # Check if it's valid ISO 4217 format
         if len(v_upper) == 3 and v_upper.isalpha():
             return v_upper
-        
+
         # If not valid, log warning but return as-is to avoid extraction failure
         logger.warning(
             f"Currency '{v}' does not match ISO 4217 format (3 uppercase letters). "
@@ -496,14 +537,14 @@ class Quantity(BaseModel):
     def coerce_positive(cls, v: Any) -> Any:
         """
         Coerce negative quantities to positive (use absolute value).
-        
+
         Negative quantities can occur in credit notes or returns, but should
         be stored as positive values. The document type (CREDIT_NOTE) or line
         context indicates the semantic meaning.
-        
+
         This validator is lenient to prevent extraction failures.
         """
-        if isinstance(v, (int, float)):
+        if isinstance(v, int | float):
             if v < 0:
                 logger.warning(
                     f"Negative quantity {v} coerced to positive {abs(v)}. "
@@ -511,7 +552,7 @@ class Quantity(BaseModel):
                 )
                 return abs(v)
             elif v == 0:
-                logger.warning(f"Zero quantity detected, setting to 1 as default.")
+                logger.warning("Zero quantity detected, setting to 1 as default.")
                 return 1.0
         return v
 
@@ -560,14 +601,15 @@ class Period(BaseModel):
 
 class PartyIdentifier(BaseModel):
     """
-    Non-tax party identifier component (GLN, DUNS, local registration numbers).
-    Deduplicated by content.
+    Non-tax party identifier entity (GLN, DUNS, local registration numbers).
+    Uniquely identified by scheme and value.
+    Enables queries like "all parties with this GLN".
     """
 
-    model_config = ConfigDict(is_entity=False)
+    model_config = ConfigDict(graph_id_fields=["scheme", "value"])
 
-    scheme: str | None = Field(
-        None,
+    scheme: str = Field(
+        ...,
         description=(
             "Identifier scheme name. "
             "Look for identifier type labels. "
@@ -577,8 +619,8 @@ class PartyIdentifier(BaseModel):
         examples=["GLN", "DUNS", "SIRET", "CIF", "Company Number"],
     )
 
-    value: str | None = Field(
-        None,
+    value: str = Field(
+        ...,
         description=(
             "Identifier value. "
             "The actual identifier number or code. "
@@ -587,17 +629,22 @@ class PartyIdentifier(BaseModel):
         examples=["1234567890123", "123456789", "12345678901234", "A12345678"],
     )
 
+    def __str__(self) -> str:
+        """Format identifier for display."""
+        return f"{self.scheme}:{self.value}"
+
 
 class TaxRegistration(BaseModel):
     """
-    Tax registration component (VAT number, tax ID, enterprise number).
-    Deduplicated by content.
+    Tax registration entity (VAT number, tax ID, enterprise number).
+    Uniquely identified by scheme, value, and country.
+    Enables queries like "all parties with this VAT number".
     """
 
-    model_config = ConfigDict(is_entity=False)
+    model_config = ConfigDict(graph_id_fields=["scheme", "value", "country"])
 
-    scheme: str | None = Field(
-        None,
+    scheme: str = Field(
+        ...,
         description=(
             "Tax registration scheme. "
             "Look for tax ID type labels. "
@@ -607,8 +654,8 @@ class TaxRegistration(BaseModel):
         examples=["VAT", "TAX_ID", "EIN", "GST", "Enterprise Number"],
     )
 
-    value: str | None = Field(
-        None,
+    value: str = Field(
+        ...,
         description=(
             "Tax registration number. "
             "Look for VAT numbers, tax IDs near party information. "
@@ -618,8 +665,8 @@ class TaxRegistration(BaseModel):
         examples=["FR12345678901", "GB123456789", "DE123456789", "123-45-6789"],
     )
 
-    country: str | None = Field(
-        None,
+    country: str = Field(
+        ...,
         description=(
             "Country of tax registration (ISO 3166-1 alpha-2 code). "
             "Extract from VAT number prefix or separate country field. "
@@ -627,6 +674,10 @@ class TaxRegistration(BaseModel):
         ),
         examples=["FR", "GB", "DE", "ES", "US"],
     )
+
+    def __str__(self) -> str:
+        """Format tax registration for display."""
+        return f"{self.scheme}:{self.value} ({self.country})"
 
 
 # =============================================================================
@@ -704,35 +755,76 @@ class Party(BaseModel):
         examples=["FR12345678901", "GB123456789", "DE123456789"],
     )
 
-    # Edges to components
-    postal_address: PostalAddress | None = edge(
-        label="LOCATED_AT", default=None, description="Physical postal address of the party"
-    )
-
-    contact: ContactPoint | None = edge(
-        label="HAS_CONTACT", default=None, description="Contact information (email, phone, website)"
-    )
-
-    electronic_address: ElectronicAddress | None = edge(
-        label="HAS_ELECTRONIC_ADDRESS",
-        default=None,
-        description="Electronic invoicing routing endpoint (Peppol, EDI, etc.)",
-    )
-
-    # Non-edge fields for identifiers (embedded data)
-    identifiers: List[PartyIdentifier] = Field(
+    # Edges to address entities
+    postal_addresses: List[PostalAddress] = edge(
+        label="LOCATED_AT",
         default_factory=list,
         description=(
-            "List of party identifiers (GLN, DUNS, local registration numbers). "
+            "Physical postal addresses of the party. "
+            "Look for address fields, street names, postal codes, cities. "
+            "Extract each address separately if multiple addresses present."
+        ),
+    )
+
+    # Edges to contact entities
+    emails: List[EmailAddress] = edge(
+        label="HAS_EMAIL",
+        default_factory=list,
+        description=(
+            "Email addresses for the party. "
+            "Look for email addresses containing '@' symbol. "
+            "Extract each email separately if multiple present."
+        ),
+    )
+
+    phones: List[PhoneNumber] = edge(
+        label="HAS_PHONE",
+        default_factory=list,
+        description=(
+            "Phone numbers for the party. "
+            "Look for phone numbers with or without country codes. "
+            "Extract each phone separately if multiple present."
+        ),
+    )
+
+    websites: List[Website] = edge(
+        label="HAS_WEBSITE",
+        default_factory=list,
+        description=(
+            "Website URLs for the party. "
+            "Look for web addresses starting with http://, https://, or www. "
+            "Extract each website separately if multiple present."
+        ),
+    )
+
+    # Edges to electronic address entities
+    electronic_addresses: List[ElectronicAddress] = edge(
+        label="HAS_ELECTRONIC_ADDRESS",
+        default_factory=list,
+        description=(
+            "Electronic invoicing routing endpoints (Peppol, EDI, etc.). "
+            "Look for e-invoicing identifiers, Peppol IDs, EDI codes. "
+            "Extract scheme and value for each electronic address."
+        ),
+    )
+
+    # Edges to identifier entities
+    identifiers: List[PartyIdentifier] = edge(
+        label="HAS_IDENTIFIER",
+        default_factory=list,
+        description=(
+            "Party identifiers (GLN, DUNS, local registration numbers). "
             "Look for various ID numbers and codes. "
             "Extract scheme and value for each identifier."
         ),
     )
 
-    tax_registrations: List[TaxRegistration] = Field(
+    # Edges to tax registration entities
+    tax_registrations: List[TaxRegistration] = edge(
+        label="HAS_TAX_REGISTRATION",
         default_factory=list,
         description=(
-            "List of tax registrations (VAT, tax IDs, enterprise numbers). "
+            "Tax registrations (VAT, tax IDs, enterprise numbers). "
             "Look for VAT numbers, tax IDs, fiscal identifiers. "
             "Extract scheme, value, and country for each registration."
         ),
@@ -2082,16 +2174,16 @@ class BillingDocument(BaseModel):
     def normalize_currency(cls, v: Any) -> Any:
         """
         Normalize currency to ISO 4217 format (3 uppercase letters).
-        
+
         Accepts lowercase, mixed case, or common currency symbols and converts them.
         This validator is lenient to prevent extraction failures.
         """
         if not v:
             return v
-        
+
         # Convert to string and strip whitespace
         v_str = str(v).strip()
-        
+
         # Common currency symbol mappings
         symbol_map = {
             "€": "EUR",
@@ -2114,18 +2206,18 @@ class BillingDocument(BaseModel):
             "₲": "PYG",
             "₵": "GHS",
         }
-        
+
         # Check if it's a symbol
         if v_str in symbol_map:
             return symbol_map[v_str]
-        
+
         # Normalize to uppercase
         v_upper = v_str.upper()
-        
+
         # Check if it's valid ISO 4217 format
         if len(v_upper) == 3 and v_upper.isalpha():
             return v_upper
-        
+
         # If not valid, log warning but return as-is to avoid extraction failure
         logger.warning(
             f"Currency '{v}' does not match ISO 4217 format (3 uppercase letters). "

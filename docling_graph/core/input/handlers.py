@@ -14,6 +14,7 @@ from typing import Any, Union
 import requests
 from docling_core.types.doc import DoclingDocument
 
+from ... import __version__
 from ...exceptions import ConfigurationError, ValidationError
 from .types import InputType, InputTypeDetector
 
@@ -134,6 +135,10 @@ class URLInputHandler(InputHandler):
         self.timeout = timeout
         self.max_size_mb = max_size_mb
         self.max_size_bytes = max_size_mb * 1024 * 1024
+        # Set User-Agent header to avoid 403 errors from sites like Wikimedia
+        self.headers = {
+            "User-Agent": f"docling-graph/{__version__} (https://github.com/ayoub-ibm/docling-graph)"
+        }
 
     def load(self, source: str) -> Path:
         """
@@ -157,7 +162,9 @@ class URLInputHandler(InputHandler):
         try:
             # Make HEAD request first to check size and content type
             try:
-                head_response = requests.head(source, timeout=self.timeout, allow_redirects=True)
+                head_response = requests.head(
+                    source, timeout=self.timeout, allow_redirects=True, headers=self.headers
+                )
                 content_length = head_response.headers.get("content-length")
                 content_type = head_response.headers.get("content-type", "").lower()
 
@@ -178,7 +185,7 @@ class URLInputHandler(InputHandler):
                 content_type = None
 
             # Download content
-            response = requests.get(source, timeout=self.timeout, stream=True)
+            response = requests.get(source, timeout=self.timeout, stream=True, headers=self.headers)
             response.raise_for_status()
 
             # Get content type from response if not from HEAD

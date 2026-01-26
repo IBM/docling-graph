@@ -24,6 +24,7 @@ def edge(label: str, **kwargs: Any) -> Any:
 # Test models: Components (is_entity=False)
 class Address(BaseModel):
     """Address component - should be embedded as dict."""
+
     model_config = ConfigDict(is_entity=False)
 
     street: str = Field(...)
@@ -33,6 +34,7 @@ class Address(BaseModel):
 
 class MonetaryAmount(BaseModel):
     """Monetary amount component - should be embedded as dict."""
+
     model_config = ConfigDict(is_entity=False)
 
     value: float = Field(...)
@@ -41,6 +43,7 @@ class MonetaryAmount(BaseModel):
 
 class ContactInfo(BaseModel):
     """Contact info component - should be embedded as dict."""
+
     model_config = ConfigDict(is_entity=False)
 
     email: str | None = Field(None)
@@ -50,6 +53,7 @@ class ContactInfo(BaseModel):
 # Test models: Entities (graph_id_fields)
 class Organization(BaseModel):
     """Organization entity - should be separate node."""
+
     model_config = ConfigDict(graph_id_fields=["name"])
 
     name: str = Field(...)
@@ -64,6 +68,7 @@ class Organization(BaseModel):
 
 class Person(BaseModel):
     """Person entity - should be separate node."""
+
     model_config = ConfigDict(graph_id_fields=["first_name", "last_name"])
 
     first_name: str = Field(...)
@@ -75,6 +80,7 @@ class Person(BaseModel):
 
 class Invoice(BaseModel):
     """Invoice entity - root document."""
+
     model_config = ConfigDict(graph_id_fields=["invoice_number"])
 
     invoice_number: str = Field(...)
@@ -94,6 +100,7 @@ class Invoice(BaseModel):
 # Test Cases
 # ============================================================================
 
+
 class TestComponentEmbedding:
     """Test that components are correctly embedded as dictionaries."""
 
@@ -103,15 +110,8 @@ class TestComponentEmbedding:
         org = Organization(
             name="Acme Corp",
             tax_id="FR123456789",
-            address=Address(
-                street="123 Main St",
-                city="Paris",
-                postal_code="75001"
-            ),
-            contact=ContactInfo(
-                email="contact@acme.com",
-                phone="+33 1 23 45 67 89"
-            )
+            address=Address(street="123 Main St", city="Paris", postal_code="75001"),
+            contact=ContactInfo(email="contact@acme.com", phone="+33 1 23 45 67 89"),
         )
 
         # Convert to graph
@@ -130,14 +130,18 @@ class TestComponentEmbedding:
 
         # CRITICAL: Address should be embedded as dict, NOT None
         assert org_data["address"] is not None, "Component address should not be None!"
-        assert isinstance(org_data["address"], dict), "Component address should be embedded as dict!"
+        assert isinstance(org_data["address"], dict), (
+            "Component address should be embedded as dict!"
+        )
         assert org_data["address"]["street"] == "123 Main St"
         assert org_data["address"]["city"] == "Paris"
         assert org_data["address"]["postal_code"] == "75001"
 
         # Contact should also be embedded as dict
         assert org_data["contact"] is not None, "Component contact should not be None!"
-        assert isinstance(org_data["contact"], dict), "Component contact should be embedded as dict!"
+        assert isinstance(org_data["contact"], dict), (
+            "Component contact should be embedded as dict!"
+        )
         assert org_data["contact"]["email"] == "contact@acme.com"
         assert org_data["contact"]["phone"] == "+33 1 23 45 67 89"
 
@@ -148,15 +152,14 @@ class TestComponentEmbedding:
             invoice_number="INV-001",
             date="2024-01-15",
             issued_by=Organization(
-                name="Acme Corp",
-                address=Address(street="123 Main St", city="Paris")
+                name="Acme Corp", address=Address(street="123 Main St", city="Paris")
             ),
             sent_to=Person(
                 first_name="John",
                 last_name="Doe",
-                address=Address(street="456 Oak Ave", city="London")
+                address=Address(street="456 Oak Ave", city="London"),
             ),
-            total=MonetaryAmount(value=1000.00, currency="EUR")
+            total=MonetaryAmount(value=1000.00, currency="EUR"),
         )
 
         # Convert to graph
@@ -171,7 +174,9 @@ class TestComponentEmbedding:
 
         # CRITICAL: Total (MonetaryAmount) should be embedded as dict
         assert invoice_data["total"] is not None, "Component total should not be None!"
-        assert isinstance(invoice_data["total"], dict), "Component total should be embedded as dict!"
+        assert isinstance(invoice_data["total"], dict), (
+            "Component total should be embedded as dict!"
+        )
         assert invoice_data["total"]["value"] == 1000.00
         assert invoice_data["total"]["currency"] == "EUR"
 
@@ -180,17 +185,9 @@ class TestComponentEmbedding:
         # Create two people at the same address
         shared_address = Address(street="123 Main St", city="Paris", postal_code="75001")
 
-        person1 = Person(
-            first_name="John",
-            last_name="Doe",
-            address=shared_address
-        )
+        person1 = Person(first_name="John", last_name="Doe", address=shared_address)
 
-        person2 = Person(
-            first_name="Jane",
-            last_name="Smith",
-            address=shared_address
-        )
+        person2 = Person(first_name="Jane", last_name="Smith", address=shared_address)
 
         # Convert to graph
         registry = NodeIDRegistry()
@@ -221,15 +218,14 @@ class TestEntitySeparation:
             invoice_number="INV-001",
             date="2024-01-15",
             issued_by=Organization(
-                name="Acme Corp",
-                address=Address(street="123 Main St", city="Paris")
+                name="Acme Corp", address=Address(street="123 Main St", city="Paris")
             ),
             sent_to=Person(
                 first_name="John",
                 last_name="Doe",
-                address=Address(street="456 Oak Ave", city="London")
+                address=Address(street="456 Oak Ave", city="London"),
             ),
-            total=MonetaryAmount(value=1000.00, currency="EUR")
+            total=MonetaryAmount(value=1000.00, currency="EUR"),
         )
 
         # Convert to graph
@@ -238,7 +234,9 @@ class TestEntitySeparation:
         graph, _ = converter.pydantic_list_to_graph([invoice])
 
         # Should have: Invoice + Organization + Person + 2 Addresses
-        assert graph.number_of_nodes() >= 3, "Should have at least Invoice, Organization, and Person nodes"
+        assert graph.number_of_nodes() >= 3, (
+            "Should have at least Invoice, Organization, and Person nodes"
+        )
 
         # Get invoice node
         invoice_nodes = [n for n in graph.nodes() if n.startswith("Invoice_")]
@@ -261,10 +259,7 @@ class TestEntitySeparation:
     def test_entity_deduplication_by_id_fields(self):
         """Test that entities with same ID fields are deduplicated."""
         # Create two invoices from same organization
-        org = Organization(
-            name="Acme Corp",
-            address=Address(street="123 Main St", city="Paris")
-        )
+        org = Organization(name="Acme Corp", address=Address(street="123 Main St", city="Paris"))
 
         invoice1 = Invoice(
             invoice_number="INV-001",
@@ -273,9 +268,9 @@ class TestEntitySeparation:
             sent_to=Person(
                 first_name="John",
                 last_name="Doe",
-                address=Address(street="456 Oak Ave", city="London")
+                address=Address(street="456 Oak Ave", city="London"),
             ),
-            total=MonetaryAmount(value=1000.00, currency="EUR")
+            total=MonetaryAmount(value=1000.00, currency="EUR"),
         )
 
         invoice2 = Invoice(
@@ -285,9 +280,9 @@ class TestEntitySeparation:
             sent_to=Person(
                 first_name="Jane",
                 last_name="Smith",
-                address=Address(street="789 Elm St", city="Berlin")
+                address=Address(street="789 Elm St", city="Berlin"),
             ),
-            total=MonetaryAmount(value=2000.00, currency="EUR")
+            total=MonetaryAmount(value=2000.00, currency="EUR"),
         )
 
         # Convert to graph
@@ -314,15 +309,14 @@ class TestEdgeCreation:
             invoice_number="INV-001",
             date="2024-01-15",
             issued_by=Organization(
-                name="Acme Corp",
-                address=Address(street="123 Main St", city="Paris")
+                name="Acme Corp", address=Address(street="123 Main St", city="Paris")
             ),
             sent_to=Person(
                 first_name="John",
                 last_name="Doe",
-                address=Address(street="456 Oak Ave", city="London")
+                address=Address(street="456 Oak Ave", city="London"),
             ),
-            total=MonetaryAmount(value=1000.00, currency="EUR")
+            total=MonetaryAmount(value=1000.00, currency="EUR"),
         )
 
         # Convert to graph
@@ -348,10 +342,7 @@ class TestEdgeCreation:
 
     def test_edges_created_for_component_with_edge_helper(self):
         """Test that components are embedded even when using edge() helper."""
-        org = Organization(
-            name="Acme Corp",
-            address=Address(street="123 Main St", city="Paris")
-        )
+        org = Organization(name="Acme Corp", address=Address(street="123 Main St", city="Paris"))
 
         # Convert to graph
         registry = NodeIDRegistry()
@@ -385,25 +376,16 @@ class TestRegressionScenarios:
                 name="Acme Corporation Ltd",
                 tax_id="FR123456789",
                 address=Address(
-                    street="123 Avenue des Champs-Élysées",
-                    city="Paris",
-                    postal_code="75008"
+                    street="123 Avenue des Champs-Élysées", city="Paris", postal_code="75008"
                 ),
-                contact=ContactInfo(
-                    email="contact@acme.com",
-                    phone="+33 1 23 45 67 89"
-                )
+                contact=ContactInfo(email="contact@acme.com", phone="+33 1 23 45 67 89"),
             ),
             sent_to=Person(
                 first_name="Jean",
                 last_name="Dupont",
-                address=Address(
-                    street="456 Rue de la Paix",
-                    city="Lyon",
-                    postal_code="69001"
-                )
+                address=Address(street="456 Rue de la Paix", city="Lyon", postal_code="69001"),
             ),
-            total=MonetaryAmount(value=5000.00, currency="EUR")
+            total=MonetaryAmount(value=5000.00, currency="EUR"),
         )
 
         # Convert to graph
