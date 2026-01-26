@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -2787,14 +2787,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -2871,14 +2871,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/research-paper/" class="md-nav__link">
+      <a href="../../examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -3261,6 +3261,34 @@
     <span class="md-ellipsis">
       
         Debug Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-recovery-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Recovery Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Recovery Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zero-data-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero Data Loss
       
     </span>
   </a>
@@ -4324,6 +4352,34 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-recovery-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Recovery Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Recovery Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zero-data-loss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero Data Loss
+      
+    </span>
+  </a>
+  
+</li>
+        
           <li class="md-nav__item">
   <a href="#partial-model-handling" class="md-nav__link">
     <span class="md-ellipsis">
@@ -5040,381 +5096,419 @@
 <a id="__codelineno-10-90" name="__codelineno-10-90" href="#__codelineno-10-90"></a><span class="n">context</span> <span class="o">=</span> <span class="n">debug_with_trace</span><span class="p">(</span><span class="s2">&quot;problematic_document.pdf&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>See Also:</strong> <a href="../trace-data-debugging/">Trace Data Debugging Guide</a> for comprehensive examples.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>---
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>### Automatic Cleanup on Failure
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>## Error Recovery Patterns
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>When `dump_to_disk=True`, the pipeline automatically cleans up empty output directories if processing fails:
 <a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>### Zero Data Loss
-<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
-<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>**Zero data loss** ensures extraction failures never result in completely empty results:
-<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>```python
-<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>&quot;&quot;&quot;Handle extraction with zero data loss.&quot;&quot;&quot;
-<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>
-<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>from docling_graph import run_pipeline, PipelineConfig
-<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>from pathlib import Path
-<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>import json
-<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>
-<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>def process_with_zero_data_loss(source: str):
-<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>    &quot;&quot;&quot;Process document with zero data loss guarantee.&quot;&quot;&quot;
-<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>
-<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>    config = PipelineConfig(
-<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>        source=source,
-<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>        template=&quot;templates.Invoice&quot;,
-<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a>        processing_mode=&quot;many-to-one&quot;,
-<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a>        output_dir=&quot;outputs&quot;
-<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a>    )
-<a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a>
-<a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a>    try:
-<a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a>        results = run_pipeline(config)
-<a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a>
-<a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a>        # Check result type
-<a id="__codelineno-11-30" name="__codelineno-11-30" href="#__codelineno-11-30"></a>        if len(results) == 1:
-<a id="__codelineno-11-31" name="__codelineno-11-31" href="#__codelineno-11-31"></a>            print(&quot;✅ Successfully merged into single model&quot;)
-<a id="__codelineno-11-32" name="__codelineno-11-32" href="#__codelineno-11-32"></a>            return {&quot;status&quot;: &quot;complete&quot;, &quot;models&quot;: results}
-<a id="__codelineno-11-33" name="__codelineno-11-33" href="#__codelineno-11-33"></a>        else:
-<a id="__codelineno-11-34" name="__codelineno-11-34" href="#__codelineno-11-34"></a>            print(f&quot;⚠ Got {len(results)} partial models (merge failed)&quot;)
-<a id="__codelineno-11-35" name="__codelineno-11-35" href="#__codelineno-11-35"></a>            print(&quot;  But data is preserved!&quot;)
-<a id="__codelineno-11-36" name="__codelineno-11-36" href="#__codelineno-11-36"></a>            return {&quot;status&quot;: &quot;partial&quot;, &quot;models&quot;: results}
-<a id="__codelineno-11-37" name="__codelineno-11-37" href="#__codelineno-11-37"></a>
-<a id="__codelineno-11-38" name="__codelineno-11-38" href="#__codelineno-11-38"></a>    except Exception as e:
-<a id="__codelineno-11-39" name="__codelineno-11-39" href="#__codelineno-11-39"></a>        print(f&quot;Pipeline failed: {e}&quot;)
-<a id="__codelineno-11-40" name="__codelineno-11-40" href="#__codelineno-11-40"></a>
-<a id="__codelineno-11-41" name="__codelineno-11-41" href="#__codelineno-11-41"></a>        # Even on failure, check for partial results
-<a id="__codelineno-11-42" name="__codelineno-11-42" href="#__codelineno-11-42"></a>        output_dir = Path(&quot;outputs&quot;)
-<a id="__codelineno-11-43" name="__codelineno-11-43" href="#__codelineno-11-43"></a>        if output_dir.exists():
-<a id="__codelineno-11-44" name="__codelineno-11-44" href="#__codelineno-11-44"></a>            # Look for partial model files
-<a id="__codelineno-11-45" name="__codelineno-11-45" href="#__codelineno-11-45"></a>            model_files = list(output_dir.glob(&quot;*.json&quot;))
-<a id="__codelineno-11-46" name="__codelineno-11-46" href="#__codelineno-11-46"></a>            if model_files:
-<a id="__codelineno-11-47" name="__codelineno-11-47" href="#__codelineno-11-47"></a>                print(f&quot;✅ Found {len(model_files)} partial model files&quot;)
-<a id="__codelineno-11-48" name="__codelineno-11-48" href="#__codelineno-11-48"></a>
-<a id="__codelineno-11-49" name="__codelineno-11-49" href="#__codelineno-11-49"></a>                # Load partial models
-<a id="__codelineno-11-50" name="__codelineno-11-50" href="#__codelineno-11-50"></a>                partial_models = []
-<a id="__codelineno-11-51" name="__codelineno-11-51" href="#__codelineno-11-51"></a>                for file in model_files:
-<a id="__codelineno-11-52" name="__codelineno-11-52" href="#__codelineno-11-52"></a>                    with open(file) as f:
-<a id="__codelineno-11-53" name="__codelineno-11-53" href="#__codelineno-11-53"></a>                        partial_models.append(json.load(f))
-<a id="__codelineno-11-54" name="__codelineno-11-54" href="#__codelineno-11-54"></a>
-<a id="__codelineno-11-55" name="__codelineno-11-55" href="#__codelineno-11-55"></a>                return {&quot;status&quot;: &quot;recovered&quot;, &quot;models&quot;: partial_models}
-<a id="__codelineno-11-56" name="__codelineno-11-56" href="#__codelineno-11-56"></a>
-<a id="__codelineno-11-57" name="__codelineno-11-57" href="#__codelineno-11-57"></a>        return {&quot;status&quot;: &quot;failed&quot;, &quot;models&quot;: []}
-<a id="__codelineno-11-58" name="__codelineno-11-58" href="#__codelineno-11-58"></a>
-<a id="__codelineno-11-59" name="__codelineno-11-59" href="#__codelineno-11-59"></a># Usage
-<a id="__codelineno-11-60" name="__codelineno-11-60" href="#__codelineno-11-60"></a>result = process_with_zero_data_loss(&quot;invoice.pdf&quot;)
-<a id="__codelineno-11-61" name="__codelineno-11-61" href="#__codelineno-11-61"></a>
-<a id="__codelineno-11-62" name="__codelineno-11-62" href="#__codelineno-11-62"></a>if result[&quot;status&quot;] == &quot;complete&quot;:
-<a id="__codelineno-11-63" name="__codelineno-11-63" href="#__codelineno-11-63"></a>    # Use merged model
-<a id="__codelineno-11-64" name="__codelineno-11-64" href="#__codelineno-11-64"></a>    model = result[&quot;models&quot;][0]
-<a id="__codelineno-11-65" name="__codelineno-11-65" href="#__codelineno-11-65"></a>    print(f&quot;Invoice: {model.get(&#39;invoice_number&#39;)}&quot;)
-<a id="__codelineno-11-66" name="__codelineno-11-66" href="#__codelineno-11-66"></a>
-<a id="__codelineno-11-67" name="__codelineno-11-67" href="#__codelineno-11-67"></a>elif result[&quot;status&quot;] == &quot;partial&quot;:
-<a id="__codelineno-11-68" name="__codelineno-11-68" href="#__codelineno-11-68"></a>    # Use partial models
-<a id="__codelineno-11-69" name="__codelineno-11-69" href="#__codelineno-11-69"></a>    print(&quot;Working with partial models:&quot;)
-<a id="__codelineno-11-70" name="__codelineno-11-70" href="#__codelineno-11-70"></a>    for i, model in enumerate(result[&quot;models&quot;], 1):
-<a id="__codelineno-11-71" name="__codelineno-11-71" href="#__codelineno-11-71"></a>        print(f&quot;  Model {i}: {model.get(&#39;invoice_number&#39;, &#39;N/A&#39;)}&quot;)
-<a id="__codelineno-11-72" name="__codelineno-11-72" href="#__codelineno-11-72"></a>
-<a id="__codelineno-11-73" name="__codelineno-11-73" href="#__codelineno-11-73"></a>elif result[&quot;status&quot;] == &quot;recovered&quot;:
-<a id="__codelineno-11-74" name="__codelineno-11-74" href="#__codelineno-11-74"></a>    # Recovered from files
-<a id="__codelineno-11-75" name="__codelineno-11-75" href="#__codelineno-11-75"></a>    print(&quot;Recovered partial data from files&quot;)
-<a id="__codelineno-11-76" name="__codelineno-11-76" href="#__codelineno-11-76"></a>
-<a id="__codelineno-11-77" name="__codelineno-11-77" href="#__codelineno-11-77"></a>else:
-<a id="__codelineno-11-78" name="__codelineno-11-78" href="#__codelineno-11-78"></a>    print(&quot;No data available&quot;)
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>```python
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>&quot;&quot;&quot;Automatic cleanup of empty directories on failure.&quot;&quot;&quot;
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>from docling_graph import run_pipeline, PipelineConfig
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>from docling_graph.exceptions import PipelineError
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>config = PipelineConfig(
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>    source=&quot;document.pdf&quot;,
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>    template=&quot;templates.MyTemplate&quot;,
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>    dump_to_disk=True,
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>    output_dir=&quot;outputs&quot;
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>)
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>try:
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>    context = run_pipeline(config)
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>except PipelineError as e:
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>    # If the pipeline fails before writing any files,
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a>    # the empty output directory is automatically removed
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a>    print(f&quot;Pipeline failed: {e.message}&quot;)
+<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a>    # No empty artifact directories left in outputs/
 </code></pre></div>
-<h3 id="partial-model-handling">Partial Model Handling<a class="headerlink" href="#partial-model-handling" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="sd">&quot;&quot;&quot;Work with partial models when merging fails.&quot;&quot;&quot;</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract_with_partial_handling</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract and handle partial models intelligently.&quot;&quot;&quot;</span>
-<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
-<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
-<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>        <span class="n">processing_mode</span><span class="o">=</span><span class="s2">&quot;many-to-one&quot;</span><span class="p">,</span>
-<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>        <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Try LLM consolidation</span>
-<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>    <span class="p">)</span>
-<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>
-<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>
-<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>        <span class="c1"># Success: single merged model</span>
-<a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>        <span class="k">return</span> <span class="p">{</span>
-<a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a>            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;merged&quot;</span><span class="p">,</span>
-<a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>            <span class="s2">&quot;invoice_number&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">invoice_number</span><span class="p">,</span>
-<a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a>            <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">total</span><span class="p">,</span>
-<a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>            <span class="s2">&quot;line_items&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">line_items</span> <span class="ow">or</span> <span class="p">[]),</span>
-<a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a>            <span class="s2">&quot;completeness&quot;</span><span class="p">:</span> <span class="mi">100</span>
-<a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a>        <span class="p">}</span>
-<a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-12-28" name="__codelineno-12-28" href="#__codelineno-12-28"></a>        <span class="c1"># Partial: multiple models</span>
-<a id="__codelineno-12-29" name="__codelineno-12-29" href="#__codelineno-12-29"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠ Merge failed, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial models&quot;</span><span class="p">)</span>
-<a id="__codelineno-12-30" name="__codelineno-12-30" href="#__codelineno-12-30"></a>
-<a id="__codelineno-12-31" name="__codelineno-12-31" href="#__codelineno-12-31"></a>        <span class="c1"># Combine data from partial models</span>
-<a id="__codelineno-12-32" name="__codelineno-12-32" href="#__codelineno-12-32"></a>        <span class="n">combined</span> <span class="o">=</span> <span class="p">{</span>
-<a id="__codelineno-12-33" name="__codelineno-12-33" href="#__codelineno-12-33"></a>            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;partial&quot;</span><span class="p">,</span>
-<a id="__codelineno-12-34" name="__codelineno-12-34" href="#__codelineno-12-34"></a>            <span class="s2">&quot;invoice_number&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-12-35" name="__codelineno-12-35" href="#__codelineno-12-35"></a>            <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-12-36" name="__codelineno-12-36" href="#__codelineno-12-36"></a>            <span class="s2">&quot;line_items&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-<a id="__codelineno-12-37" name="__codelineno-12-37" href="#__codelineno-12-37"></a>            <span class="s2">&quot;completeness&quot;</span><span class="p">:</span> <span class="mi">0</span>
-<a id="__codelineno-12-38" name="__codelineno-12-38" href="#__codelineno-12-38"></a>        <span class="p">}</span>
-<a id="__codelineno-12-39" name="__codelineno-12-39" href="#__codelineno-12-39"></a>
-<a id="__codelineno-12-40" name="__codelineno-12-40" href="#__codelineno-12-40"></a>        <span class="c1"># Extract what we can</span>
-<a id="__codelineno-12-41" name="__codelineno-12-41" href="#__codelineno-12-41"></a>        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-<a id="__codelineno-12-42" name="__codelineno-12-42" href="#__codelineno-12-42"></a>            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">invoice_number</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">]:</span>
-<a id="__codelineno-12-43" name="__codelineno-12-43" href="#__codelineno-12-43"></a>                <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">invoice_number</span>
-<a id="__codelineno-12-44" name="__codelineno-12-44" href="#__codelineno-12-44"></a>            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">total</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]:</span>
-<a id="__codelineno-12-45" name="__codelineno-12-45" href="#__codelineno-12-45"></a>                <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">total</span>
-<a id="__codelineno-12-46" name="__codelineno-12-46" href="#__codelineno-12-46"></a>            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">line_items</span><span class="p">:</span>
-<a id="__codelineno-12-47" name="__codelineno-12-47" href="#__codelineno-12-47"></a>                <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;line_items&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">line_items</span><span class="p">)</span>
-<a id="__codelineno-12-48" name="__codelineno-12-48" href="#__codelineno-12-48"></a>
-<a id="__codelineno-12-49" name="__codelineno-12-49" href="#__codelineno-12-49"></a>        <span class="c1"># Calculate completeness</span>
-<a id="__codelineno-12-50" name="__codelineno-12-50" href="#__codelineno-12-50"></a>        <span class="n">fields_found</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span>
-<a id="__codelineno-12-51" name="__codelineno-12-51" href="#__codelineno-12-51"></a>            <span class="nb">bool</span><span class="p">(</span><span class="n">combined</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">]),</span>
-<a id="__codelineno-12-52" name="__codelineno-12-52" href="#__codelineno-12-52"></a>            <span class="nb">bool</span><span class="p">(</span><span class="n">combined</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]),</span>
-<a id="__codelineno-12-53" name="__codelineno-12-53" href="#__codelineno-12-53"></a>            <span class="nb">bool</span><span class="p">(</span><span class="n">combined</span><span class="p">[</span><span class="s2">&quot;line_items&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-12-54" name="__codelineno-12-54" href="#__codelineno-12-54"></a>        <span class="p">])</span>
-<a id="__codelineno-12-55" name="__codelineno-12-55" href="#__codelineno-12-55"></a>        <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;completeness&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">fields_found</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
-<a id="__codelineno-12-56" name="__codelineno-12-56" href="#__codelineno-12-56"></a>
-<a id="__codelineno-12-57" name="__codelineno-12-57" href="#__codelineno-12-57"></a>        <span class="k">return</span> <span class="n">combined</span>
-<a id="__codelineno-12-58" name="__codelineno-12-58" href="#__codelineno-12-58"></a>
-<a id="__codelineno-12-59" name="__codelineno-12-59" href="#__codelineno-12-59"></a><span class="c1"># Usage</span>
-<a id="__codelineno-12-60" name="__codelineno-12-60" href="#__codelineno-12-60"></a><span class="n">result</span> <span class="o">=</span> <span class="n">extract_with_partial_handling</span><span class="p">(</span><span class="s2">&quot;invoice.pdf&quot;</span><span class="p">)</span>
-<a id="__codelineno-12-61" name="__codelineno-12-61" href="#__codelineno-12-61"></a>
-<a id="__codelineno-12-62" name="__codelineno-12-62" href="#__codelineno-12-62"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Status: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-12-63" name="__codelineno-12-63" href="#__codelineno-12-63"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invoice: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;invoice_number&#39;</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-12-64" name="__codelineno-12-64" href="#__codelineno-12-64"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total: $</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-12-65" name="__codelineno-12-65" href="#__codelineno-12-65"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Line items: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;line_items&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-12-66" name="__codelineno-12-66" href="#__codelineno-12-66"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Completeness: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;completeness&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
-<a id="__codelineno-12-67" name="__codelineno-12-67" href="#__codelineno-12-67"></a>
-<a id="__codelineno-12-68" name="__codelineno-12-68" href="#__codelineno-12-68"></a><span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;completeness&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
-<a id="__codelineno-12-69" name="__codelineno-12-69" href="#__codelineno-12-69"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠ Incomplete extraction - consider manual review&quot;</span><span class="p">)</span>
+<p><strong>Cleanup Behavior:</strong></p>
+<ul>
+<li><strong>Empty directories are removed</strong> - If the pipeline fails before writing any files, the output directory is automatically deleted</li>
+<li><strong>Partial results are preserved</strong> - If any files were written before the failure, the directory is kept</li>
+<li><strong>Only when dump_to_disk=True</strong> - Cleanup only runs when file exports are enabled</li>
+<li><strong>Logged for transparency</strong> - Cleanup actions are logged for visibility</li>
+</ul>
+<p><strong>Example Scenarios:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Scenario 1: Failure during template loading (before any files)</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="c1"># → Output directory is removed (empty)</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># Scenario 2: Failure during extraction (after docling conversion)</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1"># → Output directory is kept (contains docling/ files)</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="c1"># Scenario 3: dump_to_disk=False</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="c1"># → No cleanup needed (no directory created)</span>
 </code></pre></div>
-<h3 id="graceful-degradation">Graceful Degradation<a class="headerlink" href="#graceful-degradation" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="sd">&quot;&quot;&quot;Degrade gracefully on errors.&quot;&quot;&quot;</span>
+<p>This ensures your <code>outputs/</code> folder stays clean without manual intervention.</p>
+<hr />
+<h2 id="error-recovery-patterns">Error Recovery Patterns<a class="headerlink" href="#error-recovery-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="zero-data-loss">Zero Data Loss<a class="headerlink" href="#zero-data-loss" title="Permanent link">&para;</a></h3>
+<p><strong>Zero data loss</strong> ensures extraction failures never result in completely empty results:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="sd">&quot;&quot;&quot;Handle extraction with zero data loss.&quot;&quot;&quot;</span>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtractionError</span>
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_with_degradation</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Process with graceful degradation.&quot;&quot;&quot;</span>
-<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
-<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
-<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>        <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>        <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>        <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="p">[]</span>
-<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>    <span class="p">}</span>
-<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>
-<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>    <span class="c1"># Try best method first</span>
-<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>    <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>        <span class="p">(</span><span class="s2">&quot;VLM Local&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;vlm&quot;</span><span class="p">,</span> <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;local&quot;</span><span class="p">}),</span>
-<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>        <span class="p">(</span><span class="s2">&quot;LLM Local&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;llm&quot;</span><span class="p">,</span> <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;local&quot;</span><span class="p">}),</span>
-<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>        <span class="p">(</span><span class="s2">&quot;LLM Remote&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;llm&quot;</span><span class="p">,</span> <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;remote&quot;</span><span class="p">})</span>
-<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>    <span class="p">]</span>
-<a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>
-<a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>    <span class="k">for</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">config_overrides</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
-<a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>        <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
-<a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>
-<a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a>            <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a>                <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-<a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a>                <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.MyTemplate&quot;</span><span class="p">,</span>
-<a id="__codelineno-13-30" name="__codelineno-13-30" href="#__codelineno-13-30"></a>                <span class="o">**</span><span class="n">config_overrides</span>
-<a id="__codelineno-13-31" name="__codelineno-13-31" href="#__codelineno-13-31"></a>            <span class="p">)</span>
-<a id="__codelineno-13-32" name="__codelineno-13-32" href="#__codelineno-13-32"></a>            <span class="n">models</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-13-33" name="__codelineno-13-33" href="#__codelineno-13-33"></a>
-<a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-13-35" name="__codelineno-13-35" href="#__codelineno-13-35"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_name</span>
-<a id="__codelineno-13-36" name="__codelineno-13-36" href="#__codelineno-13-36"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;output_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output_dir</span>
-<a id="__codelineno-13-37" name="__codelineno-13-37" href="#__codelineno-13-37"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;models&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">models</span>
-<a id="__codelineno-13-38" name="__codelineno-13-38" href="#__codelineno-13-38"></a>
-<a id="__codelineno-13-39" name="__codelineno-13-39" href="#__codelineno-13-39"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Success with </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-13-40" name="__codelineno-13-40" href="#__codelineno-13-40"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Extracted </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span><span class="si">}</span><span class="s2"> model(s)&quot;</span><span class="p">)</span>
-<a id="__codelineno-13-41" name="__codelineno-13-41" href="#__codelineno-13-41"></a>            <span class="k">break</span>
-<a id="__codelineno-13-42" name="__codelineno-13-42" href="#__codelineno-13-42"></a>
-<a id="__codelineno-13-43" name="__codelineno-13-43" href="#__codelineno-13-43"></a>        <span class="k">except</span> <span class="n">ExtractionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-13-44" name="__codelineno-13-44" href="#__codelineno-13-44"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-13-45" name="__codelineno-13-45" href="#__codelineno-13-45"></a>            <span class="k">continue</span>
-<a id="__codelineno-13-46" name="__codelineno-13-46" href="#__codelineno-13-46"></a>
-<a id="__codelineno-13-47" name="__codelineno-13-47" href="#__codelineno-13-47"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
-<a id="__codelineno-13-48" name="__codelineno-13-48" href="#__codelineno-13-48"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ All methods failed&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_with_zero_data_loss</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Process document with zero data loss guarantee.&quot;&quot;&quot;</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>        <span class="n">processing_mode</span><span class="o">=</span><span class="s2">&quot;many-to-one&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>        <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;outputs&quot;</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>    <span class="p">)</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>        <span class="c1"># Check result type</span>
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Successfully merged into single model&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;complete&quot;</span><span class="p">,</span> <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">}</span>
+<a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠ Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial models (merge failed)&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  But data is preserved!&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a>            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;partial&quot;</span><span class="p">,</span> <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">}</span>
+<a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a>
+<a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-13-30" name="__codelineno-13-30" href="#__codelineno-13-30"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pipeline failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-31" name="__codelineno-13-31" href="#__codelineno-13-31"></a>
+<a id="__codelineno-13-32" name="__codelineno-13-32" href="#__codelineno-13-32"></a>        <span class="c1"># Even on failure, check for partial results</span>
+<a id="__codelineno-13-33" name="__codelineno-13-33" href="#__codelineno-13-33"></a>        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;outputs&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a>        <span class="k">if</span> <span class="n">output_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<a id="__codelineno-13-35" name="__codelineno-13-35" href="#__codelineno-13-35"></a>            <span class="c1"># Look for partial model files</span>
+<a id="__codelineno-13-36" name="__codelineno-13-36" href="#__codelineno-13-36"></a>            <span class="n">model_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">output_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.json&quot;</span><span class="p">))</span>
+<a id="__codelineno-13-37" name="__codelineno-13-37" href="#__codelineno-13-37"></a>            <span class="k">if</span> <span class="n">model_files</span><span class="p">:</span>
+<a id="__codelineno-13-38" name="__codelineno-13-38" href="#__codelineno-13-38"></a>                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">model_files</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial model files&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-39" name="__codelineno-13-39" href="#__codelineno-13-39"></a>
+<a id="__codelineno-13-40" name="__codelineno-13-40" href="#__codelineno-13-40"></a>                <span class="c1"># Load partial models</span>
+<a id="__codelineno-13-41" name="__codelineno-13-41" href="#__codelineno-13-41"></a>                <span class="n">partial_models</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-13-42" name="__codelineno-13-42" href="#__codelineno-13-42"></a>                <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">model_files</span><span class="p">:</span>
+<a id="__codelineno-13-43" name="__codelineno-13-43" href="#__codelineno-13-43"></a>                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<a id="__codelineno-13-44" name="__codelineno-13-44" href="#__codelineno-13-44"></a>                        <span class="n">partial_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+<a id="__codelineno-13-45" name="__codelineno-13-45" href="#__codelineno-13-45"></a>
+<a id="__codelineno-13-46" name="__codelineno-13-46" href="#__codelineno-13-46"></a>                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;recovered&quot;</span><span class="p">,</span> <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="n">partial_models</span><span class="p">}</span>
+<a id="__codelineno-13-47" name="__codelineno-13-47" href="#__codelineno-13-47"></a>
+<a id="__codelineno-13-48" name="__codelineno-13-48" href="#__codelineno-13-48"></a>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failed&quot;</span><span class="p">,</span> <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="p">[]}</span>
 <a id="__codelineno-13-49" name="__codelineno-13-49" href="#__codelineno-13-49"></a>
-<a id="__codelineno-13-50" name="__codelineno-13-50" href="#__codelineno-13-50"></a>    <span class="k">return</span> <span class="n">results</span>
+<a id="__codelineno-13-50" name="__codelineno-13-50" href="#__codelineno-13-50"></a><span class="c1"># Usage</span>
+<a id="__codelineno-13-51" name="__codelineno-13-51" href="#__codelineno-13-51"></a><span class="n">result</span> <span class="o">=</span> <span class="n">process_with_zero_data_loss</span><span class="p">(</span><span class="s2">&quot;invoice.pdf&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-52" name="__codelineno-13-52" href="#__codelineno-13-52"></a>
+<a id="__codelineno-13-53" name="__codelineno-13-53" href="#__codelineno-13-53"></a><span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;complete&quot;</span><span class="p">:</span>
+<a id="__codelineno-13-54" name="__codelineno-13-54" href="#__codelineno-13-54"></a>    <span class="c1"># Use merged model</span>
+<a id="__codelineno-13-55" name="__codelineno-13-55" href="#__codelineno-13-55"></a>    <span class="n">model</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;models&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-13-56" name="__codelineno-13-56" href="#__codelineno-13-56"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invoice: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;document_no&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-57" name="__codelineno-13-57" href="#__codelineno-13-57"></a>
+<a id="__codelineno-13-58" name="__codelineno-13-58" href="#__codelineno-13-58"></a><span class="k">elif</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;partial&quot;</span><span class="p">:</span>
+<a id="__codelineno-13-59" name="__codelineno-13-59" href="#__codelineno-13-59"></a>    <span class="c1"># Use partial models</span>
+<a id="__codelineno-13-60" name="__codelineno-13-60" href="#__codelineno-13-60"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Working with partial models:&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-61" name="__codelineno-13-61" href="#__codelineno-13-61"></a>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;models&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">):</span>
+<a id="__codelineno-13-62" name="__codelineno-13-62" href="#__codelineno-13-62"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Model </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;document_no&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-63" name="__codelineno-13-63" href="#__codelineno-13-63"></a>
+<a id="__codelineno-13-64" name="__codelineno-13-64" href="#__codelineno-13-64"></a><span class="k">elif</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;recovered&quot;</span><span class="p">:</span>
+<a id="__codelineno-13-65" name="__codelineno-13-65" href="#__codelineno-13-65"></a>    <span class="c1"># Recovered from files</span>
+<a id="__codelineno-13-66" name="__codelineno-13-66" href="#__codelineno-13-66"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered partial data from files&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-67" name="__codelineno-13-67" href="#__codelineno-13-67"></a>
+<a id="__codelineno-13-68" name="__codelineno-13-68" href="#__codelineno-13-68"></a><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-13-69" name="__codelineno-13-69" href="#__codelineno-13-69"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No data available&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="partial-model-handling">Partial Model Handling<a class="headerlink" href="#partial-model-handling" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="sd">&quot;&quot;&quot;Work with partial models when merging fails.&quot;&quot;&quot;</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract_with_partial_handling</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract and handle partial models intelligently.&quot;&quot;&quot;</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>        <span class="n">processing_mode</span><span class="o">=</span><span class="s2">&quot;many-to-one&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>        <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Try LLM consolidation</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>    <span class="p">)</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>        <span class="c1"># Success: single merged model</span>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>        <span class="k">return</span> <span class="p">{</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;merged&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>            <span class="s2">&quot;document_no&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">document_no</span><span class="p">,</span>
+<a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>            <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">total</span><span class="p">,</span>
+<a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>            <span class="s2">&quot;line_items&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">line_items</span> <span class="ow">or</span> <span class="p">[]),</span>
+<a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>            <span class="s2">&quot;completeness&quot;</span><span class="p">:</span> <span class="mi">100</span>
+<a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a>        <span class="p">}</span>
+<a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>        <span class="c1"># Partial: multiple models</span>
+<a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠ Merge failed, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial models&quot;</span><span class="p">)</span>
+<a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a>
+<a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a>        <span class="c1"># Combine data from partial models</span>
+<a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a>        <span class="n">combined</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a>            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;partial&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a>            <span class="s2">&quot;document_no&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a>            <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a>            <span class="s2">&quot;line_items&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a>            <span class="s2">&quot;completeness&quot;</span><span class="p">:</span> <span class="mi">0</span>
+<a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a>        <span class="p">}</span>
+<a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a>
+<a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a>        <span class="c1"># Extract what we can</span>
+<a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a>        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+<a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a>            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">document_no</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">]:</span>
+<a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a>                <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">document_no</span>
+<a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a>            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">total</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]:</span>
+<a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a>                <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">total</span>
+<a id="__codelineno-14-46" name="__codelineno-14-46" href="#__codelineno-14-46"></a>            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">line_items</span><span class="p">:</span>
+<a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a>                <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;line_items&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">line_items</span><span class="p">)</span>
+<a id="__codelineno-14-48" name="__codelineno-14-48" href="#__codelineno-14-48"></a>
+<a id="__codelineno-14-49" name="__codelineno-14-49" href="#__codelineno-14-49"></a>        <span class="c1"># Calculate completeness</span>
+<a id="__codelineno-14-50" name="__codelineno-14-50" href="#__codelineno-14-50"></a>        <span class="n">fields_found</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span>
+<a id="__codelineno-14-51" name="__codelineno-14-51" href="#__codelineno-14-51"></a>            <span class="nb">bool</span><span class="p">(</span><span class="n">combined</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">]),</span>
+<a id="__codelineno-14-52" name="__codelineno-14-52" href="#__codelineno-14-52"></a>            <span class="nb">bool</span><span class="p">(</span><span class="n">combined</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]),</span>
+<a id="__codelineno-14-53" name="__codelineno-14-53" href="#__codelineno-14-53"></a>            <span class="nb">bool</span><span class="p">(</span><span class="n">combined</span><span class="p">[</span><span class="s2">&quot;line_items&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-14-54" name="__codelineno-14-54" href="#__codelineno-14-54"></a>        <span class="p">])</span>
+<a id="__codelineno-14-55" name="__codelineno-14-55" href="#__codelineno-14-55"></a>        <span class="n">combined</span><span class="p">[</span><span class="s2">&quot;completeness&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">fields_found</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+<a id="__codelineno-14-56" name="__codelineno-14-56" href="#__codelineno-14-56"></a>
+<a id="__codelineno-14-57" name="__codelineno-14-57" href="#__codelineno-14-57"></a>        <span class="k">return</span> <span class="n">combined</span>
+<a id="__codelineno-14-58" name="__codelineno-14-58" href="#__codelineno-14-58"></a>
+<a id="__codelineno-14-59" name="__codelineno-14-59" href="#__codelineno-14-59"></a><span class="c1"># Usage</span>
+<a id="__codelineno-14-60" name="__codelineno-14-60" href="#__codelineno-14-60"></a><span class="n">result</span> <span class="o">=</span> <span class="n">extract_with_partial_handling</span><span class="p">(</span><span class="s2">&quot;invoice.pdf&quot;</span><span class="p">)</span>
+<a id="__codelineno-14-61" name="__codelineno-14-61" href="#__codelineno-14-61"></a>
+<a id="__codelineno-14-62" name="__codelineno-14-62" href="#__codelineno-14-62"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Status: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-14-63" name="__codelineno-14-63" href="#__codelineno-14-63"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invoice: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;document_no&#39;</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-14-64" name="__codelineno-14-64" href="#__codelineno-14-64"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total: $</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-14-65" name="__codelineno-14-65" href="#__codelineno-14-65"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Line items: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;line_items&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-14-66" name="__codelineno-14-66" href="#__codelineno-14-66"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Completeness: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;completeness&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+<a id="__codelineno-14-67" name="__codelineno-14-67" href="#__codelineno-14-67"></a>
+<a id="__codelineno-14-68" name="__codelineno-14-68" href="#__codelineno-14-68"></a><span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;completeness&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+<a id="__codelineno-14-69" name="__codelineno-14-69" href="#__codelineno-14-69"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;⚠ Incomplete extraction - consider manual review&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="graceful-degradation">Graceful Degradation<a class="headerlink" href="#graceful-degradation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="sd">&quot;&quot;&quot;Degrade gracefully on errors.&quot;&quot;&quot;</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtractionError</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_with_degradation</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Process with graceful degradation.&quot;&quot;&quot;</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>        <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>        <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>        <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>    <span class="p">}</span>
+<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>
+<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>    <span class="c1"># Try best method first</span>
+<a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>    <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>        <span class="p">(</span><span class="s2">&quot;VLM Local&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;vlm&quot;</span><span class="p">,</span> <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;local&quot;</span><span class="p">}),</span>
+<a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>        <span class="p">(</span><span class="s2">&quot;LLM Local&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;llm&quot;</span><span class="p">,</span> <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;local&quot;</span><span class="p">}),</span>
+<a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>        <span class="p">(</span><span class="s2">&quot;LLM Remote&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;llm&quot;</span><span class="p">,</span> <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;remote&quot;</span><span class="p">})</span>
+<a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>    <span class="p">]</span>
+<a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>
+<a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>    <span class="k">for</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">config_overrides</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+<a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a>
+<a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a>            <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
+<a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a>                <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+<a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a>                <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.MyTemplate&quot;</span><span class="p">,</span>
+<a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a>                <span class="o">**</span><span class="n">config_overrides</span>
+<a id="__codelineno-15-31" name="__codelineno-15-31" href="#__codelineno-15-31"></a>            <span class="p">)</span>
+<a id="__codelineno-15-32" name="__codelineno-15-32" href="#__codelineno-15-32"></a>            <span class="n">models</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a>
+<a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-15-35" name="__codelineno-15-35" href="#__codelineno-15-35"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">method_name</span>
+<a id="__codelineno-15-36" name="__codelineno-15-36" href="#__codelineno-15-36"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;output_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output_dir</span>
+<a id="__codelineno-15-37" name="__codelineno-15-37" href="#__codelineno-15-37"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">&quot;models&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">models</span>
+<a id="__codelineno-15-38" name="__codelineno-15-38" href="#__codelineno-15-38"></a>
+<a id="__codelineno-15-39" name="__codelineno-15-39" href="#__codelineno-15-39"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Success with </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-40" name="__codelineno-15-40" href="#__codelineno-15-40"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Extracted </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span><span class="si">}</span><span class="s2"> model(s)&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-41" name="__codelineno-15-41" href="#__codelineno-15-41"></a>            <span class="k">break</span>
+<a id="__codelineno-15-42" name="__codelineno-15-42" href="#__codelineno-15-42"></a>
+<a id="__codelineno-15-43" name="__codelineno-15-43" href="#__codelineno-15-43"></a>        <span class="k">except</span> <span class="n">ExtractionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-15-44" name="__codelineno-15-44" href="#__codelineno-15-44"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ </span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-45" name="__codelineno-15-45" href="#__codelineno-15-45"></a>            <span class="k">continue</span>
+<a id="__codelineno-15-46" name="__codelineno-15-46" href="#__codelineno-15-46"></a>
+<a id="__codelineno-15-47" name="__codelineno-15-47" href="#__codelineno-15-47"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
+<a id="__codelineno-15-48" name="__codelineno-15-48" href="#__codelineno-15-48"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ All methods failed&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-49" name="__codelineno-15-49" href="#__codelineno-15-49"></a>
+<a id="__codelineno-15-50" name="__codelineno-15-50" href="#__codelineno-15-50"></a>    <span class="k">return</span> <span class="n">results</span>
 </code></pre></div>
 <h3 id="partial-success-handling">Partial Success Handling<a class="headerlink" href="#partial-success-handling" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="sd">&quot;&quot;&quot;Handle partial extraction success.&quot;&quot;&quot;</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
-<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_with_partial_success</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Process and handle partial results.&quot;&quot;&quot;</span>
-<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
-<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>    <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>            <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.MyTemplate&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>            <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;outputs&quot;</span>
-<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>        <span class="p">)</span>
-<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>        <span class="n">models</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>
-<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>        <span class="c1"># Check completeness</span>
-<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>            <span class="k">return</span> <span class="p">{</span>
-<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;complete&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>                <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="n">models</span><span class="p">,</span>
-<a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>                <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">output_dir</span>
-<a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>            <span class="p">}</span>
-<a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a>            <span class="k">return</span> <span class="p">{</span>
-<a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;partial&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>                <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="n">models</span><span class="p">,</span>
-<a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a>                <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
-<a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a>                <span class="s2">&quot;warning&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial models instead of 1&quot;</span>
-<a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a>            <span class="p">}</span>
-<a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a>
-<a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pipeline failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a>
-<a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a>        <span class="c1"># Check if partial results exist</span>
-<a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a>        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;outputs&quot;</span><span class="p">)</span>
-<a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a>        <span class="k">if</span> <span class="n">output_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-<a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a>            <span class="c1"># Check for extracted data</span>
-<a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a>            <span class="n">nodes_file</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;nodes.csv&quot;</span>
-<a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a>            <span class="k">if</span> <span class="n">nodes_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-<a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a>                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Partial results available in files&quot;</span><span class="p">)</span>
-<a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a>                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Nodes: </span><span class="si">{</span><span class="n">nodes_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a>
-<a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a>                <span class="c1"># Use partial results</span>
-<a id="__codelineno-14-46" name="__codelineno-14-46" href="#__codelineno-14-46"></a>                <span class="k">return</span> <span class="p">{</span>
-<a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a>                    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;recovered&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-48" name="__codelineno-14-48" href="#__codelineno-14-48"></a>                    <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="p">[],</span>
-<a id="__codelineno-14-49" name="__codelineno-14-49" href="#__codelineno-14-49"></a>                    <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="n">output_dir</span>
-<a id="__codelineno-14-50" name="__codelineno-14-50" href="#__codelineno-14-50"></a>                <span class="p">}</span>
-<a id="__codelineno-14-51" name="__codelineno-14-51" href="#__codelineno-14-51"></a>
-<a id="__codelineno-14-52" name="__codelineno-14-52" href="#__codelineno-14-52"></a>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failed&quot;</span><span class="p">,</span> <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="sd">&quot;&quot;&quot;Handle partial extraction success.&quot;&quot;&quot;</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_with_partial_success</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Process and handle partial results.&quot;&quot;&quot;</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>        <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>            <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>            <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.MyTemplate&quot;</span><span class="p">,</span>
+<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a>            <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;outputs&quot;</span>
+<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a>        <span class="p">)</span>
+<a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a>        <span class="n">models</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a>
+<a id="__codelineno-16-18" name="__codelineno-16-18" href="#__codelineno-16-18"></a>        <span class="c1"># Check completeness</span>
+<a id="__codelineno-16-19" name="__codelineno-16-19" href="#__codelineno-16-19"></a>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-16-20" name="__codelineno-16-20" href="#__codelineno-16-20"></a>            <span class="k">return</span> <span class="p">{</span>
+<a id="__codelineno-16-21" name="__codelineno-16-21" href="#__codelineno-16-21"></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;complete&quot;</span><span class="p">,</span>
+<a id="__codelineno-16-22" name="__codelineno-16-22" href="#__codelineno-16-22"></a>                <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="n">models</span><span class="p">,</span>
+<a id="__codelineno-16-23" name="__codelineno-16-23" href="#__codelineno-16-23"></a>                <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">output_dir</span>
+<a id="__codelineno-16-24" name="__codelineno-16-24" href="#__codelineno-16-24"></a>            <span class="p">}</span>
+<a id="__codelineno-16-25" name="__codelineno-16-25" href="#__codelineno-16-25"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-16-26" name="__codelineno-16-26" href="#__codelineno-16-26"></a>            <span class="k">return</span> <span class="p">{</span>
+<a id="__codelineno-16-27" name="__codelineno-16-27" href="#__codelineno-16-27"></a>                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;partial&quot;</span><span class="p">,</span>
+<a id="__codelineno-16-28" name="__codelineno-16-28" href="#__codelineno-16-28"></a>                <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="n">models</span><span class="p">,</span>
+<a id="__codelineno-16-29" name="__codelineno-16-29" href="#__codelineno-16-29"></a>                <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+<a id="__codelineno-16-30" name="__codelineno-16-30" href="#__codelineno-16-30"></a>                <span class="s2">&quot;warning&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial models instead of 1&quot;</span>
+<a id="__codelineno-16-31" name="__codelineno-16-31" href="#__codelineno-16-31"></a>            <span class="p">}</span>
+<a id="__codelineno-16-32" name="__codelineno-16-32" href="#__codelineno-16-32"></a>
+<a id="__codelineno-16-33" name="__codelineno-16-33" href="#__codelineno-16-33"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-16-34" name="__codelineno-16-34" href="#__codelineno-16-34"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pipeline failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-16-35" name="__codelineno-16-35" href="#__codelineno-16-35"></a>
+<a id="__codelineno-16-36" name="__codelineno-16-36" href="#__codelineno-16-36"></a>        <span class="c1"># Check if partial results exist</span>
+<a id="__codelineno-16-37" name="__codelineno-16-37" href="#__codelineno-16-37"></a>        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;outputs&quot;</span><span class="p">)</span>
+<a id="__codelineno-16-38" name="__codelineno-16-38" href="#__codelineno-16-38"></a>        <span class="k">if</span> <span class="n">output_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<a id="__codelineno-16-39" name="__codelineno-16-39" href="#__codelineno-16-39"></a>            <span class="c1"># Check for extracted data</span>
+<a id="__codelineno-16-40" name="__codelineno-16-40" href="#__codelineno-16-40"></a>            <span class="n">nodes_file</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s2">&quot;nodes.csv&quot;</span>
+<a id="__codelineno-16-41" name="__codelineno-16-41" href="#__codelineno-16-41"></a>            <span class="k">if</span> <span class="n">nodes_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<a id="__codelineno-16-42" name="__codelineno-16-42" href="#__codelineno-16-42"></a>                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Partial results available in files&quot;</span><span class="p">)</span>
+<a id="__codelineno-16-43" name="__codelineno-16-43" href="#__codelineno-16-43"></a>                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Nodes: </span><span class="si">{</span><span class="n">nodes_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-16-44" name="__codelineno-16-44" href="#__codelineno-16-44"></a>
+<a id="__codelineno-16-45" name="__codelineno-16-45" href="#__codelineno-16-45"></a>                <span class="c1"># Use partial results</span>
+<a id="__codelineno-16-46" name="__codelineno-16-46" href="#__codelineno-16-46"></a>                <span class="k">return</span> <span class="p">{</span>
+<a id="__codelineno-16-47" name="__codelineno-16-47" href="#__codelineno-16-47"></a>                    <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;recovered&quot;</span><span class="p">,</span>
+<a id="__codelineno-16-48" name="__codelineno-16-48" href="#__codelineno-16-48"></a>                    <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="p">[],</span>
+<a id="__codelineno-16-49" name="__codelineno-16-49" href="#__codelineno-16-49"></a>                    <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="n">output_dir</span>
+<a id="__codelineno-16-50" name="__codelineno-16-50" href="#__codelineno-16-50"></a>                <span class="p">}</span>
+<a id="__codelineno-16-51" name="__codelineno-16-51" href="#__codelineno-16-51"></a>
+<a id="__codelineno-16-52" name="__codelineno-16-52" href="#__codelineno-16-52"></a>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;failed&quot;</span><span class="p">,</span> <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
 </code></pre></div>
 <hr />
 <h2 id="validation-strategies">Validation Strategies<a class="headerlink" href="#validation-strategies" title="Permanent link">&para;</a></h2>
 <h3 id="pre-validation">Pre-Validation<a class="headerlink" href="#pre-validation" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="sd">&quot;&quot;&quot;Validate before processing.&quot;&quot;&quot;</span>
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
-<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
-<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
-<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_and_process</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate configuration before processing.&quot;&quot;&quot;</span>
-<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>
-<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>    <span class="c1"># Validate source</span>
-<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>    <span class="n">source_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">source_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>        <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
-<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>            <span class="s2">&quot;Source file not found&quot;</span><span class="p">,</span>
-<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>            <span class="n">details</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">}</span>
-<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>        <span class="p">)</span>
-<a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>
-<a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>    <span class="c1"># Validate template</span>
-<a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>    <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>        <span class="c1"># Try to import template</span>
-<a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>        <span class="n">module_path</span><span class="p">,</span> <span class="n">class_name</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>        <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
-<a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_path</span><span class="p">)</span>
-<a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>        <span class="n">template_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-<a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a>        <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
-<a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a>            <span class="s2">&quot;Invalid template&quot;</span><span class="p">,</span>
-<a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a>            <span class="n">details</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="n">template</span><span class="p">},</span>
-<a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a>            <span class="n">cause</span><span class="o">=</span><span class="n">e</span>
-<a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a>        <span class="p">)</span>
-<a id="__codelineno-15-31" name="__codelineno-15-31" href="#__codelineno-15-31"></a>
-<a id="__codelineno-15-32" name="__codelineno-15-32" href="#__codelineno-15-32"></a>    <span class="c1"># Validate file size</span>
-<a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a>    <span class="n">size_mb</span> <span class="o">=</span> <span class="n">source_path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
-<a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a>    <span class="k">if</span> <span class="n">size_mb</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
-<a id="__codelineno-15-35" name="__codelineno-15-35" href="#__codelineno-15-35"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠️  Large file: </span><span class="si">{</span><span class="n">size_mb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">MB&quot;</span><span class="p">)</span>
-<a id="__codelineno-15-36" name="__codelineno-15-36" href="#__codelineno-15-36"></a>
-<a id="__codelineno-15-37" name="__codelineno-15-37" href="#__codelineno-15-37"></a>    <span class="c1"># Process</span>
-<a id="__codelineno-15-38" name="__codelineno-15-38" href="#__codelineno-15-38"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-15-39" name="__codelineno-15-39" href="#__codelineno-15-39"></a>        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-<a id="__codelineno-15-40" name="__codelineno-15-40" href="#__codelineno-15-40"></a>        <span class="n">template</span><span class="o">=</span><span class="n">template</span>
-<a id="__codelineno-15-41" name="__codelineno-15-41" href="#__codelineno-15-41"></a>    <span class="p">)</span>
-<a id="__codelineno-15-42" name="__codelineno-15-42" href="#__codelineno-15-42"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="sd">&quot;&quot;&quot;Validate before processing.&quot;&quot;&quot;</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_and_process</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate configuration before processing.&quot;&quot;&quot;</span>
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>    <span class="c1"># Validate source</span>
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>    <span class="n">source_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">source_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>        <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>            <span class="s2">&quot;Source file not found&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>            <span class="n">details</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">}</span>
+<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>        <span class="p">)</span>
+<a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a>
+<a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>    <span class="c1"># Validate template</span>
+<a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a>        <span class="c1"># Try to import template</span>
+<a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a>        <span class="n">module_path</span><span class="p">,</span> <span class="n">class_name</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-17-22" name="__codelineno-17-22" href="#__codelineno-17-22"></a>        <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<a id="__codelineno-17-23" name="__codelineno-17-23" href="#__codelineno-17-23"></a>        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_path</span><span class="p">)</span>
+<a id="__codelineno-17-24" name="__codelineno-17-24" href="#__codelineno-17-24"></a>        <span class="n">template_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+<a id="__codelineno-17-25" name="__codelineno-17-25" href="#__codelineno-17-25"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-17-26" name="__codelineno-17-26" href="#__codelineno-17-26"></a>        <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+<a id="__codelineno-17-27" name="__codelineno-17-27" href="#__codelineno-17-27"></a>            <span class="s2">&quot;Invalid template&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-28" name="__codelineno-17-28" href="#__codelineno-17-28"></a>            <span class="n">details</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="n">template</span><span class="p">},</span>
+<a id="__codelineno-17-29" name="__codelineno-17-29" href="#__codelineno-17-29"></a>            <span class="n">cause</span><span class="o">=</span><span class="n">e</span>
+<a id="__codelineno-17-30" name="__codelineno-17-30" href="#__codelineno-17-30"></a>        <span class="p">)</span>
+<a id="__codelineno-17-31" name="__codelineno-17-31" href="#__codelineno-17-31"></a>
+<a id="__codelineno-17-32" name="__codelineno-17-32" href="#__codelineno-17-32"></a>    <span class="c1"># Validate file size</span>
+<a id="__codelineno-17-33" name="__codelineno-17-33" href="#__codelineno-17-33"></a>    <span class="n">size_mb</span> <span class="o">=</span> <span class="n">source_path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+<a id="__codelineno-17-34" name="__codelineno-17-34" href="#__codelineno-17-34"></a>    <span class="k">if</span> <span class="n">size_mb</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+<a id="__codelineno-17-35" name="__codelineno-17-35" href="#__codelineno-17-35"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠️  Large file: </span><span class="si">{</span><span class="n">size_mb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">MB&quot;</span><span class="p">)</span>
+<a id="__codelineno-17-36" name="__codelineno-17-36" href="#__codelineno-17-36"></a>
+<a id="__codelineno-17-37" name="__codelineno-17-37" href="#__codelineno-17-37"></a>    <span class="c1"># Process</span>
+<a id="__codelineno-17-38" name="__codelineno-17-38" href="#__codelineno-17-38"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
+<a id="__codelineno-17-39" name="__codelineno-17-39" href="#__codelineno-17-39"></a>        <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+<a id="__codelineno-17-40" name="__codelineno-17-40" href="#__codelineno-17-40"></a>        <span class="n">template</span><span class="o">=</span><span class="n">template</span>
+<a id="__codelineno-17-41" name="__codelineno-17-41" href="#__codelineno-17-41"></a>    <span class="p">)</span>
+<a id="__codelineno-17-42" name="__codelineno-17-42" href="#__codelineno-17-42"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </code></pre></div>
 <hr />
 <h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
 <h3 id="use-specific-exceptions">👍 Use Specific Exceptions<a class="headerlink" href="#use-specific-exceptions" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># ✅ Good - Catch specific exceptions</span>
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="k">except</span> <span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    <span class="c1"># Handle API errors</span>
-<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>    <span class="k">pass</span>
-<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="k">except</span> <span class="n">ExtractionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>    <span class="c1"># Handle extraction errors</span>
-<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>    <span class="k">pass</span>
-<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>
-<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="c1"># ❌ Avoid - Catch all exceptions</span>
-<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a>    <span class="k">pass</span>  <span class="c1"># What went wrong?</span>
-</code></pre></div>
-<h3 id="provide-context">👍 Provide Context<a class="headerlink" href="#provide-context" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># ✅ Good - Detailed error context</span>
-<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtractionError</span>
-<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
-<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">extract_data</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>    <span class="k">raise</span> <span class="n">ExtractionError</span><span class="p">(</span>
-<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>        <span class="s2">&quot;Failed to extract data&quot;</span><span class="p">,</span>
-<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>        <span class="n">details</span><span class="o">=</span><span class="p">{</span>
-<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>            <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
-<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>            <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="n">template</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>            <span class="s2">&quot;stage&quot;</span><span class="p">:</span> <span class="s2">&quot;extraction&quot;</span>
-<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>        <span class="p">},</span>
-<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>        <span class="n">cause</span><span class="o">=</span><span class="n">e</span>
-<a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>    <span class="p">)</span>
-<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>
-<a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a><span class="c1"># ❌ Avoid - Generic errors</span>
-<a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a><span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">extract_data</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a>    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Extraction failed&quot;</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="log-before-raising">👍 Log Before Raising<a class="headerlink" href="#log-before-raising" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># ✅ Good - Log then raise</span>
-<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>
-<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># ✅ Good - Catch specific exceptions</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="k">except</span> <span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>    <span class="c1"># Handle API errors</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>    <span class="k">pass</span>
 <a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="k">except</span> <span class="n">ExtractionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extraction failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>    <span class="k">raise</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>    <span class="c1"># Handle extraction errors</span>
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>    <span class="k">pass</span>
 <a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>
-<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="c1"># ❌ Avoid - Silent failures</span>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="c1"># ❌ Avoid - Catch all exceptions</span>
 <a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="k">try</span><span class="p">:</span>
 <a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="k">except</span> <span class="n">ExtractionError</span><span class="p">:</span>
-<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>    <span class="k">pass</span>  <span class="c1"># Error lost!</span>
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>    <span class="k">pass</span>  <span class="c1"># What went wrong?</span>
+</code></pre></div>
+<h3 id="provide-context">👍 Provide Context<a class="headerlink" href="#provide-context" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># ✅ Good - Detailed error context</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtractionError</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">extract_data</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>    <span class="k">raise</span> <span class="n">ExtractionError</span><span class="p">(</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>        <span class="s2">&quot;Failed to extract data&quot;</span><span class="p">,</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>        <span class="n">details</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>            <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span>
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>            <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="n">template</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>            <span class="s2">&quot;stage&quot;</span><span class="p">:</span> <span class="s2">&quot;extraction&quot;</span>
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>        <span class="p">},</span>
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>        <span class="n">cause</span><span class="o">=</span><span class="n">e</span>
+<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>    <span class="p">)</span>
+<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>
+<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="c1"># ❌ Avoid - Generic errors</span>
+<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">extract_data</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a>    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Extraction failed&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="log-before-raising">👍 Log Before Raising<a class="headerlink" href="#log-before-raising" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># ✅ Good - Log then raise</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="k">except</span> <span class="n">ExtractionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extraction failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>    <span class="k">raise</span>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="c1"># ❌ Avoid - Silent failures</span>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="k">except</span> <span class="n">ExtractionError</span><span class="p">:</span>
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>    <span class="k">pass</span>  <span class="c1"># Error lost!</span>
 </code></pre></div>
 <h3 id="clean-up-resources">👍 Clean Up Resources<a class="headerlink" href="#clean-up-resources" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># ✅ Good - Always clean up</span>
-<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="k">finally</span><span class="p">:</span>
-<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>    <span class="c1"># Clean up even if error occurs</span>
-<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>    <span class="n">cleanup_resources</span><span class="p">()</span>
-<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>
-<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="c1"># ❌ Avoid - No cleanup on error</span>
-<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>    <span class="n">cleanup_resources</span><span class="p">()</span>  <span class="c1"># Not called if error!</span>
-<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="k">except</span><span class="p">:</span>
-<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>    <span class="k">pass</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># ✅ Good - Always clean up</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="k">finally</span><span class="p">:</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="c1"># Clean up even if error occurs</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>    <span class="n">cleanup_resources</span><span class="p">()</span>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="c1"># ❌ Avoid - No cleanup on error</span>
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>    <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>    <span class="n">cleanup_resources</span><span class="p">()</span>  <span class="c1"># Not called if error!</span>
+<a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="k">except</span><span class="p">:</span>
+<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>    <span class="k">pass</span>
 </code></pre></div>
 <hr />
 <h2 id="troubleshooting-guide">Troubleshooting Guide<a class="headerlink" href="#troubleshooting-guide" title="Permanent link">&para;</a></h2>
@@ -5458,44 +5552,44 @@
 <hr />
 <h2 id="zero-data-loss-best-practices">Zero Data Loss Best Practices<a class="headerlink" href="#zero-data-loss-best-practices" title="Permanent link">&para;</a></h2>
 <h3 id="1-always-check-result-count">1. Always Check Result Count<a class="headerlink" href="#1-always-check-result-count" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># ✅ Good - Check if merge succeeded</span>
-<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
-<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>    <span class="c1"># Merged successfully</span>
-<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>    <span class="n">process_merged_model</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>    <span class="c1"># Got partial models</span>
-<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>    <span class="n">process_partial_models</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># ✅ Good - Check if merge succeeded</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>    <span class="c1"># Merged successfully</span>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>    <span class="n">process_merged_model</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>    <span class="c1"># Got partial models</span>
+<a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>    <span class="n">process_partial_models</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="2-handle-partial-models-gracefully">2. Handle Partial Models Gracefully<a class="headerlink" href="#2-handle-partial-models-gracefully" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># ✅ Good - Extract what you can from partial models</span>
-<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_invoice_number</span><span class="p">(</span><span class="n">models</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get invoice number from any model that has it.&quot;&quot;&quot;</span>
-<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
-<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">invoice_number</span><span class="p">:</span>
-<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>            <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">invoice_number</span>
-<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>    <span class="k">return</span> <span class="s2">&quot;N/A&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># ✅ Good - Extract what you can from partial models</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_document_no</span><span class="p">(</span><span class="n">models</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get invoice number from any model that has it.&quot;&quot;&quot;</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">document_no</span><span class="p">:</span>
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>            <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">document_no</span>
+<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>    <span class="k">return</span> <span class="s2">&quot;N/A&quot;</span>
 </code></pre></div>
 <h3 id="3-log-partial-results">3. Log Partial Results<a class="headerlink" href="#3-log-partial-results" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># ✅ Good - Log when you get partial results</span>
-<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>
-<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial models instead of 1&quot;</span><span class="p">)</span>
-<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Data preserved despite merge failure&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="c1"># ✅ Good - Log when you get partial results</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial models instead of 1&quot;</span><span class="p">)</span>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Data preserved despite merge failure&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="4-provide-user-feedback">4. Provide User Feedback<a class="headerlink" href="#4-provide-user-feedback" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># ✅ Good - Inform users about partial results</span>
-<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
-<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Extraction complete&quot;</span><span class="p">)</span>
-<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠ Extraction partially complete (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> fragments)&quot;</span><span class="p">)</span>
-<a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  All data preserved - manual review recommended&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># ✅ Good - Inform users about partial results</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="n">results</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Extraction complete&quot;</span><span class="p">)</span>
+<a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠ Extraction partially complete (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> fragments)&quot;</span><span class="p">)</span>
+<a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  All data preserved - manual review recommended&quot;</span><span class="p">)</span>
 </code></pre></div>
 <hr />
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>

@@ -18,7 +18,7 @@
         <link rel="prev" href="../markdown-input/">
       
       
-        <link rel="next" href="../invoice-extraction/">
+        <link rel="next" href="../billing-document/">
       
       
         
@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -2764,15 +2764,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-case-invoice-reprocessing" class="md-nav__link">
+  <a href="#use-case-billingdocument-reprocessing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Case: Invoice Reprocessing
+        Use Case: BillingDocument Reprocessing
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Use Case: Invoice Reprocessing">
+    <nav class="md-nav" aria-label="Use Case: BillingDocument Reprocessing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3341,14 +3341,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../invoice-extraction/" class="md-nav__link">
+      <a href="../billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3425,14 +3425,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../research-paper/" class="md-nav__link">
+      <a href="../rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4252,15 +4252,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-case-invoice-reprocessing" class="md-nav__link">
+  <a href="#use-case-billingdocument-reprocessing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Case: Invoice Reprocessing
+        Use Case: BillingDocument Reprocessing
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Use Case: Invoice Reprocessing">
+    <nav class="md-nav" aria-label="Use Case: BillingDocument Reprocessing">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4776,7 +4776,7 @@
 <p>This example demonstrates how to process pre-converted DoclingDocument JSON files, enabling reprocessing of documents without re-running OCR or document conversion.</p>
 <p><strong>Time:</strong> 10 minutes</p>
 <hr />
-<h2 id="use-case-invoice-reprocessing">Use Case: Invoice Reprocessing<a class="headerlink" href="#use-case-invoice-reprocessing" title="Permanent link">&para;</a></h2>
+<h2 id="use-case-billingdocument-reprocessing">Use Case: BillingDocument Reprocessing<a class="headerlink" href="#use-case-billingdocument-reprocessing" title="Permanent link">&para;</a></h2>
 <p>Reprocess a previously converted invoice document with a different template or extraction strategy, without re-running expensive OCR operations.</p>
 <h3 id="document-source">Document Source<a class="headerlink" href="#document-source" title="Permanent link">&para;</a></h3>
 <p><strong>File:</strong> <code>invoice_docling.json</code></p>
@@ -4787,7 +4787,7 @@
 <h3 id="method-1-export-from-docling-graph">Method 1: Export from Docling Graph<a class="headerlink" href="#method-1-export-from-docling-graph" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># First run: Convert PDF and export DoclingDocument</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>invoice.pdf<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span>--export-docling-json
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># This creates: outputs/invoice_docling.json</span>
@@ -4854,11 +4854,11 @@
 <a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>    <span class="n">unit_price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Unit price&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>    <span class="n">total</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Line total&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>
-<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Complete invoice structure.&quot;&quot;&quot;</span>
 <a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;is_entity&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 <a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>
-<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>    <span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Invoice number&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>    <span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Invoice number&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>    <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Invoice date&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a>    <span class="n">issuer</span><span class="p">:</span> <span class="n">Company</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="s2">&quot;ISSUED_BY&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Issuing company&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>    <span class="n">client</span><span class="p">:</span> <span class="n">Company</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="s2">&quot;BILLED_TO&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Client company&quot;</span><span class="p">)</span>
@@ -4867,32 +4867,32 @@
 <a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>    <span class="n">tax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Tax amount&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a>    <span class="n">total</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Total amount&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p><strong>Save as:</strong> <code>templates/invoice.py</code></p>
+<p><strong>Save as:</strong> <code>templates/billing_document.py</code></p>
 <hr />
 <h2 id="processing-with-cli">Processing with CLI<a class="headerlink" href="#processing-with-cli" title="Permanent link">&para;</a></h2>
 <h3 id="basic-doclingdocument-processing">Basic DoclingDocument Processing<a class="headerlink" href="#basic-doclingdocument-processing" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Process DoclingDocument JSON</span>
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>invoice_docling.json<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span>--backend<span class="w"> </span>llm<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span>--inference<span class="w"> </span>remote
 </code></pre></div>
 <h3 id="reprocess-with-different-template">Reprocess with Different Template<a class="headerlink" href="#reprocess-with-different-template" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># First extraction</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>invoice.pdf<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.invoice.BasicInvoice&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.billing_document.BasicInvoice&quot;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span>--export-docling-json
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># Reprocess with detailed template (no OCR needed)</span>
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>outputs/invoice_docling.json<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.invoice.DetailedInvoice&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.billing_document.DetailedInvoice&quot;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span>--output-dir<span class="w"> </span><span class="s2">&quot;outputs/detailed&quot;</span>
 </code></pre></div>
 <h3 id="batch-reprocessing">Batch Reprocessing<a class="headerlink" href="#batch-reprocessing" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Reprocess multiple DoclingDocument files</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>outputs/*_docling.json<span class="p">;</span><span class="w"> </span><span class="k">do</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">        </span>--template<span class="w"> </span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">        </span>--template<span class="w"> </span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">        </span>--output-dir<span class="w"> </span><span class="s2">&quot;outputs/reprocessed&quot;</span>
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="k">done</span>
 </code></pre></div>
@@ -4900,7 +4900,7 @@
 <h2 id="processing-with-python-api">Processing with Python API<a class="headerlink" href="#processing-with-python-api" title="Permanent link">&para;</a></h2>
 <h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.invoice</span><span class="w"> </span><span class="kn">import</span> <span class="n">Invoice</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.billing_document</span><span class="w"> </span><span class="kn">import</span> <span class="n">BillingDocument</span>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Configure pipeline for DoclingDocument input</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
@@ -4917,7 +4917,7 @@
 </code></pre></div>
 <h3 id="two-stage-processing">Two-Stage Processing<a class="headerlink" href="#two-stage-processing" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.invoice</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicInvoice</span><span class="p">,</span> <span class="n">DetailedInvoice</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.billing_document</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasicInvoice</span><span class="p">,</span> <span class="n">DetailedInvoice</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Stage 1: Initial extraction with basic template</span>
 <a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">stage1_config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
@@ -4943,7 +4943,7 @@
 <h3 id="batch-reprocessing_1">Batch Reprocessing<a class="headerlink" href="#batch-reprocessing_1" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.invoice</span><span class="w"> </span><span class="kn">import</span> <span class="n">Invoice</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.billing_document</span><span class="w"> </span><span class="kn">import</span> <span class="n">BillingDocument</span>
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
 <a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1"># Find all DoclingDocument files</span>
 <a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="n">docling_files</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;outputs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*_docling.json&quot;</span><span class="p">)</span>
@@ -5224,9 +5224,9 @@
 <h3 id="1-template-experimentation">1. Template Experimentation<a class="headerlink" href="#1-template-experimentation" title="Permanent link">&para;</a></h3>
 <p>Test different templates without re-running OCR:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>    <span class="s2">&quot;templates.invoice.BasicInvoice&quot;</span><span class="p">,</span>
-<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="s2">&quot;templates.invoice.DetailedInvoice&quot;</span><span class="p">,</span>
-<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="s2">&quot;templates.invoice.MinimalInvoice&quot;</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>    <span class="s2">&quot;templates.billing_document.BasicInvoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="s2">&quot;templates.billing_document.DetailedInvoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="s2">&quot;templates.billing_document.MinimalInvoice&quot;</span>
 <a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="p">]</span>
 <a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>
 <a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>

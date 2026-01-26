@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -3313,14 +3313,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3397,14 +3397,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/research-paper/" class="md-nav__link">
+      <a href="../../examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4730,7 +4730,7 @@
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Returns data directly - no file exports by default</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;remote&quot;</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">})</span>
@@ -4746,7 +4746,7 @@
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Enable file exports with dump_to_disk</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;remote&quot;</span><span class="p">,</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="s2">&quot;dump_to_disk&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -4762,7 +4762,7 @@
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;remote&quot;</span>
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p">)</span>
@@ -4948,7 +4948,7 @@
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">try</span><span class="p">:</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;invalid&quot;</span>  <span class="c1"># Invalid backend</span>
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="p">})</span>
 <a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="k">except</span> <span class="n">ConfigurationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -4974,7 +4974,7 @@
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">try</span><span class="p">:</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span>
 <a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="p">})</span>
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="k">except</span> <span class="n">PipelineError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 <a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pipeline error: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -4987,7 +4987,7 @@
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="c1"># Minimal required configuration - returns data, no file exports</span>
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;invoice.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span>
 <a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="p">})</span>
 <a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
 <a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="c1"># Access results in memory</span>
@@ -5001,7 +5001,7 @@
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="c1"># Enable file exports</span>
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;invoice.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="s2">&quot;dump_to_disk&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;outputs/invoice&quot;</span>
 <a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="p">})</span>
@@ -5032,7 +5032,7 @@
 <a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>
 <a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="c1"># Access the knowledge graph</span>
 <a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">knowledge_graph</span>
-<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Research paper: </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> nodes, </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="si">}</span><span class="s2"> edges&quot;</span><span class="p">)</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rheology research: </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> nodes, </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="si">}</span><span class="s2"> edges&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="local-vlm">📍 Local VLM<a class="headerlink" href="#local-vlm" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span>
@@ -5096,7 +5096,7 @@
 <a id="__codelineno-12-42" name="__codelineno-12-42" href="#__codelineno-12-42"></a>        <span class="k">return</span> <span class="kc">None</span>
 <a id="__codelineno-12-43" name="__codelineno-12-43" href="#__codelineno-12-43"></a>
 <a id="__codelineno-12-44" name="__codelineno-12-44" href="#__codelineno-12-44"></a><span class="c1"># Use the function</span>
-<a id="__codelineno-12-45" name="__codelineno-12-45" href="#__codelineno-12-45"></a><span class="n">context</span> <span class="o">=</span> <span class="n">process_document</span><span class="p">(</span><span class="s2">&quot;invoice.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-45" name="__codelineno-12-45" href="#__codelineno-12-45"></a><span class="n">context</span> <span class="o">=</span> <span class="n">process_document</span><span class="p">(</span><span class="s2">&quot;invoice.pdf&quot;</span><span class="p">,</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">)</span>
 <a id="__codelineno-12-46" name="__codelineno-12-46" href="#__codelineno-12-46"></a><span class="k">if</span> <span class="n">context</span><span class="p">:</span>
 <a id="__codelineno-12-47" name="__codelineno-12-47" href="#__codelineno-12-47"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Graph has </span><span class="si">{</span><span class="n">context</span><span class="o">.</span><span class="n">knowledge_graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> nodes&quot;</span><span class="p">)</span>
 </code></pre></div>
@@ -5137,7 +5137,7 @@
 <a id="__codelineno-13-34" name="__codelineno-13-34" href="#__codelineno-13-34"></a>    <span class="k">return</span> <span class="n">results</span><span class="p">,</span> <span class="n">all_graphs</span>
 <a id="__codelineno-13-35" name="__codelineno-13-35" href="#__codelineno-13-35"></a>
 <a id="__codelineno-13-36" name="__codelineno-13-36" href="#__codelineno-13-36"></a><span class="c1"># Run batch processing</span>
-<a id="__codelineno-13-37" name="__codelineno-13-37" href="#__codelineno-13-37"></a><span class="n">results</span><span class="p">,</span> <span class="n">graphs</span> <span class="o">=</span> <span class="n">batch_process</span><span class="p">(</span><span class="s2">&quot;documents/&quot;</span><span class="p">,</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-37" name="__codelineno-13-37" href="#__codelineno-13-37"></a><span class="n">results</span><span class="p">,</span> <span class="n">graphs</span> <span class="o">=</span> <span class="n">batch_process</span><span class="p">(</span><span class="s2">&quot;documents/&quot;</span><span class="p">,</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">)</span>
 <a id="__codelineno-13-38" name="__codelineno-13-38" href="#__codelineno-13-38"></a>
 <a id="__codelineno-13-39" name="__codelineno-13-39" href="#__codelineno-13-39"></a><span class="c1"># Optionally export combined results</span>
 <a id="__codelineno-13-40" name="__codelineno-13-40" href="#__codelineno-13-40"></a><span class="k">if</span> <span class="n">graphs</span><span class="p">:</span>
@@ -5152,14 +5152,14 @@
 <a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="c1"># Default: No file exports (API mode)</span>
 <a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span>
 <a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="p">})</span>
 <a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="c1"># Returns data in memory only</span>
 <a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
 <a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="c1"># Explicit: Enable file exports</span>
 <a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>    <span class="s2">&quot;dump_to_disk&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>    <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;outputs&quot;</span>
 <a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="p">})</span>
@@ -5168,19 +5168,22 @@
 <a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="c1"># Explicit: Disable file exports</span>
 <a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>    <span class="s2">&quot;dump_to_disk&quot;</span><span class="p">:</span> <span class="kc">False</span>
 <a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="p">})</span>
 <a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="c1"># Returns data only, even if output_dir is set</span>
 </code></pre></div>
-<p><strong>Note:</strong> CLI mode defaults to <code>dump_to_disk=True</code>, API mode defaults to <code>dump_to_disk=False</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">CLI vs API defaults</p>
+<p>CLI mode defaults to dump_to_disk=True, API mode defaults to dump_to_disk=False.</p>
+</div>
 <h3 id="custom-models-configuration">Custom Models Configuration<a class="headerlink" href="#custom-models-configuration" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span>
 <a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
 <a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="c1"># Override models from config</span>
 <a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>    <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>    <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;remote&quot;</span><span class="p">,</span>
 <a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>    <span class="s2">&quot;models&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -5202,7 +5205,7 @@
 <a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="c1"># Export as Cypher for Neo4j</span>
 <a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="s2">&quot;dump_to_disk&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>    <span class="s2">&quot;export_format&quot;</span><span class="p">:</span> <span class="s2">&quot;cypher&quot;</span><span class="p">,</span>
 <a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>    <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;outputs/neo4j&quot;</span>
@@ -5228,7 +5231,7 @@
 <a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>
 <a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>    <span class="c1"># Determine template and config</span>
 <a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>    <span class="k">if</span> <span class="s2">&quot;invoice&quot;</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;templates.BillingDocument&quot;</span>
 <a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>        <span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;vlm&quot;</span>
 <a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>        <span class="n">processing</span> <span class="o">=</span> <span class="s2">&quot;one-to-one&quot;</span>
 <a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>    <span class="k">elif</span> <span class="s2">&quot;research&quot;</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
@@ -5269,7 +5272,7 @@
 <a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_endpoint</span><span class="p">():</span>
 <a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;API endpoint for document processing - returns data without disk writes.&quot;&quot;&quot;</span>
 <a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>    <span class="n">file</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;document&#39;</span><span class="p">)</span>
-<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>    <span class="n">template</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;template&#39;</span><span class="p">,</span> <span class="s1">&#39;templates.Invoice&#39;</span><span class="p">)</span>
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>    <span class="n">template</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;template&#39;</span><span class="p">,</span> <span class="s1">&#39;templates.BillingDocument&#39;</span><span class="p">)</span>
 <a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>
 <a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">file</span><span class="p">:</span>
 <a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;No file provided&quot;</span><span class="p">}),</span> <span class="mi">400</span>
@@ -5341,7 +5344,7 @@
 <a id="__codelineno-19-26" name="__codelineno-19-26" href="#__codelineno-19-26"></a><span class="c1"># Usage</span>
 <a id="__codelineno-19-27" name="__codelineno-19-27" href="#__codelineno-19-27"></a><span class="n">result</span> <span class="o">=</span> <span class="n">process_document_task</span><span class="o">.</span><span class="n">delay</span><span class="p">(</span>
 <a id="__codelineno-19-28" name="__codelineno-19-28" href="#__codelineno-19-28"></a>    <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-19-29" name="__codelineno-19-29" href="#__codelineno-19-29"></a>    <span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-19-29" name="__codelineno-19-29" href="#__codelineno-19-29"></a>    <span class="s2">&quot;templates.BillingDocument&quot;</span>
 <a id="__codelineno-19-30" name="__codelineno-19-30" href="#__codelineno-19-30"></a><span class="p">)</span>
 <a id="__codelineno-19-31" name="__codelineno-19-31" href="#__codelineno-19-31"></a><span class="c1"># Get result</span>
 <a id="__codelineno-19-32" name="__codelineno-19-32" href="#__codelineno-19-32"></a><span class="n">data</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
@@ -5379,7 +5382,7 @@
 <a id="__codelineno-20-29" name="__codelineno-20-29" href="#__codelineno-20-29"></a>    <span class="n">python_callable</span><span class="o">=</span><span class="n">process_document</span><span class="p">,</span>
 <a id="__codelineno-20-30" name="__codelineno-20-30" href="#__codelineno-20-30"></a>    <span class="n">params</span><span class="o">=</span><span class="p">{</span>
 <a id="__codelineno-20-31" name="__codelineno-20-31" href="#__codelineno-20-31"></a>        <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;documents/daily.pdf&#39;</span><span class="p">,</span>
-<a id="__codelineno-20-32" name="__codelineno-20-32" href="#__codelineno-20-32"></a>        <span class="s1">&#39;template&#39;</span><span class="p">:</span> <span class="s1">&#39;templates.Invoice&#39;</span>
+<a id="__codelineno-20-32" name="__codelineno-20-32" href="#__codelineno-20-32"></a>        <span class="s1">&#39;template&#39;</span><span class="p">:</span> <span class="s1">&#39;templates.BillingDocument&#39;</span>
 <a id="__codelineno-20-33" name="__codelineno-20-33" href="#__codelineno-20-33"></a>    <span class="p">}</span>
 <a id="__codelineno-20-34" name="__codelineno-20-34" href="#__codelineno-20-34"></a><span class="p">)</span>
 </code></pre></div>
@@ -5391,7 +5394,7 @@
 <a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
 <a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span>  <span class="c1"># Validated at creation</span>
 <a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="p">)</span>
 <a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
@@ -5399,7 +5402,7 @@
 <a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="c1"># ❌ Avoid - No validation until runtime</span>
 <a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>    <span class="s2">&quot;backend&quot;</span><span class="p">:</span> <span class="s2">&quot;invalid&quot;</span>  <span class="c1"># Error at runtime</span>
 <a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a><span class="p">})</span>
 </code></pre></div>
@@ -5426,14 +5429,14 @@
 <a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
 <a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>    <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;outputs/</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">&quot;</span>
 <a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="p">})</span>
 <a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>
 <a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="c1"># ❌ Avoid - Overwriting outputs</span>
 <a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a>    <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;outputs&quot;</span>  <span class="c1"># Same for all</span>
 <a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a><span class="p">})</span>
 </code></pre></div>
@@ -5455,7 +5458,7 @@
 <a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>
 <a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span>
 <a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a><span class="p">})</span>
 </code></pre></div></p>
 <h3 id="api-key-not-found">🐛 API Key Not Found<a class="headerlink" href="#api-key-not-found" title="Permanent link">&para;</a></h3>
@@ -5472,7 +5475,7 @@
 <a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>
 <a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="n">run_pipeline</span><span class="p">({</span>
 <a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>    <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>    <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a>    <span class="s2">&quot;inference&quot;</span><span class="p">:</span> <span class="s2">&quot;remote&quot;</span>
 <a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a><span class="p">})</span>
 </code></pre></div></p>

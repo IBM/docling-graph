@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -3319,14 +3319,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3403,14 +3403,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4719,6 +4719,11 @@
 
 
 <h1 id="field-definitions">Field Definitions<a class="headerlink" href="#field-definitions" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Note</strong>: The examples in this document use simplified field names and structures for teaching purposes. 
+The actual <code>BillingDocument</code> schema at <code>docs/examples/templates/billing_document.py</code> is more comprehensive 
+with 30+ classes, EN 16931/Peppol BIS compliance, and uses <code>CONTAINS_LINE</code> for line items.</p>
+</blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Field definitions are where you <strong>guide the LLM</strong> to extract accurate data. Well-written field descriptions and examples are crucial for extraction quality. This guide covers best practices for defining fields that maximize LLM accuracy.</p>
 <p><strong>In this guide:</strong>
@@ -5116,12 +5121,12 @@
 <li><strong>Group related fields together</strong></li>
 <li><strong>Edges at the end</strong></li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Invoice document.&quot;&quot;&quot;</span>
-<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;BillingDocument document.&quot;&quot;&quot;</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">])</span>
 <a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>
 <a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>    <span class="c1"># 1. Required ID field</span>
-<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>    <span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>    <span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>
 <a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>    <span class="c1"># 2. Required core fields</span>
 <a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>    <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -5135,7 +5140,7 @@
 <a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a>    <span class="n">issued_by</span><span class="p">:</span> <span class="n">Organization</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;ISSUED_BY&quot;</span><span class="p">)</span>
 <a id="__codelineno-23-18" name="__codelineno-23-18" href="#__codelineno-23-18"></a>    <span class="n">sent_to</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;SENT_TO&quot;</span><span class="p">)</span>
 <a id="__codelineno-23-19" name="__codelineno-23-19" href="#__codelineno-23-19"></a>    <span class="n">contains_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LineItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span>
-<a id="__codelineno-23-20" name="__codelineno-23-20" href="#__codelineno-23-20"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">,</span>
+<a id="__codelineno-23-20" name="__codelineno-23-20" href="#__codelineno-23-20"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">,</span>
 <a id="__codelineno-23-21" name="__codelineno-23-21" href="#__codelineno-23-21"></a>        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span>
 <a id="__codelineno-23-22" name="__codelineno-23-22" href="#__codelineno-23-22"></a>    <span class="p">)</span>
 </code></pre></div>
@@ -5169,7 +5174,7 @@
 <p>Document when fields are relevant:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="n">document_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
 <a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Type of document&quot;</span><span class="p">,</span>
-<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>    <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Invoice&quot;</span><span class="p">,</span> <span class="s2">&quot;Receipt&quot;</span><span class="p">,</span> <span class="s2">&quot;Credit Note&quot;</span><span class="p">]</span>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>    <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;BillingDocument&quot;</span><span class="p">,</span> <span class="s2">&quot;Receipt&quot;</span><span class="p">,</span> <span class="s2">&quot;Credit Note&quot;</span><span class="p">]</span>
 <a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="p">)</span>
 <a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>
 <a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="c1"># Field only relevant for invoices</span>

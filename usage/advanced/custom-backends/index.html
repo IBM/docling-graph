@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -2787,14 +2787,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -2871,14 +2871,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/research-paper/" class="md-nav__link">
+      <a href="../../examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4914,7 +4914,7 @@
 <hr />
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="protocol-not-recognized">🐛 Protocol Not Recognized<a class="headerlink" href="#protocol-not-recognized" title="Permanent link">&para;</a></h3>
-<p><strong>🐛</strong> Backend not recognized by pipeline</p>
+<p>Backend not recognized by pipeline</p>
 <p><strong>Solution:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Ensure you implement the correct protocol</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextExtractionBackendProtocol</span>
@@ -4929,7 +4929,7 @@
 <a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span>
 </code></pre></div></p>
 <h3 id="memory-leaks">🐛 Memory Leaks<a class="headerlink" href="#memory-leaks" title="Permanent link">&para;</a></h3>
-<p><strong>🐛</strong> Memory usage grows over time</p>
+<p>Memory usage grows over time</p>
 <p><strong>Solution:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Implement proper cleanup</span>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -4946,7 +4946,7 @@
 <a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
 </code></pre></div></p>
 <h3 id="api-rate-limits">🐛 API Rate Limits<a class="headerlink" href="#api-rate-limits" title="Permanent link">&para;</a></h3>
-<p><strong>🐛</strong> API calls fail due to rate limits</p>
+<p>API calls fail due to rate limits</p>
 <p><strong>Solution:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClientError</span>

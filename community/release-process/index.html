@@ -507,14 +507,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -535,14 +535,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/architecture/" class="md-nav__link">
+      <a href="../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -2773,14 +2773,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -2857,14 +2857,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -5207,33 +5207,31 @@
 </thead>
 <tbody>
 <tr>
-<td><code>fix:</code></td>
-<td>Patch (1.0.0 → 1.0.1)</td>
-<td><code>fix: handle null values</code></td>
-</tr>
-<tr>
 <td><code>feat:</code></td>
 <td>Minor (1.0.0 → 1.1.0)</td>
 <td><code>feat: add CSV export</code></td>
 </tr>
 <tr>
 <td><code>refactor:</code></td>
-<td>Minor (1.0.0 → 1.1.0)</td>
+<td>Patch (1.0.0 → 1.0.1)</td>
 <td><code>refactor: improve parser</code></td>
+</tr>
+<tr>
+<td><code>fix:</code></td>
+<td>Patch (1.0.0 → 1.0.1)</td>
+<td><code>fix: handle null values</code></td>
 </tr>
 <tr>
 <td><code>perf:</code></td>
 <td>Patch (1.0.0 → 1.0.1)</td>
 <td><code>perf: optimize graph build</code></td>
 </tr>
-<tr>
-<td><code>BREAKING CHANGE:</code></td>
-<td>Minor (1.0.0 → 1.1.0)</td>
-<td><strong>Capped at minor, not major</strong></td>
-</tr>
 </tbody>
 </table>
-<p><strong>Note:</strong> BREAKING CHANGE commits will trigger minor releases, not major. This allows you to accumulate breaking changes and release them together as a planned major version.</p>
+<div class="admonition note">
+<p class="admonition-title">Breaking changes and releases</p>
+<p>BREAKING CHANGE commits trigger minor releases (not major). This lets you accumulate breaking changes and ship them together later as a planned major version.</p>
+</div>
 <h3 id="manual-releases-git-tags">Manual Releases (Git Tags)<a class="headerlink" href="#manual-releases-git-tags" title="Permanent link">&para;</a></h3>
 <p>Major version bumps require manual Git tags:</p>
 <ul>
@@ -5308,7 +5306,10 @@
 <a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="c1"># Push tag to trigger release workflow</span>
 <a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v2.0.0
 </code></pre></div>
-<p><strong>Note:</strong> Even if you use <code>BREAKING CHANGE:</code> in commits, semantic-release will only bump to the next minor version. Major bumps require manual tags.</p>
+<div class="admonition note">
+<p class="admonition-title">Semantic-release major bumps</p>
+<p>Even if you use BREAKING CHANGE: in commits, semantic-release will only bump to the next minor version. Major bumps require manual tags.</p>
+</div>
 <hr />
 <h2 id="creating-a-major-release-detailed-guide">Creating a Major Release (Detailed Guide)<a class="headerlink" href="#creating-a-major-release-detailed-guide" title="Permanent link">&para;</a></h2>
 <p>Major releases are strategic milestones that require careful planning and execution. Follow this comprehensive guide:</p>

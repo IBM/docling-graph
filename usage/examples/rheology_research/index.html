@@ -12,7 +12,7 @@
         <meta name="author" content="IBM Research">
       
       
-        <link rel="canonical" href="https://ibm.github.io/docling-graph/usage/examples/research-paper/">
+        <link rel="canonical" href="https://ibm.github.io/docling-graph/usage/examples/rheology_research/">
       
       
         <link rel="prev" href="../insurance-policy/">
@@ -29,7 +29,7 @@
     
     
       
-        <title>Research Paper - Docling Graph Documentation</title>
+        <title>Rheology Research - Docling Graph Documentation</title>
       
     
     
@@ -121,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Research Paper
+              Rheology Research
             
           </span>
         </div>
@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -2787,14 +2787,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../invoice-extraction/" class="md-nav__link">
+      <a href="../billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -2885,7 +2885,7 @@
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -2903,7 +2903,7 @@
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4505,10 +4505,10 @@
   
 
 
-<h1 id="research-paper-extraction">Research Paper Extraction<a class="headerlink" href="#research-paper-extraction" title="Permanent link">&para;</a></h1>
+<h1 id="rheology-research-extraction">Rheology Research Extraction<a class="headerlink" href="#rheology-research-extraction" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Extract complex research data from scientific papers including experiments, measurements, materials, and results.</p>
-<p><strong>Document Type:</strong> Research Paper (PDF)<br />
+<p><strong>Document Type:</strong> Rheology Research (PDF)<br />
 <strong>Time:</strong> 30 minutes<br />
 <strong>Backend:</strong> LLM with chunking</p>
 <hr />
@@ -4521,7 +4521,7 @@
 </code></pre></div>
 <hr />
 <h2 id="template-overview">Template Overview<a class="headerlink" href="#template-overview" title="Permanent link">&para;</a></h2>
-<p>The research paper template (<code>rheology_research.py</code>) includes:</p>
+<p>The rheology research template (<code>rheology_research.py</code>) includes:</p>
 <ul>
 <li><strong>Measurements</strong> - Flexible value/unit pairs</li>
 <li><strong>Materials</strong> - Granular material properties</li>
@@ -4564,7 +4564,7 @@
 <hr />
 <h2 id="processing">Processing<a class="headerlink" href="#processing" title="Permanent link">&para;</a></h2>
 <h3 id="using-cli">Using CLI<a class="headerlink" href="#using-cli" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Process research paper with chunking</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Process rheology research with chunking</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>research.pdf<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;docs.examples.templates.rheology_research.Research&quot;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span>--backend<span class="w"> </span>llm<span class="w"> </span><span class="se">\</span>
@@ -4578,7 +4578,7 @@
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span>--output-dir<span class="w"> </span><span class="s2">&quot;outputs/research&quot;</span>
 </code></pre></div>
 <h3 id="using-python-api">Using Python API<a class="headerlink" href="#using-python-api" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="sd">&quot;&quot;&quot;Process research paper.&quot;&quot;&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="sd">&quot;&quot;&quot;Process rheology research.&quot;&quot;&quot;</span>
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
@@ -4599,7 +4599,7 @@
 <a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>    <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;outputs/research&quot;</span>
 <a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="p">)</span>
 <a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
-<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing research paper (may take several minutes)...&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing rheology research (may take several minutes)...&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Complete!&quot;</span><span class="p">)</span>
 </code></pre></div>
@@ -4726,7 +4726,7 @@
 <a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>    <span class="n">measurements</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Measurement</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 <a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>
 <a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="k">class</span><span class="w"> </span><span class="nc">Research</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Simplified research paper.&quot;&quot;&quot;</span>
+<a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Simplified rheology research.&quot;&quot;&quot;</span>
 <a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
 <a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>    <span class="n">authors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a>    <span class="n">abstract</span><span class="p">:</span> <span class="nb">str</span>

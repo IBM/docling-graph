@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -3453,14 +3453,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3537,14 +3537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -5092,10 +5092,10 @@ flowchart LR
 <h2 id="edge-creation">Edge Creation<a class="headerlink" href="#edge-creation" title="Permanent link">&para;</a></h2>
 <h3 id="automatic-edge-generation">Automatic Edge Generation<a class="headerlink" href="#automatic-edge-generation" title="Permanent link">&para;</a></h3>
 <p>Edges are created automatically from model relationships:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">issued_by</span><span class="p">:</span> <span class="n">Organization</span>  <span class="c1"># Creates edge: Invoice -&gt; Organization</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">line_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LineItem</span><span class="p">]</span>  <span class="c1"># Creates edges: Invoice -&gt; LineItem (multiple)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">issued_by</span><span class="p">:</span> <span class="n">Organization</span>  <span class="c1"># Creates edge: BillingDocument -&gt; Organization</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">line_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LineItem</span><span class="p">]</span>  <span class="c1"># Creates edges: BillingDocument -&gt; LineItem (multiple)</span>
 </code></pre></div>
 <h3 id="edge-structure">Edge Structure<a class="headerlink" href="#edge-structure" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Edge in graph</span>
@@ -5109,7 +5109,7 @@ flowchart LR
 <h3 id="custom-edge-labels">Custom Edge Labels<a class="headerlink" href="#custom-edge-labels" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">issued_by</span><span class="p">:</span> <span class="n">Organization</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>        <span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;edge_label&quot;</span><span class="p">:</span> <span class="s2">&quot;ISSUED_BY&quot;</span><span class="p">}</span>
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="p">)</span>
@@ -5198,12 +5198,12 @@ flowchart LR
 <h2 id="complete-examples">Complete Examples<a class="headerlink" href="#complete-examples" title="Permanent link">&para;</a></h2>
 <h3 id="basic-conversion">📍 Basic Conversion<a class="headerlink" href="#basic-conversion" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.core.converters</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphConverter</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">my_templates</span><span class="w"> </span><span class="kn">import</span> <span class="n">Invoice</span><span class="p">,</span> <span class="n">Organization</span><span class="p">,</span> <span class="n">LineItem</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">my_templates</span><span class="w"> </span><span class="kn">import</span> <span class="n">BillingDocument</span><span class="p">,</span> <span class="n">Organization</span><span class="p">,</span> <span class="n">LineItem</span>
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
 <a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Create sample models</span>
 <a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="n">models</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>    <span class="n">Invoice</span><span class="p">(</span>
-<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>        <span class="n">invoice_number</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>    <span class="n">BillingDocument</span><span class="p">(</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>        <span class="n">document_no</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span>
 <a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>        <span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Acme Corp&quot;</span><span class="p">),</span>
 <a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>        <span class="n">line_items</span><span class="o">=</span><span class="p">[</span>
 <a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>            <span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
@@ -5228,7 +5228,7 @@ flowchart LR
 <a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="n">converter</span> <span class="o">=</span> <span class="n">GraphConverter</span><span class="p">(</span><span class="n">add_reverse_edges</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="n">graph</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">pydantic_list_to_graph</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
 <a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
-<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="c1"># Original edge: Invoice -&gt; Organization (ISSUED_BY)</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="c1"># Original edge: BillingDocument -&gt; Organization (ISSUED_BY)</span>
 <a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="c1"># Reverse edge: Organization -&gt; Invoice (reverse_ISSUED_BY)</span>
 <a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
 <a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total edges (with reverse): </span><span class="si">{</span><span class="n">metadata</span><span class="o">.</span><span class="n">edge_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -5353,7 +5353,7 @@ flowchart LR
 <h3 id="missing-edges">🐛 Missing Edges<a class="headerlink" href="#missing-edges" title="Permanent link">&para;</a></h3>
 <p><strong>Solution:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="c1"># Ensure relationships are defined</span>
-<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>    <span class="n">issued_by</span><span class="p">:</span> <span class="n">Organization</span>  <span class="c1"># Must be typed as entity</span>
 <a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>    <span class="c1"># Not: issued_by: dict  # Won&#39;t create edge</span>
 </code></pre></div></p>

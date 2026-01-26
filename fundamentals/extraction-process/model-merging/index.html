@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -3491,14 +3491,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3575,14 +3575,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -5087,9 +5087,9 @@
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">chunk_3</span> <span class="o">=</span> <span class="s2">&quot;Total: $150, Due date: 2024-01-31&quot;</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1"># Each chunk produces a partial model</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">model_1</span> <span class="o">=</span> <span class="n">Invoice</span><span class="p">(</span><span class="n">invoice_number</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span> <span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Acme Corp&quot;</span><span class="p">))</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">model_2</span> <span class="o">=</span> <span class="n">Invoice</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">LineItem</span><span class="p">(</span><span class="o">...</span><span class="p">)])</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">model_3</span> <span class="o">=</span> <span class="n">Invoice</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">due_date</span><span class="o">=</span><span class="s2">&quot;2024-01-31&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">model_1</span> <span class="o">=</span> <span class="n">BillingDocument</span><span class="p">(</span><span class="n">document_no</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span> <span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Acme Corp&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">model_2</span> <span class="o">=</span> <span class="n">BillingDocument</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">LineItem</span><span class="p">(</span><span class="o">...</span><span class="p">)])</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">model_3</span> <span class="o">=</span> <span class="n">BillingDocument</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">due_date</span><span class="o">=</span><span class="s2">&quot;2024-01-31&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># Need to merge into one complete model</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">final_model</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">model_1</span><span class="p">,</span> <span class="n">model_2</span><span class="p">,</span> <span class="n">model_3</span><span class="p">)</span>
@@ -5181,17 +5181,17 @@ flowchart LR
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Multiple partial models</span>
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">models</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">Invoice</span><span class="p">(</span><span class="n">invoice_number</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span> <span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Acme&quot;</span><span class="p">)),</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">Invoice</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">50</span><span class="p">)]),</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">Invoice</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">due_date</span><span class="o">=</span><span class="s2">&quot;2024-01-31&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">BillingDocument</span><span class="p">(</span><span class="n">document_no</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span> <span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Acme&quot;</span><span class="p">)),</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">BillingDocument</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">50</span><span class="p">)]),</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">BillingDocument</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">due_date</span><span class="o">=</span><span class="s2">&quot;2024-01-31&quot;</span><span class="p">)</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">]</span>
 <a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># Merge programmatically</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">merged</span> <span class="o">=</span> <span class="n">merge_pydantic_models</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">Invoice</span><span class="p">)</span>
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nb">print</span><span class="p">(</span><span class="n">merged</span><span class="p">)</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1"># Invoice(</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c1">#     invoice_number=&quot;INV-001&quot;,</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1"># BillingDocument(</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c1">#     document_no=&quot;INV-001&quot;,</span>
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1">#     issued_by=Organization(name=&quot;Acme&quot;),</span>
 <a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="c1">#     line_items=[LineItem(description=&quot;Product A&quot;, total=50)],</span>
 <a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="c1">#     total=150,</span>
@@ -5203,24 +5203,24 @@ flowchart LR
 <h4 id="1-field-overwriting">1. Field Overwriting<a class="headerlink" href="#1-field-overwriting" title="Permanent link">&para;</a></h4>
 <p><strong>Rule:</strong> Non-empty values overwrite empty ones</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Model 1</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">invoice_number</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">document_no</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Model 2</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">invoice_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">document_no</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># Merged</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">invoice_number</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">document_no</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
 </code></pre></div>
 <h4 id="2-list-concatenation">2. List Concatenation<a class="headerlink" href="#2-list-concatenation" title="Permanent link">&para;</a></h4>
 <p><strong>Rule:</strong> Lists are concatenated and deduplicated</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Model 1</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">)])</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">)])</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Model 2</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product B&quot;</span><span class="p">)])</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product B&quot;</span><span class="p">)])</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Merged</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span>
 <a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">),</span>
 <a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product B&quot;</span><span class="p">)</span>
 <a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">])</span>
@@ -5228,13 +5228,13 @@ flowchart LR
 <h4 id="3-nested-object-merging">3. Nested Object Merging<a class="headerlink" href="#3-nested-object-merging" title="Permanent link">&para;</a></h4>
 <p><strong>Rule:</strong> Nested objects are recursively merged</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Model 1</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Acme&quot;</span><span class="p">))</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Acme&quot;</span><span class="p">))</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Model 2</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">Address</span><span class="p">(</span><span class="n">city</span><span class="o">=</span><span class="s2">&quot;Paris&quot;</span><span class="p">)))</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">Address</span><span class="p">(</span><span class="n">city</span><span class="o">=</span><span class="s2">&quot;Paris&quot;</span><span class="p">)))</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Merged</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span>
 <a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Acme&quot;</span><span class="p">,</span>
 <a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="n">address</span><span class="o">=</span><span class="n">Address</span><span class="p">(</span><span class="n">city</span><span class="o">=</span><span class="s2">&quot;Paris&quot;</span><span class="p">)</span>
 <a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="p">))</span>
@@ -5242,13 +5242,13 @@ flowchart LR
 <h4 id="4-entity-deduplication">4. Entity Deduplication<a class="headerlink" href="#4-entity-deduplication" title="Permanent link">&para;</a></h4>
 <p><strong>Rule:</strong> Duplicate entities are detected and removed</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Model 1</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">50</span><span class="p">)])</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">50</span><span class="p">)])</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Model 2 (duplicate)</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">50</span><span class="p">)])</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">50</span><span class="p">)])</span>
 <a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># Merged (deduplicated)</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">50</span><span class="p">)])</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">50</span><span class="p">)])</span>
 </code></pre></div>
 <hr />
 <h3 id="deduplication-algorithm">Deduplication Algorithm<a class="headerlink" href="#deduplication-algorithm" title="Permanent link">&para;</a></h3>
@@ -5286,7 +5286,7 @@ flowchart LR
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Automatic for SIMPLE/STANDARD tier models</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
 <a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="n">provider_override</span><span class="o">=</span><span class="s2">&quot;ollama&quot;</span><span class="p">,</span>
@@ -5307,7 +5307,7 @@ flowchart LR
 <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Automatic for ADVANCED tier models</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;contract.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Contract&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Contract&quot;</span><span class="p">,</span>
 <a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;remote&quot;</span><span class="p">,</span>
 <a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="n">provider_override</span><span class="o">=</span><span class="s2">&quot;openai&quot;</span><span class="p">,</span>
@@ -5380,7 +5380,7 @@ flowchart LR
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;remote&quot;</span><span class="p">,</span>
 <a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Enable LLM consolidation</span>
@@ -5475,21 +5475,21 @@ flowchart LR
 <h2 id="complete-examples">Complete Examples<a class="headerlink" href="#complete-examples" title="Permanent link">&para;</a></h2>
 <h3 id="basic-programmatic-merge">📍 Basic Programmatic Merge<a class="headerlink" href="#basic-programmatic-merge" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">merge_pydantic_models</span>
-<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">my_templates</span><span class="w"> </span><span class="kn">import</span> <span class="n">Invoice</span><span class="p">,</span> <span class="n">Organization</span><span class="p">,</span> <span class="n">LineItem</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">templates.billing_document</span><span class="w"> </span><span class="kn">import</span> <span class="n">BillingDocument</span><span class="p">,</span> <span class="n">Organization</span><span class="p">,</span> <span class="n">LineItem</span>
 <a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
 <a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Partial models from chunks</span>
 <a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="n">models</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>    <span class="n">Invoice</span><span class="p">(</span>
-<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>        <span class="n">invoice_number</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>    <span class="n">BillingDocument</span><span class="p">(</span>
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>        <span class="n">document_no</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">,</span>
 <a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>        <span class="n">issued_by</span><span class="o">=</span><span class="n">Organization</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Acme Corp&quot;</span><span class="p">)</span>
 <a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>    <span class="p">),</span>
-<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>    <span class="n">Invoice</span><span class="p">(</span>
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>    <span class="n">BillingDocument</span><span class="p">(</span>
 <a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>        <span class="n">line_items</span><span class="o">=</span><span class="p">[</span>
 <a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>            <span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product A&quot;</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">unit_price</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
 <a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>            <span class="n">LineItem</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Product B&quot;</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit_price</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
 <a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>        <span class="p">]</span>
 <a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>    <span class="p">),</span>
-<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>    <span class="n">Invoice</span><span class="p">(</span>
+<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>    <span class="n">BillingDocument</span><span class="p">(</span>
 <a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a>        <span class="n">subtotal</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
 <a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>        <span class="n">tax</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
 <a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>        <span class="n">total</span><span class="o">=</span><span class="mi">275</span><span class="p">,</span>
@@ -5500,7 +5500,7 @@ flowchart LR
 <a id="__codelineno-17-24" name="__codelineno-17-24" href="#__codelineno-17-24"></a><span class="c1"># Merge</span>
 <a id="__codelineno-17-25" name="__codelineno-17-25" href="#__codelineno-17-25"></a><span class="n">merged</span> <span class="o">=</span> <span class="n">merge_pydantic_models</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">Invoice</span><span class="p">)</span>
 <a id="__codelineno-17-26" name="__codelineno-17-26" href="#__codelineno-17-26"></a>
-<a id="__codelineno-17-27" name="__codelineno-17-27" href="#__codelineno-17-27"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invoice: </span><span class="si">{</span><span class="n">merged</span><span class="o">.</span><span class="n">invoice_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-17-27" name="__codelineno-17-27" href="#__codelineno-17-27"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invoice: </span><span class="si">{</span><span class="n">merged</span><span class="o">.</span><span class="n">document_no</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-17-28" name="__codelineno-17-28" href="#__codelineno-17-28"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Issued by: </span><span class="si">{</span><span class="n">merged</span><span class="o">.</span><span class="n">issued_by</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-17-29" name="__codelineno-17-29" href="#__codelineno-17-29"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Line items: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">merged</span><span class="o">.</span><span class="n">line_items</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-17-30" name="__codelineno-17-30" href="#__codelineno-17-30"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total: $</span><span class="si">{</span><span class="n">merged</span><span class="o">.</span><span class="n">total</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -5510,7 +5510,7 @@ flowchart LR
 <a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
 <a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;contract.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Contract&quot;</span><span class="p">,</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Contract&quot;</span><span class="p">,</span>
 <a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>
 <a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>    <span class="c1"># Enable LLM consolidation</span>
 <a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
@@ -5593,9 +5593,9 @@ flowchart LR
 <p><strong>Data Preservation:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># Even if consolidation fails, you get partial data</span>
 <a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">models</span> <span class="o">=</span> <span class="p">[</span>
-<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="n">Invoice</span><span class="p">(</span><span class="n">invoice_number</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">),</span>  <span class="c1"># From chunk 1</span>
-<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>    <span class="n">Invoice</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">]),</span>          <span class="c1"># From chunk 2</span>
-<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>    <span class="n">Invoice</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>                  <span class="c1"># From chunk 3</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="n">BillingDocument</span><span class="p">(</span><span class="n">document_no</span><span class="o">=</span><span class="s2">&quot;INV-001&quot;</span><span class="p">),</span>  <span class="c1"># From chunk 1</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>    <span class="n">BillingDocument</span><span class="p">(</span><span class="n">line_items</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">]),</span>          <span class="c1"># From chunk 2</span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>    <span class="n">BillingDocument</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>                  <span class="c1"># From chunk 3</span>
 <a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="p">]</span>
 <a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>
 <a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="c1"># If merge fails, you still have all 3 partial models</span>
@@ -5616,7 +5616,7 @@ flowchart LR
 <p>Zero data loss is automatic - no configuration needed:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>    <span class="n">processing_mode</span><span class="o">=</span><span class="s2">&quot;many-to-one&quot;</span>
 <a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>    <span class="c1"># Zero data loss is always enabled</span>
 <a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="p">)</span>
@@ -5626,7 +5626,7 @@ flowchart LR
 <a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
 <a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>    <span class="n">processing_mode</span><span class="o">=</span><span class="s2">&quot;many-to-one&quot;</span>
 <a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="p">)</span>
 <a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>
@@ -5640,7 +5640,7 @@ flowchart LR
 <a id="__codelineno-26-16" name="__codelineno-26-16" href="#__codelineno-26-16"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠ Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial models&quot;</span><span class="p">)</span>
 <a id="__codelineno-26-17" name="__codelineno-26-17" href="#__codelineno-26-17"></a>    <span class="c1"># Still useful! Can manually merge or use as-is</span>
 <a id="__codelineno-26-18" name="__codelineno-26-18" href="#__codelineno-26-18"></a>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
-<a id="__codelineno-26-19" name="__codelineno-26-19" href="#__codelineno-26-19"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Model </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">invoice_number</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-26-19" name="__codelineno-26-19" href="#__codelineno-26-19"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Model </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">document_no</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <hr />
 <h2 id="conflict-resolution">Conflict Resolution<a class="headerlink" href="#conflict-resolution" title="Permanent link">&para;</a></h2>
@@ -5659,16 +5659,16 @@ flowchart LR
 <h4 id="2-conflicting-values">2. Conflicting Values<a class="headerlink" href="#2-conflicting-values" title="Permanent link">&para;</a></h4>
 <p><strong>Problem:</strong> Different values for same field</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># Chunk 1</span>
-<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
 <a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>
 <a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="c1"># Chunk 2</span>
-<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">275</span><span class="p">)</span>
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">275</span><span class="p">)</span>
 <a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>
 <a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="c1"># Programmatic: Last value wins</span>
-<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">275</span><span class="p">)</span>
+<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">275</span><span class="p">)</span>
 <a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>
 <a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a><span class="c1"># LLM: Intelligent resolution</span>
-<a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a><span class="n">Invoice</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">275</span><span class="p">)</span>  <span class="c1"># LLM chooses correct value</span>
+<a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a><span class="n">BillingDocument</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="mi">275</span><span class="p">)</span>  <span class="c1"># LLM chooses correct value</span>
 </code></pre></div>
 <h4 id="3-partial-information">3. Partial Information<a class="headerlink" href="#3-partial-information" title="Permanent link">&para;</a></h4>
 <p><strong>Problem:</strong> Information spread across chunks</p>
@@ -5753,7 +5753,7 @@ flowchart LR
 <td style="text-align: left;">+5%</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>Research paper</strong></td>
+<td style="text-align: left;"><strong>Rheology research</strong></td>
 <td style="text-align: left;">85%</td>
 <td style="text-align: left;">92%</td>
 <td style="text-align: left;">+7%</td>
@@ -5766,7 +5766,7 @@ flowchart LR
 <div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="c1"># ✅ Good - Fast and free</span>
 <a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>    <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># Default (90% accuracy)</span>
 <a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="p">)</span>
 </code></pre></div>
@@ -5774,7 +5774,7 @@ flowchart LR
 <div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="c1"># ✅ Good - Better accuracy for important documents</span>
 <a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;contract.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Contract&quot;</span><span class="p">,</span>
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Contract&quot;</span><span class="p">,</span>
 <a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
 <a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;llama3.1:8b&quot;</span><span class="p">,</span>  <span class="c1"># STANDARD tier</span>
@@ -5785,7 +5785,7 @@ flowchart LR
 <div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="c1"># ✅ Good - Highest accuracy for critical data</span>
 <a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;legal_contract.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.LegalContract&quot;</span><span class="p">,</span>
+<a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.LegalContract&quot;</span><span class="p">,</span>
 <a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
 <a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;remote&quot;</span><span class="p">,</span>
 <a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;gpt-4-turbo&quot;</span><span class="p">,</span>  <span class="c1"># ADVANCED tier</span>
@@ -5806,7 +5806,7 @@ flowchart LR
 <a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="n">merged</span> <span class="o">=</span> <span class="n">merge_pydantic_models</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
 <a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>
 <a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="c1"># Check completeness</span>
-<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">merged</span><span class="o">.</span><span class="n">invoice_number</span><span class="p">:</span>
+<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">merged</span><span class="o">.</span><span class="n">document_no</span><span class="p">:</span>
 <a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: Missing invoice number&quot;</span><span class="p">)</span>
 <a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>
 <a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a><span class="k">if</span> <span class="ow">not</span> <span class="n">merged</span><span class="o">.</span><span class="n">line_items</span><span class="p">:</span>
@@ -5839,7 +5839,7 @@ flowchart LR
 <a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>
 <a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a>    <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Better preservation</span>
 <a id="__codelineno-36-8" name="__codelineno-36-8" href="#__codelineno-36-8"></a><span class="p">)</span>
 </code></pre></div></p>
@@ -5860,7 +5860,7 @@ flowchart LR
 <div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="c1"># Disable LLM consolidation for speed</span>
 <a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>    <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">False</span>  <span class="c1"># Faster</span>
 <a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a><span class="p">)</span>
 </code></pre></div></p>

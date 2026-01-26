@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -3297,14 +3297,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3381,14 +3381,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4740,7 +4740,7 @@
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">export_format</span><span class="o">=</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span>  <span class="c1"># Generate Cypher script</span>
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;neo4j_import&quot;</span>
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">)</span>
@@ -4800,7 +4800,7 @@
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Extract and export</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="n">export_format</span><span class="o">=</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span>
 <a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;neo4j_import&quot;</span>
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="p">)</span>
@@ -4847,7 +4847,7 @@
 <h3 id="finding-nodes">Finding Nodes<a class="headerlink" href="#finding-nodes" title="Permanent link">&para;</a></h3>
 <h4 id="find-specific-node">Find Specific Node<a class="headerlink" href="#find-specific-node" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1">// Find invoice by number</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="w"> </span><span class="p">{</span><span class="n">invoice_number</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span><span class="p">})</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="w"> </span><span class="p">{</span><span class="n">document_no</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span><span class="p">})</span>
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span>
 <a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
 <a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1">// Find organization by name</span>
@@ -4856,7 +4856,7 @@
 </code></pre></div>
 <h4 id="find-all-of-type">Find All of Type<a class="headerlink" href="#find-all-of-type" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1">// Find all invoices</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span>
 <a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span>
 <a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="k">LIMIT</span><span class="w"> </span><span class="m">10</span>
 <a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
@@ -4868,37 +4868,37 @@
 <h3 id="relationship-queries">Relationship Queries<a class="headerlink" href="#relationship-queries" title="Permanent link">&para;</a></h3>
 <h4 id="direct-relationships">Direct Relationships<a class="headerlink" href="#direct-relationships" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1">// Find who issued an invoice</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="w"> </span><span class="p">{</span><span class="n">invoice_number</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span><span class="p">})</span><span class="o">-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">)</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">invoice_number</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">name</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="w"> </span><span class="p">{</span><span class="n">document_no</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span><span class="p">})</span><span class="o">-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">)</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">document_no</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">name</span>
 <a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
 <a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1">// Find all line items in an invoice</span>
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">CONTAINS_ITEM</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">item</span><span class="p">:</span><span class="n">LineItem</span><span class="p">)</span>
-<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">invoice_number</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">CONTAINS_LINE</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">item</span><span class="p">:</span><span class="n">LineItem</span><span class="p">)</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">document_no</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span>
 <a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">item</span><span class="p">.</span><span class="n">description</span><span class="p">,</span><span class="w"> </span><span class="n">item</span><span class="p">.</span><span class="n">total</span>
 </code></pre></div>
 <h4 id="multi-hop-relationships">Multi-Hop Relationships<a class="headerlink" href="#multi-hop-relationships" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1">// Find invoice -&gt; organization -&gt; address</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">LOCATED_AT</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Address</span><span class="p">)</span>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">invoice_number</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">LOCATED_AT</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Address</span><span class="p">)</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">document_no</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city</span>
 <a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
 <a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="c1">// Find all paths between two nodes</span>
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="k">MATCH</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="k">start</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="o">-[</span><span class="p">*..</span><span class="m">3</span><span class="o">]-</span><span class="p">(</span><span class="k">end</span><span class="p">:</span><span class="n">Address</span><span class="p">)</span>
-<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="k">WHERE</span><span class="w"> </span><span class="k">start</span><span class="p">.</span><span class="n">invoice_number</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="k">MATCH</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">(</span><span class="k">start</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="o">-[</span><span class="p">*..</span><span class="m">3</span><span class="o">]-</span><span class="p">(</span><span class="k">end</span><span class="p">:</span><span class="n">Address</span><span class="p">)</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="k">WHERE</span><span class="w"> </span><span class="k">start</span><span class="p">.</span><span class="n">document_no</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span>
 <a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">path</span>
 </code></pre></div>
 <hr />
 <h3 id="aggregation-queries">Aggregation Queries<a class="headerlink" href="#aggregation-queries" title="Permanent link">&para;</a></h3>
 <h4 id="sum-and-average">Sum and Average<a class="headerlink" href="#sum-and-average" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1">// Total invoice amount</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span>
 <a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">sum</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">total</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">total_amount</span>
 <a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
 <a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="c1">// Average invoice amount</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span>
 <a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">avg</span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">total</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">average_amount</span>
 <a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
 <a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="c1">// Count invoices per organization</span>
-<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-</span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-</span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span>
 <a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">invoice_count</span>
 <a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">invoice_count</span><span class="w"> </span><span class="k">DESC</span>
 </code></pre></div>
@@ -4906,15 +4906,15 @@
 <h3 id="pattern-matching">Pattern Matching<a class="headerlink" href="#pattern-matching" title="Permanent link">&para;</a></h3>
 <h4 id="complex-patterns">Complex Patterns<a class="headerlink" href="#complex-patterns" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1">// Find invoices with specific pattern</span>
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">),</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">),</span>
 <a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">      </span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">SENT_TO</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">c</span><span class="p">:</span><span class="n">Organization</span><span class="p">),</span>
-<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">      </span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">CONTAINS_ITEM</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">item</span><span class="p">:</span><span class="n">LineItem</span><span class="p">)</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">      </span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">CONTAINS_LINE</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">item</span><span class="p">:</span><span class="n">LineItem</span><span class="p">)</span>
 <a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">total</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="m">1000</span>
 <a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">o</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="k">collect</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">items</span>
 <a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>
 <a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="c1">// Find organizations that both issue and receive invoices</span>
-<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-</span><span class="p">(</span><span class="n">i1</span><span class="p">:</span><span class="n">Invoice</span><span class="p">),</span>
-<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">      </span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">SENT_TO</span><span class="o">]-</span><span class="p">(</span><span class="n">i2</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">ISSUED_BY</span><span class="o">]-</span><span class="p">(</span><span class="n">i1</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">),</span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">      </span><span class="p">(</span><span class="n">o</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">SENT_TO</span><span class="o">]-</span><span class="p">(</span><span class="n">i2</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span>
 <a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">i1</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">issued</span><span class="p">,</span><span class="w"> </span><span class="n">count</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">i2</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">received</span>
 </code></pre></div>
 <hr />
@@ -4926,7 +4926,7 @@
 <a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># 1. Extract and export</span>
 <a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;invoices.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>    <span class="n">export_format</span><span class="o">=</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span>
 <a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>    <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;neo4j_data&quot;</span>
 <a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="p">)</span>
@@ -4948,14 +4948,14 @@
 <a id="__codelineno-16-26" name="__codelineno-16-26" href="#__codelineno-16-26"></a><span class="c1"># 3. Query</span>
 <a id="__codelineno-16-27" name="__codelineno-16-27" href="#__codelineno-16-27"></a><span class="k">with</span> <span class="n">driver</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
 <a id="__codelineno-16-28" name="__codelineno-16-28" href="#__codelineno-16-28"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<a id="__codelineno-16-29" name="__codelineno-16-29" href="#__codelineno-16-29"></a><span class="s2">        MATCH (i:Invoice)</span>
-<a id="__codelineno-16-30" name="__codelineno-16-30" href="#__codelineno-16-30"></a><span class="s2">        RETURN i.invoice_number, i.total</span>
+<a id="__codelineno-16-29" name="__codelineno-16-29" href="#__codelineno-16-29"></a><span class="s2">        MATCH (i:BillingDocument)</span>
+<a id="__codelineno-16-30" name="__codelineno-16-30" href="#__codelineno-16-30"></a><span class="s2">        RETURN i.document_no, i.total</span>
 <a id="__codelineno-16-31" name="__codelineno-16-31" href="#__codelineno-16-31"></a><span class="s2">        ORDER BY i.total DESC</span>
 <a id="__codelineno-16-32" name="__codelineno-16-32" href="#__codelineno-16-32"></a><span class="s2">        LIMIT 5</span>
 <a id="__codelineno-16-33" name="__codelineno-16-33" href="#__codelineno-16-33"></a><span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
 <a id="__codelineno-16-34" name="__codelineno-16-34" href="#__codelineno-16-34"></a>
 <a id="__codelineno-16-35" name="__codelineno-16-35" href="#__codelineno-16-35"></a>    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-<a id="__codelineno-16-36" name="__codelineno-16-36" href="#__codelineno-16-36"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">record</span><span class="p">[</span><span class="s1">&#39;i.invoice_number&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: $</span><span class="si">{</span><span class="n">record</span><span class="p">[</span><span class="s1">&#39;i.total&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-16-36" name="__codelineno-16-36" href="#__codelineno-16-36"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">record</span><span class="p">[</span><span class="s1">&#39;i.document_no&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: $</span><span class="si">{</span><span class="n">record</span><span class="p">[</span><span class="s1">&#39;i.total&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-16-37" name="__codelineno-16-37" href="#__codelineno-16-37"></a>
 <a id="__codelineno-16-38" name="__codelineno-16-38" href="#__codelineno-16-38"></a><span class="n">driver</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </code></pre></div>
@@ -4971,7 +4971,7 @@
 <a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>    <span class="c1"># Extract</span>
 <a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>        <span class="n">source</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pdf_file</span><span class="p">),</span>
-<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;my_templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>        <span class="n">export_format</span><span class="o">=</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span>
 <a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>        <span class="n">output_dir</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;neo4j_batch/</span><span class="si">{</span><span class="n">pdf_file</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">&quot;</span>
 <a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>    <span class="p">)</span>
@@ -5002,8 +5002,8 @@
 <a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="c1"># Query</span>
 <a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="k">with</span> <span class="n">driver</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
 <a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="s2">        MATCH (i:Invoice)-[:ISSUED_BY]-&gt;(o:Organization)</span>
-<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="s2">        RETURN i.invoice_number as invoice,</span>
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="s2">        MATCH (i:BillingDocument)-[:ISSUED_BY]-&gt;(o:Organization)</span>
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="s2">        RETURN i.document_no as invoice,</span>
 <a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="s2">               o.name as organization,</span>
 <a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a><span class="s2">               i.total as amount</span>
 <a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="s2">        ORDER BY i.total DESC</span>
@@ -5031,7 +5031,7 @@
 </code></pre></div>
 <h3 id="create-indexes">👍 Create Indexes<a class="headerlink" href="#create-indexes" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1">// Create index on invoice number</span>
-<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">invoice_number_idx</span><span class="w"> </span><span class="n">FOR</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="w"> </span><span class="n">ON</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">invoice_number</span><span class="p">)</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">document_no_idx</span><span class="w"> </span><span class="n">FOR</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="w"> </span><span class="n">ON</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">document_no</span><span class="p">)</span>
 <a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
 <a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1">// Create index on organization name</span>
 <a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">org_name_idx</span><span class="w"> </span><span class="n">FOR</span><span class="w"> </span><span class="p">(</span><span class="n">o</span><span class="p">:</span><span class="n">Organization</span><span class="p">)</span><span class="w"> </span><span class="n">ON</span><span class="w"> </span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
@@ -5041,10 +5041,10 @@
 </code></pre></div>
 <h3 id="use-constraints">👍 Use Constraints<a class="headerlink" href="#use-constraints" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1">// Unique constraint on invoice number</span>
-<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">CONSTRAINT</span><span class="w"> </span><span class="n">invoice_unique</span><span class="w"> </span><span class="n">FOR</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="w"> </span><span class="n">REQUIRE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">invoice_number</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">UNIQUE</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">CONSTRAINT</span><span class="w"> </span><span class="n">invoice_unique</span><span class="w"> </span><span class="n">FOR</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="w"> </span><span class="n">REQUIRE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">document_no</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">UNIQUE</span>
 <a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
 <a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1">// Existence constraint</span>
-<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">CONSTRAINT</span><span class="w"> </span><span class="n">invoice_number_exists</span><span class="w"> </span><span class="n">FOR</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="w"> </span><span class="n">REQUIRE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">invoice_number</span><span class="w"> </span><span class="n">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">CONSTRAINT</span><span class="w"> </span><span class="n">document_no_exists</span><span class="w"> </span><span class="n">FOR</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="w"> </span><span class="n">REQUIRE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">document_no</span><span class="w"> </span><span class="n">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
 </code></pre></div>
 <h3 id="batch-imports">👍 Batch Imports<a class="headerlink" href="#batch-imports" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># ✅ Good - Import in batches</span>
@@ -5101,20 +5101,20 @@
 <h3 id="slow-queries">🐛 Slow Queries<a class="headerlink" href="#slow-queries" title="Permanent link">&para;</a></h3>
 <p><strong>Solution:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1">// Create indexes</span>
-<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">FOR</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="w"> </span><span class="n">ON</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">invoice_number</span><span class="p">)</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">FOR</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="w"> </span><span class="n">ON</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">.</span><span class="n">document_no</span><span class="p">)</span>
 <a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
 <a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="c1">// Use EXPLAIN to analyze</span>
-<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="n">EXPLAIN</span><span class="w"> </span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">total</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="m">1000</span><span class="w"> </span><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span>
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="n">EXPLAIN</span><span class="w"> </span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">total</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="m">1000</span><span class="w"> </span><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span>
 <a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>
 <a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="c1">// Use PROFILE for detailed analysis</span>
-<a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a><span class="n">PROFILE</span><span class="w"> </span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">Invoice</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">total</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="m">1000</span><span class="w"> </span><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span>
+<a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a><span class="n">PROFILE</span><span class="w"> </span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">:</span><span class="n">BillingDocument</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">total</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="m">1000</span><span class="w"> </span><span class="k">RETURN</span><span class="w"> </span><span class="n">i</span>
 </code></pre></div></p>
 <hr />
 <h2 id="advanced-topics">Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permanent link">&para;</a></h2>
 <h3 id="graph-algorithms">Graph Algorithms<a class="headerlink" href="#graph-algorithms" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1">// Find shortest path</span>
 <a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="k">MATCH</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">shortestPath</span><span class="p">(</span>
-<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="w">    </span><span class="p">(</span><span class="k">start</span><span class="p">:</span><span class="n">Invoice</span><span class="w"> </span><span class="p">{</span><span class="n">invoice_number</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span><span class="p">})</span><span class="o">-[</span><span class="p">*</span><span class="o">]-</span><span class="p">(</span><span class="k">end</span><span class="p">:</span><span class="n">Address</span><span class="p">)</span>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="w">    </span><span class="p">(</span><span class="k">start</span><span class="p">:</span><span class="n">BillingDocument</span><span class="w"> </span><span class="p">{</span><span class="n">document_no</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;INV-001&quot;</span><span class="p">})</span><span class="o">-[</span><span class="p">*</span><span class="o">]-</span><span class="p">(</span><span class="k">end</span><span class="p">:</span><span class="n">Address</span><span class="p">)</span>
 <a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="p">)</span>
 <a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="k">RETURN</span><span class="w"> </span><span class="n">path</span>
 <a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>

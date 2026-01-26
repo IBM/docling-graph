@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -3258,14 +3258,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3342,14 +3342,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4725,7 +4725,7 @@
 <a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="c1"># Then use direct commands</span>
 <a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>docling-graph<span class="w"> </span>--version
 <a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>docling-graph<span class="w"> </span>init
-<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span>--template<span class="w"> </span><span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span>--template<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span>
 <a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>docling-graph<span class="w"> </span>inspect<span class="w"> </span>outputs
 </code></pre></div>
 <h3 id="incorrect-usage-will-not-work">Incorrect Usage (will not work)<a class="headerlink" href="#incorrect-usage-will-not-work" title="Permanent link">&para;</a></h3>
@@ -4755,7 +4755,7 @@
 <a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>
 <a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="c1"># In another terminal, run extraction</span>
 <a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.Invoice&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="w">    </span>--backend<span class="w"> </span>llm<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="w">    </span>--inference<span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="w">    </span>--provider<span class="w"> </span>vllm
@@ -4864,7 +4864,7 @@
 <li>
 <p><strong>Enable chunking</strong>:
    <div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.Invoice&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="w">    </span>--use-chunking
 </code></pre></div></p>
 </li>

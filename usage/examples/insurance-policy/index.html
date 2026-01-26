@@ -18,7 +18,7 @@
         <link rel="prev" href="../id-card/">
       
       
-        <link rel="next" href="../research-paper/">
+        <link rel="next" href="../rheology_research/">
       
       
         
@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -2787,14 +2787,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../invoice-extraction/" class="md-nav__link">
+      <a href="../billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3297,14 +3297,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../research-paper/" class="md-nav__link">
+      <a href="../rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4904,7 +4904,7 @@
 <hr />
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="coverage-not-extracted">🐛 Coverage Not Extracted<a class="headerlink" href="#coverage-not-extracted" title="Permanent link">&para;</a></h3>
-<p><strong>🐛</strong> Coverage list is empty</p>
+<p>Coverage list is empty</p>
 <p><strong>Solution:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Make coverages optional and add clear examples</span>
 <a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">coverages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Coverage</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span>
@@ -4920,7 +4920,7 @@
 <a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="p">)</span>
 </code></pre></div></p>
 <h3 id="amounts-not-parsed">🐛 Amounts Not Parsed<a class="headerlink" href="#amounts-not-parsed" title="Permanent link">&para;</a></h3>
-<p><strong>🐛</strong> MonetaryAmount fields are None</p>
+<p>MonetaryAmount fields are None</p>
 <p><strong>Solution:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Add validator to parse currency strings</span>
 <a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
@@ -4940,7 +4940,7 @@
 <a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>        <span class="k">return</span> <span class="n">v</span>
 </code></pre></div></p>
 <h3 id="dates-not-recognized">🐛 Dates Not Recognized<a class="headerlink" href="#dates-not-recognized" title="Permanent link">&para;</a></h3>
-<p><strong>🐛</strong> Date fields are None</p>
+<p>Date fields are None</p>
 <p><strong>Solution:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Add multiple date format examples</span>
 <a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">effective_period</span><span class="p">:</span> <span class="n">DateRange</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>

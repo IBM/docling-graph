@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://ibm.github.io/docling-graph/introduction/key-concepts/">
       
       
-        <link rel="prev" href="../">
+        <link rel="prev" href="../architecture/">
       
       
-        <link rel="next" href="../architecture/">
+        <link rel="next" href="../use-cases/">
       
       
         
@@ -509,6 +509,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -932,34 +960,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -3182,14 +3182,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3266,14 +3266,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4460,10 +4460,6 @@
 
 
 <h1 id="key-concepts">Key Concepts<a class="headerlink" href="#key-concepts" title="Permanent link">&para;</a></h1>
-<p><strong>Pipeline Stage</strong>: 1 - Introduction &amp; Concepts</p>
-<p><strong>Prerequisites</strong>: 
-- <a href="../">Introduction</a></p>
-<p>This page explains the fundamental concepts you need to understand before using Docling Graph.</p>
 <h2 id="core-terminology">Core Terminology<a class="headerlink" href="#core-terminology" title="Permanent link">&para;</a></h2>
 <h3 id="entity">Entity<a class="headerlink" href="#entity" title="Permanent link">&para;</a></h3>
 <p>An <strong>entity</strong> is a unique, identifiable object that you want to track individually in your knowledge graph.</p>
@@ -4529,7 +4525,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Document_INV001
 <a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  ├─ ISSUED_BY → Organization_AcmeCorp
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  ├─ SENT_TO → Person_JohnDoe
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  └─ CONTAINS_ITEM → LineItem_001
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  └─ CONTAINS_LINE → LineItem_001
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>      └─ HAS_PRODUCT → Product_Widget
 </code></pre></div></p>
 <h2 id="pydantic-templates">Pydantic Templates<a class="headerlink" href="#pydantic-templates" title="Permanent link">&para;</a></h2>
@@ -4602,7 +4598,7 @@
 <h3 id="llm-large-language-model">LLM (Large Language Model)<a class="headerlink" href="#llm-large-language-model" title="Permanent link">&para;</a></h3>
 <p><strong>What</strong>: Uses language models to extract data from markdown/text representations.</p>
 <p><strong>Best For</strong>:
-- Complex narratives (research papers, reports)
+- Complex narratives (rheology researchs, reports)
 - Large documents (5+ pages)
 - Documents requiring deep understanding</p>
 <p><strong>Characteristics</strong>:
@@ -4629,7 +4625,7 @@
 - Information flows across pages
 - You want a document-level view</p>
 <p><strong>Example</strong>:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>10-page research paper
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>10-page rheology research
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>→ 1 merged ResearchPaper model
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>→ 1 unified graph
 </code></pre></div></p>

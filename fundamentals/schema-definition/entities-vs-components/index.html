@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -1321,10 +1321,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#research-paper" class="md-nav__link">
+  <a href="#rheology-research" class="md-nav__link">
     <span class="md-ellipsis">
       
-        📍 Research Paper
+        📍 Rheology Research
       
     </span>
   </a>
@@ -3247,14 +3247,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3331,14 +3331,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4378,10 +4378,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#research-paper" class="md-nav__link">
+  <a href="#rheology-research" class="md-nav__link">
     <span class="md-ellipsis">
       
-        📍 Research Paper
+        📍 Rheology Research
       
     </span>
   </a>
@@ -4750,14 +4750,14 @@
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>→ Same node (same ID fields, email difference ignored)
 </code></pre></div></p>
 <h4 id="document-entity">📍 Document Entity<a class="headerlink" href="#document-entity" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="sd">    Invoice document entity.</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="sd">    BillingDocument document entity.</span>
 <a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="sd">    Uniquely identified by invoice number.</span>
 <a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">])</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">])</span>
 <a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
 <a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>        <span class="o">...</span><span class="p">,</span>
 <a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Unique invoice identifier&quot;</span><span class="p">,</span>
 <a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>        <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;INV-2024-001&quot;</span><span class="p">,</span> <span class="s2">&quot;12345&quot;</span><span class="p">]</span>
@@ -4767,7 +4767,7 @@
 <a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>    <span class="n">total</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 <a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>
 <a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Invoice </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">invoice_number</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Invoice </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">document_no</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div>
 <hr />
 <h2 id="components-value-objects">Components: Value Objects<a class="headerlink" href="#components-value-objects" title="Permanent link">&para;</a></h2>
@@ -4967,10 +4967,10 @@ flowchart TD
 <hr />
 <h2 id="real-world-examples">Real-World Examples<a class="headerlink" href="#real-world-examples" title="Permanent link">&para;</a></h2>
 <h3 id="invoice-processing">📍 Invoice Processing<a class="headerlink" href="#invoice-processing" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># ENTITY: Invoice (unique document)</span>
-<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">])</span>
-<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    <span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># ENTITY: BillingDocument (unique document)</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">])</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    <span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="c1"># Each invoice is unique</span>
 <a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
 <a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="c1"># ENTITY: Organization (unique company)</span>
@@ -4994,11 +4994,11 @@ flowchart TD
 <a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a>    <span class="c1"># Multiple invoices can have the same amount</span>
 </code></pre></div>
 <p><strong>Graph Structure:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>Invoice-001 --ISSUED_BY--&gt; Acme Corp --LOCATED_AT--&gt; Address(123 Main St, Paris)
-<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>Invoice-002 --ISSUED_BY--&gt; Tech Ltd --LOCATED_AT--&gt; Address(123 Main St, Paris)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>BillingDocument-001 --ISSUED_BY--&gt; Acme Corp --LOCATED_AT--&gt; Address(123 Main St, Paris)
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>BillingDocument-002 --ISSUED_BY--&gt; Tech Ltd --LOCATED_AT--&gt; Address(123 Main St, Paris)
 <a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>                                                      ↑ Same address node shared
 </code></pre></div></p>
-<h3 id="research-paper">📍 Research Paper<a class="headerlink" href="#research-paper" title="Permanent link">&para;</a></h3>
+<h3 id="rheology-research">📍 Rheology Research<a class="headerlink" href="#rheology-research" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># ENTITY: Research (unique paper)</span>
 <a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Research</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">])</span>
@@ -5093,14 +5093,17 @@ flowchart TD
 <a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>    <span class="n">quantity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>    <span class="n">unit_price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>
-<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Entity - unique invoice.&quot;&quot;&quot;</span>
-<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">])</span>
+<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">])</span>
 <a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a>    <span class="c1"># ...</span>
 <a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a>    <span class="c1"># Use regular Field, not edge() - these are embedded</span>
 <a id="__codelineno-27-13" name="__codelineno-27-13" href="#__codelineno-27-13"></a>    <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LineItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 </code></pre></div>
-<p><strong>Note:</strong> If you want line items as nodes, use <code>edge()</code> and decide if they're entities or components.</p>
+<div class="admonition note">
+<p class="admonition-title">Line items as nodes</p>
+<p>If you want line items as nodes, use edge() and decide if they're entities or components.</p>
+</div>
 <hr />
 <h2 id="common-mistakes">Common Mistakes<a class="headerlink" href="#common-mistakes" title="Permanent link">&para;</a></h2>
 <h3 id="making-everything-an-entity">❌ Making Everything an Entity<a class="headerlink" href="#making-everything-an-entity" title="Permanent link">&para;</a></h3>

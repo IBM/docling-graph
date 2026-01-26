@@ -66,7 +66,7 @@ class SimpleDocument(BaseModel):
     model_config = {"is_entity": True, "graph_id_fields": ["title"]}
 
     title: str = Field(
-        description="Document title", examples=["Research Paper", "Technical Report"]
+        description="Document title", examples=["Rheology Research", "Technical Report"]
     )
     summary: str = Field(
         description="Brief summary of the document", examples=["This paper discusses..."]
@@ -260,5 +260,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-# Made with Bob

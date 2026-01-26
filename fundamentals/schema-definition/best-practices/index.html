@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -3362,14 +3362,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3446,14 +3446,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -5014,11 +5014,11 @@
 </code></pre></div>
 <h3 id="missing-default_factory-for-lists">❌ Missing default_factory for Lists<a class="headerlink" href="#missing-default_factory-for-lists" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># WRONG</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">)</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># CORRECT</span>
 <a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">,</span>
 <a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span>
 <a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="p">)</span>
 </code></pre></div>
@@ -5053,7 +5053,7 @@
 <a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="c1"># CORRECT - Consistent ALL_CAPS_WITH_UNDERSCORES</span>
 <a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="n">issued_by</span><span class="p">:</span> <span class="n">Org</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;ISSUED_BY&quot;</span><span class="p">)</span>
 <a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="n">sent_to</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;SENT_TO&quot;</span><span class="p">)</span>
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="n">has_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="n">has_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="wrong-entitycomponent-classification">❌ Wrong Entity/Component Classification<a class="headerlink" href="#wrong-entitycomponent-classification" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># WRONG - Address as entity (creates duplicate nodes)</span>
@@ -5093,8 +5093,8 @@
 <h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
 <h3 id="1-keep-templates-focused">1. Keep Templates Focused<a class="headerlink" href="#1-keep-templates-focused" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># ✅ Good - Focused template</span>
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Invoice document.&quot;&quot;&quot;</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;BillingDocument document.&quot;&quot;&quot;</span>
 <a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>    <span class="c1"># Only invoice-related fields</span>
 <a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>
 <a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="c1"># ❌ Bad - Kitchen sink template</span>
@@ -5131,7 +5131,7 @@
 <h2 id="maintenance-tips">Maintenance Tips<a class="headerlink" href="#maintenance-tips" title="Permanent link">&para;</a></h2>
 <h3 id="1-version-your-templates">1. Version Your Templates<a class="headerlink" href="#1-version-your-templates" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="sd">Invoice extraction template.</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="sd">BillingDocument extraction template.</span>
 <a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
 <a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="sd">Version: 2.0.0</span>
 <a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="sd">Last Updated: 2024-01-15</span>
@@ -5144,21 +5144,21 @@
 <h3 id="2-document-breaking-changes">2. Document Breaking Changes<a class="headerlink" href="#2-document-breaking-changes" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="sd">BREAKING CHANGES in v2.0.0:</span>
-<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="sd">- Renamed &#39;bill_no&#39; to &#39;invoice_number&#39;</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="sd">- Renamed &#39;bill_no&#39; to &#39;document_no&#39;</span>
 <a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="sd">- Changed &#39;date&#39; from str to date type</span>
 <a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="sd">- Removed deprecated &#39;legacy_field&#39;</span>
 <a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="sd">&quot;&quot;&quot;</span>
 </code></pre></div>
 <h3 id="3-keep-examples-updated">3. Keep Examples Updated<a class="headerlink" href="#3-keep-examples-updated" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># ✅ Good - Current examples</span>
-<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
 <a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>    <span class="o">...</span><span class="p">,</span>
 <a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Unique invoice identifier&quot;</span><span class="p">,</span>
 <a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>    <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;INV-2024-001&quot;</span><span class="p">,</span> <span class="s2">&quot;2024-INV-12345&quot;</span><span class="p">]</span>  <span class="c1"># Current format</span>
 <a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="p">)</span>
 <a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
 <a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="c1"># ❌ Bad - Outdated examples</span>
-<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
 <a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>    <span class="o">...</span><span class="p">,</span>
 <a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Unique invoice identifier&quot;</span><span class="p">,</span>
 <a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>    <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;INV-2020-001&quot;</span><span class="p">,</span> <span class="s2">&quot;2020-INV-12345&quot;</span><span class="p">]</span>  <span class="c1"># Old format</span>
@@ -5169,7 +5169,7 @@
 <a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="sd">Migration from v1.x to v2.0:</span>
 <a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
 <a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="sd">1. Rename fields:</span>
-<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="sd">   - bill_no → invoice_number</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="sd">   - bill_no → document_no</span>
 <a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="sd">   - client → sent_to</span>
 <a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>
 <a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="sd">2. Update types:</span>
@@ -5283,9 +5283,9 @@
 </ul>
 <h3 id="example-templates">Example Templates<a class="headerlink" href="#example-templates" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Invoice Template</strong> - <code>docs/examples/templates/invoice.py</code></li>
+<li><strong>Invoice Template</strong> - <code>docs/examples/templates/billing_document.py</code></li>
 <li><strong>ID Card Template</strong> - <code>docs/examples/templates/id_card.py</code></li>
-<li><strong>Research Paper Template</strong> - <code>docs/examples/templates/rheology_research.py</code></li>
+<li><strong>Rheology Research Template</strong> - <code>docs/examples/templates/rheology_research.py</code></li>
 <li><strong>Insurance Template</strong> - <code>docs/examples/templates/insurance.py</code></li>
 </ul>
 <h3 id="community">Community<a class="headerlink" href="#community" title="Permanent link">&para;</a></h3>

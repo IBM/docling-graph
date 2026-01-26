@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -2787,14 +2787,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -2871,14 +2871,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/research-paper/" class="md-nav__link">
+      <a href="../../examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4913,7 +4913,7 @@
 <a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>
 <a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
 <a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="k">def</span><span class="w"> </span><span class="nf">research_paper_pdf</span><span class="p">():</span>
-<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Path to sample research paper.&quot;&quot;&quot;</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Path to sample rheology research.&quot;&quot;&quot;</span>
 <a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/fixtures/sample_paper.pdf&quot;</span><span class="p">)</span>
 <a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>
 <a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_invoice_extraction</span><span class="p">(</span><span class="n">invoice_pdf</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">):</span>
@@ -4923,7 +4923,7 @@
 <a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>
 <a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>        <span class="n">source</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">invoice_pdf</span><span class="p">),</span>
-<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>        <span class="n">output_dir</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">)</span>
 <a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>    <span class="p">)</span>
 <a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>
@@ -4939,7 +4939,7 @@
 <a id="__codelineno-8-37" name="__codelineno-8-37" href="#__codelineno-8-37"></a>    <span class="k">assert</span> <span class="s2">&quot;LineItem&quot;</span> <span class="ow">in</span> <span class="n">content</span>
 <a id="__codelineno-8-38" name="__codelineno-8-38" href="#__codelineno-8-38"></a>
 <a id="__codelineno-8-39" name="__codelineno-8-39" href="#__codelineno-8-39"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_research_paper_extraction</span><span class="p">(</span><span class="n">research_paper_pdf</span><span class="p">,</span> <span class="n">tmp_path</span><span class="p">):</span>
-<a id="__codelineno-8-40" name="__codelineno-8-40" href="#__codelineno-8-40"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test research paper extraction.&quot;&quot;&quot;</span>
+<a id="__codelineno-8-40" name="__codelineno-8-40" href="#__codelineno-8-40"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test rheology research extraction.&quot;&quot;&quot;</span>
 <a id="__codelineno-8-41" name="__codelineno-8-41" href="#__codelineno-8-41"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">research_paper_pdf</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
 <a id="__codelineno-8-42" name="__codelineno-8-42" href="#__codelineno-8-42"></a>        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;Sample paper not available&quot;</span><span class="p">)</span>
 <a id="__codelineno-8-43" name="__codelineno-8-43" href="#__codelineno-8-43"></a>

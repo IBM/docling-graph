@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../introduction/architecture/" class="md-nav__link">
+      <a href="../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -1055,10 +1055,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#issue-uv-not-found" class="md-nav__link">
+  <a href="#uv-not-found" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Issue: uv not found
+        🐛 uv not found
       
     </span>
   </a>
@@ -1066,10 +1066,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#issue-python-version-mismatch" class="md-nav__link">
+  <a href="#python-version-mismatch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Issue: Python version mismatch
+        🐛 Python version mismatch
       
     </span>
   </a>
@@ -1077,10 +1077,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#issue-import-errors-after-installation" class="md-nav__link">
+  <a href="#import-errors-after-installation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Issue: Import errors after installation
+        🐛 Import errors after installation
       
     </span>
   </a>
@@ -1088,10 +1088,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#issue-gpu-not-detected" class="md-nav__link">
+  <a href="#gpu-not-detected" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Issue: GPU not detected
+        🐛 GPU not detected
       
     </span>
   </a>
@@ -3158,14 +3158,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3242,14 +3242,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4284,10 +4284,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#issue-uv-not-found" class="md-nav__link">
+  <a href="#uv-not-found" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Issue: uv not found
+        🐛 uv not found
       
     </span>
   </a>
@@ -4295,10 +4295,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#issue-python-version-mismatch" class="md-nav__link">
+  <a href="#python-version-mismatch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Issue: Python version mismatch
+        🐛 Python version mismatch
       
     </span>
   </a>
@@ -4306,10 +4306,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#issue-import-errors-after-installation" class="md-nav__link">
+  <a href="#import-errors-after-installation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Issue: Import errors after installation
+        🐛 Import errors after installation
       
     </span>
   </a>
@@ -4317,10 +4317,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#issue-gpu-not-detected" class="md-nav__link">
+  <a href="#gpu-not-detected" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Issue: GPU not detected
+        🐛 GPU not detected
       
     </span>
   </a>
@@ -4397,10 +4397,6 @@
 
 
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
-<p><strong>Pipeline Stage</strong>: 2 - Installation</p>
-<p><strong>Prerequisites</strong>: 
-- <a href="../../introduction/">Introduction</a></p>
-<p>This section guides you through setting up Docling Graph on your system.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Docling Graph uses <strong>uv</strong> as the package manager for fast, reliable dependency management. All installation and execution commands use <code>uv</code> exclusively.</p>
 <h3 id="what-youll-install">What You'll Install<a class="headerlink" href="#what-youll-install" title="Permanent link">&para;</a></h3>
@@ -4420,11 +4416,13 @@
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Install core dependencies</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>uv<span class="w"> </span>sync
 </code></pre></div>
-<p>This installs:
-<br>✅ Docling (document conversion)
-<br>✅ VLM backend (NuExtract models)
-<br>✅ Core graph functionality
-<br>❌ LLM providers (not included)</p>
+<p>This installs:</p>
+<ul>
+<li>✅ Docling (document conversion)</li>
+<li>✅ VLM backend (NuExtract models)</li>
+<li>✅ Core graph functionality</li>
+<li>❌ LLM providers (not included)</li>
+</ul>
 <h3 id="full-installation">Full Installation<a class="headerlink" href="#full-installation" title="Permanent link">&para;</a></h3>
 <p>For all features (VLM + all LLM providers):</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Clone repository</span>
@@ -4434,14 +4432,16 @@
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># Install all dependencies</span>
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>uv<span class="w"> </span>sync<span class="w"> </span>--extra<span class="w"> </span>all
 </code></pre></div>
-<p>This installs:
-<br>✅ Everything from minimal
-<br>✅ vLLM (local LLM inference)
-<br>✅ Ollama client
-<br>✅ Mistral AI client
-<br>✅ OpenAI client
-<br>✅ Google Gemini client
-<br>✅ IBM WatsonX client</p>
+<p>This installs:</p>
+<ul>
+<li>✅ Everything from minimal</li>
+<li>✅ vLLM (local LLM inference)</li>
+<li>✅ Ollama client</li>
+<li>✅ Mistral AI client</li>
+<li>✅ OpenAI client</li>
+<li>✅ Google Gemini client</li>
+<li>✅ IBM WatsonX client</li>
+</ul>
 <h2 id="installation-options">Installation Options<a class="headerlink" href="#installation-options" title="Permanent link">&para;</a></h2>
 <h3 id="by-feature-set">By Feature Set<a class="headerlink" href="#by-feature-set" title="Permanent link">&para;</a></h3>
 <p>Choose the installation that matches your needs:</p>
@@ -4554,7 +4554,7 @@
 <li><strong><a href="../schema-definition/">Define Schema</a></strong> - Create your first Pydantic template</li>
 </ol>
 <h2 id="common-issues">Common Issues<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h2>
-<h3 id="issue-uv-not-found">Issue: <code>uv</code> not found<a class="headerlink" href="#issue-uv-not-found" title="Permanent link">&para;</a></h3>
+<h3 id="uv-not-found">🐛 <code>uv</code> not found<a class="headerlink" href="#uv-not-found" title="Permanent link">&para;</a></h3>
 <p><strong>Solution</strong>: Install uv first:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Linux/macOS</span>
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
@@ -4565,12 +4565,12 @@
 <a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Or with pip</span>
 <a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>pip<span class="w"> </span>install<span class="w"> </span>uv
 </code></pre></div>
-<h3 id="issue-python-version-mismatch">Issue: Python version mismatch<a class="headerlink" href="#issue-python-version-mismatch" title="Permanent link">&para;</a></h3>
+<h3 id="python-version-mismatch">🐛 Python version mismatch<a class="headerlink" href="#python-version-mismatch" title="Permanent link">&para;</a></h3>
 <p><strong>Solution</strong>: Specify Python version:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>uv<span class="w"> </span>python<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.10
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>uv<span class="w"> </span>sync
 </code></pre></div>
-<h3 id="issue-import-errors-after-installation">Issue: Import errors after installation<a class="headerlink" href="#issue-import-errors-after-installation" title="Permanent link">&para;</a></h3>
+<h3 id="import-errors-after-installation">🐛 Import errors after installation<a class="headerlink" href="#import-errors-after-installation" title="Permanent link">&para;</a></h3>
 <p><strong>Solution</strong>: Ensure you're using <code>uv run</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Wrong</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>python<span class="w"> </span>script.py
@@ -4578,7 +4578,7 @@
 <a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># Correct</span>
 <a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>script.py
 </code></pre></div>
-<h3 id="issue-gpu-not-detected">Issue: GPU not detected<a class="headerlink" href="#issue-gpu-not-detected" title="Permanent link">&para;</a></h3>
+<h3 id="gpu-not-detected">🐛 GPU not detected<a class="headerlink" href="#gpu-not-detected" title="Permanent link">&para;</a></h3>
 <p><strong>Solution</strong>: See <a href="gpu-setup/">GPU Setup Guide</a></p>
 <h2 id="performance-notes">Performance Notes<a class="headerlink" href="#performance-notes" title="Permanent link">&para;</a></h2>
 <p><strong>New in v1.2.0</strong>: Significant CLI performance improvements:</p>

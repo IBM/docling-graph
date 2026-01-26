@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -1437,10 +1437,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#complete-example-invoice-template" class="md-nav__link">
+  <a href="#complete-example-billingdocument-template" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Complete Example: Invoice Template
+        Complete Example: BillingDocument Template
       
     </span>
   </a>
@@ -3263,14 +3263,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3347,14 +3347,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4454,10 +4454,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#complete-example-invoice-template" class="md-nav__link">
+  <a href="#complete-example-billingdocument-template" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Complete Example: Invoice Template
+        Complete Example: BillingDocument Template
       
     </span>
   </a>
@@ -4607,6 +4607,11 @@
 
 
 <h1 id="relationships-edge-definitions">Relationships: Edge Definitions<a class="headerlink" href="#relationships-edge-definitions" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Note</strong>: The examples in this document use simplified field names and structures for teaching purposes. 
+The actual <code>BillingDocument</code> schema at <code>docs/examples/templates/billing_document.py</code> is more comprehensive 
+with 30+ classes, EN 16931/Peppol BIS compliance, and uses <code>CONTAINS_LINE</code> for line items.</p>
+</blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Relationships (edges) connect nodes in your knowledge graph. The <code>edge()</code> helper function marks fields as graph relationships and defines their labels. Well-designed edges create meaningful, queryable graph structures.</p>
 <p><strong>In this guide:</strong>
@@ -4639,7 +4644,7 @@
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
 <a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># Required list relationship (one-to-many)</span>
 <a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="n">contains_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LineItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">,</span>
 <a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>  <span class="c1"># REQUIRED for lists</span>
 <a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Line items contained in this document&quot;</span>
 <a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="p">)</span>
@@ -4668,7 +4673,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># ✅ Good - Clear, descriptive, consistent</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">issued_by</span><span class="p">:</span> <span class="n">Organization</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;ISSUED_BY&quot;</span><span class="p">)</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">sent_to</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;SENT_TO&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">contains_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">contains_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">)</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">located_at</span><span class="p">:</span> <span class="n">Address</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;LOCATED_AT&quot;</span><span class="p">)</span>
 <a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># ❌ Bad - Inconsistent, vague</span>
@@ -4716,7 +4721,7 @@
 </code></pre></div>
 <h3 id="composition-containment">Composition &amp; Containment<a class="headerlink" href="#composition-containment" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Document structure</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">contains_item</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LineItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">contains_item</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LineItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">)</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">has_component</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Component</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;HAS_COMPONENT&quot;</span><span class="p">)</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">includes_part</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Part</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;INCLUDES_PART&quot;</span><span class="p">)</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">composed_of</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Material</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;COMPOSED_OF&quot;</span><span class="p">)</span>
@@ -4762,11 +4767,11 @@
 <h2 id="single-vs-list-relationships">Single vs List Relationships<a class="headerlink" href="#single-vs-list-relationships" title="Permanent link">&para;</a></h2>
 <h3 id="single-relationships-one-to-one">Single Relationships (One-to-One)<a class="headerlink" href="#single-relationships-one-to-one" title="Permanent link">&para;</a></h3>
 <p>Use when an entity has <strong>exactly one</strong> or <strong>at most one</strong> related entity:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Invoice document.&quot;&quot;&quot;</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;BillingDocument document.&quot;&quot;&quot;</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">])</span>
 <a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
 <a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>    <span class="c1"># One invoice is issued by one organization</span>
 <a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="n">issued_by</span><span class="p">:</span> <span class="n">Organization</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span>
@@ -4781,28 +4786,28 @@
 <a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>    <span class="p">)</span>
 </code></pre></div>
 <p><strong>Graph Structure:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Invoice-001 --ISSUED_BY--&gt; Acme Corp
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Invoice-001 --SENT_TO--&gt; Client A
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>BillingDocument-001 --ISSUED_BY--&gt; Acme Corp
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>BillingDocument-001 --SENT_TO--&gt; Client A
 </code></pre></div></p>
 <h3 id="list-relationships-one-to-many">List Relationships (One-to-Many)<a class="headerlink" href="#list-relationships-one-to-many" title="Permanent link">&para;</a></h3>
 <p>Use when an entity can have <strong>multiple</strong> related entities:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Invoice document.&quot;&quot;&quot;</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;BillingDocument document.&quot;&quot;&quot;</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">])</span>
 <a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
 <a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="c1"># One invoice contains many line items</span>
 <a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>    <span class="n">contains_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LineItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span>
-<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">,</span>
 <a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>  <span class="c1"># Required!</span>
 <a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Line items in this invoice&quot;</span>
 <a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>    <span class="p">)</span>
 </code></pre></div>
 <p><strong>Graph Structure:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Invoice-001 --CONTAINS_ITEM--&gt; LineItem-1
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Invoice-001 --CONTAINS_ITEM--&gt; LineItem-2
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>Invoice-001 --CONTAINS_ITEM--&gt; LineItem-3
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>BillingDocument-001 --CONTAINS_LINE--&gt; LineItem-1
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>BillingDocument-001 --CONTAINS_LINE--&gt; LineItem-2
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>BillingDocument-001 --CONTAINS_LINE--&gt; LineItem-3
 </code></pre></div></p>
 <h3 id="optional-single-relationships">Optional Single Relationships<a class="headerlink" href="#optional-single-relationships" title="Permanent link">&para;</a></h3>
 <p>Use <code>Optional[Type]</code> for relationships that may not exist:</p>
@@ -4961,9 +4966,9 @@
 <a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>Document --APPROVED_BY--&gt; Person-C
 </code></pre></div></p>
 <hr />
-<h2 id="complete-example-invoice-template">Complete Example: Invoice Template<a class="headerlink" href="#complete-example-invoice-template" title="Permanent link">&para;</a></h2>
+<h2 id="complete-example-billingdocument-template">Complete Example: BillingDocument Template<a class="headerlink" href="#complete-example-billingdocument-template" title="Permanent link">&para;</a></h2>
 <p>Here's a complete example showing various edge patterns:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="sd">&quot;&quot;&quot;Invoice extraction template with comprehensive edge definitions.&quot;&quot;&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="sd">&quot;&quot;&quot;BillingDocument extraction template with comprehensive edge definitions.&quot;&quot;&quot;</span>
 <a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
 <a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 <a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span>
@@ -5034,11 +5039,11 @@
 <a id="__codelineno-23-69" name="__codelineno-23-69" href="#__codelineno-23-69"></a>
 <a id="__codelineno-23-70" name="__codelineno-23-70" href="#__codelineno-23-70"></a><span class="c1"># --- Root Document ---</span>
 <a id="__codelineno-23-71" name="__codelineno-23-71" href="#__codelineno-23-71"></a>
-<a id="__codelineno-23-72" name="__codelineno-23-72" href="#__codelineno-23-72"></a><span class="k">class</span><span class="w"> </span><span class="nc">Invoice</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<a id="__codelineno-23-73" name="__codelineno-23-73" href="#__codelineno-23-73"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Invoice document (root).&quot;&quot;&quot;</span>
-<a id="__codelineno-23-74" name="__codelineno-23-74" href="#__codelineno-23-74"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoice_number&quot;</span><span class="p">])</span>
+<a id="__codelineno-23-72" name="__codelineno-23-72" href="#__codelineno-23-72"></a><span class="k">class</span><span class="w"> </span><span class="nc">BillingDocument</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-23-73" name="__codelineno-23-73" href="#__codelineno-23-73"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;BillingDocument document (root).&quot;&quot;&quot;</span>
+<a id="__codelineno-23-74" name="__codelineno-23-74" href="#__codelineno-23-74"></a>    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">graph_id_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;document_no&quot;</span><span class="p">])</span>
 <a id="__codelineno-23-75" name="__codelineno-23-75" href="#__codelineno-23-75"></a>
-<a id="__codelineno-23-76" name="__codelineno-23-76" href="#__codelineno-23-76"></a>    <span class="n">invoice_number</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-23-76" name="__codelineno-23-76" href="#__codelineno-23-76"></a>    <span class="n">document_no</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <a id="__codelineno-23-77" name="__codelineno-23-77" href="#__codelineno-23-77"></a>    <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <a id="__codelineno-23-78" name="__codelineno-23-78" href="#__codelineno-23-78"></a>
 <a id="__codelineno-23-79" name="__codelineno-23-79" href="#__codelineno-23-79"></a>    <span class="c1"># Single edges to entities</span>
@@ -5054,7 +5059,7 @@
 <a id="__codelineno-23-89" name="__codelineno-23-89" href="#__codelineno-23-89"></a>
 <a id="__codelineno-23-90" name="__codelineno-23-90" href="#__codelineno-23-90"></a>    <span class="c1"># List edge to entities</span>
 <a id="__codelineno-23-91" name="__codelineno-23-91" href="#__codelineno-23-91"></a>    <span class="n">contains_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LineItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span>
-<a id="__codelineno-23-92" name="__codelineno-23-92" href="#__codelineno-23-92"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">,</span>
+<a id="__codelineno-23-92" name="__codelineno-23-92" href="#__codelineno-23-92"></a>        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">,</span>
 <a id="__codelineno-23-93" name="__codelineno-23-93" href="#__codelineno-23-93"></a>        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
 <a id="__codelineno-23-94" name="__codelineno-23-94" href="#__codelineno-23-94"></a>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Line items in this invoice&quot;</span>
 <a id="__codelineno-23-95" name="__codelineno-23-95" href="#__codelineno-23-95"></a>    <span class="p">)</span>
@@ -5066,14 +5071,14 @@
 <a id="__codelineno-23-101" name="__codelineno-23-101" href="#__codelineno-23-101"></a>    <span class="p">)</span>
 </code></pre></div>
 <p><strong>Resulting Graph:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>Invoice-001
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>BillingDocument-001
 <a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>  ├─ ISSUED_BY → Organization(Acme Corp)
 <a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>  │               └─ LOCATED_AT → Address(123 Main St, Paris)
 <a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>  ├─ SENT_TO → Client(John Doe)
 <a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>  │             └─ LIVES_AT → Address(456 Oak Ave, London)
-<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>  ├─ CONTAINS_ITEM → LineItem-1
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>  ├─ CONTAINS_LINE → LineItem-1
 <a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>  │                   └─ HAS_TOTAL → MonetaryAmount(100, EUR)
-<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>  ├─ CONTAINS_ITEM → LineItem-2
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>  ├─ CONTAINS_LINE → LineItem-2
 <a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>  │                   └─ HAS_TOTAL → MonetaryAmount(200, EUR)
 <a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>  └─ HAS_TOTAL → MonetaryAmount(300, EUR)
 </code></pre></div></p>
@@ -5082,7 +5087,7 @@
 <h3 id="use-descriptive-labels">👍 Use Descriptive Labels<a class="headerlink" href="#use-descriptive-labels" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># ✅ Good - Clear and specific</span>
 <a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="n">issued_by</span><span class="p">:</span> <span class="n">Organization</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;ISSUED_BY&quot;</span><span class="p">)</span>
-<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="n">contains_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">)</span>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="n">contains_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">)</span>
 <a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>
 <a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="c1"># ❌ Bad - Vague</span>
 <a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="n">issued_by</span><span class="p">:</span> <span class="n">Organization</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;HAS&quot;</span><span class="p">)</span>
@@ -5102,12 +5107,12 @@
 <h3 id="always-use-default_factory-for-lists">👍 Always Use default_factory for Lists<a class="headerlink" href="#always-use-default_factory-for-lists" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># ✅ Good</span>
 <a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span>
-<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">,</span>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">,</span>
 <a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span>
 <a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="p">)</span>
 <a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>
 <a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="c1"># ❌ Bad - Missing default_factory</span>
-<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">)</span>
+<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="provide-clear-descriptions">👍 Provide Clear Descriptions<a class="headerlink" href="#provide-clear-descriptions" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># ✅ Good - Explains the relationship</span>
@@ -5123,11 +5128,11 @@
 <h2 id="common-mistakes">Common Mistakes<a class="headerlink" href="#common-mistakes" title="Permanent link">&para;</a></h2>
 <h3 id="missing-default_factory">❌ Missing default_factory<a class="headerlink" href="#missing-default_factory" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># Wrong</span>
-<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">)</span>
 <a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>
 <a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="c1"># Correct</span>
 <a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span>
-<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">,</span>
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">,</span>
 <a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a>    <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span>
 <a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a><span class="p">)</span>
 </code></pre></div>
@@ -5140,7 +5145,7 @@
 <a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="c1"># Correct - Consistent ALL_CAPS_WITH_UNDERSCORES</span>
 <a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="n">issued_by</span><span class="p">:</span> <span class="n">Org</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;ISSUED_BY&quot;</span><span class="p">)</span>
 <a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a><span class="n">sent_to</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;SENT_TO&quot;</span><span class="p">)</span>
-<a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a><span class="n">has_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">)</span>
+<a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a><span class="n">has_items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="vague-labels">❌ Vague Labels<a class="headerlink" href="#vague-labels" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="c1"># Wrong - Too vague</span>
@@ -5149,7 +5154,7 @@
 <a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>
 <a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a><span class="c1"># Correct - Descriptive</span>
 <a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="n">org</span><span class="p">:</span> <span class="n">Organization</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;ISSUED_BY&quot;</span><span class="p">)</span>
-<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_ITEM&quot;</span><span class="p">)</span>
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Item</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;CONTAINS_LINE&quot;</span><span class="p">)</span>
 </code></pre></div>
 <hr />
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>

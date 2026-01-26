@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -3268,14 +3268,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3352,14 +3352,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/research-paper/" class="md-nav__link">
+      <a href="../../examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4807,7 +4807,7 @@
 <a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
 <a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>3. Run your first conversion:
 <a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>   uv run docling-graph convert document.pdf \
-<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>       --template &quot;my_templates.Invoice&quot;
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>       --template &quot;templates.BillingDocument&quot;
 </code></pre></div>
 <h3 id="local-provider-setup">Local Provider Setup<a class="headerlink" href="#local-provider-setup" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Next steps:
@@ -4822,7 +4822,7 @@
 <a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
 <a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>4. Run your first conversion:
 <a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>   uv run docling-graph convert document.pdf \
-<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>       --template &quot;my_templates.Invoice&quot;
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>       --template &quot;templates.BillingDocument&quot;
 </code></pre></div>
 <hr />
 <h2 id="overwriting-configuration">Overwriting Configuration<a class="headerlink" href="#overwriting-configuration" title="Permanent link">&para;</a></h2>
@@ -4868,7 +4868,7 @@
 <a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a>
 <a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a><span class="c1"># Test conversion</span>
 <a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>test.pdf<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span>
 </code></pre></div>
 <h3 id="local-development-setup">📍 Local Development Setup<a class="headerlink" href="#local-development-setup" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Initialize for local development</span>
@@ -4893,7 +4893,7 @@
 <a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a>
 <a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a><span class="c1"># Test conversion</span>
 <a id="__codelineno-18-22" name="__codelineno-18-22" href="#__codelineno-18-22"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>test.pdf<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-18-23" name="__codelineno-18-23" href="#__codelineno-18-23"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-18-23" name="__codelineno-18-23" href="#__codelineno-18-23"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span>
 </code></pre></div>
 <h3 id="vlm-setup">📍 VLM Setup<a class="headerlink" href="#vlm-setup" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Initialize for VLM</span>
@@ -5004,7 +5004,7 @@
 <a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>
 <a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="c1"># Use specific config</span>
 <a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>cp<span class="w"> </span>config.prod.yaml<span class="w"> </span>config.yaml
-<a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span>
 </code></pre></div>
 <hr />
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>

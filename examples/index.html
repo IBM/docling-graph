@@ -503,14 +503,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../introduction/key-concepts/" class="md-nav__link">
+      <a href="../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -531,14 +531,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../introduction/architecture/" class="md-nav__link">
+      <a href="../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -2769,14 +2769,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -2853,14 +2853,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -3796,14 +3796,14 @@
 <ul>
 <li><code>/examples/scripts/</code>: Python script examples and CLI recipes</li>
 <li><code>/examples/data/</code>: Sample PDF and image files used by the scripts</li>
-<li><code>/examples/templates/</code>: Pydantic schemas (e.g., <code>invoice.py</code>) that define what data to extract</li>
+<li><code>/examples/templates/</code>: Pydantic schemas (e.g., <code>billing_document.py</code>) that define what data to extract</li>
 </ul>
 <h2 id="10-high-quality-example-scripts">10 High-Quality Example Scripts<a class="headerlink" href="#10-high-quality-example-scripts" title="Permanent link">&para;</a></h2>
 <p>All Python scripts are located in the <code>/examples/scripts/</code> folder and are designed to be <strong>run from the project's root directory</strong>.</p>
 <h3 id="beginner-level-getting-started">Beginner Level (Getting Started)<a class="headerlink" href="#beginner-level-getting-started" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong><code>01_quickstart_vlm_image.py</code></strong>: Basic VLM extraction from invoice image - The "Hello World" example</li>
-<li><strong><code>02_quickstart_llm_pdf.py</code></strong>: Basic LLM extraction from multi-page research paper PDF</li>
+<li><strong><code>02_quickstart_llm_pdf.py</code></strong>: Basic LLM extraction from multi-page rheology research PDF</li>
 <li><strong><code>03_url_processing.py</code></strong>: Download and process documents directly from URLs (arXiv, etc.)</li>
 </ol>
 <h3 id="intermediate-level-core-features">Intermediate Level (Core Features)<a class="headerlink" href="#intermediate-level-core-features" title="Permanent link">&para;</a></h3>
@@ -3828,8 +3828,8 @@
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>docs/examples/scripts/01_quickstart_vlm_image.py
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Or use CLI directly</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span><span class="s2">&quot;docs/examples/data/invoice/sample_invoice.jpg&quot;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;docs.examples.templates.invoice.Invoice&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span><span class="s2">&quot;https://upload.wikimedia.org/wikipedia/commons/9/9f/Swiss_QR-Bill_example.jpg&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span>--template<span class="w"> </span><span class="s2">&quot;docs.examples.templates.billing_document.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span>--backend<span class="w"> </span><span class="s2">&quot;vlm&quot;</span>
 </code></pre></div>
 <h2 id="learning-path">Learning Path<a class="headerlink" href="#learning-path" title="Permanent link">&para;</a></h2>

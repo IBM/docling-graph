@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://ibm.github.io/docling-graph/introduction/architecture/">
       
       
-        <link rel="prev" href="../key-concepts/">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="../use-cases/">
+        <link rel="next" href="../key-concepts/">
       
       
         
@@ -509,34 +509,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../key-concepts/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Key Concepts
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -748,6 +720,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../key-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Key Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2970,14 +2970,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../usage/examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3054,14 +3054,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../usage/examples/research-paper/" class="md-nav__link">
+      <a href="../../usage/examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4036,11 +4036,6 @@
 
 
 <h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h1>
-<p><strong>Pipeline Stage</strong>: 1 - Introduction &amp; Concepts</p>
-<p><strong>Prerequisites</strong>: 
-- <a href="../">Introduction</a>
-- <a href="../key-concepts/">Key Concepts</a></p>
-<p>This page provides a high-level overview of Docling Graph's architecture and how components interact.</p>
 <h2 id="system-architecture">System Architecture<a class="headerlink" href="#system-architecture" title="Permanent link">&para;</a></h2>
 <p>Docling Graph follows a modular, pipeline-based architecture with clear separation of concerns:</p>
 <p><img alt="Architecture" src="../../assets/screenshots/architecture.png" /></p>
@@ -4054,7 +4049,7 @@
 <p><strong>Location:</strong> <code>docling_graph/core/extractors/backends/</code></p>
 <h3 id="processing-strategies">Processing Strategies<a class="headerlink" href="#processing-strategies" title="Permanent link">&para;</a></h3>
 <p><strong>One-to-One:</strong> Each page produces a separate model (invoice batches, ID cards)
-<strong>Many-to-One:</strong> Multiple pages merged into single model (research papers, reports)</p>
+<strong>Many-to-One:</strong> Multiple pages merged into single model (rheology researchs, reports)</p>
 <p><strong>Location:</strong> <code>docling_graph/core/extractors/strategies/</code></p>
 <h3 id="document-chunker">Document Chunker<a class="headerlink" href="#document-chunker" title="Permanent link">&para;</a></h3>
 <p>Splits large documents while preserving semantic coherence and respecting structure.</p>

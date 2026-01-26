@@ -509,14 +509,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/key-concepts/" class="md-nav__link">
+      <a href="../../../introduction/architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Key Concepts
+    Architecture
   
 
     
@@ -537,14 +537,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../introduction/architecture/" class="md-nav__link">
+      <a href="../../../introduction/key-concepts/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Architecture
+    Key Concepts
   
 
     
@@ -3159,14 +3159,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/invoice-extraction/" class="md-nav__link">
+      <a href="../../examples/billing-document/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Invoice Extraction
+    Billing Document
   
 
     
@@ -3243,14 +3243,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/research-paper/" class="md-nav__link">
+      <a href="../../examples/rheology_research/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Research Paper
+    Rheology Research
   
 
     
@@ -4429,7 +4429,7 @@
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="n">source</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Invoice&quot;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span>
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="p">)</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="k">try</span><span class="p">:</span>
@@ -4457,7 +4457,7 @@
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>        <span class="n">source</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        <span class="n">dump_to_disk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Enable file exports</span>
 <a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="n">output_dir</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;outputs/</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">&quot;</span>
 <a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="p">)</span>
@@ -4480,7 +4480,7 @@
 <a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Processing&quot;</span><span class="p">):</span>
 <a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>        <span class="n">source</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">),</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        <span class="n">output_dir</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;outputs/</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">&quot;</span>
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="p">)</span>
 <a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
@@ -4560,7 +4560,7 @@
 <a id="__codelineno-4-63" name="__codelineno-4-63" href="#__codelineno-4-63"></a><span class="c1"># Run batch processing</span>
 <a id="__codelineno-4-64" name="__codelineno-4-64" href="#__codelineno-4-64"></a><span class="n">results</span> <span class="o">=</span> <span class="n">batch_process</span><span class="p">(</span>
 <a id="__codelineno-4-65" name="__codelineno-4-65" href="#__codelineno-4-65"></a>    <span class="n">input_dir</span><span class="o">=</span><span class="s2">&quot;documents/invoices&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-66" name="__codelineno-4-66" href="#__codelineno-4-66"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.invoice.Invoice&quot;</span>
+<a id="__codelineno-4-66" name="__codelineno-4-66" href="#__codelineno-4-66"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span>
 <a id="__codelineno-4-67" name="__codelineno-4-67" href="#__codelineno-4-67"></a><span class="p">)</span>
 </code></pre></div>
 <hr />
@@ -4635,7 +4635,7 @@
 <a id="__codelineno-5-67" name="__codelineno-5-67" href="#__codelineno-5-67"></a><span class="c1"># Run parallel processing</span>
 <a id="__codelineno-5-68" name="__codelineno-5-68" href="#__codelineno-5-68"></a><span class="n">results</span> <span class="o">=</span> <span class="n">parallel_batch_process</span><span class="p">(</span>
 <a id="__codelineno-5-69" name="__codelineno-5-69" href="#__codelineno-5-69"></a>    <span class="n">input_dir</span><span class="o">=</span><span class="s2">&quot;documents/invoices&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-70" name="__codelineno-5-70" href="#__codelineno-5-70"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-70" name="__codelineno-5-70" href="#__codelineno-5-70"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-5-71" name="__codelineno-5-71" href="#__codelineno-5-71"></a>    <span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span>
 <a id="__codelineno-5-72" name="__codelineno-5-72" href="#__codelineno-5-72"></a><span class="p">)</span>
 </code></pre></div>
@@ -4703,7 +4703,7 @@
 <a id="__codelineno-6-59" name="__codelineno-6-59" href="#__codelineno-6-59"></a><span class="c1"># Run with statistics</span>
 <a id="__codelineno-6-60" name="__codelineno-6-60" href="#__codelineno-6-60"></a><span class="n">df</span> <span class="o">=</span> <span class="n">batch_with_stats</span><span class="p">(</span>
 <a id="__codelineno-6-61" name="__codelineno-6-61" href="#__codelineno-6-61"></a>    <span class="n">input_dir</span><span class="o">=</span><span class="s2">&quot;documents/invoices&quot;</span><span class="p">,</span>
-<a id="__codelineno-6-62" name="__codelineno-6-62" href="#__codelineno-6-62"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-62" name="__codelineno-6-62" href="#__codelineno-6-62"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-6-63" name="__codelineno-6-63" href="#__codelineno-6-63"></a>    <span class="n">output_base</span><span class="o">=</span><span class="s2">&quot;outputs/batch_stats&quot;</span>
 <a id="__codelineno-6-64" name="__codelineno-6-64" href="#__codelineno-6-64"></a><span class="p">)</span>
 <a id="__codelineno-6-65" name="__codelineno-6-65" href="#__codelineno-6-65"></a>
@@ -4724,7 +4724,7 @@
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">:</span>
 <a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>        <span class="c1"># Determine template based on filename</span>
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>        <span class="k">if</span> <span class="s2">&quot;invoice&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>            <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;templates.invoice.Invoice&quot;</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>            <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span>
 <a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>            <span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;vlm&quot;</span>
 <a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>        <span class="k">elif</span> <span class="s2">&quot;research&quot;</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
 <a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>            <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;templates.research.Research&quot;</span>
@@ -4806,7 +4806,7 @@
 <a id="__codelineno-8-53" name="__codelineno-8-53" href="#__codelineno-8-53"></a>
 <a id="__codelineno-8-54" name="__codelineno-8-54" href="#__codelineno-8-54"></a><span class="n">results</span> <span class="o">=</span> <span class="n">batch_with_retry</span><span class="p">(</span>
 <a id="__codelineno-8-55" name="__codelineno-8-55" href="#__codelineno-8-55"></a>    <span class="n">input_dir</span><span class="o">=</span><span class="s2">&quot;documents/invoices&quot;</span><span class="p">,</span>
-<a id="__codelineno-8-56" name="__codelineno-8-56" href="#__codelineno-8-56"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-56" name="__codelineno-8-56" href="#__codelineno-8-56"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-8-57" name="__codelineno-8-57" href="#__codelineno-8-57"></a>    <span class="n">output_base</span><span class="o">=</span><span class="s2">&quot;outputs/retry&quot;</span>
 <a id="__codelineno-8-58" name="__codelineno-8-58" href="#__codelineno-8-58"></a><span class="p">)</span>
 </code></pre></div>
@@ -4873,7 +4873,7 @@
 <a id="__codelineno-9-59" name="__codelineno-9-59" href="#__codelineno-9-59"></a><span class="c1"># Run with checkpoint</span>
 <a id="__codelineno-9-60" name="__codelineno-9-60" href="#__codelineno-9-60"></a><span class="n">checkpoint</span> <span class="o">=</span> <span class="n">batch_with_checkpoint</span><span class="p">(</span>
 <a id="__codelineno-9-61" name="__codelineno-9-61" href="#__codelineno-9-61"></a>    <span class="n">input_dir</span><span class="o">=</span><span class="s2">&quot;documents/invoices&quot;</span><span class="p">,</span>
-<a id="__codelineno-9-62" name="__codelineno-9-62" href="#__codelineno-9-62"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-62" name="__codelineno-9-62" href="#__codelineno-9-62"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-9-63" name="__codelineno-9-63" href="#__codelineno-9-63"></a>    <span class="n">output_base</span><span class="o">=</span><span class="s2">&quot;outputs/checkpoint&quot;</span>
 <a id="__codelineno-9-64" name="__codelineno-9-64" href="#__codelineno-9-64"></a><span class="p">)</span>
 </code></pre></div>
@@ -4913,7 +4913,7 @@
 <a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a>
 <a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a><span class="n">batch_with_memory_management</span><span class="p">(</span>
 <a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a>    <span class="n">input_dir</span><span class="o">=</span><span class="s2">&quot;documents/large_batch&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a>    <span class="n">output_base</span><span class="o">=</span><span class="s2">&quot;outputs/memory_managed&quot;</span><span class="p">,</span>
 <a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a>    <span class="n">cleanup_interval</span><span class="o">=</span><span class="mi">10</span>
 <a id="__codelineno-10-37" name="__codelineno-10-37" href="#__codelineno-10-37"></a><span class="p">)</span>
@@ -5094,7 +5094,7 @@
 <a id="__codelineno-11-171" name="__codelineno-11-171" href="#__codelineno-11-171"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
 <a id="__codelineno-11-172" name="__codelineno-11-172" href="#__codelineno-11-172"></a>    <span class="n">processor</span> <span class="o">=</span> <span class="n">BatchProcessor</span><span class="p">(</span>
 <a id="__codelineno-11-173" name="__codelineno-11-173" href="#__codelineno-11-173"></a>        <span class="n">input_dir</span><span class="o">=</span><span class="s2">&quot;documents/invoices&quot;</span><span class="p">,</span>
-<a id="__codelineno-11-174" name="__codelineno-11-174" href="#__codelineno-11-174"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.invoice.Invoice&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-174" name="__codelineno-11-174" href="#__codelineno-11-174"></a>        <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.billing_document.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-11-175" name="__codelineno-11-175" href="#__codelineno-11-175"></a>        <span class="n">output_base</span><span class="o">=</span><span class="s2">&quot;outputs/production_batch&quot;</span><span class="p">,</span>
 <a id="__codelineno-11-176" name="__codelineno-11-176" href="#__codelineno-11-176"></a>        <span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
 <a id="__codelineno-11-177" name="__codelineno-11-177" href="#__codelineno-11-177"></a>        <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span>
