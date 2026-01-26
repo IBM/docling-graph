@@ -61,7 +61,7 @@ uv sync --extra remote
 **CLI Command:**
 ```bash
 uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --output-dir "outputs/cli_02" \
     --backend "llm" \
     --inference "remote" \
@@ -96,7 +96,7 @@ uv sync --extra remote
 **CLI Command:**
 ```bash
 uv run docling-graph convert "https://arxiv.org/pdf/2207.02720" \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --output-dir "outputs/cli_03" \
     --backend "llm" \
     --inference "remote" \
@@ -252,7 +252,7 @@ uv sync --extra local
 **CLI Command:**
 ```bash
 uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --output-dir "outputs/cli_07" \
     --backend "llm" \
     --inference "local" \
@@ -286,7 +286,7 @@ uv sync --extra remote
 **Programmatic Merge (Fast):**
 ```bash
 uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --output-dir "outputs/cli_08_programmatic" \
     --backend "llm" \
     --inference "remote" \
@@ -299,7 +299,7 @@ uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
 **LLM Consolidation (Intelligent):**
 ```bash
 uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --output-dir "outputs/cli_08_llm" \
     --backend "llm" \
     --inference "remote" \
@@ -359,7 +359,7 @@ uv sync --extra remote --extra watsonx
 **OpenAI:**
 ```bash
 uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --output-dir "outputs/cli_10_openai" \
     --backend "llm" \
     --inference "remote" \
@@ -370,7 +370,7 @@ uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
 **Mistral:**
 ```bash
 uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --output-dir "outputs/cli_10_mistral" \
     --backend "llm" \
     --inference "remote" \
@@ -381,7 +381,7 @@ uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
 **Gemini:**
 ```bash
 uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --output-dir "outputs/cli_10_gemini" \
     --backend "llm" \
     --inference "remote" \
@@ -392,7 +392,7 @@ uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
 **WatsonX:**
 ```bash
 uv run docling-graph convert "docs/examples/data/research_paper/rheology.pdf" \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --output-dir "outputs/cli_10_watsonx" \
     --backend "llm" \
     --inference "remote" \

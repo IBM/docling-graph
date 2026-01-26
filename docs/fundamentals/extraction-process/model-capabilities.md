@@ -168,7 +168,7 @@ run_pipeline(config)
 ```python
 config = PipelineConfig(
     source="research_paper.pdf",
-    template="templates.ResearchPaper",
+    template="templates.RheologyResearch",
     backend="llm",
     inference="remote",
     provider_override="openai",
@@ -302,7 +302,7 @@ config = PipelineConfig(
 # ✅ Good - Complex task, advanced model
 config = PipelineConfig(
     source="research_paper.pdf",
-    template="templates.ResearchPaper",
+    template="templates.RheologyResearch",
     model_override="gpt-4-turbo"  # ADVANCED tier
 )
 

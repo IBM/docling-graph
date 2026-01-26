@@ -149,7 +149,7 @@ from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="research.pdf",
-    template="templates.Research",
+    template="templates.RheologyResearch",
     backend="llm",
     inference="remote",
     provider_override="mistral",
@@ -390,7 +390,7 @@ import matplotlib.pyplot as plt
 # Cell 2: Process document
 config = PipelineConfig(
     source="research.pdf",
-    template="templates.Research",
+    template="templates.RheologyResearch",
     output_dir="outputs/research"
 )
 run_pipeline(config)

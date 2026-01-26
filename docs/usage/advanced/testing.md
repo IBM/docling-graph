@@ -365,7 +365,7 @@ def test_research_paper_extraction(research_paper_pdf, tmp_path):
     
     config = PipelineConfig(
         source=str(research_paper_pdf),
-        template="templates.research.ResearchPaper",
+        template="templates.rheology_research.ResearchPaper",
         output_dir=str(tmp_path),
         use_chunking=True  # Large document
     )

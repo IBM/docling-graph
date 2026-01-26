@@ -197,7 +197,7 @@ config = PipelineConfig(
 # Rheology research with 15 pages
 config = PipelineConfig(
     source="research_paper.pdf",  # 1 paper, 15 pages
-    template="templates.Research",
+    template="templates.RheologyResearch",
     processing_mode="many-to-one"  # Single paper entity
 )
 ```

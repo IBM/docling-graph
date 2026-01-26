@@ -91,7 +91,7 @@ from docling_graph import run_pipeline, PipelineConfig
 
 config = PipelineConfig(
     source="documents/research.pdf",
-    template="templates.research.Research",
+    template="docs.examples.templates.rheology_research.ScholarlyRheologyPaper",
     backend="llm",
     inference="local",
     provider_override="ollama",
@@ -183,7 +183,7 @@ os.environ["MISTRAL_API_KEY"] = "your-api-key"
 
 config = PipelineConfig(
     source="documents/research_paper.pdf",
-    template="templates.research.Research",
+    template="docs.examples.templates.rheology_research.ScholarlyRheologyPaper",
     backend="llm",
     inference="remote",
     provider_override="mistral",
@@ -538,7 +538,7 @@ sns.set_style("whitegrid")
 # Cell 2: Process Document
 config = PipelineConfig(
     source="documents/research.pdf",
-    template="templates.research.Research",
+    template="docs.examples.templates.rheology_research.ScholarlyRheologyPaper",
     output_dir="outputs/research"
 )
 
