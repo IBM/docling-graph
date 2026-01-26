@@ -77,7 +77,7 @@ class Research(BaseModel):
 ```bash
 # Process rheology research with chunking
 uv run docling-graph convert research.pdf \
-    --template "docs.examples.templates.rheology_research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --backend llm \
     --inference remote \
     --provider mistral \
@@ -101,7 +101,7 @@ os.environ["MISTRAL_API_KEY"] = "your-key"
 
 config = PipelineConfig(
     source="research.pdf",
-    template="docs.examples.templates.rheology_research.Research",
+    template="docs.examples.templates.rheology_research.ScholarlyRheologyPaper",
     backend="llm",
     inference="remote",
     provider_override="mistral",
@@ -223,7 +223,7 @@ class Experiment(BaseModel):
 ```bash
 # Enable chunking and consolidation
 uv run docling-graph convert research.pdf \
-    --template "templates.Research" \
+    --template "templates.RheologyResearch" \
     --use-chunking \
     --llm-consolidation \
     --processing-mode many-to-one
@@ -234,7 +234,7 @@ uv run docling-graph convert research.pdf \
 ```bash
 # Use vision pipeline for better table/figure handling
 uv run docling-graph convert research.pdf \
-    --template "templates.Research" \
+    --template "templates.RheologyResearch" \
     --docling-pipeline vision
 ```
 
@@ -243,7 +243,7 @@ uv run docling-graph convert research.pdf \
 ```bash
 # Use smaller model without consolidation
 uv run docling-graph convert research.pdf \
-    --template "templates.Research" \
+    --template "templates.RheologyResearch" \
     --model mistral-small-latest \
     --no-llm-consolidation
 ```
@@ -278,7 +278,18 @@ class Experiment(BaseModel):
     measurements: List[Measurement] = Field(default_factory=list)
 
 class Research(BaseModel):
-    """Simplified rheology research."""
+    """Simplified rheology research (for demonstration).
+    
+    Note: For production use, see the full ScholarlyRheologyPaper template at:
+    docs/examples/templates/rheology_research.py
+    
+    The full template includes:
+    - Comprehensive scholarly metadata (authors, affiliations, identifiers)
+    - Detailed formulation specifications (materials, components, amounts)
+    - Batch preparation history (mixing steps, equipment, conditions)
+    - Complete rheometry setup (instruments, geometries, protocols)
+    - Test runs and datasets (curves, measurements, model fits)
+    """
     title: str
     authors: List[str]
     abstract: str
@@ -295,7 +306,7 @@ class Research(BaseModel):
 ```bash
 # Disable consolidation for faster processing
 uv run docling-graph convert research.pdf \
-    --template "templates.Research" \
+    --template "templates.RheologyResearch" \
     --no-llm-consolidation
 
 # Or use smaller model
@@ -355,7 +366,7 @@ class Research(BaseModel):
 # For papers > 10 pages
 config = PipelineConfig(
     source="long_paper.pdf",
-    template="templates.Research",
+    template="templates.RheologyResearch",
     use_chunking=True,  # Essential
     llm_consolidation=True  # Better accuracy
 )

@@ -69,7 +69,7 @@ This section provides **complete, end-to-end examples** organized by both **inpu
 ```bash
 # Download and process in one step
 uv run docling-graph convert "https://arxiv.org/pdf/2207.02720" \
-    --template "templates.research.Research" \
+    --template "docs.examples.templates.rheology_research.ScholarlyRheologyPaper" \
     --processing-mode "many-to-one"
 
 # Visualize results
