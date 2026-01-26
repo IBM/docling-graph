@@ -683,6 +683,299 @@ def coerce_to_float(cls, v: Any) -> Any:
 
 ---
 
+## Graceful Error Handling
+
+### The Problem with Strict Validators
+
+**Strict validators** that raise `ValueError` on invalid data can cause **complete extraction failure**:
+
+```python
+# ❌ Strict validator - causes extraction failure
+@field_validator("value")
+@classmethod
+def validate_positive(cls, v: Any) -> Any:
+    """Ensure amount is non-negative."""
+    if v < 0:
+        raise ValueError(f"Monetary amount must be non-negative, got {v}")
+    return v
+```
+
+**What happens:**
+- LLM extracts: `allowance_total: -258.12` (negative because it's a discount)
+- Validator rejects: "Monetary amount must be non-negative"
+- **Result:** Entire extraction fails, losing ALL extracted data
+
+### The Solution: Lenient Validators
+
+**Lenient validators** coerce invalid values instead of rejecting them:
+
+```python
+# ✅ Lenient validator - coerces instead of rejecting
+import logging
+
+logger = logging.getLogger(__name__)
+
+@field_validator("value", mode="before")
+@classmethod
+def coerce_positive(cls, v: Any) -> Any:
+    """
+    Coerce negative values to positive (use absolute value).
+    
+    Allowances and discounts are often represented as negative in accounting,
+    but should be stored as positive amounts. The charge_indicator field
+    (in AllowanceCharge) indicates direction: false=allowance, true=charge.
+    
+    This validator is lenient - it coerces instead of rejecting to prevent
+    extraction failures due to semantic differences in how amounts are represented.
+    """
+    if isinstance(v, (int, float)) and v < 0:
+        logger.warning(
+            f"Negative monetary value {v} coerced to positive {abs(v)}. "
+            "Allowances/discounts should be positive amounts."
+        )
+        return abs(v)
+    return v
+```
+
+**Benefits:**
+- ✅ Extraction succeeds even with "invalid" data
+- ✅ Data quality issues are logged for review
+- ✅ 99% correct data is preserved instead of lost
+- ✅ Semantic differences are handled gracefully
+
+### When to Use Lenient Validators
+
+Use lenient validators for:
+
+1. **Semantic Variations**
+   - Negative amounts for discounts/allowances
+   - Lowercase currency codes (normalize to uppercase)
+   - Different date formats (parse and normalize)
+
+2. **Common LLM Mistakes**
+   - Missing spaces in addresses
+   - Wrong case in enums
+   - Currency symbols instead of codes
+
+3. **Non-Critical Validation**
+   - Format preferences (3-letter currency codes)
+   - Range constraints (quantity > 0)
+   - Pattern matching (email format)
+
+### When to Use Strict Validators
+
+Use strict validators only for:
+
+1. **Critical Data Integrity**
+   - Required fields that must be present
+   - Type safety (must be a number, not a string)
+   - Business rules that cannot be violated
+
+2. **Security Concerns**
+   - SQL injection prevention
+   - Path traversal prevention
+   - XSS prevention
+
+### Lenient Validator Patterns
+
+#### Pattern 1: Coerce Negative to Positive
+
+```python
+@field_validator("value", mode="before")
+@classmethod
+def coerce_positive(cls, v: Any) -> Any:
+    """Coerce negative values to positive."""
+    if isinstance(v, (int, float)) and v < 0:
+        logger.warning(f"Negative value {v} coerced to {abs(v)}")
+        return abs(v)
+    return v
+```
+
+#### Pattern 2: Normalize Case
+
+```python
+@field_validator("currency", mode="before")
+@classmethod
+def normalize_currency(cls, v: Any) -> Any:
+    """Normalize currency to uppercase."""
+    if v:
+        v_upper = str(v).strip().upper()
+        if len(v_upper) == 3 and v_upper.isalpha():
+            return v_upper
+        logger.warning(f"Currency '{v}' normalized to '{v_upper}'")
+        return v_upper
+    return v
+```
+
+#### Pattern 3: Handle Zero Values
+
+```python
+@field_validator("quantity", mode="before")
+@classmethod
+def handle_zero(cls, v: Any) -> Any:
+    """Handle zero quantities by setting default."""
+    if isinstance(v, (int, float)):
+        if v == 0:
+            logger.warning("Zero quantity detected, setting to 1 as default")
+            return 1.0
+        elif v < 0:
+            logger.warning(f"Negative quantity {v} coerced to {abs(v)}")
+            return abs(v)
+    return v
+```
+
+#### Pattern 4: Symbol to Code Conversion
+
+```python
+@field_validator("currency", mode="before")
+@classmethod
+def convert_symbol(cls, v: Any) -> Any:
+    """Convert currency symbols to ISO codes."""
+    symbol_map = {
+        "€": "EUR",
+        "$": "USD",
+        "£": "GBP",
+        "¥": "JPY",
+    }
+    
+    if v in symbol_map:
+        logger.info(f"Currency symbol '{v}' converted to '{symbol_map[v]}'")
+        return symbol_map[v]
+    
+    return v
+```
+
+### Logging Best Practices
+
+Always log data quality issues:
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+@field_validator("value", mode="before")
+@classmethod
+def coerce_positive(cls, v: Any) -> Any:
+    """Coerce with logging."""
+    if isinstance(v, (int, float)) and v < 0:
+        # Log at WARNING level for data quality issues
+        logger.warning(
+            f"Data quality issue: Negative value {v} coerced to {abs(v)}. "
+            f"Field: {cls.__name__}.value"
+        )
+        return abs(v)
+    return v
+```
+
+**Log Levels:**
+- `logger.info()` - Normal coercion (e.g., lowercase → uppercase)
+- `logger.warning()` - Data quality issues (e.g., negative → positive)
+- `logger.error()` - Serious issues that couldn't be fixed
+
+### Complete Example: Lenient MonetaryAmount
+
+```python
+import logging
+from typing import Any
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+logger = logging.getLogger(__name__)
+
+class MonetaryAmount(BaseModel):
+    """Monetary amount with lenient validation."""
+    model_config = ConfigDict(is_entity=False)
+    
+    value: float = Field(
+        ...,
+        description="Monetary amount (always positive)",
+        examples=[100.00, 1250.50, 89.99]
+    )
+    
+    currency: str | None = Field(
+        None,
+        description="ISO 4217 currency code (3 uppercase letters)",
+        examples=["EUR", "USD", "GBP", "CHF"]
+    )
+    
+    @field_validator("value", mode="before")
+    @classmethod
+    def coerce_positive(cls, v: Any) -> Any:
+        """Coerce negative values to positive."""
+        if isinstance(v, (int, float)) and v < 0:
+            logger.warning(
+                f"Negative monetary value {v} coerced to positive {abs(v)}. "
+                "Allowances/discounts should be positive amounts."
+            )
+            return abs(v)
+        return v
+    
+    @field_validator("currency", mode="before")
+    @classmethod
+    def normalize_currency(cls, v: Any) -> Any:
+        """Normalize currency to ISO 4217 format."""
+        if not v:
+            return v
+        
+        # Symbol to code mapping
+        symbol_map = {
+            "€": "EUR", "$": "USD", "£": "GBP", "¥": "JPY",
+            "₹": "INR", "₽": "RUB", "₩": "KRW", "₪": "ILS",
+        }
+        
+        v_str = str(v).strip()
+        
+        # Convert symbol to code
+        if v_str in symbol_map:
+            return symbol_map[v_str]
+        
+        # Normalize to uppercase
+        v_upper = v_str.upper()
+        
+        # Validate format
+        if len(v_upper) == 3 and v_upper.isalpha():
+            return v_upper
+        
+        # Log warning but don't fail
+        logger.warning(
+            f"Currency '{v}' does not match ISO 4217 format. "
+            f"Normalized to '{v_upper}' but may be invalid."
+        )
+        return v_upper if len(v_upper) == 3 else v_str
+```
+
+### Migration Guide: Strict → Lenient
+
+**Before (Strict):**
+```python
+@field_validator("value")
+@classmethod
+def validate_positive(cls, v: Any) -> Any:
+    if v < 0:
+        raise ValueError(f"Must be non-negative, got {v}")
+    return v
+```
+
+**After (Lenient):**
+```python
+@field_validator("value", mode="before")
+@classmethod
+def coerce_positive(cls, v: Any) -> Any:
+    if isinstance(v, (int, float)) and v < 0:
+        logger.warning(f"Negative value {v} coerced to {abs(v)}")
+        return abs(v)
+    return v
+```
+
+**Changes:**
+1. Add `mode="before"` to validator decorator
+2. Replace `raise ValueError` with coercion logic
+3. Add `logger.warning()` for data quality tracking
+4. Add type guard (`isinstance`) for safety
+5. Update docstring to explain lenient behavior
+
+---
+
 ## Testing Validators
 
 ### Test Individual Validators

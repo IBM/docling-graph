@@ -20,6 +20,7 @@ Version: 1.0.0
 Last Updated: 2026-01-25
 """
 
+import logging
 import re
 from datetime import date
 from enum import Enum
@@ -27,6 +28,9 @@ from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from typing_extensions import Self
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 # =============================================================================
 # HELPER FUNCTIONS
@@ -191,7 +195,7 @@ class PostalAddress(BaseModel):
         default_factory=list,
         description=(
             "Street address lines including street name, number, building, floor, etc. "
-            "CRITICAL: Preserve ALL spaces between words and numbers exactly as shown in the document. "
+            "Preserve ALL spaces between words and numbers exactly as shown in the document. "
             "Extract 'Rue du Lac 1268' NOT 'RueduLac1268'. "
             "Extract 'Marktgasse 28' NOT 'Marktgasse28'. "
             "Extract '123 Main Street' NOT '123MainStreet'. "
@@ -370,21 +374,82 @@ class MonetaryAmount(BaseModel):
         examples=["EUR", "USD", "GBP", "CHF"],
     )
 
-    @field_validator("value")
+    @field_validator("value", mode="before")
     @classmethod
-    def validate_positive(cls, v: Any) -> Any:
-        """Ensure amount is non-negative."""
-        if v < 0:
-            raise ValueError(f"Monetary amount must be non-negative, got {v}")
+    def coerce_positive(cls, v: Any) -> Any:
+        """
+        Coerce negative values to positive (use absolute value).
+        
+        Allowances and discounts are often represented as negative in accounting,
+        but should be stored as positive amounts. The charge_indicator field
+        (in AllowanceCharge) indicates direction: false=allowance, true=charge.
+        
+        This validator is lenient - it coerces instead of rejecting to prevent
+        extraction failures due to semantic differences in how amounts are represented.
+        """
+        if isinstance(v, (int, float)) and v < 0:
+            logger.warning(
+                f"Negative monetary value {v} coerced to positive {abs(v)}. "
+                "Allowances/discounts should be positive amounts."
+            )
+            return abs(v)
         return v
 
-    @field_validator("currency")
+    @field_validator("currency", mode="before")
     @classmethod
-    def validate_currency_format(cls, v: Any) -> Any:
-        """Ensure currency is 3 uppercase letters (ISO 4217)."""
-        if v and not (len(v) == 3 and v.isupper() and v.isalpha()):
-            raise ValueError(f"Currency must be 3 uppercase letters (ISO 4217), got {v}")
-        return v
+    def normalize_currency(cls, v: Any) -> Any:
+        """
+        Normalize currency to ISO 4217 format (3 uppercase letters).
+        
+        Accepts lowercase, mixed case, or common currency symbols and converts them.
+        This validator is lenient to prevent extraction failures.
+        """
+        if not v:
+            return v
+        
+        # Convert to string and strip whitespace
+        v_str = str(v).strip()
+        
+        # Common currency symbol mappings
+        symbol_map = {
+            "€": "EUR",
+            "$": "USD",
+            "£": "GBP",
+            "¥": "JPY",
+            "₹": "INR",
+            "₽": "RUB",
+            "₩": "KRW",
+            "₪": "ILS",
+            "₺": "TRY",
+            "₴": "UAH",
+            "₱": "PHP",
+            "฿": "THB",
+            "₫": "VND",
+            "₡": "CRC",
+            "₦": "NGN",
+            "₨": "PKR",
+            "₮": "MNT",
+            "₲": "PYG",
+            "₵": "GHS",
+        }
+        
+        # Check if it's a symbol
+        if v_str in symbol_map:
+            return symbol_map[v_str]
+        
+        # Normalize to uppercase
+        v_upper = v_str.upper()
+        
+        # Check if it's valid ISO 4217 format
+        if len(v_upper) == 3 and v_upper.isalpha():
+            return v_upper
+        
+        # If not valid, log warning but return as-is to avoid extraction failure
+        logger.warning(
+            f"Currency '{v}' does not match ISO 4217 format (3 uppercase letters). "
+            f"Normalized to '{v_upper}' but may be invalid."
+        )
+        return v_upper if len(v_upper) == 3 else v_str
 
     def __str__(self) -> str:
         """Format amount for display."""
@@ -402,31 +467,52 @@ class Quantity(BaseModel):
     value: float = Field(
         ...,
         description=(
-            "Numeric quantity value. "
-            "Extract numeric value from quantity fields. "
+            "Extract ONLY the numeric quantity value, NOT the unit. "
+            "Separate the number from any unit abbreviations. "
+            "Examples: '28 Std.' → value=28.0 (NOT 258.72), '10 kg' → value=10.0, '5.5 hours' → value=5.5. "
+            "DO NOT combine digits from different parts of the text. "
+            "DO NOT include unit abbreviations in the numeric value. "
             "Look for numbers near unit codes or quantity labels. "
-            "Common labels: 'Quantity', 'Qty', 'Quantité', 'Cantidad'."
+            "Common labels: 'Quantity', 'Qty', 'Quantité', 'Cantidad', 'Menge'."
         ),
-        examples=[1.0, 10.5, 100.0, 2.5],
+        examples=[1.0, 10.5, 28.0, 100.0, 2.5],
     )
 
     unit_code: str | None = Field(
         None,
         description=(
             "UN/CEFACT unit of measure code or common unit abbreviation. "
-            "Look for unit codes or abbreviations after quantities. "
+            "Extract the unit SEPARATELY from the numeric value. "
+            "Examples: '28 Std.' → unit_code='HUR' or 'Std.', '10 kg' → unit_code='KG'. "
             "Common units: 'EA' (each), 'KG' (kilogram), 'MTR' (meter), 'LTR' (liter), "
-            "'HUR' (hour), 'DAY' (day), 'PC' (piece), 'BOX', 'SET'."
+            "'HUR' or 'Std.' (hour/Stunden), 'DAY' (day), 'PC' (piece), 'BOX', 'SET', "
+            "'MIN' (minute), 'MON' (month), 'WEE' (week)."
         ),
-        examples=["EA", "KG", "MTR", "LTR", "HUR", "PC", "BOX"],
+        examples=["EA", "KG", "MTR", "LTR", "HUR", "Std.", "PC", "BOX", "DAY"],
     )
 
-    @field_validator("value")
+    @field_validator("value", mode="before")
     @classmethod
-    def validate_positive(cls, v: Any) -> Any:
-        """Ensure quantity is positive."""
-        if v <= 0:
-            raise ValueError(f"Quantity must be positive, got {v}")
+    def coerce_positive(cls, v: Any) -> Any:
+        """
+        Coerce negative quantities to positive (use absolute value).
+        
+        Negative quantities can occur in credit notes or returns, but should
+        be stored as positive values. The document type (CREDIT_NOTE) or line
+        context indicates the semantic meaning.
+        
+        This validator is lenient to prevent extraction failures.
+        """
+        if isinstance(v, (int, float)):
+            if v < 0:
+                logger.warning(
+                    f"Negative quantity {v} coerced to positive {abs(v)}. "
+                    "Credit notes/returns should use positive quantities."
+                )
+                return abs(v)
+            elif v == 0:
+                logger.warning(f"Zero quantity detected, setting to 1 as default.")
+                return 1.0
         return v
 
 
@@ -1991,13 +2077,61 @@ class BillingDocument(BaseModel):
         """Normalize document type enum."""
         return _normalize_enum(DocumentType, v)
 
-    @field_validator("currency", "tax_currency")
+    @field_validator("currency", "tax_currency", mode="before")
     @classmethod
-    def validate_currency_format(cls, v: Any) -> Any:
-        """Ensure currency is 3 uppercase letters (ISO 4217)."""
-        if v and not (len(v) == 3 and v.isupper() and v.isalpha()):
-            raise ValueError(f"Currency must be 3 uppercase letters (ISO 4217), got {v}")
-        return v
+    def normalize_currency(cls, v: Any) -> Any:
+        """
+        Normalize currency to ISO 4217 format (3 uppercase letters).
+        
+        Accepts lowercase, mixed case, or common currency symbols and converts them.
+        This validator is lenient to prevent extraction failures.
+        """
+        if not v:
+            return v
+        
+        # Convert to string and strip whitespace
+        v_str = str(v).strip()
+        
+        # Common currency symbol mappings
+        symbol_map = {
+            "€": "EUR",
+            "$": "USD",
+            "£": "GBP",
+            "¥": "JPY",
+            "₹": "INR",
+            "₽": "RUB",
+            "₩": "KRW",
+            "₪": "ILS",
+            "₺": "TRY",
+            "₴": "UAH",
+            "₱": "PHP",
+            "฿": "THB",
+            "₫": "VND",
+            "₡": "CRC",
+            "₦": "NGN",
+            "₨": "PKR",
+            "₮": "MNT",
+            "₲": "PYG",
+            "₵": "GHS",
+        }
+        
+        # Check if it's a symbol
+        if v_str in symbol_map:
+            return symbol_map[v_str]
+        
+        # Normalize to uppercase
+        v_upper = v_str.upper()
+        
+        # Check if it's valid ISO 4217 format
+        if len(v_upper) == 3 and v_upper.isalpha():
+            return v_upper
+        
+        # If not valid, log warning but return as-is to avoid extraction failure
+        logger.warning(
+            f"Currency '{v}' does not match ISO 4217 format (3 uppercase letters). "
+            f"Normalized to '{v_upper}' but may be invalid."
+        )
+        return v_upper if len(v_upper) == 3 else v_str
 
     def __str__(self) -> str:
         """Format document for display."""
