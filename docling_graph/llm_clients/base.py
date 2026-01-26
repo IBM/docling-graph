@@ -149,6 +149,70 @@ class BaseLlmClient(ABC):
             max_tokens=self.max_tokens,
         )
 
+    def extract_from_slots_batch(
+        self,
+        slots: list[dict[str, str]],
+        entity_schema: str,
+        entity_type_name: str,
+        prompt_version: str = "v1",
+    ) -> Dict[str, Any]:
+        """
+        Extract entities from a batch of document slots.
+
+        This method is designed for bottom-up extraction pipelines that work
+        with small LLMs by processing focused document slots rather than
+        full documents.
+
+        Args:
+            slots: List of slot dictionaries with 'slot_id' and 'content'
+            entity_schema: JSON schema for the entity type to extract
+            entity_type_name: Name of the entity type (e.g., "Material", "Component")
+            prompt_version: Version identifier for prompt caching (default: "v1")
+
+        Returns:
+            Parsed JSON response in SlotBatchResponse format:
+            {
+                "slots": [
+                    {
+                        "slotid": "table0row5",
+                        "entities": [{...entity_fields, "evidence": {...}}]
+                    }
+                ]
+            }
+
+        Raises:
+            ClientError: If API call or parsing fails
+        """
+        from .prompts import get_slot_batch_extraction_prompt
+
+        # Get model config for adaptive prompting
+        try:
+            from .config import get_model_config
+
+            model_config = get_model_config(self._provider_id(), self.model)
+        except Exception:
+            model_config = None
+
+        # Generate prompts
+        prompt = get_slot_batch_extraction_prompt(
+            slots=slots,
+            entity_schema=entity_schema,
+            entity_type_name=entity_type_name,
+            model_config=model_config,
+        )
+
+        # Use existing get_json_response method
+        response = self.get_json_response(prompt, entity_schema)
+
+        # Validate response structure
+        if not isinstance(response, dict) or "slots" not in response:
+            raise ValueError(
+                f"Invalid slot batch response format. Expected dict with 'slots' key, "
+                f"got: {type(response).__name__}"
+            )
+
+        return response
+
     def _prepare_messages(self, prompt: str | dict) -> list[Dict[str, str]]:
         """
         Convert prompt to standardized message format.

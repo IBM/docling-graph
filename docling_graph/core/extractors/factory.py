@@ -11,6 +11,7 @@ from ...protocols import Backend
 from .backends.llm_backend import LlmBackend
 from .backends.vlm_backend import VlmBackend
 from .extractor_base import BaseExtractor
+from .strategies.bottom_up import BottomUpStrategy
 from .strategies.many_to_one import ManyToOneStrategy
 from .strategies.one_to_one import OneToOneStrategy
 
@@ -20,25 +21,35 @@ class ExtractorFactory:
 
     @staticmethod
     def create_extractor(
-        processing_mode: Literal["one-to-one", "many-to-one"],
+        processing_mode: Literal["one-to-one", "many-to-one", "bottom-up"],
         backend_name: Literal["vlm", "llm"],
         model_name: str | None = None,
         llm_client: BaseLlmClient | None = None,
         docling_config: str = "ocr",
         use_chunking: bool = True,
         llm_consolidation: bool = False,
+        min_text_length: int = 20,
+        enable_caching: bool = False,
+        enable_rate_limiting: bool = True,
+        max_retries: int = 3,
+        enable_metrics: bool = True,
     ) -> BaseExtractor:
         """
         Create an extractor based on configuration.
 
         Args:
-            processing_mode (str): 'one-to-one' or 'many-to-one'
+            processing_mode (str): 'one-to-one', 'many-to-one', or 'bottom-up'
             backend_name (str): 'vlm' or 'llm'
             model_name (str): Model name for VLM (optional)
             llm_client (BaseLlmClient): LLM client instance (optional)
             docling_config (str): Docling pipeline configuration ('default' or 'vlm')
             llm_consolidation (bool): Whether to use LLM consolidation.
             use_chunking (bool): Whether to use chunking.
+            min_text_length (int): Minimum text length for bottom-up text slots (default: 20)
+            enable_caching (bool): Enable extraction caching for bottom-up (default: False)
+            enable_rate_limiting (bool): Enable rate limiting for bottom-up (default: True)
+            max_retries (int): Maximum retries for failed API calls in bottom-up (default: 3)
+            enable_metrics (bool): Enable metrics collection for bottom-up (default: True)
 
         Returns:
             BaseExtractor: Configured extractor instance.
@@ -87,6 +98,28 @@ class ExtractorFactory:
                 strategy_args["llm_consolidation"] = llm_consolidation
 
             extractor = ManyToOneStrategy(**strategy_args)
+        elif processing_mode == "bottom-up":
+            # BottomUpStrategy requires LLM backend
+            if backend_name != "llm":
+                raise ValueError("Bottom-up mode requires LLM backend")
+            if not llm_client:
+                raise ValueError("Bottom-up mode requires llm_client parameter")
+
+            rich_print(f" • Min text length: [cyan]{min_text_length}[/cyan]")
+            rich_print(f" • Caching: [cyan]{enable_caching}[/cyan]")
+            rich_print(f" • Rate limiting: [cyan]{enable_rate_limiting}[/cyan]")
+            rich_print(f" • Max retries: [cyan]{max_retries}[/cyan]")
+            rich_print(f" • Metrics: [cyan]{enable_metrics}[/cyan]")
+
+            extractor = BottomUpStrategy(
+                backend=backend_obj,
+                docling_config=docling_config,
+                min_text_length=min_text_length,
+                enable_caching=enable_caching,
+                enable_rate_limiting=enable_rate_limiting,
+                max_retries=max_retries,
+                enable_metrics=enable_metrics,
+            )
         else:
             raise ValueError(f"Unknown processing_mode: {processing_mode}")
 

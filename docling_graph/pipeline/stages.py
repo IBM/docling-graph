@@ -463,7 +463,9 @@ class ExtractionStage(PipelineStage):
         """
         conf = context.config.to_dict()
 
-        processing_mode = cast(Literal["one-to-one", "many-to-one"], conf["processing_mode"])
+        processing_mode = cast(
+            Literal["one-to-one", "many-to-one", "bottom-up"], conf["processing_mode"]
+        )
         backend = cast(Literal["vlm", "llm"], conf["backend"])
         inference = cast(str, conf["inference"])
 
@@ -488,14 +490,30 @@ class ExtractionStage(PipelineStage):
             llm_client = self._initialize_llm_client(
                 model_config["provider"], model_config["model"]
             )
-            return ExtractorFactory.create_extractor(
-                processing_mode=processing_mode,
-                backend_name="llm",
-                llm_client=llm_client,
-                docling_config=conf["docling_config"],
-                llm_consolidation=conf.get("llm_consolidation", True),
-                use_chunking=conf.get("use_chunking", True),
-            )
+
+            # Build extractor arguments
+            extractor_args = {
+                "processing_mode": processing_mode,
+                "backend_name": "llm",
+                "llm_client": llm_client,
+                "docling_config": conf["docling_config"],
+                "llm_consolidation": conf.get("llm_consolidation", True),
+                "use_chunking": conf.get("use_chunking", True),
+            }
+
+            # Add bottom-up specific parameters if in bottom-up mode
+            if processing_mode == "bottom-up":
+                extractor_args.update(
+                    {
+                        "min_text_length": conf.get("min_text_length", 20),
+                        "enable_caching": conf.get("enable_caching", False),
+                        "enable_rate_limiting": conf.get("enable_rate_limiting", True),
+                        "max_retries": conf.get("max_retries", 3),
+                        "enable_metrics": conf.get("enable_metrics", True),
+                    }
+                )
+
+            return ExtractorFactory.create_extractor(**extractor_args)
 
     @staticmethod
     def _get_model_config(

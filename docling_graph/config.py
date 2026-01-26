@@ -89,7 +89,9 @@ class PipelineConfig(BaseModel):
     # Core processing settings (with defaults)
     backend: Literal["llm", "vlm"] = Field(default="llm")
     inference: Literal["local", "remote"] = Field(default="local")
-    processing_mode: Literal["one-to-one", "many-to-one"] = Field(default="many-to-one")
+    processing_mode: Literal["one-to-one", "many-to-one", "bottom-up"] = Field(
+        default="many-to-one"
+    )
 
     # Docling settings (with defaults)
     docling_config: Literal["ocr", "vision"] = Field(default="ocr")
@@ -105,6 +107,23 @@ class PipelineConfig(BaseModel):
     use_chunking: bool = True
     llm_consolidation: bool = False
     max_batch_size: int = 1
+
+    # Bottom-up strategy settings (with defaults)
+    min_text_length: int = Field(
+        default=20, description="Minimum text length for text block slots in bottom-up extraction"
+    )
+    enable_caching: bool = Field(
+        default=False, description="Enable per-slot extraction caching in bottom-up mode"
+    )
+    enable_rate_limiting: bool = Field(
+        default=True, description="Enable rate limiting based on provider limits in bottom-up mode"
+    )
+    max_retries: int = Field(
+        default=3, description="Maximum number of retries for failed API calls in bottom-up mode"
+    )
+    enable_metrics: bool = Field(
+        default=True, description="Enable comprehensive metrics collection in bottom-up mode"
+    )
 
     # Export settings (with defaults)
     export_format: Literal["csv", "cypher"] = Field(default="csv")
@@ -176,6 +195,12 @@ class PipelineConfig(BaseModel):
             "dump_to_disk": self.dump_to_disk,
             "include_trace": self.include_trace,
             "models": self.models.model_dump(),
+            # Bottom-up strategy settings
+            "min_text_length": self.min_text_length,
+            "enable_caching": self.enable_caching,
+            "enable_rate_limiting": self.enable_rate_limiting,
+            "max_retries": self.max_retries,
+            "enable_metrics": self.enable_metrics,
         }
 
     def run(self) -> None:

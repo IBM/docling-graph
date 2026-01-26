@@ -254,3 +254,106 @@ DRAFT MERGE:
 
 Review the draft against raw extractions. Fix errors, remove duplicates, ensure completeness.
 Output final JSON only."""
+
+
+# Slot-based extraction prompts for bottom-up pipeline
+
+_SLOT_EXTRACTION_INSTRUCTIONS_SIMPLE = (
+    "1. Read each slot carefully.\n"
+    "2. Extract entities matching the schema.\n"
+    "3. Return valid JSON with slotid and entities.\n"
+    "4. Empty entities list if no data found.\n"
+)
+
+_SLOT_EXTRACTION_INSTRUCTIONS_STANDARD = (
+    "1. Process each slot independently.\n"
+    "2. Extract ALL entities matching the schema from each slot.\n"
+    "3. Return JSON with 'slots' array containing one entry per input slot.\n"
+    "4. Each slot entry must have 'slotid' (matching input) and 'entities' array.\n"
+    "5. Include 'evidence' field with 'quote' and 'local_span' for each entity.\n"
+    "6. Return empty 'entities' array if no data found in a slot.\n"
+)
+
+_SLOT_EXTRACTION_INSTRUCTIONS_ADVANCED = (
+    "1. Carefully analyze each slot's content.\n"
+    "2. Extract ALL entities that match the provided schema.\n"
+    "3. For each entity, include evidence: exact quote and character span.\n"
+    "4. Return structured JSON with one entry per input slot.\n"
+    "5. Maintain slot identity: each output slotid must match an input slot_id.\n"
+    "6. Empty entities array is valid if no relevant data found.\n"
+    "7. Preserve exact values from source text.\n"
+)
+
+
+def get_slot_batch_extraction_prompt(
+    slots: list[dict[str, str]],
+    entity_schema: str,
+    entity_type_name: str,
+    model_config: ModelConfig | None = None,
+) -> dict[str, str]:
+    """
+    Generate prompts for batched slot extraction.
+
+    Args:
+        slots: List of slot dictionaries with 'slot_id' and 'content'
+        entity_schema: JSON schema for the entity type to extract
+        entity_type_name: Name of the entity type (e.g., "Material", "Component")
+        model_config: Optional model configuration for adaptive prompting
+
+    Returns:
+        Dictionary with 'system' and 'user' keys containing the prompts
+    """
+    # Select instructions based on model capability
+    if model_config:
+        if model_config.capability == ModelCapability.SIMPLE:
+            instructions = _SLOT_EXTRACTION_INSTRUCTIONS_SIMPLE
+        elif model_config.capability == ModelCapability.ADVANCED:
+            instructions = _SLOT_EXTRACTION_INSTRUCTIONS_ADVANCED
+        else:
+            instructions = _SLOT_EXTRACTION_INSTRUCTIONS_STANDARD
+    else:
+        instructions = _SLOT_EXTRACTION_INSTRUCTIONS_STANDARD
+
+    # Build system prompt
+    system_prompt = f"""You are an expert data extraction assistant specialized in extracting {entity_type_name} entities from document slots.
+
+Instructions:
+{instructions}
+
+CRITICAL: You must return exactly one entry in the 'slots' array for each input slot, with the same 'slotid'.
+Never create a slotid that was not provided in the input.
+
+Response format:
+{{
+  "slots": [
+    {{
+      "slotid": "slot_id_from_input",
+      "entities": [
+        {{
+          ...entity_fields...,
+          "evidence": {{"quote": "exact text", "local_span": {{"start": 0, "end": 10}}}}
+        }}
+      ]
+    }}
+  ]
+}}"""
+
+    # Build user prompt with slots
+    slots_text = []
+    for i, slot in enumerate(slots, 1):
+        slot_id = slot.get("slot_id", f"unknown_{i}")
+        content = slot.get("content", "")
+        slots_text.append(f"SLOT {i} (ID: {slot_id}):\n{content}\n")
+
+    user_prompt = f"""Extract {entity_type_name} entities from these document slots:
+
+{"=" * 60}
+{"".join(slots_text)}
+{"=" * 60}
+
+Entity Schema:
+{entity_schema}
+
+Extract all {entity_type_name} entities from the slots above. Return JSON following the response format."""
+
+    return {"system": system_prompt, "user": user_prompt}
