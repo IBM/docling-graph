@@ -76,19 +76,13 @@ class TestExtractionStage:
 
     @patch("docling_graph.pipeline.stages.ExtractorFactory.create_extractor")
     @patch("docling_graph.pipeline.stages.ExtractionStage._initialize_llm_client")
-    @patch("docling_graph.llm_clients.config.get_model_config")
-    def test_extraction_success(self, mock_get_model_config, mock_init_client, mock_factory):
+    def test_extraction_success(self, mock_init_client, mock_factory):
         """Test successful extraction."""
         from pydantic import BaseModel
 
         class TestModel(BaseModel):
             name: str
             value: int
-
-        # Mock model config to avoid vLLM connection
-        mock_config = MagicMock()
-        mock_config.context_limit = 4096
-        mock_get_model_config.return_value = mock_config
 
         # Mock LLM client initialization
         mock_client = Mock()
@@ -118,20 +112,12 @@ class TestExtractionStage:
 
     @patch("docling_graph.pipeline.stages.ExtractorFactory.create_extractor")
     @patch("docling_graph.pipeline.stages.ExtractionStage._initialize_llm_client")
-    @patch("docling_graph.llm_clients.config.get_model_config")
-    def test_extraction_no_models_raises_error(
-        self, mock_get_model_config, mock_init_client, mock_factory
-    ):
+    def test_extraction_no_models_raises_error(self, mock_init_client, mock_factory):
         """Test that no models extracted raises ExtractionError."""
         from pydantic import BaseModel
 
         class TestModel(BaseModel):
             name: str
-
-        # Mock model config to avoid vLLM connection
-        mock_config = MagicMock()
-        mock_config.context_limit = 4096
-        mock_get_model_config.return_value = mock_config
 
         # Mock LLM client initialization
         mock_client = Mock()

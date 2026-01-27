@@ -6,12 +6,8 @@ Based on https://ai.google.dev/gemini-api/docs/structured-output
 import logging
 from typing import Any, Dict
 
-from dotenv import load_dotenv
-
 from ..exceptions import ClientError, ConfigurationError
 from .base import BaseLlmClient
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +36,7 @@ class GeminiClient(BaseLlmClient):
 
     def _provider_id(self) -> str:
         """Return provider ID for config lookup."""
-        return "google"
+        return "gemini"
 
     def _setup_client(self, **kwargs: Any) -> None:
         """Initialize Gemini-specific client."""
@@ -50,8 +46,13 @@ class GeminiClient(BaseLlmClient):
                 details={"package": "google-genai", "install": "pip install google-genai"},
             )
 
-        self.api_key = self._get_required_env("GEMINI_API_KEY")
-        self.client = genai.Client(api_key=self.api_key)
+        api_key = self.connection.api_key.get_secret_value() if self.connection.api_key else None
+        if not api_key:
+            raise ConfigurationError(
+                "Gemini API key missing",
+                details={"provider": "gemini"},
+            )
+        self.client = genai.Client(api_key=api_key)
 
         logger.info(f"Gemini client initialized for model: {self.model}")
 
@@ -82,10 +83,19 @@ class GeminiClient(BaseLlmClient):
 
             contents = "\n\n".join(contents_parts)
 
-            config = types.GenerateContentConfig(
-                response_mime_type="application/json",
-                temperature=0.1,
-            )
+            gen = self.generation
+            config_kwargs: dict[str, Any] = {
+                "response_mime_type": "application/json",
+                "temperature": gen.temperature,
+            }
+            if gen.top_p is not None:
+                config_kwargs["top_p"] = gen.top_p
+            if gen.top_k is not None:
+                config_kwargs["top_k"] = gen.top_k
+            if gen.max_tokens is not None:
+                config_kwargs["max_output_tokens"] = gen.max_tokens
+
+            config = types.GenerateContentConfig(**config_kwargs)
 
             response = self.client.models.generate_content(
                 model=self.model, contents=contents, config=config

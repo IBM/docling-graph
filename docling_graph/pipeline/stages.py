@@ -486,7 +486,9 @@ class ExtractionStage(PipelineStage):
             )
         else:
             llm_client = self._initialize_llm_client(
-                model_config["provider"], model_config["model"]
+                model_config["provider"],
+                model_config["model"],
+                context.config.llm_overrides,
             )
             return ExtractorFactory.create_extractor(
                 processing_mode=processing_mode,
@@ -513,19 +515,8 @@ class ExtractionStage(PipelineStage):
                 details={"backend": backend, "inference": inference},
             )
 
-        provider = provider_override or model_config.get(
-            "provider", "ollama" if inference == "local" else "mistral"
-        )
-
-        if model_override:
-            model = model_override
-        elif provider_override and inference == "remote":
-            providers = model_config.get("providers", {})
-            model = providers.get(provider_override, {}).get(
-                "default_model", model_config.get("default_model")
-            )
-        else:
-            model = model_config.get("default_model")
+        provider = provider_override or model_config.get("provider")
+        model = model_override or model_config.get("model")
 
         if not model:
             raise ConfigurationError(
@@ -535,10 +526,22 @@ class ExtractionStage(PipelineStage):
         return {"model": model, "provider": provider}
 
     @staticmethod
-    def _initialize_llm_client(provider: str, model: str) -> BaseLlmClient:
+    def _initialize_llm_client(
+        provider: str, model: str, overrides: Any | None = None
+    ) -> BaseLlmClient:
         """Initialize LLM client based on provider."""
+        from docling_graph.llm_clients.config import (
+            LlmRuntimeOverrides,
+            resolve_effective_model_config,
+        )
+
         client_class = get_client(provider)
-        return client_class(model=model)
+        effective_config = resolve_effective_model_config(
+            provider,
+            model,
+            overrides=overrides if isinstance(overrides, LlmRuntimeOverrides) else None,
+        )
+        return client_class(model_config=effective_config)
 
     def _extract_from_text(self, context: PipelineContext) -> List[Any]:
         """
@@ -593,7 +596,11 @@ class ExtractionStage(PipelineStage):
             conf.get("provider_override"),
         )
 
-        llm_client = self._initialize_llm_client(model_config["provider"], model_config["model"])
+        llm_client = self._initialize_llm_client(
+            model_config["provider"],
+            model_config["model"],
+            context.config.llm_overrides,
+        )
 
         # Import LlmBackend here to avoid circular imports
         from ..core.extractors.backends.llm_backend import LlmBackend

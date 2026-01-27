@@ -33,6 +33,7 @@ class DocumentChunker:
         tokenizer_name: str | None = None,
         max_tokens: int | None = None,
         provider: str | None = None,
+        model: str | None = None,
         merge_peers: bool = True,
         schema_size: int = 0,
     ) -> None:
@@ -45,6 +46,7 @@ class DocumentChunker:
             tokenizer_name: Name of the tokenizer to use
             max_tokens: Maximum tokens per chunk (if None, calculated from provider)
             provider: LLM provider name (e.g., "watsonx", "openai")
+            model: Model name (optional, improves chunk sizing)
             merge_peers: Whether to merge peer sections in chunking
             schema_size: Size of Pydantic schema JSON for dynamic chunk sizing
         """
@@ -60,7 +62,7 @@ class DocumentChunker:
         # Step 2: Determine max_tokens (using centralized lookup with schema awareness)
         if max_tokens is None:
             if provider is not None:
-                max_tokens = get_recommended_chunk_size(provider, "", schema_size)
+                max_tokens = get_recommended_chunk_size(provider, model or "", schema_size)
             else:
                 max_tokens = 5120
 

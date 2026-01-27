@@ -156,7 +156,7 @@ print(config_dict)
 
 ## Complete Examples
 
-### 📍 Minimal Configuration (API Mode)
+### 📍 Minimal Config (API Mode)
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig
@@ -173,7 +173,7 @@ graph = context.knowledge_graph
 invoice = context.pydantic_model
 ```
 
-### Example 1b: With File Exports
+### 📍 Minimal Config With File Exports
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig
@@ -260,13 +260,13 @@ run_pipeline(config)
 ### 📍 Custom Models Configuration
 
 ```python
-from docling_graph import run_pipeline, PipelineConfig, ModelsConfig, ModelConfig
+from docling_graph import LLMConfig, ModelConfig, ModelsConfig, PipelineConfig, run_pipeline
 
 # Custom models configuration
 models = ModelsConfig(
     llm=LLMConfig(
         remote=ModelConfig(
-            default_model="gpt-4-turbo",
+            model="gpt-4o",
             provider="openai"
         )
     )
@@ -282,6 +282,8 @@ config = PipelineConfig(
 
 run_pipeline(config)
 ```
+
+For full registry and override details, see `docs/usage/api/llm-model-config.md`.
 
 ---
 

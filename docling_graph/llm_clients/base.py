@@ -11,11 +11,10 @@ Each client only needs to implement provider-specific API calls.
 """
 
 import logging
-import os
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-from ..exceptions import ConfigurationError
+from .config import EffectiveModelConfig
 from .response_handler import ResponseHandler
 
 logger = logging.getLogger(__name__)
@@ -34,30 +33,27 @@ class BaseLlmClient(ABC):
     - _provider_id(): Return provider identifier for config lookup
     """
 
-    def __init__(
-        self, model: str, max_tokens: int | None = None, timeout: int | None = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, model_config: EffectiveModelConfig, **kwargs: Any) -> None:
         """
         Initialize LLM client.
 
         Args:
-            model: Model identifier
-            max_tokens: Maximum tokens to generate (overrides config)
-            timeout: Request timeout in seconds (overrides config)
+            model_config: Fully-resolved model configuration
             **kwargs: Provider-specific parameters
         """
-        self.model = model
-        self._context_limit: int = 8192  # Default, will be overridden
-        self._max_tokens: int | None = max_tokens  # User override
-        self._timeout: int | None = timeout  # User override
+        self._config = model_config
+        self.model = model_config.provider_model
+        self.model_id = model_config.model_id
+        self._context_limit = model_config.context_limit
+        self._max_output_tokens = model_config.max_output_tokens
+        self._generation = model_config.generation
+        self._reliability = model_config.reliability
+        self._connection = model_config.connection
 
         # Provider-specific setup
         self._setup_client(**kwargs)
 
-        # Load model configuration
-        self._load_model_config()
-
-        logger.info(f"{self.__class__.__name__} initialized for model: {model}")
+        logger.info(f"{self.__class__.__name__} initialized for model: {self.model}")
 
     @abstractmethod
     def _setup_client(self, **kwargs: Any) -> None:
@@ -197,81 +193,10 @@ class BaseLlmClient(ABC):
         # (Conservative: don't assume truncation without evidence)
         return False
 
-    def _load_model_config(self) -> None:
-        """Load model configuration from centralized registry."""
-        try:
-            from .config import get_model_config, get_provider_config
-
-            provider_id = self._provider_id()
-            config = get_model_config(provider_id, self.model)
-            provider_config = get_provider_config(provider_id)
-
-            if config:
-                self._context_limit = config.context_limit
-                if hasattr(config, "max_new_tokens"):
-                    self._max_new_tokens = config.max_new_tokens
-
-                # Load max_tokens (use user override if provided)
-                if self._max_tokens is None:
-                    if config.max_tokens is not None:
-                        self._max_tokens = config.max_tokens
-                    elif provider_config:
-                        self._max_tokens = provider_config.default_max_tokens
-                    else:
-                        self._max_tokens = 8192
-
-                # Load timeout (use user override if provided)
-                if self._timeout is None:
-                    if config.timeout is not None:
-                        self._timeout = config.timeout
-                    elif provider_config:
-                        self._timeout = provider_config.timeout_seconds
-                    else:
-                        self._timeout = 300
-
-                logger.info(
-                    f"{self.__class__.__name__}: "
-                    f"context={self._context_limit}, "
-                    f"max_tokens={self._max_tokens}, "
-                    f"timeout={self._timeout}s"
-                )
-            else:
-                # Fallback defaults
-                self._max_tokens = self._max_tokens or 8192
-                self._timeout = self._timeout or 300
-                logger.warning(
-                    f"{self.__class__.__name__}: Model '{self.model}' not in config, using defaults"
-                )
-        except Exception as e:
-            logger.warning(f"Failed to load model config: {e}")
-            self._max_tokens = self._max_tokens or 8192
-            self._timeout = self._timeout or 300
-
-    @staticmethod
-    def _get_required_env(key: str) -> str:
-        """
-        Get required environment variable.
-
-        Args:
-            key: Environment variable name
-
-        Returns:
-            Environment variable value
-
-        Raises:
-            ConfigurationError: If variable is not set
-        """
-        value = os.getenv(key)
-        if not value:
-            raise ConfigurationError(
-                f"Required environment variable not set: {key}", details={"variable": key}
-            )
-        return value
-
     @property
     def provider(self) -> str:
         """Return the provider identifier for this client."""
-        return self._provider_id()
+        return self._config.provider_id
 
     @property
     def context_limit(self) -> int:
@@ -281,9 +206,29 @@ class BaseLlmClient(ABC):
     @property
     def max_tokens(self) -> int:
         """Return the maximum tokens to generate."""
-        return self._max_tokens if self._max_tokens is not None else 8192
+        return self._generation.max_tokens or self._max_output_tokens
 
     @property
     def timeout(self) -> int:
         """Return the request timeout in seconds."""
-        return self._timeout if self._timeout is not None else 300
+        return self._reliability.timeout_s
+
+    @property
+    def generation(self) -> Any:
+        """Return resolved generation settings."""
+        return self._generation
+
+    @property
+    def reliability(self) -> Any:
+        """Return resolved reliability settings."""
+        return self._reliability
+
+    @property
+    def connection(self) -> Any:
+        """Return resolved connection settings."""
+        return self._connection
+
+    @property
+    def model_config(self) -> EffectiveModelConfig:
+        """Return the resolved model configuration."""
+        return self._config

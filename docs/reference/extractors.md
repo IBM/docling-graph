@@ -170,9 +170,11 @@ class LLMBackend(TextExtractionBackendProtocol):
 ```python
 from docling_graph.core.extractors.backends import LLMBackend
 from docling_graph.llm_clients import OllamaClient
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
 # STANDARD tier model (7B-13B)
-client = OllamaClient(model="llama3.1:8b")
+effective = resolve_effective_model_config("ollama", "llama3.1:8b")
+client = OllamaClient(model_config=effective)
 backend = LLMBackend(llm_client=client)
 
 # Automatically uses STANDARD tier prompts

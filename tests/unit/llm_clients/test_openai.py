@@ -1,29 +1,41 @@
-import json
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, patch
 
-import pytest
-
+from docling_graph.llm_clients.config import (
+    EffectiveModelConfig,
+    GenerationDefaults,
+    ModelCapability,
+    ReliabilityDefaults,
+    ResolvedConnection,
+)
 from docling_graph.llm_clients.openai import OpenAIClient
 
 
-@pytest.fixture
-def mock_env_vars(monkeypatch):
-    """Mock environment variables."""
-    monkeypatch.setenv("OPENAI_API_KEY", "test-api-key-123")
-
-
 @patch("docling_graph.llm_clients.openai.OpenAI")
-@patch("docling_graph.llm_clients.config.get_model_config")
-def test_openai_client_init(mock_get_model_config, mock_openai_class, mock_env_vars):
+def test_openai_client_init(mock_openai_class):
     """Test OpenAI client initialization."""
     mock_openai_class.return_value = MagicMock()
-    mock_config = MagicMock()
-    mock_config.context_limit = 4096
-    mock_get_model_config.return_value = mock_config
-
-    client = OpenAIClient(model="gpt-4")
+    model_config = _make_effective_config()
+    client = OpenAIClient(model_config=model_config)
 
     assert client.model == "gpt-4"
-    assert client.api_key == "test-api-key-123"
     assert client.context_limit == 4096
     mock_openai_class.assert_called_once_with(api_key="test-api-key-123")
+
+
+def _make_effective_config() -> EffectiveModelConfig:
+    return EffectiveModelConfig(
+        model_id="gpt-4",
+        provider_id="openai",
+        provider_model="gpt-4",
+        context_limit=4096,
+        max_output_tokens=2048,
+        capability=ModelCapability.ADVANCED,
+        generation=GenerationDefaults(max_tokens=512),
+        reliability=ReliabilityDefaults(timeout_s=30, max_retries=0),
+        connection=ResolvedConnection(api_key="test-api-key-123"),
+        tokenizer="tiktoken",
+        content_ratio=0.8,
+        merge_threshold=0.9,
+        rate_limit_rpm=None,
+        supports_batching=True,
+    )

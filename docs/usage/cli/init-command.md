@@ -127,14 +127,14 @@ docling:
 models:
   llm:
     local:
-      default_model: ibm-granite/granite-4.0-1b
+      model: ibm-granite/granite-4.0-1b
       provider: vllm
     remote:
-      default_model: mistral-small-latest
+      model: mistral-small-latest
       provider: mistral
   vlm:
     local:
-      default_model: numind/NuExtract-2.0-8B
+      model: numind/NuExtract-2.0-8B
       provider: docling
 
 output:
@@ -153,14 +153,14 @@ defaults:
 models:
   llm:
     local:
-      default_model: llama3:8b
+      model: llama3:8b
       provider: ollama
     remote:
-      default_model: mistral-small-latest
+      model: mistral-small-latest
       provider: mistral
   vlm:
     local:
-      default_model: numind/NuExtract-2.0-8B
+      model: numind/NuExtract-2.0-8B
       provider: docling
 
 output:
@@ -182,14 +182,14 @@ docling:
 models:
   llm:
     local:
-      default_model: ibm-granite/granite-4.0-1b
+      model: ibm-granite/granite-4.0-1b
       provider: vllm
     remote:
-      default_model: mistral-small-latest
+      model: mistral-small-latest
       provider: mistral
   vlm:
     local:
-      default_model: numind/NuExtract-2.0-8B
+      model: numind/NuExtract-2.0-8B
       provider: docling
 
 output:
@@ -398,7 +398,7 @@ defaults:
 models:
   llm:
     remote:
-      default_model: mistral-small-latest
+      model: mistral-small-latest
       provider: mistral
 ```
 

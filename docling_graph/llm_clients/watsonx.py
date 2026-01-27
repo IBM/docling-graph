@@ -9,17 +9,12 @@ This refactored version reduces from 214 lines to ~100 lines by:
 """
 
 import logging
-import os
 from typing import Any, Dict
 
-from dotenv import load_dotenv
 from rich import print as rich_print
 
 from ..exceptions import ClientError, ConfigurationError
 from .base import BaseLlmClient
-
-# Load environment variables
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -77,20 +72,24 @@ class WatsonxClient(BaseLlmClient):
                 },
             )
 
-        # Load credentials
-        self.api_key = self._get_required_env("WATSONX_API_KEY")
-        self.project_id = self._get_required_env("WATSONX_PROJECT_ID")
-        self.url = os.getenv("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
+        api_key = self.connection.api_key.get_secret_value() if self.connection.api_key else None
+        project_id = self.connection.project_id
+        base_url = self.connection.base_url or "https://us-south.ml.cloud.ibm.com"
+        if not api_key or not project_id:
+            raise ConfigurationError(
+                "WatsonX credentials missing",
+                details={"provider": "watsonx"},
+            )
 
         # Initialize WatsonX client
-        credentials = Credentials(url=self.url, api_key=self.api_key)
+        credentials = Credentials(url=base_url, api_key=api_key)
         self.client = WatsonxLLM(
             model_id=self.model,
             credentials=credentials,
-            project_id=self.project_id,
+            project_id=project_id,
         )
 
-        rich_print(f"[blue][WatsonX][/blue] Connected to: [cyan]{self.url}[/cyan]")
+        rich_print(f"[blue][WatsonX][/blue] Connected to: [cyan]{base_url}[/cyan]")
         rich_print(f"[blue][WatsonX][/blue] Model: [cyan]{self.model}[/cyan]")
 
     def _call_api(
@@ -119,12 +118,13 @@ class WatsonxClient(BaseLlmClient):
         prompt_text += "\n\nRespond with valid JSON only."
 
         # Configure generation parameters
+        gen = self.generation
         gen_params = {
-            "decoding_method": "greedy",
-            "temperature": 0.1,
-            "max_new_tokens": getattr(self, "_max_new_tokens", 2048),
-            "min_new_tokens": 1,
-            "repetition_penalty": 1.0,
+            "decoding_method": gen.decoding_method or "greedy",
+            "temperature": gen.temperature,
+            "max_new_tokens": gen.max_tokens or self._max_output_tokens,
+            "min_new_tokens": gen.min_tokens or 1,
+            "repetition_penalty": gen.repetition_penalty or 1.0,
         }
 
         try:

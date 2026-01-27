@@ -218,9 +218,11 @@ config = PipelineConfig(
 ```python
 from docling_graph.core.extractors.backends import LlmBackend
 from docling_graph.llm_clients import OllamaClient
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
 # Initialize client
-client = OllamaClient(model="llama3.1:8b")
+effective = resolve_effective_model_config("ollama", "llama3.1:8b")
+client = OllamaClient(model_config=effective)
 
 # Create backend
 backend = LlmBackend(llm_client=client)

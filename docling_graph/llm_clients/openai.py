@@ -6,17 +6,12 @@ and ResponseHandler.
 """
 
 import logging
-import os
 from typing import TYPE_CHECKING, Any, Dict
 
-from dotenv import load_dotenv
 from rich import print as rich_print
 
 from ..exceptions import ClientError, ConfigurationError
 from .base import BaseLlmClient
-
-# Load environment variables
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -60,11 +55,20 @@ class OpenAIClient(BaseLlmClient):
                 },
             )
 
-        # Load API key
-        self.api_key = self._get_required_env("OPENAI_API_KEY")
+        api_key = self.connection.api_key.get_secret_value() if self.connection.api_key else None
+        if not api_key:
+            raise ConfigurationError(
+                "OpenAI API key missing",
+                details={"provider": "openai"},
+            )
 
-        # Initialize client
-        self.client = OpenAI(api_key=self.api_key)
+        client_kwargs: dict[str, Any] = {"api_key": api_key}
+        if self.connection.base_url:
+            client_kwargs["base_url"] = self.connection.base_url
+        if self.connection.organization:
+            client_kwargs["organization"] = self.connection.organization
+
+        self.client = OpenAI(**client_kwargs)
 
         rich_print(f"[blue][OpenAI][/blue] Initialized for model: [cyan]{self.model}[/cyan]")
 
@@ -91,18 +95,30 @@ class OpenAIClient(BaseLlmClient):
             api_messages = messages
 
         try:
-            # Get max_tokens and timeout from instance
-            max_tokens = getattr(self, "_max_tokens", 8192)
-            timeout_seconds = getattr(self, "_timeout", 300)
+            gen = self.generation
+            max_tokens = gen.max_tokens or self._max_output_tokens
+            timeout_seconds = self.timeout
 
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=api_messages,
-                response_format={"type": "json_object"},
-                temperature=0.1,
-                max_tokens=max_tokens,
-                timeout=timeout_seconds,
-            )
+            request_params: dict[str, Any] = {
+                "model": self.model,
+                "messages": api_messages,
+                "response_format": {"type": "json_object"},
+                "temperature": gen.temperature,
+                "max_tokens": max_tokens,
+                "timeout": timeout_seconds,
+            }
+            if gen.top_p is not None:
+                request_params["top_p"] = gen.top_p
+            if gen.frequency_penalty is not None:
+                request_params["frequency_penalty"] = gen.frequency_penalty
+            if gen.presence_penalty is not None:
+                request_params["presence_penalty"] = gen.presence_penalty
+            if gen.seed is not None:
+                request_params["seed"] = gen.seed
+            if gen.stop is not None:
+                request_params["stop"] = gen.stop
+
+            response = self.client.chat.completions.create(**request_params)
 
             content = response.choices[0].message.content
             finish_reason = response.choices[0].finish_reason

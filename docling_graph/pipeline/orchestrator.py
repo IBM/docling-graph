@@ -8,6 +8,7 @@ of pipeline stages, handles errors, and manages resource cleanup.
 import gc
 import logging
 import time
+from pathlib import Path
 from typing import Any, Dict, Literal, Union
 
 from .. import __version__
@@ -46,6 +47,16 @@ class PipelineOrchestrator:
         """
         self.config = config
         self.mode = mode
+
+        # Configure LLM registry for this run (global for downstream lookups)
+        from ..llm_clients.config import get_registry, load_registry_from_path, set_registry
+
+        if config.llm_registry is not None:
+            set_registry(config.llm_registry)
+        elif config.llm_registry_path:
+            set_registry(load_registry_from_path(Path(config.llm_registry_path)))
+        else:
+            set_registry(get_registry())
 
         # Auto-detect dump_to_disk based on mode if not explicitly set
         if config.dump_to_disk is None:
@@ -107,8 +118,6 @@ class PipelineOrchestrator:
 
         # Initialize OutputDirectoryManager if dumping to disk
         if self.dump_to_disk:
-            from pathlib import Path
-
             from ..core.utils.output_manager import OutputDirectoryManager
 
             source_filename = Path(self.config.source).name if self.config.source else "output"
@@ -158,21 +167,17 @@ class PipelineOrchestrator:
                 if not actual_model or not actual_provider:
                     if self.config.backend == "llm":
                         if self.config.inference == "local":
-                            actual_model = (
-                                actual_model or self.config.models.llm.local.default_model
-                            )
+                            actual_model = actual_model or self.config.models.llm.local.model
                             actual_provider = (
                                 actual_provider or self.config.models.llm.local.provider
                             )
                         else:  # remote
-                            actual_model = (
-                                actual_model or self.config.models.llm.remote.default_model
-                            )
+                            actual_model = actual_model or self.config.models.llm.remote.model
                             actual_provider = (
                                 actual_provider or self.config.models.llm.remote.provider
                             )
                     else:  # vlm
-                        actual_model = actual_model or self.config.models.vlm.local.default_model
+                        actual_model = actual_model or self.config.models.vlm.local.model
                         actual_provider = actual_provider or self.config.models.vlm.local.provider
 
                 metadata = {

@@ -179,11 +179,11 @@ class LLMConfig(BaseModel):
     """LLM model configurations for local and remote inference."""
     
     local: ModelConfig = Field(default_factory=lambda: ModelConfig(
-        default_model="ibm-granite/granite-4.0-1b",
+        model="ibm-granite/granite-4.0-1b",
         provider="vllm"
     ))
     remote: ModelConfig = Field(default_factory=lambda: ModelConfig(
-        default_model="mistral-small-latest",
+        model="mistral-small-latest",
         provider="mistral"
     ))
 ```
@@ -206,7 +206,7 @@ class VLMConfig(BaseModel):
     """VLM model configuration."""
     
     local: ModelConfig = Field(default_factory=lambda: ModelConfig(
-        default_model="numind/NuExtract-2.0-8B",
+        model="numind/NuExtract-2.0-8B",
         provider="docling"
     ))
 ```
@@ -229,8 +229,8 @@ Configuration for a specific model.
 ```python
 class ModelConfig(BaseModel):
     """Configuration for a specific model."""
-    
-    default_model: str = Field(..., description="Model name/path")
+
+    model: str = Field(..., description="Model name/path")
     provider: str = Field(..., description="Provider name")
 ```
 
@@ -238,7 +238,7 @@ class ModelConfig(BaseModel):
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `default_model` | `str` | Model name or path |
+| `model` | `str` | Model name or path |
 | `provider` | `str` | Provider name (e.g., "vllm", "mistral") |
 
 ---

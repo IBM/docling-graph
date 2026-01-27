@@ -287,17 +287,17 @@ class ConfigurationBuilder:
         return {
             "vlm": {
                 "local": {
-                    "default_model": vlm_model,
+                    "model": vlm_model,
                     "provider": vlm_provider,
                 }
             },
             "llm": {
                 "local": {
-                    "default_model": llm_local_model,
+                    "model": llm_local_model,
                     "provider": llm_local_provider,
                 },
                 "remote": {
-                    "default_model": llm_remote_model,
+                    "model": llm_remote_model,
                     "provider": llm_remote_provider,
                 },
             },

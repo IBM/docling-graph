@@ -166,17 +166,14 @@ def test_cleanup(mock_gc_collect, mock_llm_client):
 # --- Tests for Phase 1 Fix 5: Model-Aware Backend ---
 
 
-@patch("docling_graph.core.extractors.backends.llm_backend.get_model_config")
-def test_init_with_model_config(mock_get_model_config, mock_llm_client):
+def test_init_with_model_config(mock_llm_client):
     """Test backend initialization with model configuration."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
 
-    mock_config = ModelConfig(
-        model_id="gpt-4", context_limit=128000, capability=ModelCapability.ADVANCED
-    )
-    mock_get_model_config.return_value = mock_config
-    mock_llm_client.provider = "openai"
-    mock_llm_client.model_id = "gpt-4"
+    from docling_graph.llm_clients.config import ModelCapability
+
+    mock_config = SimpleNamespace(capability=ModelCapability.ADVANCED, context_limit=128000)
+    mock_llm_client.model_config = mock_config
 
     backend = LlmBackend(llm_client=mock_llm_client)
 
@@ -184,15 +181,15 @@ def test_init_with_model_config(mock_get_model_config, mock_llm_client):
     assert backend.model_config.capability == ModelCapability.ADVANCED
 
 
-@patch("docling_graph.core.extractors.backends.llm_backend.get_model_config")
 @patch("docling_graph.core.extractors.backends.llm_backend.detect_model_capability")
-def test_init_with_fallback_detection(mock_detect, mock_get_model_config, mock_llm_client):
+def test_init_with_fallback_detection(mock_detect, mock_llm_client):
     """Test backend falls back to auto-detection when model not in registry."""
     from docling_graph.llm_clients.config import ModelCapability
 
-    mock_get_model_config.return_value = None  # Not in registry
+    mock_llm_client.model_config = None
     mock_detect.return_value = ModelCapability.STANDARD
     mock_llm_client.context_limit = 8192
+    mock_llm_client.model = ""
 
     backend = LlmBackend(llm_client=mock_llm_client)
 
@@ -204,11 +201,11 @@ def test_init_with_fallback_detection(mock_detect, mock_get_model_config, mock_l
 @patch("docling_graph.core.extractors.backends.llm_backend.get_extraction_prompt")
 def test_extract_passes_model_config_to_prompt(mock_get_prompt, llm_backend, mock_llm_client):
     """Test that model_config is passed to prompt generation."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
 
-    llm_backend.model_config = ModelConfig(
-        model_id="gpt-4", context_limit=128000, capability=ModelCapability.ADVANCED
-    )
+    from docling_graph.llm_clients.config import ModelCapability
+
+    llm_backend.model_config = SimpleNamespace(capability=ModelCapability.ADVANCED)
 
     markdown = "Test content"
     expected_json = {"name": "Test", "age": 30}
@@ -227,11 +224,11 @@ def test_extract_passes_model_config_to_prompt(mock_get_prompt, llm_backend, moc
 @patch("docling_graph.core.extractors.backends.llm_backend.get_consolidation_prompt")
 def test_consolidate_chain_of_density(mock_get_prompt, llm_backend, mock_llm_client):
     """Test Chain of Density consolidation for advanced models."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
 
-    llm_backend.model_config = ModelConfig(
-        model_id="gpt-4", context_limit=128000, capability=ModelCapability.ADVANCED
-    )
+    from docling_graph.llm_clients.config import ModelCapability
+
+    llm_backend.model_config = SimpleNamespace(capability=ModelCapability.ADVANCED)
 
     raw_models = [MockTemplate(name="Test1", age=30), MockTemplate(name="Test2", age=31)]
     programmatic_model = MockTemplate(name="Merged", age=30)
@@ -259,11 +256,11 @@ def test_consolidate_chain_of_density(mock_get_prompt, llm_backend, mock_llm_cli
 @patch("docling_graph.core.extractors.backends.llm_backend.get_consolidation_prompt")
 def test_consolidate_chain_of_density_stage2_fails(mock_get_prompt, llm_backend, mock_llm_client):
     """Test Chain of Density falls back to stage 1 if stage 2 fails."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
 
-    llm_backend.model_config = ModelConfig(
-        model_id="gpt-4", context_limit=128000, capability=ModelCapability.ADVANCED
-    )
+    from docling_graph.llm_clients.config import ModelCapability
+
+    llm_backend.model_config = SimpleNamespace(capability=ModelCapability.ADVANCED)
 
     raw_models = [MockTemplate(name="Test1", age=30)]
     programmatic_model = MockTemplate(name="Merged", age=30)
@@ -286,11 +283,11 @@ def test_consolidate_chain_of_density_stage2_fails(mock_get_prompt, llm_backend,
 @patch("docling_graph.core.extractors.backends.llm_backend.get_consolidation_prompt")
 def test_consolidate_single_turn_simple_model(mock_get_prompt, llm_backend, mock_llm_client):
     """Test single-turn consolidation for simple models."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
 
-    llm_backend.model_config = ModelConfig(
-        model_id="phi-3", context_limit=4096, capability=ModelCapability.SIMPLE
-    )
+    from docling_graph.llm_clients.config import ModelCapability
+
+    llm_backend.model_config = SimpleNamespace(capability=ModelCapability.SIMPLE)
 
     raw_models = [MockTemplate(name="Test1", age=30)]
     programmatic_model = MockTemplate(name="Merged", age=30)

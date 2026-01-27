@@ -8,7 +8,7 @@ from typing import TypedDict
 
 from pydantic import BaseModel, Field
 
-from .config import ModelCapability, ModelConfig
+from .config import EffectiveModelConfig, ModelCapability
 
 
 class PromptDict(TypedDict):
@@ -46,7 +46,6 @@ _EXTRACTION_INSTRUCTIONS_ADVANCED = (
     "8. Maintain data consistency across related fields.\n"
 )
 
-# Legacy constant for backward compatibility
 _EXTRACTION_INSTRUCTIONS = _EXTRACTION_INSTRUCTIONS_STANDARD
 
 _SYSTEM_PROMPT_PARTIAL = (
@@ -121,7 +120,7 @@ def get_extraction_prompt(
     markdown_content: str,
     schema_json: str,
     is_partial: bool = False,
-    model_config: ModelConfig | None = None,
+    model_config: EffectiveModelConfig | None = None,
 ) -> dict[str, str]:
     """Generate system and user prompts for LLM extraction with model-aware adaptation.
 
@@ -143,7 +142,7 @@ def get_extraction_prompt(
         else:
             instructions = _EXTRACTION_INSTRUCTIONS_STANDARD
     else:
-        # Default to standard if no config provided (backward compatibility)
+        # Default to standard if no config provided
         instructions = _EXTRACTION_INSTRUCTIONS_STANDARD
 
     # Build system prompt
@@ -183,7 +182,7 @@ def get_consolidation_prompt(
     schema_json: str,
     raw_models: list,
     programmatic_model: BaseModel | None = None,
-    model_config: ModelConfig | None = None,
+    model_config: EffectiveModelConfig | None = None,
 ) -> str | list[str]:
     """Generate the prompt(s) for LLM-based consolidation with model-aware adaptation.
 

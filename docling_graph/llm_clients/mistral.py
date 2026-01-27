@@ -6,12 +6,8 @@ Based on https://docs.mistral.ai/api/endpoint/chat
 import logging
 from typing import Any, Dict, cast
 
-from dotenv import load_dotenv
-
 from ..exceptions import ClientError, ConfigurationError
 from .base import BaseLlmClient
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +40,13 @@ class MistralClient(BaseLlmClient):
                 details={"package": "mistralai", "install": "pip install mistralai"},
             )
 
-        self.api_key = self._get_required_env("MISTRAL_API_KEY")
-        self.client = Mistral(api_key=self.api_key)
+        api_key = self.connection.api_key.get_secret_value() if self.connection.api_key else None
+        if not api_key:
+            raise ConfigurationError(
+                "Mistral API key missing",
+                details={"provider": "mistral"},
+            )
+        self.client = Mistral(api_key=api_key)
 
         logger.info(f"Mistral client initialized for model: {self.model}")
 
@@ -66,18 +67,22 @@ class MistralClient(BaseLlmClient):
             ClientError: If API call fails
         """
         try:
-            # Get max_tokens from instance
-            max_tokens = getattr(self, "_max_tokens", 8192)
+            gen = self.generation
+            max_tokens = gen.max_tokens or self._max_output_tokens
             # Note: Mistral SDK doesn't support timeout parameter in chat.complete()
             # Timeout should be handled at HTTP client level if needed
 
-            response = self.client.chat.complete(
-                model=self.model,
-                messages=cast(Any, messages),
-                response_format={"type": "json_object"},
-                temperature=0.1,
-                max_tokens=max_tokens,
-            )
+            params: dict[str, Any] = {
+                "model": self.model,
+                "messages": cast(Any, messages),
+                "response_format": {"type": "json_object"},
+                "temperature": gen.temperature,
+                "max_tokens": max_tokens,
+            }
+            if gen.top_p is not None:
+                params["top_p"] = gen.top_p
+
+            response = self.client.chat.complete(**params)
 
             response_content = response.choices[0].message.content
             finish_reason = response.choices[0].finish_reason

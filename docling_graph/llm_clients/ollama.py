@@ -41,14 +41,21 @@ class OllamaClient(BaseLlmClient):
             )
 
         try:
+            base_url = self.connection.base_url
+            if base_url:
+                self.client = ollama.Client(host=base_url)
+            else:
+                self.client = ollama.Client()
+
             logger.info(f"Checking Ollama connection and model '{self.model}'...")
-            ollama.show(self.model)
+            self.client.show(self.model)
             logger.info(f"Ollama client initialized with model: {self.model}")
         except Exception as e:
             raise ConfigurationError(
                 f"Ollama connection failed: {e}",
                 details={
                     "model": self.model,
+                    "base_url": self.connection.base_url,
                     "error": str(e),
                     "instructions": [
                         "1. Ensure Ollama is running: ollama serve",
@@ -74,17 +81,25 @@ class OllamaClient(BaseLlmClient):
             ClientError: If API call fails
         """
         try:
-            # Get max_tokens from instance (Ollama uses num_predict)
-            max_tokens = getattr(self, "_max_tokens", 8192)
+            gen = self.generation
+            max_tokens = gen.max_tokens or self._max_output_tokens
 
-            response = ollama.chat(
+            options: dict[str, Any] = {
+                "temperature": gen.temperature,
+                "num_predict": max_tokens,
+            }
+            if gen.top_p is not None:
+                options["top_p"] = gen.top_p
+            if gen.top_k is not None:
+                options["top_k"] = gen.top_k
+            if gen.repetition_penalty is not None:
+                options["repeat_penalty"] = gen.repetition_penalty
+
+            response = self.client.chat(
                 model=self.model,
                 messages=messages,
                 format="json",
-                options={
-                    "temperature": 0.1,
-                    "num_predict": max_tokens,
-                },
+                options=options,
             )
 
             raw_json = response["message"]["content"]

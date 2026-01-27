@@ -69,22 +69,10 @@ class ManyToOneStrategy(BaseExtractor):
         if use_chunking and chunker_config is None:
             # Provide minimal config - will be updated with schema_size later
             if hasattr(backend, "client"):
-                # Try to get provider info from client
-                provider = None
-                client_name = backend.client.__class__.__name__.lower()
-                if "watsonx" in client_name:
-                    provider = "watsonx"
-                elif "openai" in client_name:
-                    provider = "openai"
-                elif "mistral" in client_name:
-                    provider = "mistral"
-                elif "ollama" in client_name:
-                    provider = "ollama"
-                elif "gemini" in client_name:
-                    provider = "google"
-
+                provider = getattr(backend.client, "provider", None)
+                model_id = getattr(backend.client, "model_id", None)
                 if provider:
-                    chunker_config = {"provider": provider}
+                    chunker_config = {"provider": provider, "model": model_id}
                 else:
                     # Fallback: use context limit if available
                     context_limit = getattr(backend.client, "context_limit", 8000)

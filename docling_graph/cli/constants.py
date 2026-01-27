@@ -30,13 +30,14 @@ DOCLING_EXPORT_FORMATS: Final[list[str]] = ["markdown", "json", "document"]
 
 # Providers (enum for validation)
 LOCAL_PROVIDERS: Final[list[str]] = ["vllm", "ollama"]
-API_PROVIDERS: Final[list[str]] = ["mistral", "openai", "gemini"]
+API_PROVIDERS: Final[list[str]] = ["mistral", "openai", "gemini", "watsonx"]
 
 # Provider-specific default models (for CLI prompts)
 PROVIDER_DEFAULT_MODELS: Final[dict[str, str]] = {
     "mistral": "mistral-small-latest",
-    "openai": "gpt-4-turbo",
+    "openai": "gpt-4o",
     "gemini": "gemini-2.5-flash",
+    "watsonx": "ibm/granite-4-h-small",
 }
 
 # Local provider default models

@@ -291,25 +291,16 @@ class TestProviderConfigurations:
             context_limit=128000,
             provider="openai",
         )
-        assert batcher.provider_config.provider_id == "openai"
+        assert batcher.provider_name == "openai"
         assert batcher.merge_threshold == 0.90
 
-    def test_provider_detection_anthropic(self):
-        """Test Anthropic provider detection."""
-        batcher = ChunkBatcher(
-            context_limit=200000,
-            provider="anthropic",
-        )
-        assert batcher.provider_config.provider_id == "anthropic"
-        assert batcher.merge_threshold == 0.90
-
-    def test_provider_detection_google(self):
-        """Test Google/Gemini provider detection."""
+    def test_provider_detection_gemini(self):
+        """Test Gemini provider detection."""
         batcher = ChunkBatcher(
             context_limit=1000000,
-            provider="google",
+            provider="gemini",
         )
-        assert batcher.provider_config.provider_id == "google"
+        assert batcher.provider_name == "gemini"
         assert batcher.merge_threshold == 0.90
 
     def test_provider_detection_ollama(self):
@@ -318,7 +309,7 @@ class TestProviderConfigurations:
             context_limit=8000,
             provider="ollama",
         )
-        assert batcher.provider_config.provider_id == "ollama"
+        assert batcher.provider_name == "ollama"
         assert batcher.merge_threshold == 0.75
 
     def test_provider_detection_unknown(self):
@@ -327,7 +318,7 @@ class TestProviderConfigurations:
             context_limit=8000,
             provider="unknown-provider",
         )
-        assert batcher.provider_config.provider_id == "unknown"
+        assert batcher.provider_name == "unknown-provider"
         assert batcher.merge_threshold == 0.85
 
     def test_provider_detection_none(self):
@@ -336,7 +327,7 @@ class TestProviderConfigurations:
             context_limit=8000,
             provider=None,
         )
-        assert batcher.provider_config.provider_id == "unknown"
+        assert batcher.provider_name == "unknown"
 
     def test_custom_merge_threshold_override(self):
         """Test that custom merge threshold overrides provider default."""

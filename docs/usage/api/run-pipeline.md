@@ -440,7 +440,7 @@ context = run_pipeline({
     "models": {
         "llm": {
             "remote": {
-                "default_model": "gpt-4-turbo",
+                "model": "gpt-4o",
                 "provider": "openai"
             }
         }

@@ -45,8 +45,10 @@ class VllmClient(BaseLlmClient):
                 details={"package": "openai", "install": "pip install openai"},
             )
 
-        self.base_url = kwargs.get("base_url", "http://localhost:8000/v1")
-        self.api_key = kwargs.get("api_key", "EMPTY")
+        self.base_url = self.connection.base_url or "http://localhost:8000/v1"
+        self.api_key = (
+            self.connection.api_key.get_secret_value() if self.connection.api_key else "EMPTY"
+        )
 
         self.client = OpenAI(base_url=self.base_url, api_key=self.api_key)
 
@@ -114,20 +116,32 @@ class VllmClient(BaseLlmClient):
                 yield
 
         try:
-            # Get max_tokens and timeout from instance (configured via base class)
-            max_tokens = getattr(self, "_max_tokens", 8192)
-            timeout_seconds = getattr(self, "_timeout", 300)
+            gen = self.generation
+            max_tokens = gen.max_tokens or self._max_output_tokens
+            timeout_seconds = self.timeout
 
             logger.info(f"vLLM request: max_tokens={max_tokens}, timeout={timeout_seconds}s")
 
             with timeout_handler(timeout_seconds):
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=messages,
-                    temperature=0.1,
-                    response_format={"type": "json_object"},
-                    max_tokens=max_tokens,
-                )
+                params: dict[str, Any] = {
+                    "model": self.model,
+                    "messages": messages,
+                    "temperature": gen.temperature,
+                    "response_format": {"type": "json_object"},
+                    "max_tokens": max_tokens,
+                }
+                if gen.top_p is not None:
+                    params["top_p"] = gen.top_p
+                if gen.frequency_penalty is not None:
+                    params["frequency_penalty"] = gen.frequency_penalty
+                if gen.presence_penalty is not None:
+                    params["presence_penalty"] = gen.presence_penalty
+                if gen.seed is not None:
+                    params["seed"] = gen.seed
+                if gen.stop is not None:
+                    params["stop"] = gen.stop
+
+                response = self.client.chat.completions.create(**params)
 
             raw_json = response.choices[0].message.content
             finish_reason = response.choices[0].finish_reason
@@ -148,12 +162,12 @@ class VllmClient(BaseLlmClient):
 
         except TimeoutError as e:
             raise ClientError(
-                f"vLLM request timeout after {getattr(self, '_timeout', 300)}s",
+                f"vLLM request timeout after {self.timeout}s",
                 details={
                     "model": self.model,
                     "base_url": self.base_url,
-                    "timeout": getattr(self, "_timeout", 300),
-                    "max_tokens": getattr(self, "_max_tokens", 8192),
+                    "timeout": self.timeout,
+                    "max_tokens": max_tokens,
                 },
             ) from e
         except Exception as e:

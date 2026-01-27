@@ -12,7 +12,7 @@ from pydantic import BaseModel, ValidationError
 from rich import print as rich_print
 
 from ....llm_clients.base import BaseLlmClient
-from ....llm_clients.config import ModelConfig, detect_model_capability, get_model_config
+from ....llm_clients.config import EffectiveModelConfig, ModelCapability, detect_model_capability
 from ....llm_clients.prompts import get_consolidation_prompt, get_extraction_prompt
 
 logger = logging.getLogger(__name__)
@@ -30,26 +30,15 @@ class LlmBackend:
         """
         self.client = llm_client
 
-        # Get model configuration from centralized registry
-        self.model_config = None
-        # Get model from client (all clients use self.model)
+        # Get resolved model configuration from client
+        self.model_config: EffectiveModelConfig | None = getattr(llm_client, "model_config", None)
         model_attr = getattr(llm_client, "model", None) or getattr(llm_client, "model_id", None)
 
-        # Try to get config from registry (now works with all clients via .provider property)
-        if hasattr(llm_client, "provider") and model_attr:
-            provider = llm_client.provider
-            self.model_config = get_model_config(provider, model_attr)
-
-            if self.model_config:
-                logger.info(
-                    f"Loaded model config from registry: provider={provider}, "
-                    f"model={model_attr}, capability={self.model_config.capability.value}"
-                )
-            else:
-                logger.warning(
-                    f"Model '{model_attr}' not found in registry for provider '{provider}', "
-                    "using fallback detection"
-                )
+        if self.model_config:
+            logger.info(
+                f"Loaded model config: provider={self.model_config.provider_id}, "
+                f"model={self.model_config.model_id}, capability={self.model_config.capability.value}"
+            )
 
         # Fallback: auto-detect from model characteristics
         if not self.model_config:
@@ -62,28 +51,30 @@ class LlmBackend:
             context_limit: int = int(context_limit_raw) if context_limit_raw is not None else 8000
 
             model_name = getattr(llm_client, "model", None)
-            # Get max_new_tokens if available (better capability indicator)
-            max_new_tokens = getattr(llm_client, "_max_tokens", None)
-            # Ensure max_new_tokens is None or int (not MagicMock)
-            if max_new_tokens is not None and not isinstance(max_new_tokens, int):
-                max_new_tokens = None
+            max_output_tokens = getattr(llm_client, "_max_output_tokens", None)
+            if max_output_tokens is not None and not isinstance(max_output_tokens, int):
+                max_output_tokens = None
 
             # Ensure model_name is a string for detect_model_capability
             model_name_str = str(model_name) if model_name else ""
 
             logger.info(
                 f"Using fallback capability detection: context={context_limit}, "
-                f"model_name={model_name_str}, max_new_tokens={max_new_tokens}"
+                f"model_name={model_name_str}, max_output_tokens={max_output_tokens}"
             )
 
-            capability = detect_model_capability(context_limit, model_name_str, max_new_tokens)
+            capability = detect_model_capability(context_limit, model_name_str, max_output_tokens)
 
-            # Create minimal config
-            self.model_config = ModelConfig(
-                model_id=model_name_str or "unknown",
-                context_limit=context_limit,
-                capability=capability,
-            )
+            class _FallbackConfig:
+                def __init__(self, capability: ModelCapability, context_limit: int) -> None:
+                    self.capability = capability
+                    self.context_limit = context_limit
+
+                @property
+                def supports_chain_of_density(self) -> bool:
+                    return self.capability == ModelCapability.ADVANCED
+
+            self.model_config = _FallbackConfig(capability, context_limit)
 
         rich_print(
             f"[blue][LlmBackend][/blue] Initialized with:\n"

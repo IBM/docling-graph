@@ -14,7 +14,7 @@ from typing import Callable, List
 
 from rich import print as rich_print
 
-from docling_graph.llm_clients.config import ProviderConfig, get_provider_config
+from docling_graph.llm_clients.config import ProviderDefinition, get_provider_config
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class ChunkBatcher:
             merge_threshold: Merge chunks if batch is <this% of available context
                 (default: provider-specific or 0.85)
             tokenizer_type: Fallback tokenizer family (llama, gpt, small_model, etc.)
-            provider: LLM provider name (openai, anthropic, google, etc.)
+            provider: LLM provider name (openai, gemini, etc.)
                      Used to apply provider-specific optimizations
         """
         self.context_limit = context_limit
@@ -112,7 +112,7 @@ class ChunkBatcher:
 
         rich_print(
             f"[blue][ChunkBatcher][/blue] Initialized with:\n"
-            f" • Provider: [cyan]{self.provider_config.provider_id}[/cyan]\n"
+            f" • Provider: [cyan]{self.provider_name}[/cyan]\n"
             f" • Context limit: [yellow]{context_limit:,}[/yellow] tokens\n"
             f" • Available for content: [cyan]{self.available_tokens:,}[/cyan] tokens\n"
             f" • Merge threshold: {self.merge_threshold * 100:.0f}% "
@@ -120,7 +120,7 @@ class ChunkBatcher:
             f" • Fallback tokenizer: {tokenizer_type} ({self.char_per_token} chars/token)"
         )
 
-    def _get_provider_config(self, provider: str) -> ProviderConfig:
+    def _get_provider_config(self, provider: str) -> ProviderDefinition:
         """
         Get provider configuration from centralized registry.
 
@@ -144,7 +144,7 @@ class ChunkBatcher:
         provider_mappings = {
             "gpt": "openai",
             "claude": "anthropic",
-            "gemini": "google",
+            "gemini": "gemini",
             "watson": "watsonx",
         }
 
@@ -157,11 +157,7 @@ class ChunkBatcher:
         # Return default config if provider not found
         logger.warning(f"Provider '{provider}' not found in registry, using default configuration")
         # Create a minimal default config
-        from docling_graph.llm_clients.config import ProviderConfig as LLMProviderConfig
-
-        return LLMProviderConfig(
-            provider_id="unknown",
-            models={},
+        return ProviderDefinition(
             tokenizer="sentence-transformers/all-MiniLM-L6-v2",
             content_ratio=0.8,
             merge_threshold=0.85,

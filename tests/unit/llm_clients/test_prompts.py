@@ -145,13 +145,13 @@ def test_get_consolidation_prompt_empty_raw(sample_schema_json):
 
 def test_get_extraction_prompt_with_simple_model():
     """Test extraction prompt for simple models (1B-7B)."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
+
+    from docling_graph.llm_clients.config import ModelCapability
 
     markdown = "Test document"
     schema = '{"title": "Test"}'
-    model_config = ModelConfig(
-        model_id="phi-3", context_limit=4096, capability=ModelCapability.SIMPLE
-    )
+    model_config = SimpleNamespace(capability=ModelCapability.SIMPLE)
 
     prompt_dict = get_extraction_prompt(markdown, schema, model_config=model_config)
 
@@ -165,13 +165,13 @@ def test_get_extraction_prompt_with_simple_model():
 
 def test_get_extraction_prompt_with_standard_model():
     """Test extraction prompt for standard models (7B-13B)."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
+
+    from docling_graph.llm_clients.config import ModelCapability
 
     markdown = "Test document"
     schema = '{"title": "Test"}'
-    model_config = ModelConfig(
-        model_id="mistral-7b", context_limit=8192, capability=ModelCapability.STANDARD
-    )
+    model_config = SimpleNamespace(capability=ModelCapability.STANDARD)
 
     prompt_dict = get_extraction_prompt(markdown, schema, model_config=model_config)
 
@@ -182,13 +182,13 @@ def test_get_extraction_prompt_with_standard_model():
 
 def test_get_extraction_prompt_with_advanced_model():
     """Test extraction prompt for advanced models (13B+)."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
+
+    from docling_graph.llm_clients.config import ModelCapability
 
     markdown = "Test document"
     schema = '{"title": "Test"}'
-    model_config = ModelConfig(
-        model_id="gpt-4", context_limit=128000, capability=ModelCapability.ADVANCED
-    )
+    model_config = SimpleNamespace(capability=ModelCapability.ADVANCED)
 
     prompt_dict = get_extraction_prompt(markdown, schema, model_config=model_config)
 
@@ -211,7 +211,9 @@ def test_get_extraction_prompt_backward_compatible():
 
 def test_get_consolidation_prompt_chain_of_density():
     """Test Chain of Density consolidation for advanced models."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
+
+    from docling_graph.llm_clients.config import ModelCapability
 
     schema_json = '{"title": "Test"}'
     m1 = ComplexModel(items=[SimpleModel(name="A", value=1)])
@@ -220,9 +222,7 @@ def test_get_consolidation_prompt_chain_of_density():
         items=[SimpleModel(name="A", value=1), SimpleModel(name="B", value=2)]
     )
 
-    model_config = ModelConfig(
-        model_id="gpt-4", context_limit=128000, capability=ModelCapability.ADVANCED
-    )
+    model_config = SimpleNamespace(capability=ModelCapability.ADVANCED)
 
     result = get_consolidation_prompt(
         schema_json=schema_json,
@@ -242,14 +242,14 @@ def test_get_consolidation_prompt_chain_of_density():
 
 def test_get_consolidation_prompt_single_turn_simple():
     """Test single-turn consolidation for simple models."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
+
+    from docling_graph.llm_clients.config import ModelCapability
 
     schema_json = '{"title": "Test"}'
     m1 = ComplexModel(items=[SimpleModel(name="A", value=1)])
 
-    model_config = ModelConfig(
-        model_id="phi-3", context_limit=4096, capability=ModelCapability.SIMPLE
-    )
+    model_config = SimpleNamespace(capability=ModelCapability.SIMPLE)
 
     result = get_consolidation_prompt(
         schema_json=schema_json,
@@ -265,14 +265,14 @@ def test_get_consolidation_prompt_single_turn_simple():
 
 def test_get_consolidation_prompt_single_turn_standard():
     """Test single-turn consolidation for standard models."""
-    from docling_graph.llm_clients.config import ModelCapability, ModelConfig
+    from types import SimpleNamespace
+
+    from docling_graph.llm_clients.config import ModelCapability
 
     schema_json = '{"title": "Test"}'
     m1 = ComplexModel(items=[SimpleModel(name="A", value=1)])
 
-    model_config = ModelConfig(
-        model_id="mistral-7b", context_limit=8192, capability=ModelCapability.STANDARD
-    )
+    model_config = SimpleNamespace(capability=ModelCapability.STANDARD)
 
     result = get_consolidation_prompt(
         schema_json=schema_json,

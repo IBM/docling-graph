@@ -1,5 +1,10 @@
 # LLM Clients API
 
+!!! note
+    Clients are instantiated with resolved configs.
+    Prefer resolving via `resolve_effective_model_config(provider, model)` and
+    passing `model_config` to client constructors.
+
 
 ## Overview
 
@@ -64,31 +69,27 @@ class BaseLLMClient(LLMClientProtocol):
 
 #### Configuration
 
-All clients support `max_tokens` and `timeout` parameters:
+All clients use resolved configs from the registry:
 
-- **`max_tokens`**: Maximum tokens to generate in response (default: 8192)
-  - Prevents infinite generation loops
-  - Configurable per-client or via `models.yaml`
-  
-- **`timeout`**: Request timeout in seconds
-  - API providers: 300s (5 minutes) default
-  - Local providers: 600s (10 minutes) default
-  - Prevents indefinite hangs
+- **Generation defaults** (e.g., `max_tokens`, `temperature`)
+- **Reliability defaults** (e.g., `timeout_s`, `max_retries`)
 
-**Example:**
+Use `llm_overrides` in `PipelineConfig` or resolve explicitly:
 
 ```python
 from docling_graph.llm_clients import VllmClient
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
-# Use defaults from models.yaml
-client = VllmClient(model="qwen/Qwen2-7B")
-
-# Override with custom values
-client = VllmClient(
-    model="qwen/Qwen2-7B",
-    max_tokens=4096,    # Limit response to 4K tokens
-    timeout=300         # 5 minute timeout
+effective = resolve_effective_model_config(
+    "vllm",
+    "qwen/Qwen2-7B",
+    overrides={
+        "generation": {"max_tokens": 4096},
+        "reliability": {"timeout_s": 300},
+    },
 )
+
+client = VllmClient(model_config=effective)
 ```
 
 ---
@@ -122,11 +123,14 @@ class OllamaClient(BaseLLMClient):
 
 ```python
 from docling_graph.llm_clients import OllamaClient
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
-client = OllamaClient(
-    model="llama-3.1-8b",
-    base_url="http://localhost:11434"
+effective = resolve_effective_model_config(
+    "ollama",
+    "llama-3.1-8b",
+    overrides={"connection": {"base_url": "http://localhost:11434"}},
 )
+client = OllamaClient(model_config=effective)
 
 response = client.get_json_response(
     prompt="Extract data from: ...",
@@ -172,21 +176,28 @@ class VLLMClient(BaseLLMClient):
 **Example:**
 
 ```python
-from docling_graph.llm_clients import VLLMClient
+from docling_graph.llm_clients import VllmClient
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
-# Basic usage (uses defaults: max_tokens=8192, timeout=600s)
-client = VLLMClient(
-    model="ibm-granite/granite-4.0-1b",
-    base_url="http://localhost:8000/v1"
+# Basic usage (uses registry defaults)
+effective = resolve_effective_model_config(
+    "vllm",
+    "ibm-granite/granite-4.0-1b",
+    overrides={"connection": {"base_url": "http://localhost:8000/v1"}},
 )
+client = VllmClient(model_config=effective)
 
 # Custom limits to prevent hanging
-client = VLLMClient(
-    model="qwen/Qwen2-7B",
-    base_url="http://localhost:8000/v1",
-    max_tokens=4096,    # Limit response length
-    timeout=300         # 5 minute timeout
+effective = resolve_effective_model_config(
+    "vllm",
+    "qwen/Qwen2-7B",
+    overrides={
+        "connection": {"base_url": "http://localhost:8000/v1"},
+        "generation": {"max_tokens": 4096},
+        "reliability": {"timeout_s": 300},
+    },
 )
+client = VllmClient(model_config=effective)
 ```
 
 !!! warning "Timeout Protection"
@@ -229,12 +240,10 @@ class MistralClient(BaseLLMClient):
 
 ```python
 from docling_graph.llm_clients import MistralClient
-import os
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
-# Set API key
-os.environ["MISTRAL_API_KEY"] = "your_key"
-
-client = MistralClient(model="mistral-small-latest")
+effective = resolve_effective_model_config("mistral", "mistral-small-latest")
+client = MistralClient(model_config=effective)
 ```
 
 ---
@@ -272,11 +281,10 @@ class OpenAIClient(BaseLLMClient):
 
 ```python
 from docling_graph.llm_clients import OpenAIClient
-import os
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
-os.environ["OPENAI_API_KEY"] = "your_key"
-
-client = OpenAIClient(model="gpt-4-turbo")
+effective = resolve_effective_model_config("openai", "gpt-4o")
+client = OpenAIClient(model_config=effective)
 ```
 
 ---
@@ -314,11 +322,10 @@ class GeminiClient(BaseLLMClient):
 
 ```python
 from docling_graph.llm_clients import GeminiClient
-import os
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
-os.environ["GEMINI_API_KEY"] = "your_key"
-
-client = GeminiClient(model="gemini-2.5-flash")
+effective = resolve_effective_model_config("gemini", "gemini-2.5-flash")
+client = GeminiClient(model_config=effective)
 ```
 
 ---
@@ -357,13 +364,10 @@ class WatsonxClient(BaseLLMClient):
 
 ```python
 from docling_graph.llm_clients import WatsonxClient
-import os
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
-os.environ["WATSONX_API_KEY"] = "your_key"
-os.environ["WATSONX_PROJECT_ID"] = "your_project"
-os.environ["WATSONX_URL"] = "https://us-south.ml.cloud.ibm.com"
-
-client = WatsonxClient(model="ibm/granite-13b-chat-v2")
+effective = resolve_effective_model_config("watsonx", "ibm/granite-13b-chat-v2")
+client = WatsonxClient(model_config=effective)
 ```
 
 ---
@@ -399,25 +403,29 @@ providers:
 
 ### Configuration Hierarchy
 
-Configuration is loaded in this order (highest priority first):
+Configuration is resolved in this order (highest priority first):
 
-1. **Constructor parameters**: `VllmClient(max_tokens=4096, timeout=300)`
-2. **Model-specific config**: `models.yaml` → `providers.vllm.models.qwen/Qwen2-7B.max_tokens`
-3. **Provider defaults**: `models.yaml` → `providers.vllm.default_max_tokens`
-4. **Fallback defaults**: `max_tokens=8192`, `timeout=300`
+1. **Runtime overrides**: `llm_overrides` or `resolve_effective_model_config(..., overrides=...)`
+2. **Model overrides**: `models` registry entry
+3. **Provider defaults**: `providers` registry entry
+4. **Built-in defaults**: schema defaults
 
 **Example:**
 
 ```python
-# Uses provider default (8192 tokens, 600s timeout)
-client = VllmClient(model="qwen/Qwen2-7B")
+from docling_graph.llm_clients import VllmClient
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
-# Override with custom values
-client = VllmClient(
-    model="qwen/Qwen2-7B",
-    max_tokens=4096,
-    timeout=300
+effective = resolve_effective_model_config(
+    "vllm",
+    "qwen/Qwen2-7B",
+    overrides={
+        "generation": {"max_tokens": 4096},
+        "reliability": {"timeout_s": 300},
+    },
 )
+
+client = VllmClient(model_config=effective)
 ```
 
 ### Timeout Defaults by Provider
@@ -524,9 +532,15 @@ All clients raise `ClientError` on failures, including timeouts:
 
 ```python
 from docling_graph.llm_clients import VllmClient
+from docling_graph.llm_clients.config import resolve_effective_model_config
 from docling_graph.exceptions import ClientError
 
-client = VllmClient(model="qwen/Qwen2-7B", timeout=300)
+effective = resolve_effective_model_config(
+    "vllm",
+    "qwen/Qwen2-7B",
+    overrides={"reliability": {"timeout_s": 300}},
+)
+client = VllmClient(model_config=effective)
 
 try:
     response = client.get_json_response(prompt, schema)
@@ -559,20 +573,28 @@ Before the fix, vLLM could generate indefinitely when content didn't match the t
 ```python
 # Old behavior: Could hang for hours
 # New behavior: Stops at 8192 tokens (or custom limit)
-client = VllmClient(model="qwen/Qwen2-7B", max_tokens=4096)
+from docling_graph.llm_clients import VllmClient
+from docling_graph.llm_clients.config import resolve_effective_model_config
+
+effective = resolve_effective_model_config(
+    "vllm",
+    "qwen/Qwen2-7B",
+    overrides={"generation": {"max_tokens": 4096}},
+)
+client = VllmClient(model_config=effective)
 ```
 
 ### Troubleshooting
 
 **Problem: Request times out**
 
-- Increase timeout: `VllmClient(timeout=1200)` (20 minutes)
-- Reduce max_tokens: `VllmClient(max_tokens=4096)`
+- Increase timeout: `resolve_effective_model_config(..., overrides={"reliability": {"timeout_s": 1200}})`
+- Reduce max_tokens: `resolve_effective_model_config(..., overrides={"generation": {"max_tokens": 4096}})`
 - Check if content matches template schema
 
 **Problem: Response truncated**
 
-- Increase max_tokens: `VllmClient(max_tokens=16384)`
+- Increase max_tokens: `resolve_effective_model_config(..., overrides={"generation": {"max_tokens": 16384}})`
 - Simplify template to require less output
 - Use chunking for large documents
 
@@ -588,49 +610,31 @@ client = VllmClient(model="qwen/Qwen2-7B", max_tokens=4096)
 
 ## Recent Changes
 
-### Version 0.x.x - Generation Limits & Timeout Protection
+### Registry-Based Resolution
 
-**Added `max_tokens` and `timeout` parameters to all LLM clients** to prevent infinite generation and hanging requests.
+LLM settings now come from the registry plus overrides:
 
-**Key Changes:**
+1. **Runtime overrides** (`llm_overrides` or resolver overrides)
+2. **Model defaults** (model entry)
+3. **Provider defaults** (provider entry)
 
-1. **`max_tokens` Parameter**: Limits response generation (default: 8192 tokens)
-   - Prevents infinite generation loops
-   - Configurable per-client or via `models.yaml`
-   - Critical fix for vLLM client hanging issue
-
-2. **`timeout` Parameter**: Request timeout protection
-   - API providers: 300s (5 minutes)
-   - Local providers: 600s (10 minutes)
-   - Prevents indefinite hangs
-
-3. **Configuration Hierarchy**:
-   - Constructor → Model-specific → Provider default → Fallback
-
-**Migration Guide:**
-
-Existing code continues to work with sensible defaults:
+**Example:**
 
 ```python
-# Old code (still works)
-client = VllmClient(model="qwen/Qwen2-7B")
+from docling_graph.llm_clients import VllmClient
+from docling_graph.llm_clients.config import resolve_effective_model_config
 
-# New code (with explicit limits)
-client = VllmClient(
-    model="qwen/Qwen2-7B",
-    max_tokens=8192,
-    timeout=600
+effective = resolve_effective_model_config(
+    "vllm",
+    "qwen/Qwen2-7B",
+    overrides={
+        "generation": {"max_tokens": 8192},
+        "reliability": {"timeout_s": 600},
+    },
 )
+
+client = VllmClient(model_config=effective)
 ```
-
-**Why This Matters:**
-
-Before this change, vLLM could hang indefinitely when processing documents that didn't match the template schema (e.g., bibliography pages). Now:
-
-- ✅ Generation stops at `max_tokens` limit
-- ✅ Requests timeout after configured duration
-- ✅ Clear error messages for debugging
-- ✅ Backward compatible with existing code
 
 ---
 

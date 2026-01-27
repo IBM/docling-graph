@@ -132,12 +132,19 @@ OPTIONAL_DEPS: Dict[str, OptionalDependency] = {
         description="Google Gemini API client",
         inference_type="remote",
     ),
+    "watsonx": OptionalDependency(
+        name="watsonx",
+        package="ibm_watsonx_ai",
+        extra="watsonx",
+        description="IBM WatsonX API client",
+        inference_type="remote",
+    ),
 }
 
 # Mapping of inference types to their providers
 INFERENCE_PROVIDERS: Dict[str, List[str]] = {
     "local": ["vllm", "ollama"],
-    "remote": ["mistral", "openai", "gemini"],
+    "remote": ["mistral", "openai", "gemini", "watsonx"],
 }
 
 
