@@ -3,6 +3,8 @@ Utility for managing optional dependencies with helpful error messages.
 """
 
 import importlib.util
+import json
+import time
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -139,12 +141,43 @@ OPTIONAL_DEPS: Dict[str, OptionalDependency] = {
         description="IBM WatsonX API client",
         inference_type="remote",
     ),
+    "ibm-watsonx-ai": OptionalDependency(
+        name="ibm-watsonx-ai",
+        package="ibm_watsonx_ai",
+        extra="watsonx",
+        description="IBM WatsonX API client",
+        inference_type="remote",
+    ),
 }
+# region agent log
+try:
+    with open(
+        "/home/ayoub/github/docling-graph/.cursor/debug.log",
+        "a",
+        encoding="utf-8",
+    ) as log_file:
+        log_file.write(
+            json.dumps(
+                {
+                    "sessionId": "debug-session",
+                    "runId": "pre-fix",
+                    "hypothesisId": "H4",
+                    "location": "dependencies.py:149",
+                    "message": "OPTIONAL_DEPS keys initialized",
+                    "data": {"keys": sorted(OPTIONAL_DEPS.keys())},
+                    "timestamp": int(time.time() * 1000),
+                }
+            )
+            + "\n"
+        )
+except Exception:
+    pass
+# endregion
 
 # Mapping of inference types to their providers
 INFERENCE_PROVIDERS: Dict[str, List[str]] = {
     "local": ["vllm", "ollama"],
-    "remote": ["mistral", "openai", "gemini", "watsonx"],
+    "remote": ["mistral", "openai", "gemini", "ibm-watsonx-ai"],
 }
 
 

@@ -17,7 +17,7 @@ import logging
 import os
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
 import yaml
 from dotenv import load_dotenv
@@ -150,6 +150,7 @@ class ProviderDefinition(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    provider_id: str = ""
     requires_api_key: bool = False
     requires_project_id: bool = False
     connection: ProviderConnection = Field(default_factory=ProviderConnection)
@@ -204,6 +205,7 @@ class LlmRegistry(BaseModel):
     def _normalize_and_validate(self) -> Self:
         normalized_providers: dict[str, ProviderDefinition] = {}
         for provider_id, provider in self.providers.items():
+            provider.provider_id = provider_id.lower()
             normalized_providers[provider_id.lower()] = provider
         self.providers = normalized_providers
 
@@ -265,6 +267,14 @@ class EffectiveModelConfig(BaseModel):
         return self.capability == ModelCapability.SIMPLE
 
 
+class ModelConfigLike(Protocol):
+    capability: ModelCapability
+    context_limit: int
+
+    @property
+    def supports_chain_of_density(self) -> bool: ...
+
+
 class LlmRuntimeOverrides(BaseModel):
     """Runtime overrides for a resolved model configuration."""
 
@@ -316,11 +326,8 @@ def _resolve_connection(
         value = os.getenv(key)
         return value or None
 
-    api_key = connection.api_key or (
-        SecretStr(_env_value(connection.api_key_env))
-        if _env_value(connection.api_key_env)
-        else None
-    )
+    env_api_key = _env_value(connection.api_key_env)
+    api_key = connection.api_key or (SecretStr(env_api_key) if env_api_key is not None else None)
     base_url = connection.base_url or _env_value(connection.base_url_env)
     organization = connection.organization
     project_id = connection.project_id or _env_value(connection.project_id_env)
@@ -382,7 +389,7 @@ def get_registry() -> LlmRegistry:
 def resolve_effective_model_config(
     provider_id: str,
     model_id: str,
-    overrides: LlmRuntimeOverrides | None = None,
+    overrides: LlmRuntimeOverrides | dict[str, Any] | None = None,
     registry: LlmRegistry | None = None,
 ) -> EffectiveModelConfig:
     registry = registry or get_registry()
@@ -419,6 +426,7 @@ def resolve_effective_model_config(
 
     if generation.max_tokens is None:
         generation = generation.model_copy(update={"max_tokens": model.max_output_tokens})
+    assert generation.max_tokens is not None
     if generation.max_tokens > model.max_output_tokens:
         raise ConfigurationError(
             "max_tokens exceeds model limit",
@@ -449,6 +457,10 @@ def resolve_effective_model_config(
 
 def get_provider_config(provider_id: str) -> ProviderDefinition | None:
     return get_registry().get_provider(provider_id)
+
+
+def list_providers() -> list[str]:
+    return sorted(get_registry().providers.keys())
 
 
 def get_model_config(provider_id: str, model_id: str) -> ModelDefinition | None:

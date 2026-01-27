@@ -179,15 +179,18 @@ class DocumentProcessor:
             )
 
         chunks = self.chunker.chunk_document(document)
+        raw_chunker = self.chunker.chunker
+        if raw_chunker is None:
+            raise ValueError("Chunker not initialized.")
 
         # Extract metadata from chunks
         metadata_list = []
-        for i, chunk_obj in enumerate(self.chunker.chunker.chunk(document)):
+        for i, chunk_obj in enumerate(raw_chunker.chunk(document)):
             # Get page numbers from chunk
             page_numbers = list(
                 {
                     item.prov[0].page_no
-                    for item in chunk_obj.meta.doc_items  # type: ignore[attr-defined]
+                    for item in getattr(chunk_obj.meta, "doc_items", [])
                     if hasattr(item, "prov") and item.prov
                 }
             )

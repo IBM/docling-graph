@@ -245,7 +245,11 @@ class ManyToOneStrategy(BaseExtractor):
 
             # Get tokenizer from chunker for accurate token counting
             tokenizer_fn = None
-            if self.doc_processor.chunker and hasattr(self.doc_processor.chunker, "tokenizer"):
+            if (
+                self.doc_processor.chunker
+                and hasattr(self.doc_processor.chunker, "tokenizer")
+                and self.doc_processor.chunker.tokenizer is not None
+            ):
                 # Extract the count_tokens method from the tokenizer object
                 tokenizer_obj = self.doc_processor.chunker.tokenizer
                 if hasattr(tokenizer_obj, "count_tokens"):

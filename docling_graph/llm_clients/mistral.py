@@ -72,7 +72,7 @@ class MistralClient(BaseLlmClient):
             # Note: Mistral SDK doesn't support timeout parameter in chat.complete()
             # Timeout should be handled at HTTP client level if needed
 
-            params: dict[str, Any] = {
+            request_params: dict[str, Any] = {
                 "model": self.model,
                 "messages": cast(Any, messages),
                 "response_format": {"type": "json_object"},
@@ -80,9 +80,9 @@ class MistralClient(BaseLlmClient):
                 "max_tokens": max_tokens,
             }
             if gen.top_p is not None:
-                params["top_p"] = gen.top_p
+                request_params["top_p"] = gen.top_p
 
-            response = self.client.chat.complete(**params)
+            response = self.client.chat.complete(**request_params)
 
             response_content = response.choices[0].message.content
             finish_reason = response.choices[0].finish_reason

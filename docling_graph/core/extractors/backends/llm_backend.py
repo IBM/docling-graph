@@ -12,7 +12,7 @@ from pydantic import BaseModel, ValidationError
 from rich import print as rich_print
 
 from ....llm_clients.base import BaseLlmClient
-from ....llm_clients.config import EffectiveModelConfig, ModelCapability, detect_model_capability
+from ....llm_clients.config import ModelCapability, ModelConfigLike, detect_model_capability
 from ....llm_clients.prompts import get_consolidation_prompt, get_extraction_prompt
 
 logger = logging.getLogger(__name__)
@@ -30,14 +30,24 @@ class LlmBackend:
         """
         self.client = llm_client
 
-        # Get resolved model configuration from client
-        self.model_config: EffectiveModelConfig | None = getattr(llm_client, "model_config", None)
+        # Get resolved model configuration from client (if valid)
+        raw_model_config = getattr(llm_client, "model_config", None)
+        if (
+            raw_model_config
+            and hasattr(raw_model_config, "capability")
+            and isinstance(getattr(raw_model_config, "context_limit", None), int)
+        ):
+            self.model_config: ModelConfigLike | None = raw_model_config
+        else:
+            self.model_config = None
         model_attr = getattr(llm_client, "model", None) or getattr(llm_client, "model_id", None)
 
         if self.model_config:
+            provider_id = getattr(self.model_config, "provider_id", "unknown")
+            model_id = getattr(self.model_config, "model_id", "unknown")
             logger.info(
-                f"Loaded model config: provider={self.model_config.provider_id}, "
-                f"model={self.model_config.model_id}, capability={self.model_config.capability.value}"
+                f"Loaded model config: provider={provider_id}, "
+                f"model={model_id}, capability={self.model_config.capability.value}"
             )
 
         # Fallback: auto-detect from model characteristics
@@ -76,13 +86,20 @@ class LlmBackend:
 
             self.model_config = _FallbackConfig(capability, context_limit)
 
+        assert self.model_config is not None
+
+        chain_of_density = getattr(self.model_config, "supports_chain_of_density", False)
+        context_limit = self.model_config.context_limit
+        context_limit_display = (
+            f"{context_limit:,}" if isinstance(context_limit, int) else str(context_limit)
+        )
         rich_print(
             f"[blue][LlmBackend][/blue] Initialized with:\n"
             f"  • Client: [cyan]{self.client.__class__.__name__}[/cyan]\n"
             f"  • Model: [cyan]{model_attr or 'unknown'}[/cyan]\n"
             f"  • Model capability: [yellow]{self.model_config.capability.value}[/yellow]\n"
-            f"  • Context limit: {self.model_config.context_limit:,} tokens\n"
-            f"  • Chain of Density: {'enabled' if self.model_config.supports_chain_of_density else 'disabled'}"
+            f"  • Context limit: {context_limit_display} tokens\n"
+            f"  • Chain of Density: {'enabled' if chain_of_density else 'disabled'}"
         )
 
     def extract_from_markdown(

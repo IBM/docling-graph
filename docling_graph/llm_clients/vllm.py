@@ -123,7 +123,7 @@ class VllmClient(BaseLlmClient):
             logger.info(f"vLLM request: max_tokens={max_tokens}, timeout={timeout_seconds}s")
 
             with timeout_handler(timeout_seconds):
-                params: dict[str, Any] = {
+                request_params: dict[str, Any] = {
                     "model": self.model,
                     "messages": messages,
                     "temperature": gen.temperature,
@@ -131,17 +131,17 @@ class VllmClient(BaseLlmClient):
                     "max_tokens": max_tokens,
                 }
                 if gen.top_p is not None:
-                    params["top_p"] = gen.top_p
+                    request_params["top_p"] = gen.top_p
                 if gen.frequency_penalty is not None:
-                    params["frequency_penalty"] = gen.frequency_penalty
+                    request_params["frequency_penalty"] = gen.frequency_penalty
                 if gen.presence_penalty is not None:
-                    params["presence_penalty"] = gen.presence_penalty
+                    request_params["presence_penalty"] = gen.presence_penalty
                 if gen.seed is not None:
-                    params["seed"] = gen.seed
+                    request_params["seed"] = gen.seed
                 if gen.stop is not None:
-                    params["stop"] = gen.stop
+                    request_params["stop"] = gen.stop
 
-                response = self.client.chat.completions.create(**params)
+                response = self.client.chat.completions.create(**request_params)
 
             raw_json = response.choices[0].message.content
             finish_reason = response.choices[0].finish_reason

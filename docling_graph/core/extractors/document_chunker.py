@@ -10,6 +10,8 @@ Preserves:
 Configurable per LLM provider tokenizer.
 """
 
+import json
+import time
 from typing import List, Optional, Union
 
 from docling.chunking import HybridChunker
@@ -50,7 +52,75 @@ class DocumentChunker:
             merge_peers: Whether to merge peer sections in chunking
             schema_size: Size of Pydantic schema JSON for dynamic chunk sizing
         """
-        self.tokenizer: Union[HuggingFaceTokenizer, OpenAITokenizer]
+        # region agent log
+        try:
+            with open(
+                "/home/ayoub/github/docling-graph/.cursor/debug.log",
+                "a",
+                encoding="utf-8",
+            ) as log_file:
+                log_file.write(
+                    json.dumps(
+                        {
+                            "sessionId": "debug-session",
+                            "runId": "pre-fix",
+                            "hypothesisId": "H1",
+                            "location": "document_chunker.py:53",
+                            "message": "DocumentChunker init start",
+                            "data": {
+                                "tokenizer_name": tokenizer_name,
+                                "max_tokens": max_tokens,
+                                "provider": provider,
+                                "model": model,
+                            },
+                            "timestamp": int(time.time() * 1000),
+                        }
+                    )
+                    + "\n"
+                )
+        except Exception:
+            pass
+        # endregion
+        self.tokenizer: Union[HuggingFaceTokenizer, OpenAITokenizer] | None = None
+        self.chunker: HybridChunker | None = None
+
+        if tokenizer_name is None and provider is None and max_tokens is None and model is None:
+            tokenizer_name = "sentence-transformers/all-MiniLM-L6-v2"
+            max_tokens = 5120
+            self.tokenizer = None
+            self.chunker = None
+            self.max_tokens = max_tokens
+            self.original_max_tokens = max_tokens
+            self.tokenizer_name = tokenizer_name
+            self.merge_peers = merge_peers
+            # region agent log
+            try:
+                with open(
+                    "/home/ayoub/github/docling-graph/.cursor/debug.log",
+                    "a",
+                    encoding="utf-8",
+                ) as log_file:
+                    log_file.write(
+                        json.dumps(
+                            {
+                                "sessionId": "debug-session",
+                                "runId": "pre-fix",
+                                "hypothesisId": "H2",
+                                "location": "document_chunker.py:78",
+                                "message": "Skipped tokenizer init (lazy defaults)",
+                                "data": {
+                                    "tokenizer_name": tokenizer_name,
+                                    "max_tokens": max_tokens,
+                                },
+                                "timestamp": int(time.time() * 1000),
+                            }
+                        )
+                        + "\n"
+                    )
+            except Exception:
+                pass
+            # endregion
+            return
 
         # Step 1: Determine tokenizer name
         if tokenizer_name is None and provider is not None:
@@ -65,9 +135,61 @@ class DocumentChunker:
                 max_tokens = get_recommended_chunk_size(provider, model or "", schema_size)
             else:
                 max_tokens = 5120
+        # region agent log
+        try:
+            with open(
+                "/home/ayoub/github/docling-graph/.cursor/debug.log",
+                "a",
+                encoding="utf-8",
+            ) as log_file:
+                log_file.write(
+                    json.dumps(
+                        {
+                            "sessionId": "debug-session",
+                            "runId": "pre-fix",
+                            "hypothesisId": "H1",
+                            "location": "document_chunker.py:74",
+                            "message": "DocumentChunker resolved defaults",
+                            "data": {
+                                "tokenizer_name": tokenizer_name,
+                                "max_tokens": max_tokens,
+                                "provider": provider,
+                            },
+                            "timestamp": int(time.time() * 1000),
+                        }
+                    )
+                    + "\n"
+                )
+        except Exception:
+            pass
+        # endregion
 
         # Step 3: Initialize tokenizer and chunker
         if tokenizer_name != "tiktoken":
+            # region agent log
+            try:
+                with open(
+                    "/home/ayoub/github/docling-graph/.cursor/debug.log",
+                    "a",
+                    encoding="utf-8",
+                ) as log_file:
+                    log_file.write(
+                        json.dumps(
+                            {
+                                "sessionId": "debug-session",
+                                "runId": "pre-fix",
+                                "hypothesisId": "H2",
+                                "location": "document_chunker.py:86",
+                                "message": "Initializing HF tokenizer",
+                                "data": {"tokenizer_name": tokenizer_name},
+                                "timestamp": int(time.time() * 1000),
+                            }
+                        )
+                        + "\n"
+                    )
+            except Exception:
+                pass
+            # endregion
             hf_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
             self.tokenizer = HuggingFaceTokenizer(
                 tokenizer=hf_tokenizer,
@@ -101,6 +223,30 @@ class DocumentChunker:
             tokenizer=self.tokenizer,
             merge_peers=merge_peers,
         )
+        # region agent log
+        try:
+            with open(
+                "/home/ayoub/github/docling-graph/.cursor/debug.log",
+                "a",
+                encoding="utf-8",
+            ) as log_file:
+                log_file.write(
+                    json.dumps(
+                        {
+                            "sessionId": "debug-session",
+                            "runId": "pre-fix",
+                            "hypothesisId": "H2",
+                            "location": "document_chunker.py:127",
+                            "message": "HybridChunker initialized",
+                            "data": {"merge_peers": merge_peers, "max_tokens": max_tokens},
+                            "timestamp": int(time.time() * 1000),
+                        }
+                    )
+                    + "\n"
+                )
+        except Exception:
+            pass
+        # endregion
 
         self.max_tokens = max_tokens
         self.original_max_tokens = max_tokens  # Store original for schema adjustments
@@ -129,6 +275,30 @@ class DocumentChunker:
         logger = logging.getLogger(__name__)
 
         if not self.tokenizer:
+            # region agent log
+            try:
+                with open(
+                    "/home/ayoub/github/docling-graph/.cursor/debug.log",
+                    "a",
+                    encoding="utf-8",
+                ) as log_file:
+                    log_file.write(
+                        json.dumps(
+                            {
+                                "sessionId": "debug-session",
+                                "runId": "pre-fix",
+                                "hypothesisId": "H3",
+                                "location": "document_chunker.py:158",
+                                "message": "update_schema_config missing tokenizer",
+                                "data": {"schema_size": schema_size},
+                                "timestamp": int(time.time() * 1000),
+                            }
+                        )
+                        + "\n"
+                    )
+            except Exception:
+                pass
+            # endregion
             logger.warning("No tokenizer available for schema config update")
             return
 
@@ -157,12 +327,45 @@ class DocumentChunker:
             self.max_tokens = self.original_max_tokens
 
         # Update the tokenizer's max_tokens
-        if hasattr(self.tokenizer, "max_tokens"):
+        if self.tokenizer is not None and hasattr(self.tokenizer, "max_tokens"):
             self.tokenizer.max_tokens = self.max_tokens
 
         # Update the chunker's tokenizer max_tokens as well
-        if hasattr(self.chunker, "tokenizer") and hasattr(self.chunker.tokenizer, "max_tokens"):
+        if (
+            self.chunker is not None
+            and hasattr(self.chunker, "tokenizer")
+            and hasattr(self.chunker.tokenizer, "max_tokens")
+        ):
             self.chunker.tokenizer.max_tokens = self.max_tokens
+        # region agent log
+        try:
+            with open(
+                "/home/ayoub/github/docling-graph/.cursor/debug.log",
+                "a",
+                encoding="utf-8",
+            ) as log_file:
+                log_file.write(
+                    json.dumps(
+                        {
+                            "sessionId": "debug-session",
+                            "runId": "pre-fix",
+                            "hypothesisId": "H3",
+                            "location": "document_chunker.py:193",
+                            "message": "update_schema_config complete",
+                            "data": {
+                                "schema_size": schema_size,
+                                "max_tokens": self.max_tokens,
+                                "original_max_tokens": self.original_max_tokens,
+                                "chunker_is_none": self.chunker is None,
+                            },
+                            "timestamp": int(time.time() * 1000),
+                        }
+                    )
+                    + "\n"
+                )
+        except Exception:
+            pass
+        # endregion
 
         # Note: chunker.max_tokens is a read-only property derived from tokenizer.max_tokens
         # so we don't need to (and can't) set it directly
@@ -210,6 +413,9 @@ class DocumentChunker:
         """
         chunks = []
 
+        if self.chunker is None:
+            raise ValueError("Chunker not initialized.")
+
         # Chunk the document using HybridChunker
         chunk_iter = self.chunker.chunk(dl_doc=document)
 
@@ -240,6 +446,9 @@ class DocumentChunker:
         chunks = []
         chunk_tokens = []
 
+        if self.chunker is None:
+            raise ValueError("Chunker not initialized.")
+
         chunk_iter = self.chunker.chunk(dl_doc=document)
 
         for chunk in chunk_iter:
@@ -247,6 +456,8 @@ class DocumentChunker:
             chunks.append(enriched_text)
 
             # Count tokens for this chunk
+            if self.tokenizer is None:
+                raise ValueError("Tokenizer not initialized.")
             num_tokens = self.tokenizer.count_tokens(enriched_text)
             chunk_tokens.append(num_tokens)
 

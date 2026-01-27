@@ -8,7 +8,7 @@ from typing import TypedDict
 
 from pydantic import BaseModel, Field
 
-from .config import EffectiveModelConfig, ModelCapability
+from .config import ModelCapability, ModelConfigLike
 
 
 class PromptDict(TypedDict):
@@ -120,7 +120,7 @@ def get_extraction_prompt(
     markdown_content: str,
     schema_json: str,
     is_partial: bool = False,
-    model_config: EffectiveModelConfig | None = None,
+    model_config: ModelConfigLike | None = None,
 ) -> dict[str, str]:
     """Generate system and user prompts for LLM extraction with model-aware adaptation.
 
@@ -182,7 +182,7 @@ def get_consolidation_prompt(
     schema_json: str,
     raw_models: list,
     programmatic_model: BaseModel | None = None,
-    model_config: EffectiveModelConfig | None = None,
+    model_config: ModelConfigLike | None = None,
 ) -> str | list[str]:
     """Generate the prompt(s) for LLM-based consolidation with model-aware adaptation.
 
@@ -211,7 +211,7 @@ OBJECTS TO MERGE:
 Output the merged JSON only."""
 
     # Advanced models: Chain of Density (multi-turn)
-    elif model_config and model_config.supports_chain_of_density:
+    elif model_config and model_config.capability == ModelCapability.ADVANCED:
         # Stage 1: Initial merge
         stage1 = f"""Merge these JSON objects, removing duplicates.
 
