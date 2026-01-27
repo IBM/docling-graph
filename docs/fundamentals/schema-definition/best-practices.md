@@ -568,7 +568,7 @@ Congratulations! You've completed the Schema Definition guide. Now:
 - **Invoice Template** - `docs/examples/templates/billing_document.py`
 - **ID Card Template** - `docs/examples/templates/id_card.py`
 - **Rheology Research Template** - `docs/examples/templates/rheology_research.py`
-- **Insurance Template** - `docs/examples/templates/insurance.py`
+- **Insurance Template** - `docs/examples/templates/cgv_mrh.py`
 
 ### Community
 - **GitHub Issues** - Report bugs or request features
