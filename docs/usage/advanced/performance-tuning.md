@@ -169,7 +169,7 @@ All providers now use a **95% threshold** by default. This provides an optimal b
 - Higher threshold (0.95-0.98) = Fewer API calls = Faster processing
 - Lower threshold (0.80-0.90) = More aggressive merging = Fewer batches but less optimal fit
 
-**Note**: You can override the threshold programmatically if needed (see [Batch Processing](../fundamentals/extraction-process/batch-processing.md)).
+**Note**: You can override the threshold programmatically if needed (see [Batch Processing](../../fundamentals/extraction-process/batch-processing.md)).
 
 ### Optimal Batch Sizes
 

@@ -76,6 +76,22 @@ _USER_PROMPT_TEMPLATE = (
     "following the schema above."
 )
 
+_USER_PROMPT_CONTEXT_TEMPLATE = (
+    "Here is a list of EXISTING ENTITIES (compact registry):\n"
+    "{registry_content}\n\n"
+    "Extract information from this {document_type}:\n\n"
+    "=== {delimiter} ===\n"
+    "{markdown_content}\n"
+    "=== END {delimiter} ===\n\n"
+    "=== TARGET SCHEMA ===\n"
+    "{schema_json}\n"
+    "=== END SCHEMA ===\n\n"
+    "=== DELTA SCHEMA ===\n"
+    "{delta_schema_json}\n"
+    "=== END DELTA SCHEMA ===\n\n"
+    "Return ONLY a JSON object that matches the DELTA SCHEMA."
+)
+
 _CONSOLIDATION_PROMPT = """You are a data consolidation expert. Your task is to merge multiple \
 partial JSON objects from a document into one single, accurate, and complete JSON object that \
 strictly adheres to the provided schema.
@@ -173,6 +189,68 @@ def get_extraction_prompt(
         delimiter=delimiter,
         markdown_content=markdown_content,
         schema_json=schema_json,
+    )
+
+    return {"system": system_prompt, "user": user_prompt}
+
+
+def get_context_aware_prompt(
+    markdown_content: str,
+    schema_json: str,
+    registry_content: str,
+    delta_schema_json: str,
+    is_partial: bool = True,
+    model_config: ModelConfigLike | None = None,
+) -> dict[str, str]:
+    """Generate system and user prompts for context-aware delta extraction.
+
+    Args:
+        markdown_content: The document content in markdown format.
+        schema_json: JSON schema of the target Pydantic model.
+        registry_content: Compact JSON list of existing entity IDs/names.
+        delta_schema_json: JSON schema for delta operations.
+        is_partial: Whether to expect partial data (for chunk extraction).
+        model_config: Optional model configuration for adaptive prompting.
+
+    Returns:
+        Dictionary with 'system' and 'user' keys containing the prompts.
+    """
+    # Select instructions based on model capability
+    if model_config:
+        if model_config.capability == ModelCapability.SIMPLE:
+            instructions = _EXTRACTION_INSTRUCTIONS_SIMPLE
+        elif model_config.capability == ModelCapability.ADVANCED:
+            instructions = _EXTRACTION_INSTRUCTIONS_ADVANCED
+        else:
+            instructions = _EXTRACTION_INSTRUCTIONS_STANDARD
+    else:
+        instructions = _EXTRACTION_INSTRUCTIONS_STANDARD
+
+    # Build system prompt
+    system_prompt = (
+        "You are an expert data extraction assistant. "
+        "Extract structured information from document chunks.\n\n"
+        f"Instructions:\n{instructions}"
+        "Context rules:\n"
+        "1. You MUST reuse IDs from the registry for existing entities.\n"
+        "2. If an entity is new, create a new ID and add evidence for it.\n"
+        "3. Evidence must be a short quote or pointer from the current chunk.\n"
+        "4. Use deletes[] for removals; do not use null to delete data.\n"
+        "5. Return ONLY a JSON object matching the DELTA SCHEMA.\n\n"
+        "Important: Your response MUST be valid JSON."
+    )
+
+    # Build user prompt
+    document_type = "document page" if is_partial else "complete document"
+    delimiter = "DOCUMENT PAGE" if is_partial else "COMPLETE DOCUMENT"
+
+    user_prompt = _USER_PROMPT_CONTEXT_TEMPLATE.format(
+        document_type=document_type,
+        delimiter=delimiter,
+        markdown_content=markdown_content,
+        schema_json=schema_json,
+        delta_schema_json=delta_schema_json,
+        registry_content=registry_content,
     )
 
     return {"system": system_prompt, "user": user_prompt}

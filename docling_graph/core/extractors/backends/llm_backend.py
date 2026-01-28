@@ -13,8 +13,13 @@ from pydantic import BaseModel, ValidationError
 from rich import print as rich_print
 
 from ....llm_clients.config import ModelCapability, ModelConfigLike, detect_model_capability
-from ....llm_clients.prompts import get_consolidation_prompt, get_extraction_prompt
+from ....llm_clients.prompts import (
+    get_consolidation_prompt,
+    get_context_aware_prompt,
+    get_extraction_prompt,
+)
 from ....protocols import LLMClientProtocol
+from ..delta_models import DeltaOperation
 
 logger = logging.getLogger(__name__)
 
@@ -145,6 +150,84 @@ class LlmBackend:
         except Exception as e:
             rich_print(
                 f"[red]Error during LLM extraction for {context}:[/red] {type(e).__name__}: {e}"
+            )
+            return None
+
+    def extract_with_context(
+        self,
+        markdown: str,
+        template: Type[BaseModel],
+        registry_str: str,
+        context: str = "document",
+        is_partial: bool = True,
+    ) -> DeltaOperation | None:
+        """
+        Extract delta operations using context-aware prompting.
+
+        Args:
+            markdown (str): Markdown content to extract from.
+            template (Type[BaseModel]): Pydantic model template.
+            registry_str (str): Compact registry string for entity IDs.
+            context (str): Context description for the extraction.
+            is_partial (bool): If True, use the partial/chunk-based prompt.
+
+        Returns:
+            Optional[DeltaOperation]: Validated delta operation model, or None if failed.
+        """
+        rich_print(
+            f"[blue][LlmBackend][/blue] Extracting delta from {context} "
+            f"([cyan]{len(markdown)}[/cyan] chars)"
+        )
+
+        if not markdown or len(markdown.strip()) == 0:
+            rich_print(
+                f"[red]Error:[/red] Extracted markdown is empty for {context}. Cannot proceed."
+            )
+            return None
+
+        try:
+            schema_json = json.dumps(template.model_json_schema(), indent=2)
+            delta_schema_json = json.dumps(DeltaOperation.model_json_schema(), indent=2)
+
+            prompt = get_context_aware_prompt(
+                markdown_content=markdown,
+                schema_json=schema_json,
+                registry_content=registry_str,
+                delta_schema_json=delta_schema_json,
+                is_partial=is_partial,
+                model_config=self.model_config,
+            )
+
+            parsed_json = self.client.get_json_response(
+                prompt=prompt, schema_json=delta_schema_json
+            )
+
+            if not parsed_json:
+                rich_print(
+                    f"[yellow]Warning:[/yellow] No valid JSON returned from LLM for {context}"
+                )
+                return None
+
+            try:
+                validated_delta = DeltaOperation.model_validate(parsed_json)
+                rich_print(f"[blue][LlmBackend][/blue] Successfully extracted delta from {context}")
+                return validated_delta
+
+            except ValidationError as e:
+                rich_print(
+                    f"[blue][LlmBackend][/blue] [yellow]Validation Error for {context}:[/yellow]"
+                )
+                rich_print("  The delta extracted by the LLM does not match the delta schema.")
+                rich_print("[red]Details:[/red]")
+                for error in e.errors():
+                    loc = " -> ".join(map(str, error["loc"]))
+                    rich_print(f"  - [bold magenta]{loc}[/bold magenta]: [red]{error['msg']}[/red]")
+                rich_print(f"\n[yellow]Extracted Data (raw):[/yellow]\n{parsed_json}\n")
+                return None
+
+        except Exception as e:
+            rich_print(
+                f"[red]Error during delta extraction for {context}:[/red] {type(e).__name__}: {e}"
             )
             return None
 

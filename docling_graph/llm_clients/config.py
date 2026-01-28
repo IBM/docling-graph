@@ -99,7 +99,7 @@ class ReliabilityDefaults(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    timeout_s: int = 600
+    timeout_s: int = 300
     max_retries: int = 2
     backoff: BackoffDefaults = Field(default_factory=BackoffDefaults)
 

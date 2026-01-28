@@ -109,6 +109,7 @@ class TestExtractionData:
         assert extraction.parsed_model == model
         assert extraction.extraction_time == 1.5
         assert extraction.error is None
+        assert extraction.metadata == {}
 
     def test_extraction_data_with_error(self):
         """Test ExtractionData with error."""

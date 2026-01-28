@@ -604,7 +604,7 @@ config = PipelineConfig(
 )
 ```
 
-### Example: Handling Partial Results
+### 📍 Handling Partial Results
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig

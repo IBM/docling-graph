@@ -130,6 +130,7 @@ class TraceExporter:
                     else None,
                     "extraction_time": extraction.extraction_time,
                     "error": extraction.error,
+                    "metadata": extraction.metadata,
                 },
                 "json",
             )

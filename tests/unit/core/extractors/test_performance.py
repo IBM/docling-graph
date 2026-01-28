@@ -108,8 +108,8 @@ class TestPerformanceImprovements:
         openai_batcher.batch_chunks(chunks=chunks)
         ollama_batcher.batch_chunks(chunks=chunks)
 
-    # OpenAI and Ollama share the same default threshold unless overridden
-    assert openai_batcher.merge_threshold == ollama_batcher.merge_threshold
+        # OpenAI and Ollama share the same default threshold unless overridden
+        assert openai_batcher.merge_threshold == ollama_batcher.merge_threshold
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from pydantic import BaseModel
 
+from docling_graph.core.extractors.delta_models import DeltaOperation
 from docling_graph.core.extractors.strategies.many_to_one import ManyToOneStrategy
 from docling_graph.protocols import ExtractionBackendProtocol, TextExtractionBackendProtocol
 
@@ -18,6 +19,15 @@ def mock_llm_backend():
     backend = MagicMock(spec=TextExtractionBackendProtocol)
     backend.client = MagicMock(context_limit=8000, content_ratio=0.8)
     backend.__class__.__name__ = "MockLlmBackend"
+
+    def mock_extract_with_context(
+        markdown, template, registry_str, context, is_partial
+    ) -> DeltaOperation | None:
+        if "fail" in markdown:
+            return None
+        return DeltaOperation(data={"name": context, "value": len(markdown)})
+
+    backend.extract_with_context.side_effect = mock_extract_with_context
 
     def mock_extract(markdown, template, context, is_partial) -> MockTemplate | None:
         if "fail" in markdown:
@@ -58,7 +68,6 @@ def mock_vlm_backend():
 def patch_deps():
     with (
         patch("docling_graph.core.extractors.strategies.many_to_one.DocumentProcessor") as mock_dp,
-        patch("docling_graph.core.extractors.strategies.many_to_one.ChunkBatcher") as mock_cb,
         patch(
             "docling_graph.core.extractors.strategies.many_to_one.merge_pydantic_models"
         ) as mock_merge,
@@ -71,23 +80,18 @@ def patch_deps():
         mock_doc_processor.extract_page_markdowns.return_value = ["page1_md", "page2_md"]
         mock_doc_processor.extract_full_markdown.return_value = "full_doc_md"
 
-        mock_batcher = mock_cb.return_value
-        mock_batcher.batch_chunks.return_value = [
-            MagicMock(batch_id=0, chunk_count=2, combined_text="chunk1chunk2")
-        ]
-
         mock_merge.return_value = MockTemplate(name="Merged", value=123)
 
         # Default: not LLM, not VLM (will be overridden in tests)
         mock_is_llm.return_value = False
         mock_is_vlm.return_value = False
 
-        yield mock_dp, mock_cb, mock_merge, mock_is_llm, mock_is_vlm
+        yield mock_dp, mock_merge, mock_is_llm, mock_is_vlm
 
 
 def test_init_llm_chunking(mock_llm_backend, patch_deps):
     """Test init with LLM backend and chunking enabled."""
-    _, _, _, _, _ = patch_deps
+    _, _, _, _ = patch_deps
 
     strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
 
@@ -97,7 +101,7 @@ def test_init_llm_chunking(mock_llm_backend, patch_deps):
 
 def test_extract_with_vlm_single_page(mock_vlm_backend, patch_deps):
     """Test VLM extraction for a single-page document."""
-    _, _, mock_merge, _, mock_is_vlm = patch_deps
+    _, mock_merge, _, mock_is_vlm = patch_deps
     mock_is_vlm.return_value = True
 
     strategy = ManyToOneStrategy(backend=mock_vlm_backend)
@@ -110,7 +114,7 @@ def test_extract_with_vlm_single_page(mock_vlm_backend, patch_deps):
 
 def test_extract_with_vlm_multi_page(mock_vlm_backend, patch_deps):
     """Test VLM extraction and merge for a multi-page document."""
-    _, _, mock_merge, _, mock_is_vlm = patch_deps
+    _, mock_merge, _, mock_is_vlm = patch_deps
     mock_is_vlm.return_value = True
 
     strategy = ManyToOneStrategy(backend=mock_vlm_backend)
@@ -124,118 +128,85 @@ def test_extract_with_vlm_multi_page(mock_vlm_backend, patch_deps):
 # --- Tests for Phase 1 Fix 6: Error Recovery and Tokenizer Passing ---
 
 
-def test_tokenizer_passing_to_batcher(mock_llm_backend, patch_deps):
-    """Test that tokenizer is extracted from DocumentChunker and passed to ChunkBatcher."""
-    mock_dp, mock_cb, _, mock_is_llm, _ = patch_deps
+def test_extract_with_context_called(mock_llm_backend, patch_deps):
+    """Test that context-aware extraction is invoked for chunking mode."""
+    mock_dp, _mock_merge, mock_is_llm, _ = patch_deps
     mock_is_llm.return_value = True
 
-    # Mock chunker with tokenizer that has count_tokens method
-    mock_chunker = MagicMock()
-    mock_tokenizer = MagicMock()
-    mock_count_tokens = MagicMock(return_value=100)
-    mock_tokenizer.count_tokens = mock_count_tokens
-    mock_chunker.tokenizer = mock_tokenizer
     mock_doc_processor = mock_dp.return_value
-    mock_doc_processor.chunker = mock_chunker
+    mock_doc_processor.extract_chunks.return_value = ["chunk1", "chunk2"]
 
     strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
-    strategy.extract("test.pdf", MockTemplate)
+    results, _doc = strategy.extract("test.pdf", MockTemplate)
 
-    # Verify tokenizer's count_tokens method was passed to batch_chunks
-    mock_batcher = mock_cb.return_value
-    mock_batcher.batch_chunks.assert_called_once()
-    call_kwargs = mock_batcher.batch_chunks.call_args[1]
-    assert "tokenizer_fn" in call_kwargs
-    assert call_kwargs["tokenizer_fn"] == mock_count_tokens
-
-
-def test_tokenizer_passing_when_no_chunker(mock_llm_backend, patch_deps):
-    """Test graceful handling when chunker doesn't exist."""
-    mock_dp, mock_cb, _, mock_is_llm, _ = patch_deps
-    mock_is_llm.return_value = True
-
-    # Mock processor without chunker
-    mock_doc_processor = mock_dp.return_value
-    mock_doc_processor.chunker = None
-
-    strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
-    strategy.extract("test.pdf", MockTemplate)
-
-    # Should still work, just without tokenizer
-    mock_batcher = mock_cb.return_value
-    mock_batcher.batch_chunks.assert_called_once()
-    call_kwargs = mock_batcher.batch_chunks.call_args[1]
-    assert call_kwargs.get("tokenizer_fn") is None
-
-
-def test_error_recovery_merge_failure_returns_all_models(mock_llm_backend, patch_deps):
-    """Test that merge failure returns all extracted models (zero data loss)."""
-    _mock_dp, mock_cb, mock_merge, mock_is_llm, _ = patch_deps
-    mock_is_llm.return_value = True
-
-    # Mock merge to fail
-    mock_merge.return_value = None
-
-    # Mock multiple batch extractions
-    model1 = MockTemplate(name="Batch1", value=10)
-    model2 = MockTemplate(name="Batch2", value=20)
-    mock_llm_backend.extract_from_markdown.side_effect = [model1, model2]
-
-    # Mock 2 batches
-    mock_batcher = mock_cb.return_value
-    mock_batcher.batch_chunks.return_value = [
-        MagicMock(batch_id=0, chunk_count=1, combined_text="chunk1"),
-        MagicMock(batch_id=1, chunk_count=1, combined_text="chunk2"),
-    ]
-
-    strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
-    results, _ = strategy.extract("test.pdf", MockTemplate)
-
-    # Should return all extracted models, not empty list
-    assert len(results) == 2
-    assert results[0].name == "Batch1"
-    assert results[1].name == "Batch2"
-
-
-def test_error_recovery_consolidation_failure_returns_programmatic(mock_llm_backend, patch_deps):
-    """Test that consolidation failure returns programmatic merge (zero data loss)."""
-    _mock_dp, mock_cb, mock_merge, mock_is_llm, _ = patch_deps
-    mock_is_llm.return_value = True
-
-    # Mock 2 batches to trigger merge logic
-    mock_batcher = mock_cb.return_value
-    mock_batcher.batch_chunks.return_value = [
-        MagicMock(batch_id=0, chunk_count=1, combined_text="chunk1"),
-        MagicMock(batch_id=1, chunk_count=1, combined_text="chunk2"),
-    ]
-
-    # Mock successful extractions
-    model1 = MockTemplate(name="Batch1", value=10)
-    model2 = MockTemplate(name="Batch2", value=20)
-    mock_llm_backend.extract_from_markdown.side_effect = [model1, model2]
-
-    # Mock successful merge
-    merged_model = MockTemplate(name="Merged", value=100)
-    mock_merge.return_value = merged_model
-
-    # Mock consolidation to fail - must override side_effect, not return_value
-    mock_llm_backend.consolidate_from_pydantic_models.side_effect = None
-    mock_llm_backend.consolidate_from_pydantic_models.return_value = None
-
-    strategy = ManyToOneStrategy(
-        backend=mock_llm_backend, use_chunking=True, llm_consolidation=True
-    )
-    results, _ = strategy.extract("test.pdf", MockTemplate)
-
-    # Should return programmatic merge, not empty list
     assert len(results) == 1
-    assert results[0].name == "Merged"
-    assert results[0].value == 100
+    assert mock_llm_backend.extract_with_context.called
+
+
+def test_full_document_path_selected_when_budgets_fit(mock_llm_backend, patch_deps):
+    """Use full-document extraction when input/output budgets fit."""
+    mock_dp, _mock_merge, mock_is_llm, _ = patch_deps
+    mock_is_llm.return_value = True
+
+    mock_llm_backend.client.context_limit = 100000
+    mock_llm_backend.client.model_config = Mock(max_output_tokens=1000)
+
+    mock_doc_processor = mock_dp.return_value
+    mock_doc_processor.extract_full_markdown.return_value = "x" * 1000
+
+    strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
+    strategy._extract_full_document = Mock(
+        return_value=[MockTemplate(name="FullDoc", value=1)]
+    )
+    strategy._extract_with_chunks = Mock(return_value=[MockTemplate(name="Chunked", value=2)])
+
+    results, _doc = strategy.extract("test.pdf", MockTemplate)
+
+    assert len(results) == 1
+    assert results[0].name == "FullDoc"
+    strategy._extract_full_document.assert_called_once()
+    strategy._extract_with_chunks.assert_not_called()
+
+
+def test_full_document_failure_falls_back_to_chunks(mock_llm_backend, patch_deps):
+    """Fallback to diff extraction when full-document extraction fails."""
+    mock_dp, _mock_merge, mock_is_llm, _ = patch_deps
+    mock_is_llm.return_value = True
+
+    mock_llm_backend.client.context_limit = 100000
+    mock_llm_backend.client.model_config = Mock(max_output_tokens=1000)
+
+    mock_doc_processor = mock_dp.return_value
+    mock_doc_processor.extract_full_markdown.return_value = "x" * 1000
+
+    strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
+    strategy._extract_full_document = Mock(return_value=[])
+    strategy._extract_with_chunks = Mock(return_value=[MockTemplate(name="Chunked", value=2)])
+
+    results, _doc = strategy.extract("test.pdf", MockTemplate)
+
+    assert len(results) == 1
+    assert results[0].name == "Chunked"
+    strategy._extract_full_document.assert_called_once()
+    strategy._extract_with_chunks.assert_called_once()
+
+
+def test_error_recovery_returns_empty_when_all_deltas_fail(mock_llm_backend, patch_deps):
+    """Test that empty list is returned when all delta extractions fail."""
+    _mock_dp, _mock_merge, mock_is_llm, _ = patch_deps
+    mock_is_llm.return_value = True
+
+    mock_llm_backend.extract_with_context.side_effect = [None, None]
+
+    strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
+    results, _ = strategy.extract("test.pdf", MockTemplate)
+
+    assert len(results) == 0
 
 
 def test_error_recovery_vlm_merge_failure_returns_all_pages(mock_vlm_backend, patch_deps):
     """Test that VLM merge failure returns all page models (zero data loss)."""
-    _, _, mock_merge, _, mock_is_vlm = patch_deps
+    _, mock_merge, _, mock_is_vlm = patch_deps
     mock_is_vlm.return_value = True
 
     # Mock merge to fail
@@ -252,7 +223,7 @@ def test_error_recovery_vlm_merge_failure_returns_all_pages(mock_vlm_backend, pa
 
 def test_error_recovery_page_by_page_merge_failure(mock_llm_backend, patch_deps):
     """Test error recovery for page-by-page extraction merge failure."""
-    mock_dp, _, mock_merge, mock_is_llm, _ = patch_deps
+    mock_dp, mock_merge, mock_is_llm, _ = patch_deps
     mock_is_llm.return_value = True
 
     # Mock merge to fail
@@ -277,66 +248,9 @@ def test_error_recovery_page_by_page_merge_failure(mock_llm_backend, patch_deps)
     assert results[1].name == "Page2"
 
 
-def test_zero_data_loss_no_models_extracted(mock_llm_backend, patch_deps):
-    """Test that empty list is returned when no models extracted (no data to preserve)."""
-    _mock_dp, mock_cb, _, mock_is_llm, _ = patch_deps
-    mock_is_llm.return_value = True
-
-    # Mock 2 batches but all extractions fail
-    mock_batcher = mock_cb.return_value
-    mock_batcher.batch_chunks.return_value = [
-        MagicMock(batch_id=0, chunk_count=1, combined_text="chunk1"),
-        MagicMock(batch_id=1, chunk_count=1, combined_text="chunk2"),
-    ]
-
-    # Mock all extractions to fail (return None for both batches)
-    mock_llm_backend.extract_from_markdown.side_effect = [None, None]
-
-    strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
-    results, _ = strategy.extract("test.pdf", MockTemplate)
-
-    # Should return empty list (no data to preserve)
-    assert len(results) == 0
-
-
-def test_error_recovery_with_consolidation_enabled(mock_llm_backend, patch_deps):
-    """Test error recovery path with LLM consolidation enabled."""
-    _mock_dp, mock_cb, mock_merge, mock_is_llm, _ = patch_deps
-    mock_is_llm.return_value = True
-
-    # Mock 2 batches
-    mock_batcher = mock_cb.return_value
-    mock_batcher.batch_chunks.return_value = [
-        MagicMock(batch_id=0, chunk_count=1, combined_text="chunk1"),
-        MagicMock(batch_id=1, chunk_count=1, combined_text="chunk2"),
-    ]
-
-    # Mock successful extractions and merge
-    model1 = MockTemplate(name="Batch1", value=10)
-    model2 = MockTemplate(name="Batch2", value=20)
-    merged = MockTemplate(name="Merged", value=30)
-    consolidated = MockTemplate(name="Consolidated", value=40)
-
-    mock_llm_backend.extract_from_markdown.side_effect = [model1, model2]
-    mock_merge.return_value = merged
-    # Override the default side_effect from fixture
-    mock_llm_backend.consolidate_from_pydantic_models.side_effect = None
-    mock_llm_backend.consolidate_from_pydantic_models.return_value = consolidated
-
-    strategy = ManyToOneStrategy(
-        backend=mock_llm_backend, use_chunking=True, llm_consolidation=True
-    )
-    results, _ = strategy.extract("test.pdf", MockTemplate)
-
-    # Should return consolidated result
-    assert len(results) == 1
-    assert results[0].name == "Consolidated"
-    assert results[0].value == 40
-
-
 def test_catastrophic_failure_returns_empty_with_traceback(mock_llm_backend, patch_deps):
     """Test that catastrophic failures return empty list with traceback logging."""
-    mock_dp, _, _, mock_is_llm, _ = patch_deps
+    mock_dp, _mock_merge, mock_is_llm, _ = patch_deps
     mock_is_llm.return_value = True
 
     # Mock document processor to raise exception

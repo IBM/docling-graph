@@ -419,7 +419,7 @@ run_pipeline(config)
 
 ## Complete Examples
 
-### Example 1: LLM Backend (Local)
+### 📍 LLM Backend (Local)
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig
@@ -444,7 +444,7 @@ config = PipelineConfig(
 run_pipeline(config)
 ```
 
-### 📍ample 2: LLM Backend (Remote)
+### 📍 LLM Backend (Remote)
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig
@@ -474,7 +474,7 @@ config = PipelineConfig(
 run_pipeline(config)
 ```
 
-### 📍ample 3: VLM Backend
+### 📍 VLM Backend
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig
@@ -499,7 +499,7 @@ config = PipelineConfig(
 run_pipeline(config)
 ```
 
-### 📍ample 4: Hybrid Approach
+### 📍 Hybrid Approach
 
 ```python
 from docling_graph import run_pipeline, PipelineConfig

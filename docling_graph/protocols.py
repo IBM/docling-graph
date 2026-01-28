@@ -10,6 +10,8 @@ from typing import Any, Dict, List, Mapping, Optional, Protocol, Type, TypeGuard
 
 from pydantic import BaseModel
 
+from .core.extractors.delta_models import DeltaOperation
+
 # =============================================================================
 # Backend Protocols
 # =============================================================================
@@ -67,6 +69,17 @@ class TextExtractionBackendProtocol(Protocol):
         Returns:
             Extracted and validated model instance, or None if extraction failed.
         """
+        ...
+
+    def extract_with_context(
+        self,
+        markdown: str,
+        template: Type[BaseModel],
+        registry_str: str,
+        context: str = "document",
+        is_partial: bool = True,
+    ) -> DeltaOperation | None:
+        """Extract delta operations from markdown content with registry context."""
         ...
 
     def consolidate_from_pydantic_models(
