@@ -335,12 +335,12 @@ print(f"Accurate batching: {len(batches)} batches")
 
 ```python
 from docling_graph.core.extractors.backends import LlmBackend
-from docling_graph.llm_clients import MistralClient
+from docling_graph.llm_clients import get_client
 from docling_graph.llm_clients.config import resolve_effective_model_config
 
 # Initialize backend
 effective = resolve_effective_model_config("mistral", "mistral-large-latest")
-client = MistralClient(model_config=effective)
+client = get_client("mistral")(model_config=effective)
 backend = LlmBackend(llm_client=client)
 
 # Batch chunks

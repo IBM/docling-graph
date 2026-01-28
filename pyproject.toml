@@ -38,6 +38,7 @@ dependencies = [
     "rich>=13,<15",
     "typer[all]>=0.12,<1.0.0",
     "python-dotenv>=1.0,<2.0",
+    "litellm>=1.0.0,<2.0.0",
     "pyyaml>=6.0,<7.0",
     "aiofiles>=24.0.0,<26.0.0",
 ]
@@ -52,20 +53,7 @@ changelog = "https://github.com/ayoub-ibm/docling-graph/blob/main/CHANGELOG.md"
 docling-graph = "docling_graph.cli.main:main"
 
 [project.optional-dependencies]
-# --- Local Clients ---
-ollama = ["ollama"]
-vllm = ["openai"]
-
-# --- Remote Clients ---
-gemini = ["google-genai"]
-mistral = ["mistralai"]
-openai = ["openai"]
-watsonx = ["ibm-watsonx-ai"]
-
-# --- Bundles ---
-local = ["docling-graph[ollama]", "docling-graph[vllm]"]
-remote = ["docling-graph[openai]", "docling-graph[mistral]", "docling-graph[gemini]", "docling-graph[watsonx]"]
-all = ["docling-graph[local]", "docling-graph[remote]"]
+# Legacy provider SDKs removed; LiteLLM is installed by default.
 
 [dependency-groups]
 # Development tools (linters, type-checkers) and utilities
@@ -212,12 +200,8 @@ module = [
     "mypy.*",
     "pandas.*",
     "networkx.*",
-    "vllm.*",
-    "ollama.*",
-    "openai.*",
+    "litellm.*",
     "tiktoken.*",
-    "mistralai.*",
-    "google-genai.*",
     "google.*"
 ]
 ignore_missing_imports = true

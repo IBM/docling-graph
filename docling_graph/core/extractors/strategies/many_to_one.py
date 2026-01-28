@@ -3,6 +3,7 @@ Many-to-one extraction strategy.
 Processes entire document and returns single consolidated model.
 """
 
+import json
 from typing import List, Tuple, Type, cast
 
 from docling_core.types.doc import DoclingDocument
@@ -259,11 +260,42 @@ class ManyToOneStrategy(BaseExtractor):
                     )
 
             # Create batcher
+            provider = getattr(backend.client, "provider", None)
+            model_id = getattr(backend.client, "model_id", None)
+            # #region agent log
+            try:
+                with open(
+                    "/home/ayoub/github/docling-graph/.cursor/debug.log",
+                    "a",
+                    encoding="utf-8",
+                ) as log_file:
+                    log_file.write(
+                        json.dumps(
+                            {
+                                "sessionId": "debug-session",
+                                "runId": "run2",
+                                "hypothesisId": "H5",
+                                "location": "strategies/many_to_one.py:_extract_with_llm",
+                                "message": "Initializing ChunkBatcher",
+                                "data": {
+                                    "provider": provider,
+                                    "model_id": model_id,
+                                    "context_limit": context_limit,
+                                },
+                                "timestamp": int(time.time() * 1000),
+                            }
+                        )
+                        + "\n"
+                    )
+            except Exception:
+                pass
+            # #endregion
             batcher = ChunkBatcher(
                 context_limit=context_limit,
                 system_prompt_tokens=500,
                 response_buffer_tokens=500,
                 merge_threshold=0.85,
+                provider=provider,
             )
 
             # Batch chunks for efficient processing with real tokenizer

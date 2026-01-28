@@ -13,8 +13,10 @@ provider defaults -> model overrides -> runtime overrides.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
+import time
 from enum import Enum
 from pathlib import Path
 from typing import Any, Protocol
@@ -177,9 +179,10 @@ class ModelDefinition(BaseModel):
 
     provider: str
     model: str | None = None
-    context_limit: int
-    max_output_tokens: int = 4096
-    capability: ModelCapability = ModelCapability.STANDARD
+    litellm_model: str | None = None
+    context_limit: int | None = None
+    max_output_tokens: int | None = None
+    capability: ModelCapability | None = None
     description: str = ""
     notes: str = ""
     generation: GenerationOverrides = Field(default_factory=GenerationOverrides)
@@ -187,7 +190,9 @@ class ModelDefinition(BaseModel):
 
     @field_validator("context_limit", "max_output_tokens")
     @classmethod
-    def _validate_limits(cls, value: int) -> int:
+    def _validate_limits(cls, value: int | None) -> int | None:
+        if value is None:
+            return value
         if value <= 0:
             raise ValueError("Must be positive.")
         return value
@@ -246,6 +251,7 @@ class EffectiveModelConfig(BaseModel):
     model_id: str
     provider_id: str
     provider_model: str
+    litellm_model: str | None = None
     context_limit: int
     max_output_tokens: int
     capability: ModelCapability
@@ -286,6 +292,49 @@ class LlmRuntimeOverrides(BaseModel):
 
 
 _registry: LlmRegistry | None = None
+
+_DEFAULT_CONTEXT_LIMIT = 8192
+_DEFAULT_MAX_OUTPUT_TOKENS = 4096
+
+
+def _get_litellm_model_info(model_name: str | None) -> dict[str, Any] | None:
+    if not model_name:
+        return None
+    try:
+        import litellm
+    except Exception:
+        return None
+
+    get_info = getattr(litellm, "get_model_info", None)
+    if callable(get_info):
+        try:
+            info = get_info(model_name)
+            return info if isinstance(info, dict) else None
+        except Exception:
+            return None
+    return None
+
+
+def _resolve_model_limits(model: ModelDefinition) -> tuple[int, int]:
+    context_limit = model.context_limit
+    max_output_tokens = model.max_output_tokens
+
+    if context_limit is None or max_output_tokens is None:
+        info = _get_litellm_model_info(model.litellm_model or model.model)
+        if info:
+            context_limit = context_limit or info.get("context_window") or info.get("max_tokens")
+            max_output_tokens = max_output_tokens or info.get("max_output_tokens")
+
+            max_input_tokens = info.get("max_input_tokens")
+            if context_limit is None and max_input_tokens and max_output_tokens:
+                context_limit = int(max_input_tokens) + int(max_output_tokens)
+
+    if context_limit is None:
+        context_limit = _DEFAULT_CONTEXT_LIMIT
+    if max_output_tokens is None:
+        max_output_tokens = _DEFAULT_MAX_OUTPUT_TOKENS
+
+    return int(context_limit), int(max_output_tokens)
 
 
 def _merge_generation(
@@ -416,6 +465,14 @@ def resolve_effective_model_config(
     elif isinstance(overrides, dict):
         overrides = LlmRuntimeOverrides(**overrides)
 
+    context_limit, max_output_tokens = _resolve_model_limits(model)
+
+    capability = model.capability
+    if capability is None:
+        capability = detect_model_capability(
+            context_limit, model.model or model_id, max_output_tokens
+        )
+
     generation = _merge_generation(
         provider.generation_defaults, model.generation, overrides.generation
     )
@@ -425,25 +482,26 @@ def resolve_effective_model_config(
     connection = _resolve_connection(provider, overrides.connection, provider_id)
 
     if generation.max_tokens is None:
-        generation = generation.model_copy(update={"max_tokens": model.max_output_tokens})
+        generation = generation.model_copy(update={"max_tokens": max_output_tokens})
     assert generation.max_tokens is not None
-    if generation.max_tokens > model.max_output_tokens:
+    if generation.max_tokens > max_output_tokens:
         raise ConfigurationError(
             "max_tokens exceeds model limit",
             details={
                 "model": model_id,
                 "max_tokens": generation.max_tokens,
-                "model_max_output_tokens": model.max_output_tokens,
+                "model_max_output_tokens": max_output_tokens,
             },
         )
 
-    return EffectiveModelConfig(
+    effective = EffectiveModelConfig(
         model_id=model_id,
         provider_id=provider_id.lower(),
         provider_model=model.model or model_id,
-        context_limit=model.context_limit,
-        max_output_tokens=model.max_output_tokens,
-        capability=model.capability,
+        litellm_model=model.litellm_model,
+        context_limit=context_limit,
+        max_output_tokens=max_output_tokens,
+        capability=capability,
         generation=generation,
         reliability=reliability,
         connection=connection,
@@ -453,6 +511,38 @@ def resolve_effective_model_config(
         rate_limit_rpm=provider.rate_limit_rpm,
         supports_batching=provider.supports_batching,
     )
+    # #region agent log
+    try:
+        with open(
+            "/home/ayoub/github/docling-graph/.cursor/debug.log",
+            "a",
+            encoding="utf-8",
+        ) as log_file:
+            log_file.write(
+                json.dumps(
+                    {
+                        "sessionId": "debug-session",
+                        "runId": "run1",
+                        "hypothesisId": "H1",
+                        "location": "llm_clients/config.py:resolve_effective_model_config",
+                        "message": "Resolved effective model config",
+                        "data": {
+                            "provider_id": effective.provider_id,
+                            "model_id": effective.model_id,
+                            "provider_model": effective.provider_model,
+                            "litellm_model": effective.litellm_model,
+                            "base_url": effective.connection.base_url,
+                            "has_api_key": bool(effective.connection.api_key),
+                        },
+                        "timestamp": int(time.time() * 1000),
+                    }
+                )
+                + "\n"
+            )
+    except Exception:
+        pass
+    # #endregion
+    return effective
 
 
 def get_provider_config(provider_id: str) -> ProviderDefinition | None:

@@ -35,7 +35,8 @@ from ..core.input import (
     URLValidator,
 )
 from ..exceptions import ConfigurationError, ExtractionError, PipelineError
-from ..llm_clients import BaseLlmClient, get_client
+from ..llm_clients import get_client
+from ..protocols import LLMClientProtocol
 from .context import PipelineContext
 
 logger = logging.getLogger(__name__)
@@ -485,11 +486,14 @@ class ExtractionStage(PipelineStage):
                 docling_config=conf["docling_config"],
             )
         else:
-            llm_client = self._initialize_llm_client(
-                model_config["provider"],
-                model_config["model"],
-                context.config.llm_overrides,
-            )
+            if context.config.llm_client is not None:
+                llm_client = context.config.llm_client
+            else:
+                llm_client = self._initialize_llm_client(
+                    model_config["provider"],
+                    model_config["model"],
+                    context.config.llm_overrides,
+                )
             return ExtractorFactory.create_extractor(
                 processing_mode=processing_mode,
                 backend_name="llm",
@@ -528,7 +532,7 @@ class ExtractionStage(PipelineStage):
     @staticmethod
     def _initialize_llm_client(
         provider: str, model: str, overrides: Any | None = None
-    ) -> BaseLlmClient:
+    ) -> LLMClientProtocol:
         """Initialize LLM client based on provider."""
         from docling_graph.llm_clients.config import (
             LlmRuntimeOverrides,
@@ -596,11 +600,14 @@ class ExtractionStage(PipelineStage):
             conf.get("provider_override"),
         )
 
-        llm_client = self._initialize_llm_client(
-            model_config["provider"],
-            model_config["model"],
-            context.config.llm_overrides,
-        )
+        if context.config.llm_client is not None:
+            llm_client = context.config.llm_client
+        else:
+            llm_client = self._initialize_llm_client(
+                model_config["provider"],
+                model_config["model"],
+                context.config.llm_overrides,
+            )
 
         # Import LlmBackend here to avoid circular imports
         from ..core.extractors.backends.llm_backend import LlmBackend

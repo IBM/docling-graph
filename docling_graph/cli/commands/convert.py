@@ -249,6 +249,38 @@ def convert_command(
     if llm_base_url is not None:
         llm_overrides.setdefault("connection", {})["base_url"] = llm_base_url
 
+    # #region agent log
+    try:
+        import json as _json
+        from time import time as _time
+
+        with open(
+            "/home/ayoub/github/docling-graph/.cursor/debug.log",
+            "a",
+            encoding="utf-8",
+        ) as log_file:
+            log_file.write(
+                _json.dumps(
+                    {
+                        "sessionId": "debug-session",
+                        "runId": "run1",
+                        "hypothesisId": "H1",
+                        "location": "cli/commands/convert.py:convert_command",
+                        "message": "Resolved LLM overrides",
+                        "data": {
+                            "provider": provider,
+                            "model": model,
+                            "base_url": llm_overrides.get("connection", {}).get("base_url"),
+                        },
+                        "timestamp": int(_time() * 1000),
+                    }
+                )
+                + "\n"
+            )
+    except Exception:
+        pass
+    # #endregion
+
     cfg = PipelineConfig(
         source=str(source),
         template=template,

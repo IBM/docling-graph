@@ -108,7 +108,6 @@ context = run_pipeline(config)
 | `llm_consolidation` | `bool` | `False` | Enable LLM consolidation |
 | `dump_to_disk` | `bool` or `None` | `None` | Control file exports (None=auto: CLI=True, API=False) |
 | `export_format` | `str` | `"csv"` | Export format: `"csv"` or `"cypher"` |
-| `output_dir` | `str` | `"outputs"` | Output directory path |
 | `model_override` | `str` | `None` | Override model name |
 | `provider_override` | `str` | `None` | Override provider name |
 
@@ -222,24 +221,6 @@ context = run_pipeline({
 graph = context.knowledge_graph
 invoice = context.pydantic_model
 print(f"Extracted invoice with {graph.number_of_nodes()} entities")
-```
-
-### 📍 With File Exports
-
-```python
-from docling_graph import run_pipeline
-
-# Enable file exports
-context = run_pipeline({
-    "source": "invoice.pdf",
-    "template": "templates.BillingDocument",
-    "dump_to_disk": True,
-    "output_dir": "outputs/invoice"
-})
-
-# Results available both in memory and on disk
-graph = context.knowledge_graph
-# Files also written to outputs/invoice/
 ```
 
 ### 📍 Remote LLM
@@ -405,22 +386,13 @@ context = run_pipeline({
 })
 # Returns data in memory only
 
-# Explicit: Enable file exports
-context = run_pipeline({
-    "source": "document.pdf",
-    "template": "templates.BillingDocument",
-    "dump_to_disk": True,
-    "output_dir": "outputs"
-})
-# Returns data AND writes files
-
 # Explicit: Disable file exports
 context = run_pipeline({
     "source": "document.pdf",
     "template": "templates.BillingDocument",
     "dump_to_disk": False
 })
-# Returns data only, even if output_dir is set
+# Returns data only
 ```
 
 !!! note "CLI vs API defaults"
@@ -449,31 +421,6 @@ context = run_pipeline({
 
 # Access results
 graph = context.knowledge_graph
-```
-
-### Multiple Export Formats
-
-```python
-from docling_graph import run_pipeline
-
-# Export as Cypher for Neo4j
-context = run_pipeline({
-    "source": "document.pdf",
-    "template": "templates.BillingDocument",
-    "dump_to_disk": True,
-    "export_format": "cypher",
-    "output_dir": "outputs/neo4j"
-})
-
-# Access graph in memory
-graph = context.knowledge_graph
-
-# Also import files to Neo4j
-import subprocess
-subprocess.run([
-    "cypher-shell",
-    "-f", "outputs/neo4j/graph.cypher"
-])
 ```
 
 ### Conditional Processing
@@ -697,27 +644,6 @@ try:
     run_pipeline(config)
 except:
     pass
-```
-
-### 👍 Organize Outputs
-
-```python
-# ✅ Good - Unique output directories
-from datetime import datetime
-
-timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-run_pipeline({
-    "source": "document.pdf",
-    "template": "templates.BillingDocument",
-    "output_dir": f"outputs/{timestamp}"
-})
-
-# ❌ Avoid - Overwriting outputs
-run_pipeline({
-    "source": "document.pdf",
-    "template": "templates.BillingDocument",
-    "output_dir": "outputs"  # Same for all
-})
 ```
 
 ---

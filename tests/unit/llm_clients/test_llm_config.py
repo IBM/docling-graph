@@ -13,8 +13,8 @@ def test_missing_required_model_fields_fail_fast():
         "providers": {"openai": {"requires_api_key": False}},
         "models": {
             "gpt-4o": {
-                # missing provider + context_limit
-                "max_output_tokens": 4096
+                # missing provider
+                "max_output_tokens": 4096,
             }
         },
     }

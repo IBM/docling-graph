@@ -112,6 +112,36 @@ class TestExtractionStage:
 
     @patch("docling_graph.pipeline.stages.ExtractorFactory.create_extractor")
     @patch("docling_graph.pipeline.stages.ExtractionStage._initialize_llm_client")
+    def test_extraction_uses_custom_llm_client(self, mock_init_client, mock_factory):
+        """Test that a custom LLM client bypasses initialization."""
+        from pydantic import BaseModel
+
+        class TestModel(BaseModel):
+            name: str
+
+        custom_client = Mock()
+
+        mock_extractor = Mock()
+        mock_extractor.extract.return_value = ([TestModel(name="Test")], Mock())
+        mock_factory.return_value = mock_extractor
+
+        config = PipelineConfig(
+            source="test.pdf",
+            template=TestModel,
+            backend="llm",
+            inference="local",
+            llm_client=custom_client,
+        )
+        context = PipelineContext(config=config, template=TestModel)
+
+        stage = ExtractionStage()
+        stage.execute(context)
+
+        mock_init_client.assert_not_called()
+        mock_factory.assert_called_once()
+
+    @patch("docling_graph.pipeline.stages.ExtractorFactory.create_extractor")
+    @patch("docling_graph.pipeline.stages.ExtractionStage._initialize_llm_client")
     def test_extraction_no_models_raises_error(self, mock_init_client, mock_factory):
         """Test that no models extracted raises ExtractionError."""
         from pydantic import BaseModel

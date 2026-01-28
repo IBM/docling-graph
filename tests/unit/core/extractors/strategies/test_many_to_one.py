@@ -364,7 +364,7 @@ class TestCachedProtocolChecks:
         mock_backend = Mock()
         mock_backend.__class__.__name__ = "LlmBackend"
         mock_backend.client = Mock()
-        mock_backend.client.__class__.__name__ = "OpenAIClient"
+        mock_backend.client.__class__.__name__ = "LiteLLMClient"
 
         with (
             patch(
@@ -401,7 +401,7 @@ class TestCachedProtocolChecks:
         mock_backend = Mock()
         mock_backend.__class__.__name__ = "LlmBackend"
         mock_backend.client = Mock()
-        mock_backend.client.__class__.__name__ = "OpenAIClient"
+        mock_backend.client.__class__.__name__ = "LiteLLMClient"
 
         with (
             patch(

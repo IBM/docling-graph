@@ -39,7 +39,7 @@ class TestPerformanceImprovements:
         mock_backend = Mock()
         mock_backend.__class__.__name__ = "LlmBackend"
         mock_backend.client = Mock()
-        mock_backend.client.__class__.__name__ = "OpenAIClient"
+        mock_backend.client.__class__.__name__ = "LiteLLMClient"
 
         call_count = {"is_llm": 0, "is_vlm": 0}
 

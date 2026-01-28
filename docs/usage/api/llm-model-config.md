@@ -8,16 +8,17 @@ resolved (effective) LLM configuration at runtime.
 Edit the registry YAML (default: `docling_graph/llm_clients/models.yaml`) or
 provide your own via `llm_registry_path`.
 
-Minimal model entry:
+Minimal model entry (guardrails + LiteLLM routing):
 
 ```yaml
 models:
   my-model-id:
     provider: openai
-    model: gpt-4o
+    # Optional guardrails (fallback to LiteLLM metadata if omitted)
     context_limit: 128000
     max_output_tokens: 4096
-    capability: advanced
+    # Optional: override LiteLLM model string if it differs
+    # litellm_model: openai/gpt-4o
 ```
 
 Provider entries define auth, defaults, and transport:

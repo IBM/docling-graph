@@ -341,7 +341,7 @@ for doc in documents:
 
 ```bash
 # Install with GPU support
-uv sync --extra local
+uv sync
 
 # Verify GPU is available
 uv run python -c "import torch; print(torch.cuda.is_available())"
@@ -753,7 +753,7 @@ estimate_cost(num_pages=100, model="mistral-small-latest")
 
 **Solutions:**
 1. Verify GPU installation: `torch.cuda.is_available()`
-2. Install GPU dependencies: `uv sync --extra local`
+2. Install GPU dependencies: `uv sync`
 3. Check CUDA version compatibility
 4. Use vLLM provider for GPU optimization
 

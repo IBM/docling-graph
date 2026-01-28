@@ -97,57 +97,12 @@ class OptionalDependency:
 
 # Registry of all optional dependencies
 OPTIONAL_DEPS: Dict[str, OptionalDependency] = {
-    # Local providers
-    "vllm": OptionalDependency(
-        name="vllm",
-        package="openai",
-        extra="openai",
-        description="vLLM for running local LLMs via OpenAI Local API",
-        inference_type="local",
-    ),
-    "ollama": OptionalDependency(
-        name="ollama",
-        package="ollama",
-        extra="ollama",
-        description="Ollama for running local LLMs",
-        inference_type="local",
-    ),
-    # Remote providers
-    "openai": OptionalDependency(
-        name="openai",
-        package="openai",
-        extra="openai",
-        description="OpenAI API client",
+    "litellm": OptionalDependency(
+        name="litellm",
+        package="litellm",
+        description="LiteLLM client library",
         inference_type="remote",
-    ),
-    "mistral": OptionalDependency(
-        name="mistral",
-        package="mistralai",
-        extra="mistral",
-        description="Mistral AI API client",
-        inference_type="remote",
-    ),
-    "gemini": OptionalDependency(
-        name="gemini",
-        package="google.genai",
-        extra="gemini",
-        description="Google Gemini API client",
-        inference_type="remote",
-    ),
-    "watsonx": OptionalDependency(
-        name="watsonx",
-        package="ibm_watsonx_ai",
-        extra="watsonx",
-        description="IBM WatsonX API client",
-        inference_type="remote",
-    ),
-    "ibm-watsonx-ai": OptionalDependency(
-        name="ibm-watsonx-ai",
-        package="ibm_watsonx_ai",
-        extra="watsonx",
-        description="IBM WatsonX API client",
-        inference_type="remote",
-    ),
+    )
 }
 # region agent log
 try:
@@ -176,8 +131,8 @@ except Exception:
 
 # Mapping of inference types to their providers
 INFERENCE_PROVIDERS: Dict[str, List[str]] = {
-    "local": ["vllm", "ollama"],
-    "remote": ["mistral", "openai", "gemini", "ibm-watsonx-ai"],
+    "local": ["litellm"],
+    "remote": ["litellm"],
 }
 
 

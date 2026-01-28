@@ -8,7 +8,7 @@ configurations for the docling-graph pipeline programmatically.
 from pathlib import Path
 from typing import Any, Dict, Literal, Optional, Union
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from typing_extensions import Self
 
 from .llm_clients.config import LlmRegistry, LlmRuntimeOverrides
@@ -82,6 +82,8 @@ class PipelineConfig(BaseModel):
     All other modules should reference these defaults via PipelineConfig, not duplicate them.
     """
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     # Optional fields (empty by default, filled in at runtime)
     source: Union[str, Path] = Field(default="", description="Path to the source document")
     template: Union[str, type[BaseModel]] = Field(
@@ -99,6 +101,13 @@ class PipelineConfig(BaseModel):
     # Model overrides
     model_override: str | None = None
     provider_override: str | None = None
+
+    # Optional custom LLM client (implements LLMClientProtocol)
+    llm_client: Any | None = Field(
+        default=None,
+        description="Custom LLM client instance to use for LLM backend.",
+        exclude=True,
+    )
 
     # Models configuration (flat only, with defaults)
     models: ModelsConfig = Field(default_factory=ModelsConfig)
@@ -192,6 +201,7 @@ class PipelineConfig(BaseModel):
             "llm_registry_path": self.llm_registry_path,
             "llm_registry": self.llm_registry.model_dump() if self.llm_registry else None,
             "llm_overrides": self.llm_overrides.model_dump(),
+            "llm_client": self.llm_client,
         }
 
     def run(self) -> None:

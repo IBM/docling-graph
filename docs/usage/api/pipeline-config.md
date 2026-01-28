@@ -173,6 +173,12 @@ graph = context.knowledge_graph
 invoice = context.pydantic_model
 ```
 
+### Output Settings
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `output_dir` | `str | Path` | `"outputs"` | Output directory path |
+
 ### 📍 Minimal Config With File Exports
 
 ```python
@@ -209,8 +215,7 @@ config = PipelineConfig(
     model_override="mistral-large-latest",
     processing_mode="many-to-one",
     use_chunking=True,
-    llm_consolidation=True,
-    output_dir="outputs/research"
+    llm_consolidation=True
 )
 
 run_pipeline(config)
@@ -228,8 +233,7 @@ config = PipelineConfig(
     backend="vlm",
     inference="local",  # VLM only supports local
     processing_mode="one-to-one",
-    docling_config="vision",
-    output_dir="outputs/form"
+    docling_config="vision"
 )
 
 run_pipeline(config)
@@ -250,8 +254,7 @@ class Invoice(BaseModel):
 # Pass class directly
 config = PipelineConfig(
     source="invoice.pdf",
-    template=Invoice,  # Class instead of string
-    output_dir="outputs/invoice"
+    template=Invoice  # Class instead of string
 )
 
 run_pipeline(config)
@@ -374,8 +377,7 @@ def create_config(source: str, template: str, use_remote: bool = False):
         template=template,
         backend="llm",
         inference="remote" if use_remote else "local",
-        provider_override="mistral" if use_remote else "ollama",
-        output_dir=f"outputs/{Path(source).stem}"
+        provider_override="mistral" if use_remote else "ollama"
     )
 
 # Use factory
@@ -402,8 +404,7 @@ def process_invoice(source: str):
     config = PipelineConfig(
         source=source,
         template="templates.BillingDocument",
-        **BASE_CONFIG,
-        output_dir=f"outputs/invoices/{Path(source).stem}"
+        **BASE_CONFIG
     )
     run_pipeline(config)
 
@@ -412,8 +413,7 @@ def process_research(source: str):
         source=source,
         template="templates.ScholarlyRheologyPaper",
         **BASE_CONFIG,
-        llm_consolidation=True,  # Override for research
-        output_dir=f"outputs/research/{Path(source).stem}"
+        llm_consolidation=True  # Override for research
     )
     run_pipeline(config)
 ```
@@ -448,8 +448,7 @@ def smart_config(source: str) -> PipelineConfig:
         template="templates.BillingDocument",
         backend=backend,
         processing_mode=processing,
-        use_chunking=use_chunking,
-        output_dir=f"outputs/{path.stem}"
+        use_chunking=use_chunking
     )
 
 # Use smart configuration
@@ -526,10 +525,6 @@ class ConfigBuilder:
         self.config_dict["llm_consolidation"] = enabled
         return self
     
-    def with_output_dir(self, output_dir: str):
-        self.config_dict["output_dir"] = output_dir
-        return self
-    
     def build(self) -> PipelineConfig:
         return PipelineConfig(**self.config_dict)
 
@@ -538,7 +533,6 @@ config = (ConfigBuilder("document.pdf", "templates.BillingDocument")
     .with_remote_llm("mistral", "mistral-large-latest")
     .with_chunking(True)
     .with_consolidation(True)
-    .with_output_dir("outputs/research")
     .build())
 
 run_pipeline(config)
@@ -587,27 +581,6 @@ config = PipelineConfig(
     processing_mode="many-to-one",
     use_chunking=True,
     # ... all defaults
-)
-```
-
-### 👍 Organize Output Directories
-
-```python
-# ✅ Good - Organized structure
-from datetime import datetime
-
-timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-config = PipelineConfig(
-    source="document.pdf",
-    template="templates.BillingDocument",
-    output_dir=f"outputs/invoices/{timestamp}"
-)
-
-# ❌ Avoid - Overwriting outputs
-config = PipelineConfig(
-    source="document.pdf",
-    template="templates.BillingDocument",
-    output_dir="outputs"  # Same for all
 )
 ```
 

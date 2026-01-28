@@ -212,14 +212,11 @@ After configuration, `init` validates required dependencies:
 
 ```
 ⚠ Missing dependencies for remote inference
-Run: uv sync --extra remote
+Run: uv sync
 ```
 
-**Common dependency groups:**
-- `--extra local` - Local inference (vLLM, Ollama)
-- `--extra remote` - Remote APIs (Mistral, OpenAI, Gemini)
-- `--extra watsonx` - IBM watsonx support
-- `--extra all` - All features
+**Dependencies:**
+- `uv sync` installs LiteLLM and all core runtime dependencies
 
 ---
 
@@ -230,7 +227,7 @@ Run: uv sync --extra remote
 ```
 Next steps:
 1. Install dependencies:
-   uv sync --extra remote
+   uv sync
 
 2. Set your API key:
    export MISTRAL_API_KEY="your-api-key-here"
@@ -245,7 +242,7 @@ Next steps:
 ```
 Next steps:
 1. Install dependencies:
-   uv sync --extra local
+   uv sync
 
 2. Start Ollama server:
    ollama serve
@@ -303,13 +300,13 @@ uv run docling-graph init
 # Follow prompts:
 # 1. Choose LLM backend
 # 2. Choose remote inference
-# 3. Choose Mistral provider
-# 4. Choose mistral-small-latest model
+# 3. Choose provider (LiteLLM ID)
+# 4. Choose model (LiteLLM identifier)
 # 5. Choose many-to-one processing
 # 6. Choose CSV export
 
 # Install dependencies
-uv sync --extra remote
+uv sync
 
 # Set API key
 export MISTRAL_API_KEY="your-key"
@@ -328,13 +325,13 @@ uv run docling-graph init
 # Follow prompts:
 # 1. Choose LLM backend
 # 2. Choose local inference
-# 3. Choose Ollama provider
-# 4. Choose llama3:8b model
+# 3. Choose provider (LiteLLM ID)
+# 4. Choose model (LiteLLM identifier)
 # 5. Choose many-to-one processing
 # 6. Choose CSV export
 
 # Install dependencies
-uv sync --extra local
+uv sync
 
 # Start Ollama
 ollama serve
@@ -360,7 +357,7 @@ uv run docling-graph init
 # 4. Choose CSV export
 
 # Install dependencies
-uv sync --extra all
+uv sync
 
 # Test conversion
 uv run docling-graph convert form.jpg \

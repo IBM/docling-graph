@@ -6,8 +6,7 @@ from typing import Any, Literal
 
 from rich import print as rich_print
 
-from ...llm_clients.base import BaseLlmClient
-from ...protocols import Backend
+from ...protocols import Backend, LLMClientProtocol
 from .backends.llm_backend import LlmBackend
 from .backends.vlm_backend import VlmBackend
 from .extractor_base import BaseExtractor
@@ -23,7 +22,7 @@ class ExtractorFactory:
         processing_mode: Literal["one-to-one", "many-to-one"],
         backend_name: Literal["vlm", "llm"],
         model_name: str | None = None,
-        llm_client: BaseLlmClient | None = None,
+        llm_client: LLMClientProtocol | None = None,
         docling_config: str = "ocr",
         use_chunking: bool = True,
         llm_consolidation: bool = False,

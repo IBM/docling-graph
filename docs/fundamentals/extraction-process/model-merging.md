@@ -487,7 +487,7 @@ run_pipeline(config)
 ```python
 from docling_graph.core.extractors.backends import LlmBackend
 from docling_graph.core.utils import merge_pydantic_models
-from docling_graph.llm_clients import MistralClient
+from docling_graph.llm_clients import get_client
 from docling_graph.llm_clients.config import resolve_effective_model_config
 
 # Extract from chunks
@@ -502,7 +502,7 @@ programmatic = merge_pydantic_models(models, template)
 
 # LLM consolidation
 effective = resolve_effective_model_config("mistral", "mistral-large-latest")
-client = MistralClient(model_config=effective)
+client = get_client("mistral")(model_config=effective)
 backend = LlmBackend(llm_client=client)
 
 final = backend.consolidate_from_pydantic_models(

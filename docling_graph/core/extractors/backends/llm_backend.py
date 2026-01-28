@@ -11,9 +11,9 @@ from typing import List, Optional, Type
 from pydantic import BaseModel, ValidationError
 from rich import print as rich_print
 
-from ....llm_clients.base import BaseLlmClient
 from ....llm_clients.config import ModelCapability, ModelConfigLike, detect_model_capability
 from ....llm_clients.prompts import get_consolidation_prompt, get_extraction_prompt
+from ....protocols import LLMClientProtocol
 
 logger = logging.getLogger(__name__)
 
@@ -21,12 +21,12 @@ logger = logging.getLogger(__name__)
 class LlmBackend:
     """Backend for LLM-based extraction with model-aware prompting and multi-turn consolidation."""
 
-    def __init__(self, llm_client: BaseLlmClient) -> None:
+    def __init__(self, llm_client: LLMClientProtocol) -> None:
         """
         Initialize LLM backend with a client and model configuration.
 
         Args:
-            llm_client (BaseLlmClient): LLM client instance (Mistral, Ollama, etc.)
+            llm_client (LLMClientProtocol): LLM client instance
         """
         self.client = llm_client
 

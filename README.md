@@ -28,11 +28,13 @@ Docling-Graph turns documents into validated **Pydantic** objects, then builds a
 
 This transformation enables high-precision use cases in **chemistry, finance, and legal** domains, where AI must capture exact entity connections (compounds and reactions, instruments and dependencies, properties and measurements) **rather than rely on approximate text embeddings**.
 
-This toolkit supports two extraction paths: **local VLM extraction** via Docling, and **LLM-based extraction** using either local runtimes (vLLM, Ollama) or API providers (Mistral, OpenAI, Gemini, IBM WatsonX), all orchestrated through a flexible, config-driven pipeline.
+This toolkit supports two extraction paths: **local VLM extraction** via Docling, and **LLM-based extraction** routed through **LiteLLM** for local runtimes (vLLM, Ollama) and API providers (Mistral, OpenAI, Gemini, IBM WatsonX), all orchestrated through a flexible, config-driven pipeline.
 
 
 
 ## Key Capabilities
+
+- **✍🏻 Input Formats**: Ingest PDFs, images, [DoclingDocument](docs/fundamentals/pipeline-configuration/input-formats.md#docling-document-json), Markdown, URLs and [more](docs/fundamentals/pipeline-configuration/input-formats.md).
 
 - **🧠 Data Extraction**: Extract structured data using [VLM](docs/fundamentals/pipeline-configuration/backend-selection.md) or [LLM](docs/fundamentals/pipeline-configuration/backend-selection.md). Supports [intelligent chunking](docs/fundamentals/extraction-process/chunking-strategies.md) and flexible [processing modes](docs/fundamentals/pipeline-configuration/processing-modes.md).
 
@@ -43,8 +45,6 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 - **📊 Visualization**: Explore graphs with [interactive HTML](docs/fundamentals/graph-management/visualization.md) pages, and detailed [Markdown reports](docs/fundamentals/graph-management/visualization.md#markdown-reports).
 
 ### Latest Changes
-
-- **✍🏻 Input Formats**: Process [PDF and images](docs/fundamentals/pipeline-configuration/input-formats.md#pdf-documents), [text and Markdown files](docs/fundamentals/pipeline-configuration/input-formats.md#text-files), [URLs](docs/fundamentals/pipeline-configuration/input-formats.md#urls), [DoclingDocument](docs/fundamentals/pipeline-configuration/input-formats.md#docling-document-json), and [plain text](docs/usage/api/programmatic-examples.md) strings.
 
 - **✨ Batch Optimization**: [Provider-specific batching](docs/usage/advanced/performance-tuning.md#provider-specific-batching) with [real tokenizers](docs/usage/advanced/performance-tuning.md#real-tokenizer-integration) and [improved GPU utilization](docs/usage/advanced/performance-tuning.md#clean-up-resources) for faster inference and better memory handling.
 
@@ -78,12 +78,8 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 git clone https://github.com/IBM/docling-graph
 cd docling-graph
 
-# Install with uv (choose your option)
-uv sync                    # Minimal: Core + VLM only
-uv sync --extra all        # Full: All features
-uv sync --extra local      # Local LLM (vLLM, Ollama)
-uv sync --extra remote     # Remote APIs (Mistral, OpenAI, Gemini)
-uv sync --extra watsonx    # IBM WatsonX support
+# Install with uv
+uv sync                    # Core + LiteLLM + VLM
 ```
 
 For detailed installation instructions, see [Installation Guide](docs/fundamentals/installation/index.md).
@@ -253,7 +249,7 @@ git clone https://github.com/IBM/docling-graph
 cd docling-graph
 
 # Install with dev dependencies
-uv sync --extra all --extra dev
+uv sync --extra dev
 
 # Run Execute pre-commit checks
 uv run pre-commit run --all-files
