@@ -16,7 +16,7 @@ from .constants import (
     LOCAL_PROVIDERS,
     PROCESSING_MODES,
 )
-from .dependencies import OPTIONAL_DEPS, get_missing_dependencies
+from .dependencies import INFERENCE_PROVIDERS, OPTIONAL_DEPS, get_missing_dependencies
 
 # Validation option sets mapped to names
 VALIDATION_SETS = {
@@ -62,12 +62,17 @@ def validate_vlm_constraints(backend: str, inference: str) -> None:
 
 
 def validate_provider(provider: str, inference: str) -> str:
-    """Validate provider choice."""
+    """Validate provider choice.
+
+    Ensures that the provider is valid for the selected inference type.
+    Raises ValueError for invalid combinations so that CLI commands and tests
+    can fail fast with clear feedback.
+    """
     valid_providers = LOCAL_PROVIDERS if inference == "local" else API_PROVIDERS
     if provider not in valid_providers:
-        rich_print(
-            f"[yellow]Warning:[/yellow] Provider '{provider}' is not in the default list. "
-            "Assuming LiteLLM can route it."
+        raise ValueError(
+            f"Invalid provider '{provider}' for inference='{inference}'. "
+            f"Expected one of: {', '.join(sorted(valid_providers))}."
         )
     return provider
 
@@ -120,7 +125,13 @@ def _get_install_command(provider: str) -> str:
 
 def print_dependency_setup_guide(inference_type: str, provider: str | None = None) -> None:
     """Print setup guide for the selected inference type."""
-    missing = get_missing_dependencies(["litellm"])
+    # Determine which providers to check
+    if provider is not None:
+        provider_names = [provider]
+    else:
+        provider_names = INFERENCE_PROVIDERS.get(inference_type, [])
+
+    missing = get_missing_dependencies(provider_names)
 
     if not missing:
         msg = (
@@ -128,32 +139,38 @@ def print_dependency_setup_guide(inference_type: str, provider: str | None = Non
             if provider
             else f"All {inference_type} inference dependencies"
         )
-        rich_print(f"\n[green]{msg} is installed![/green]")
+        rich_print(f"\n[green]{msg} are installed![/green]")
         return
 
     # Show missing dependencies
-    rich_print("\n[yellow]Note: Setup required for LiteLLM[/yellow]")
+    rich_print(f"\n[yellow]Note: Setup required for {inference_type} inference[/yellow]")
     rich_print("\n[blue]Dependency status:[/blue]")
-    _print_provider_status("litellm")
+    for dep in missing:
+        _print_provider_status(dep.name)
 
     rich_print("\n[blue]Run the following to install missing dependencies:[/blue]")
-    rich_print(f" {_get_install_command('litellm')}")
+    for dep in missing:
+        rich_print(f" {dep.get_install_command()}")
     rich_print()
 
 
 def validate_and_warn_dependencies(config_dict: dict, interactive: bool = True) -> bool:
     """Validate dependencies and show warnings if missing (optimized)."""
-    _provider, inference_type = get_provider_from_config(config_dict)
+    provider, inference_type = get_provider_from_config(config_dict)
 
-    missing = get_missing_dependencies(["litellm"])
+    # If no provider is configured, assume dependencies are fine
+    if not provider:
+        return True
 
-    if not missing:
+    is_available = check_provider_installed(provider)
+
+    if is_available:
         if interactive:
-            rich_print("\n[green]- LiteLLM is installed[/green]")
+            rich_print("\n[green]- Dependencies are installed[/green]")
         return True
 
     if interactive:
-        print_dependency_setup_guide(inference_type)
+        print_dependency_setup_guide(inference_type, provider)
     return False
 
 

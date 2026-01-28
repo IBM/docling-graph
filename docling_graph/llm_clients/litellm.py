@@ -2,7 +2,7 @@
 LiteLLM-backed client implementation.
 
 This client standardizes chat/completion calls through LiteLLM's OpenAI-style
-API surface while preserving the BaseLlmClient contract.
+API surface while implementing the LLMClientProtocol directly.
 """
 
 from __future__ import annotations
@@ -10,12 +10,15 @@ from __future__ import annotations
 import json
 import logging
 import time
-from typing import Any, Dict
+from typing import Any, Dict, Mapping
 
 from ..exceptions import ClientError, ConfigurationError
-from .base import BaseLlmClient
+from .config import EffectiveModelConfig
+from .response_handler import ResponseHandler
 
 logger = logging.getLogger(__name__)
+
+_litellm_import_error: ImportError | None
 
 try:
     import litellm
@@ -26,13 +29,23 @@ else:
     _litellm_import_error = None
 
 
-class LiteLLMClient(BaseLlmClient):
+class LiteLLMClient:
     """LiteLLM client implementation using OpenAI-style calls."""
 
-    def _provider_id(self) -> str:
-        return "litellm"
+    def __init__(self, model_config: EffectiveModelConfig, **kwargs: Any) -> None:
+        self._config = model_config
+        self.model = model_config.model_id
+        self.model_id = model_config.model_id
+        self._context_limit = model_config.context_limit
+        self._max_output_tokens = model_config.max_output_tokens
+        self._generation = model_config.generation
+        self._reliability = model_config.reliability
+        self._connection = model_config.connection
 
-    def _setup_client(self, **kwargs: Any) -> None:
+        self._setup_client(**kwargs)
+        logger.info("%s initialized for model: %s", self.__class__.__name__, self.model)
+
+    def _setup_client(self, **_kwargs: Any) -> None:
         if litellm is None:
             raise ConfigurationError(
                 "LiteLLM client requires 'litellm' package",
@@ -40,12 +53,47 @@ class LiteLLMClient(BaseLlmClient):
                 cause=_litellm_import_error,
             )
 
+    def get_json_response(
+        self, prompt: str | Mapping[str, str], schema_json: str
+    ) -> Dict[str, Any] | list[Any]:
+        messages = self._prepare_messages(prompt)
+        raw_response, metadata = self._call_api(messages, schema_json=schema_json)
+        truncated = self._check_truncation(metadata)
+        return ResponseHandler.parse_json_response(
+            raw_response,
+            self.__class__.__name__,
+            aggressive_clean=self._needs_aggressive_cleaning(),
+            truncated=truncated,
+            max_tokens=self.max_tokens,
+        )
+
+    def _prepare_messages(self, prompt: str | Mapping[str, str]) -> list[Dict[str, str]]:
+        if isinstance(prompt, Mapping):
+            prompt_mapping = dict(prompt)
+            messages: list[Dict[str, str]] = []
+            system_content = prompt_mapping.get("system")
+            if system_content is not None:
+                messages.append({"role": "system", "content": system_content})
+            user_content = prompt_mapping.get("user")
+            if user_content is not None:
+                messages.append({"role": "user", "content": user_content})
+            return messages
+        return [{"role": "user", "content": prompt}]
+
+    def _needs_aggressive_cleaning(self) -> bool:
+        return self._config.provider_id == "watsonx"
+
+    def _check_truncation(self, metadata: Dict[str, Any]) -> bool:
+        finish_reason = metadata.get("finish_reason")
+        if finish_reason:
+            return bool(finish_reason == "length")
+        return False
+
     def _call_api(
         self, messages: list[Dict[str, str]], **params: Any
     ) -> tuple[str, Dict[str, Any]]:
         try:
             request = self._build_request(messages)
-            # #region agent log
             try:
                 with open(
                     "/home/ayoub/github/docling-graph/.cursor/debug.log",
@@ -74,7 +122,6 @@ class LiteLLMClient(BaseLlmClient):
                     )
             except Exception:
                 pass
-            # #endregion
             response = litellm.completion(**request)
 
             choices = response.get("choices", [])
@@ -95,7 +142,6 @@ class LiteLLMClient(BaseLlmClient):
         except Exception as e:
             if isinstance(e, ClientError):
                 raise
-            # #region agent log
             try:
                 with open(
                     "/home/ayoub/github/docling-graph/.cursor/debug.log",
@@ -121,7 +167,6 @@ class LiteLLMClient(BaseLlmClient):
                     )
             except Exception:
                 pass
-            # #endregion
             raise ClientError(
                 f"LiteLLM API call failed: {type(e).__name__}",
                 details={"model": self.model, "error": str(e)},
@@ -131,18 +176,7 @@ class LiteLLMClient(BaseLlmClient):
     def _build_request(self, messages: list[Dict[str, str]]) -> dict[str, Any]:
         gen = self.generation
         max_tokens = gen.max_tokens or self._max_output_tokens
-
-        model_name = self.model_config.litellm_model or self.model
-        provider_id = self.model_config.provider_id
-        if provider_id == "vllm" and self.connection.base_url:
-            # OpenAI-compatible vLLM server mode per LiteLLM docs
-            if model_name.startswith("vllm/"):
-                model_name = model_name.removeprefix("vllm/")
-            if model_name.startswith("hosted_vllm/"):
-                model_name = model_name.removeprefix("hosted_vllm/")
-            model_name = f"hosted_vllm/{model_name}"
-        elif provider_id not in {"openai"} and not model_name.startswith(f"{provider_id}/"):
-            model_name = f"{provider_id}/{model_name}"
+        model_name = self.model_config.litellm_model
 
         request: dict[str, Any] = {
             "model": model_name,
@@ -152,7 +186,7 @@ class LiteLLMClient(BaseLlmClient):
             "timeout": self.timeout,
             "drop_params": True,
         }
-        if provider_id != "vllm":
+        if self.model_config.provider_id != "vllm":
             request["response_format"] = {"type": "json_object"}
 
         if gen.top_p is not None:
@@ -203,7 +237,6 @@ class LiteLLMClient(BaseLlmClient):
             except Exception:
                 logger.debug("LiteLLM supported params lookup failed for %s", model_name)
 
-        # #region agent log
         try:
             with open(
                 "/home/ayoub/github/docling-graph/.cursor/debug.log",
@@ -233,5 +266,36 @@ class LiteLLMClient(BaseLlmClient):
                 )
         except Exception:
             pass
-        # #endregion
         return request
+
+    @property
+    def provider(self) -> str:
+        return self._config.provider_id
+
+    @property
+    def context_limit(self) -> int:
+        return self._context_limit
+
+    @property
+    def max_tokens(self) -> int:
+        return self._generation.max_tokens or self._max_output_tokens
+
+    @property
+    def timeout(self) -> int:
+        return self._reliability.timeout_s
+
+    @property
+    def generation(self) -> Any:
+        return self._generation
+
+    @property
+    def reliability(self) -> Any:
+        return self._reliability
+
+    @property
+    def connection(self) -> Any:
+        return self._connection
+
+    @property
+    def model_config(self) -> EffectiveModelConfig:
+        return self._config

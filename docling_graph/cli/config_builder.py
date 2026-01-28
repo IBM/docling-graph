@@ -293,7 +293,9 @@ class ConfigurationBuilder:
             )
             provider = provider_id
         else:
-            default_model = PROVIDER_DEFAULT_MODELS.get(provider, PROVIDER_DEFAULT_MODELS["mistral"])
+            default_model = PROVIDER_DEFAULT_MODELS.get(
+                provider, PROVIDER_DEFAULT_MODELS["mistral"]
+            )
             model = typer.prompt(
                 f"Select model for {provider}",
                 default=default_model,

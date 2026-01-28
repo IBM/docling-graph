@@ -78,9 +78,7 @@ def export_csv() -> None:
     context = run_pipeline(config)
     console.print("  • [green]✓ Complete[/green]")
     graph = context.knowledge_graph
-    console.print(
-        f"  • Graph: {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges"
-    )
+    console.print(f"  • Graph: {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges")
 
 
 def export_cypher() -> None:
@@ -101,9 +99,7 @@ def export_cypher() -> None:
     context = run_pipeline(config)
     console.print("  • [green]✓ Complete[/green]")
     graph = context.knowledge_graph
-    console.print(
-        f"  • Graph: {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges"
-    )
+    console.print(f"  • Graph: {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges")
 
 
 def main() -> None:

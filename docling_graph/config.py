@@ -11,7 +11,7 @@ from typing import Any, Dict, Literal, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from typing_extensions import Self
 
-from .llm_clients.config import LlmRegistry, LlmRuntimeOverrides
+from .llm_clients.config import LlmRuntimeOverrides
 
 
 class BackendConfig(BaseModel):
@@ -112,13 +112,6 @@ class PipelineConfig(BaseModel):
     # Models configuration (flat only, with defaults)
     models: ModelsConfig = Field(default_factory=ModelsConfig)
 
-    # LLM registry configuration
-    llm_registry_path: str | None = Field(
-        default=None, description="Optional path to a custom LLM registry YAML file."
-    )
-    llm_registry: LlmRegistry | None = Field(
-        default=None, description="Inline LLM registry definitions."
-    )
     llm_overrides: LlmRuntimeOverrides = Field(
         default_factory=LlmRuntimeOverrides, description="Runtime overrides for LLM settings."
     )
@@ -198,8 +191,6 @@ class PipelineConfig(BaseModel):
             "dump_to_disk": self.dump_to_disk,
             "include_trace": self.include_trace,
             "models": self.models.model_dump(),
-            "llm_registry_path": self.llm_registry_path,
-            "llm_registry": self.llm_registry.model_dump() if self.llm_registry else None,
             "llm_overrides": self.llm_overrides.model_dump(),
             "llm_client": self.llm_client,
         }
@@ -234,8 +225,6 @@ class PipelineConfig(BaseModel):
                 },
             },
             "models": default_config.models.model_dump(),
-            "llm_registry_path": default_config.llm_registry_path,
-            "llm_registry": None,
             "llm_overrides": default_config.llm_overrides.model_dump(),
             "output": {
                 "directory": str(default_config.output_dir),

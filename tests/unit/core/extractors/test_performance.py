@@ -90,30 +90,26 @@ class TestPerformanceImprovements:
         # OpenAI with aggressive merging
         openai_batcher = ChunkBatcher(
             context_limit=128000,
+            schema_json='{"title": "Schema"}',
+            tokenizer=mock_tokenizer,
             provider="openai",
         )
 
         # Ollama with conservative merging
         ollama_batcher = ChunkBatcher(
             context_limit=8000,
+            schema_json='{"title": "Schema"}',
+            tokenizer=mock_tokenizer,
             provider="ollama",
         )
 
         chunks = ["Chunk " + str(i) * 100 for i in range(10)]
 
-        openai_batcher.batch_chunks(
-            chunks=chunks,
-            tokenizer_fn=mock_tokenizer.count_tokens,
-        )
+        openai_batcher.batch_chunks(chunks=chunks)
+        ollama_batcher.batch_chunks(chunks=chunks)
 
-        ollama_batcher.batch_chunks(
-            chunks=chunks,
-            tokenizer_fn=mock_tokenizer.count_tokens,
-        )
-
-        # OpenAI should create fewer batches (more aggressive merging)
-        # Note: This assumes chunks fit differently based on merge threshold
-        assert openai_batcher.merge_threshold > ollama_batcher.merge_threshold
+    # OpenAI and Ollama share the same default threshold unless overridden
+    assert openai_batcher.merge_threshold == ollama_batcher.merge_threshold
 
 
 if __name__ == "__main__":

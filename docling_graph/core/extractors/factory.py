@@ -34,7 +34,7 @@ class ExtractorFactory:
             processing_mode (str): 'one-to-one' or 'many-to-one'
             backend_name (str): 'vlm' or 'llm'
             model_name (str): Model name for VLM (optional)
-            llm_client (BaseLlmClient): LLM client instance (optional)
+            llm_client (LLMClientProtocol): LLM client instance (optional)
             docling_config (str): Docling pipeline configuration ('default' or 'vlm')
             llm_consolidation (bool): Whether to use LLM consolidation.
             use_chunking (bool): Whether to use chunking.

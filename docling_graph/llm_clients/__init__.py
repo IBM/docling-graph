@@ -4,13 +4,12 @@ LLM Clients module with LiteLLM as the default execution path.
 
 from typing import Type
 
-from .base import BaseLlmClient
 from .litellm import LiteLLMClient
 
-__all__ = ["BaseLlmClient", "LiteLLMClient", "get_client"]
+__all__ = ["LiteLLMClient", "get_client"]
 
 
-def get_client(provider: str) -> Type[BaseLlmClient]:
+def get_client(provider: str) -> Type[LiteLLMClient]:
     """
     Get LLM client class for the specified provider.
 

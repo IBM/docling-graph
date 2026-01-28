@@ -30,6 +30,7 @@ from ..validators import (
 )
 
 logger = logging.getLogger(__name__)
+DEFAULT_OUTPUT_DIR = Path("outputs")
 
 
 def convert_command(
@@ -98,7 +99,7 @@ def convert_command(
         typer.Option(
             "--output-dir", "-o", help="Output directory.", file_okay=False, writable=True
         ),
-    ] = Path("outputs"),
+    ] = DEFAULT_OUTPUT_DIR,
     model: Annotated[str | None, typer.Option("--model", "-m", help="Override model name.")] = None,
     provider: Annotated[str | None, typer.Option("--provider", help="Override provider.")] = None,
     llm_temperature: Annotated[
@@ -118,6 +119,20 @@ def convert_command(
     ] = None,
     llm_base_url: Annotated[
         str | None, typer.Option("--llm-base-url", help="Override LLM base URL.")
+    ] = None,
+    llm_context_limit: Annotated[
+        int | None,
+        typer.Option(
+            "--llm-context-limit",
+            help="Override LLM context limit (total context window size in tokens).",
+        ),
+    ] = None,
+    llm_max_output_tokens: Annotated[
+        int | None,
+        typer.Option(
+            "--llm-max-output-tokens",
+            help="Override LLM max output tokens (maximum tokens the model can generate).",
+        ),
     ] = None,
     show_llm_config: Annotated[
         bool,
@@ -150,8 +165,6 @@ def convert_command(
     defaults = config_data.get("defaults", {})
     docling_cfg = config_data.get("docling", {})
     models_from_yaml = config_data.get("models", {})
-    llm_registry_path = config_data.get("llm_registry_path")
-    llm_registry_data = config_data.get("llm_registry")
     llm_overrides = config_data.get("llm_overrides", {}) or {}
 
     # Resolve configuration (CLI args override config file)
@@ -248,6 +261,10 @@ def convert_command(
         llm_overrides.setdefault("reliability", {})["max_retries"] = llm_retries
     if llm_base_url is not None:
         llm_overrides.setdefault("connection", {})["base_url"] = llm_base_url
+    if llm_context_limit is not None:
+        llm_overrides["context_limit"] = llm_context_limit
+    if llm_max_output_tokens is not None:
+        llm_overrides["max_output_tokens"] = llm_max_output_tokens
 
     # #region agent log
     try:
@@ -291,8 +308,6 @@ def convert_command(
         model_override=model,
         provider_override=provider,
         models=models_from_yaml,
-        llm_registry_path=llm_registry_path,
-        llm_registry=llm_registry_data,
         llm_overrides=llm_overrides,
         llm_consolidation=final_llm_consolidation,
         use_chunking=final_use_chunking,
@@ -309,14 +324,7 @@ def convert_command(
     logger.debug(f"Output directory: {cfg.output_dir}")
 
     if show_llm_config and backend_val == "llm":
-        from docling_graph.llm_clients.config import (
-            load_registry_from_path,
-            resolve_effective_model_config,
-        )
-
-        registry = cfg.llm_registry
-        if registry is None and cfg.llm_registry_path:
-            registry = load_registry_from_path(Path(cfg.llm_registry_path))
+        from docling_graph.llm_clients.config import resolve_effective_model_config
 
         selection = cfg.models.llm.local if cfg.inference == "local" else cfg.models.llm.remote
         resolved_provider = provider or selection.provider
@@ -325,7 +333,6 @@ def convert_command(
             resolved_provider,
             resolved_model,
             overrides=cfg.llm_overrides,
-            registry=registry,
         )
         rich_print("[yellow][ResolvedLLMConfig][/yellow]")
         rich_print(effective.model_dump())

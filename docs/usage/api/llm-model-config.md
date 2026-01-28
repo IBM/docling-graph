@@ -3,41 +3,15 @@
 This guide explains how to define models, override settings, and inspect the
 resolved (effective) LLM configuration at runtime.
 
-## Add a New Model Definition
+## Select a Model and Provider
 
-Edit the registry YAML (default: `docling_graph/llm_clients/models.yaml`) or
-provide your own via `llm_registry_path`.
-
-Minimal model entry (guardrails + LiteLLM routing):
-
-```yaml
-models:
-  my-model-id:
-    provider: openai
-    # Optional guardrails (fallback to LiteLLM metadata if omitted)
-    context_limit: 128000
-    max_output_tokens: 4096
-    # Optional: override LiteLLM model string if it differs
-    # litellm_model: openai/gpt-4o
-```
-
-Provider entries define auth, defaults, and transport:
-
-```yaml
-providers:
-  openai:
-    requires_api_key: true
-    connection:
-      api_key_env: OPENAI_API_KEY
-    generation_defaults:
-      temperature: 0.1
-    reliability_defaults:
-      timeout_s: 300
-```
+Model context windows and output limits are resolved dynamically via LiteLLM.
+To use a new model, simply specify the provider and model name in your config
+or via CLI overrides.
 
 ## Override via Python (API)
 
-You can override generation, reliability, or connection settings at runtime:
+You can override generation, reliability, connection settings, and model limits at runtime:
 
 ```python
 from docling_graph import PipelineConfig
@@ -52,6 +26,8 @@ config = PipelineConfig(
     llm_overrides={
         "generation": {"temperature": 0.2, "max_tokens": 2048},
         "reliability": {"timeout_s": 120, "max_retries": 1},
+        "context_limit": 128000,           # Override context window size
+        "max_output_tokens": 4096,        # Override max output tokens
     },
 )
 ```
@@ -73,12 +49,8 @@ llm_overrides:
     max_tokens: 2048
   reliability:
     timeout_s: 120
-```
-
-To use a custom registry:
-
-```yaml
-llm_registry_path: "/path/to/custom_llm_registry.yaml"
+  context_limit: 128000        # Override context window size
+  max_output_tokens: 4096      # Override max output tokens
 ```
 
 ## Override via CLI
@@ -88,8 +60,52 @@ Common overrides:
 ```bash
 docling-graph convert doc.pdf --template templates.BillingDocument \
   --provider openai --model gpt-4o \
-  --llm-temperature 0.2 --llm-max-tokens 2048 --llm-timeout 120
+  --llm-temperature 0.2 \
+  --llm-max-tokens 2048 \
+  --llm-timeout 120 \
+  --llm-context-limit 128000 \
+  --llm-max-output-tokens 4096
 ```
+
+### Available CLI Overrides
+
+- `--llm-temperature`: Generation temperature (0.0-2.0)
+- `--llm-max-tokens`: Maximum tokens in response
+- `--llm-top-p`: Top-p sampling parameter
+- `--llm-timeout`: Request timeout in seconds
+- `--llm-retries`: Maximum retry attempts
+- `--llm-base-url`: Custom API base URL
+- `--llm-context-limit`: Total context window size in tokens
+- `--llm-max-output-tokens`: Maximum tokens the model can generate
+
+## Model Limits and Defaults
+
+### Context Limit and Max Output Tokens
+
+By default, these values are resolved from LiteLLM metadata. If LiteLLM doesn't have information about your model, the system falls back to defaults:
+
+- **Default context limit**: 8,192 tokens
+- **Default max output tokens**: 2,048 tokens
+
+**Important**: If you see warnings about falling back to defaults, provide explicit values via CLI flags or `llm_overrides` to optimize extraction performance.
+
+### Merge Threshold
+
+The `merge_threshold` controls when chunks are merged into batches (default: **95%**). This is provider-specific and can be overridden programmatically:
+
+```python
+from docling_graph.core.extractors import ChunkBatcher
+
+batcher = ChunkBatcher(
+    context_limit=128000,
+    schema_json='{"title": "Schema"}',
+    tokenizer=tokenizer,
+    merge_threshold=0.90,  # Override default 95%
+    provider="openai",
+)
+```
+
+**Note**: Merge threshold is not currently available as a CLI option. Use the Python API for advanced control.
 
 ## View the Resolved Config
 

@@ -158,18 +158,18 @@ config = PipelineConfig(
 )
 ```
 
-**Why Different Thresholds?**
+**Default Threshold:**
 
-| Provider | Threshold | Reason |
-|:---------|:----------|:-------|
-| **OpenAI** | 90% | Robust to near-limit contexts |
-| **Google** | 88% | Good context handling |
-| **Anthropic** | 85% | More conservative approach |
-| **Ollama/Local** | 75% | Variable performance, safer margin |
+All providers now use a **95% threshold** by default. This provides an optimal balance between:
+- **Efficiency**: Fewer API calls, faster processing
+- **Reliability**: Adequate safety margin for context limits
+- **Consistency**: Same behavior across all providers
 
 **Performance Impact:**
-- Higher threshold = Fewer API calls = Faster processing
-- Lower threshold = More safety margin = Better reliability
+- Higher threshold (0.95-0.98) = Fewer API calls = Faster processing
+- Lower threshold (0.80-0.90) = More aggressive merging = Fewer batches but less optimal fit
+
+**Note**: You can override the threshold programmatically if needed (see [Batch Processing](../fundamentals/extraction-process/batch-processing.md)).
 
 ### Optimal Batch Sizes
 

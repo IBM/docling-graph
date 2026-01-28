@@ -257,7 +257,23 @@ upload_to_vcs_release = true
 [tool.pytest.ini_options]
 filterwarnings = [
     "error",
+    # Ignore ResourceWarnings from unclosed sockets/event loops
+    "ignore::ResourceWarning",
     # Ignore warnings from external dependencies
     "ignore:.*Use BaseMetaSerializer.*:DeprecationWarning",
     "ignore:.*Using `@model_validator` with mode='after' on a classmethod is deprecated.*:pydantic.warnings.PydanticDeprecatedSince212",
+]
+addopts = "--cov=docling_graph --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["docling_graph"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
 ]

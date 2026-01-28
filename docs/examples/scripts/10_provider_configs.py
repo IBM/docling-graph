@@ -85,9 +85,7 @@ def check_api_key(env_var: str) -> bool:
     return bool(os.getenv(env_var))
 
 
-def process_with_provider(
-    name: str, provider: str, model: str
-) -> Tuple[bool, str]:
+def process_with_provider(name: str, provider: str, model: str) -> Tuple[bool, str]:
     """
     Process document with specific provider.
 

@@ -66,9 +66,9 @@ The system uses a **3-tier priority system** for accurate capability detection:
 !!! note "Context Window Caveat"
     Modern small models can have large contexts (e.g., Granite 1B with 128K)
 
-**Registry Lookup:**
-- For known models in `models.yaml`, explicit capability is always used
-- Fallback detection only applies to unregistered models
+**LiteLLM Metadata:**
+- Capability is inferred from LiteLLM context window and model name
+- Fallback detection only applies when metadata is unavailable
 
 ---
 
@@ -222,11 +222,9 @@ run_pipeline(config)
 
 ## Supported Models
 
-Model capability tiers are derived from context limits and output limits at runtime.
-The project registry only keeps guardrails (context/output limits) and provider
-defaults; LiteLLM provides model metadata when available.
-
-To see the current model list, review `docling_graph/llm_clients/models.yaml`.
+Model capability tiers are derived from LiteLLM metadata at runtime.
+The project no longer keeps a static model list; use LiteLLM's model catalog
+or your provider documentation for supported models.
 
 ---
 

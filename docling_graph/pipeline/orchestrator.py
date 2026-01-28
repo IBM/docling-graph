@@ -48,16 +48,6 @@ class PipelineOrchestrator:
         self.config = config
         self.mode = mode
 
-        # Configure LLM registry for this run (global for downstream lookups)
-        from ..llm_clients.config import get_registry, load_registry_from_path, set_registry
-
-        if config.llm_registry is not None:
-            set_registry(config.llm_registry)
-        elif config.llm_registry_path:
-            set_registry(load_registry_from_path(Path(config.llm_registry_path)))
-        else:
-            set_registry(get_registry())
-
         # Auto-detect dump_to_disk based on mode if not explicitly set
         if config.dump_to_disk is None:
             # CLI mode: dump by default

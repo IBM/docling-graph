@@ -96,6 +96,11 @@ class LLMClientProtocol(Protocol):
     """
 
     @property
+    def model_config(self) -> Any:
+        """Return the effective model configuration."""
+        ...
+
+    @property
     def context_limit(self) -> int:
         """Return the effective context limit in tokens.
 
@@ -105,7 +110,7 @@ class LLMClientProtocol(Protocol):
 
     def get_json_response(
         self, prompt: str | Mapping[str, str], schema_json: str
-    ) -> Dict[str, Any]:
+    ) -> Dict[str, Any] | List[Any]:
         """Execute LLM call and return parsed JSON.
 
         Args:

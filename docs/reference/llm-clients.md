@@ -7,9 +7,9 @@
 
 **Module:** `docling_graph.llm_clients`
 
-All LLM calls go through `BaseLlmClient.get_json_response()` via the LiteLLM-backed
-client. This preserves the existing extraction/consolidation pipeline while
-standardizing provider differences through LiteLLM.
+All LLM calls go through `LiteLLMClient.get_json_response()` which implements
+`LLMClientProtocol` directly. This preserves the extraction/consolidation pipeline
+while standardizing provider differences through LiteLLM.
 
 ---
 
@@ -51,10 +51,24 @@ You can supply a custom LLM client (for bespoke API calls, chat templates, etc.)
 as long as it implements `LLMClientProtocol` and provides `get_json_response()`.
 
 ```python
+from types import SimpleNamespace
+
 from docling_graph import run_pipeline
+from docling_graph.llm_clients.config import ModelCapability
 from docling_graph.protocols import LLMClientProtocol
 
 class MyCustomClient(LLMClientProtocol):
+    def __init__(self):
+        self.model_config = SimpleNamespace(
+            capability=ModelCapability.STANDARD,
+            context_limit=8192,
+            supports_chain_of_density=False,
+        )
+
+    @property
+    def context_limit(self):
+        return 8192
+
     def get_json_response(self, prompt, schema_json):
         return {"custom": "response"}
 

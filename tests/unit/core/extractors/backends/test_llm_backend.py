@@ -5,7 +5,7 @@ import pytest
 from pydantic import BaseModel, ValidationError
 
 from docling_graph.core.extractors.backends.llm_backend import LlmBackend
-from docling_graph.llm_clients.base import BaseLlmClient
+from docling_graph.llm_clients.config import ModelCapability
 
 
 # A simple Pydantic model for testing
@@ -15,11 +15,22 @@ class MockTemplate(BaseModel):
 
 
 # Fixture for a mock LLM client
+class _DummyModelConfig:
+    def __init__(self) -> None:
+        self.capability = ModelCapability.STANDARD
+        self.context_limit = 8000
+
+    @property
+    def supports_chain_of_density(self) -> bool:
+        return False
+
+
 @pytest.fixture
 def mock_llm_client():
-    client = MagicMock(spec=BaseLlmClient)
+    client = MagicMock()
     client.__class__.__name__ = "MockLlmClient"
-    client.context_limit = 8000  # Set as integer, not MagicMock
+    client.context_limit = 8000
+    client.model_config = _DummyModelConfig()
     return client
 
 
@@ -309,9 +320,10 @@ def test_consolidate_single_turn_simple_model(mock_get_prompt, llm_backend, mock
 def test_cleanup_without_cleanup_method(mock_llm_client):
     """Test cleanup when client doesn't have cleanup method."""
     # Client without cleanup method
-    mock_llm_client_no_cleanup = MagicMock(spec=BaseLlmClient)
+    mock_llm_client_no_cleanup = MagicMock()
     mock_llm_client_no_cleanup.__class__.__name__ = "MockClient"
     mock_llm_client_no_cleanup.context_limit = 8192  # Set as integer
+    mock_llm_client_no_cleanup.model_config = _DummyModelConfig()
     # Explicitly remove cleanup if it exists
     if hasattr(mock_llm_client_no_cleanup, "cleanup"):
         delattr(mock_llm_client_no_cleanup, "cleanup")

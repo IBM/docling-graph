@@ -97,12 +97,57 @@ class OptionalDependency:
 
 # Registry of all optional dependencies
 OPTIONAL_DEPS: Dict[str, OptionalDependency] = {
+    # Local inference providers
+    "ollama": OptionalDependency(
+        name="ollama",
+        package="ollama",
+        extra="ollama",
+        description="Ollama local inference provider",
+        inference_type="local",
+    ),
+    "vllm": OptionalDependency(
+        name="vllm",
+        package="vllm",
+        extra="vllm",
+        description="vLLM local inference provider",
+        inference_type="local",
+    ),
+    # Remote/API providers
+    "mistral": OptionalDependency(
+        name="mistral",
+        package="mistralai",
+        extra="mistral",
+        description="Mistral API provider",
+        inference_type="remote",
+    ),
+    "openai": OptionalDependency(
+        name="openai",
+        package="openai",
+        extra="openai",
+        description="OpenAI API provider",
+        inference_type="remote",
+    ),
+    "gemini": OptionalDependency(
+        name="gemini",
+        package="google-generativeai",
+        extra="gemini",
+        description="Gemini API provider",
+        inference_type="remote",
+    ),
+    "ibm-watsonx-ai": OptionalDependency(
+        name="ibm-watsonx-ai",
+        package="ibm-watsonx-ai",
+        extra="ibm-watsonx-ai",
+        description="IBM watsonx.ai API provider",
+        inference_type="remote",
+    ),
+    # Shared LiteLLM client library used by multiple providers
     "litellm": OptionalDependency(
         name="litellm",
         package="litellm",
         description="LiteLLM client library",
         inference_type="remote",
-    )
+    ),
 }
 # region agent log
 try:
@@ -131,8 +176,8 @@ except Exception:
 
 # Mapping of inference types to their providers
 INFERENCE_PROVIDERS: Dict[str, List[str]] = {
-    "local": ["litellm"],
-    "remote": ["litellm"],
+    "local": ["ollama", "vllm"],
+    "remote": ["mistral", "openai", "gemini", "ibm-watsonx-ai"],
 }
 
 

@@ -14,11 +14,11 @@ flowchart LR
     classDef subgraph_style fill:none,stroke:#969696,stroke-width:2px,stroke-dasharray: 5,color:#969696
 
     %% 2. Define Nodes
-    A@{ shape: procs, label: "BaseLlmClient TemplateMethod" }
+    A@{ shape: procs, label: "LLMClientProtocol" }
     B@{ shape: lin-proc, label: "LiteLLMClient" }
 
-    H@{ shape: tag-proc, label: "ResponseHandler<br>JSON Parsing" }
-    I("Config<br>models.yaml")
+    H@{ shape: tag-proc, label: "ResponseHandler JSON Parsing" }
+    I("ProviderConfig (tokenizer, merge_threshold)")
 
     %% 3. Define Connections
     A --> B

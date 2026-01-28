@@ -46,12 +46,6 @@ models:
       model: "mistral-small-latest"
       provider: "mistral"
 
-# Optional: override the built-in LLM registry
-# llm_registry_path: "/path/to/llm_registry.yaml"
-# llm_registry:
-#   providers: {}
-#   models: {}
-
 # Optional: runtime defaults for LLMs (can be overridden by CLI flags)
 llm_overrides:
   generation:

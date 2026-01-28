@@ -728,31 +728,31 @@ Different LLM providers have different optimal batching strategies:
 ```python
 from docling_graph import run_pipeline, PipelineConfig
 
-# OpenAI - Aggressive batching (90% merge threshold)
+# OpenAI - Uses default 95% threshold
 config = PipelineConfig(
     backend="llm",
     inference="remote",
     provider_override="openai",
     model_override="gpt-4-turbo",
-    use_chunking=True  # Automatically uses 90% threshold
+    use_chunking=True  # Automatically uses 95% threshold (default)
 )
 
-# Anthropic - Conservative batching (85% threshold)
+# Anthropic - Uses default 95% threshold
 config = PipelineConfig(
     backend="llm",
     inference="remote",
     provider_override="anthropic",
     model_override="claude-3-opus",
-    use_chunking=True  # Automatically uses 85% threshold
+    use_chunking=True  # Automatically uses 95% threshold (default)
 )
 
-# Ollama - Very conservative (75% threshold)
+# Ollama - Uses default 95% threshold
 config = PipelineConfig(
     backend="llm",
     inference="local",
     provider_override="ollama",
     model_override="llama3.1:8b",
-    use_chunking=True  # Automatically uses 75% threshold
+    use_chunking=True  # Automatically uses 95% threshold (default)
 )
 ```
 

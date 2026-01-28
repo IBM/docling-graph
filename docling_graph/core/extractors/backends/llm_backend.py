@@ -6,6 +6,7 @@ Handles document extraction using LLM models (local or API) with model-aware pro
 import gc
 import json
 import logging
+from types import SimpleNamespace
 from typing import List, Optional, Type
 
 from pydantic import BaseModel, ValidationError
@@ -30,63 +31,32 @@ class LlmBackend:
         """
         self.client = llm_client
 
-        # Get resolved model configuration from client (if valid)
         raw_model_config = getattr(llm_client, "model_config", None)
-        if (
-            raw_model_config
-            and hasattr(raw_model_config, "capability")
-            and isinstance(getattr(raw_model_config, "context_limit", None), int)
-        ):
-            self.model_config: ModelConfigLike | None = raw_model_config
+        if raw_model_config:
+            self.model_config: ModelConfigLike = raw_model_config
         else:
-            self.model_config = None
+            # Fallback: dynamically detect capability when a full model_config
+            # is not available (e.g., in tests or lightweight clients).
+            context_limit = getattr(llm_client, "context_limit", 8192)
+            # Use only the public `model` attribute; tests expect an empty
+            # string when it is unset instead of a mocked model_id.
+            model_name = getattr(llm_client, "model", "") or ""
+            capability = detect_model_capability(context_limit, model_name, None)
+            self.model_config = SimpleNamespace(
+                capability=capability,
+                context_limit=context_limit,
+                supports_chain_of_density=capability == ModelCapability.ADVANCED,
+            )
         model_attr = getattr(llm_client, "model", None) or getattr(llm_client, "model_id", None)
 
-        if self.model_config:
-            provider_id = getattr(self.model_config, "provider_id", "unknown")
-            model_id = getattr(self.model_config, "model_id", "unknown")
-            logger.info(
-                f"Loaded model config: provider={provider_id}, "
-                f"model={model_id}, capability={self.model_config.capability.value}"
-            )
-
-        # Fallback: auto-detect from model characteristics
-        if not self.model_config:
-            # Use context_limit property if available, otherwise _context_limit attribute
-            context_limit_raw = getattr(llm_client, "context_limit", None)
-            if context_limit_raw is None:
-                context_limit_raw = getattr(llm_client, "_context_limit", 8000)
-
-            # Ensure context_limit is an int for type safety
-            context_limit: int = int(context_limit_raw) if context_limit_raw is not None else 8000
-
-            model_name = getattr(llm_client, "model", None)
-            max_output_tokens = getattr(llm_client, "_max_output_tokens", None)
-            if max_output_tokens is not None and not isinstance(max_output_tokens, int):
-                max_output_tokens = None
-
-            # Ensure model_name is a string for detect_model_capability
-            model_name_str = str(model_name) if model_name else ""
-
-            logger.info(
-                f"Using fallback capability detection: context={context_limit}, "
-                f"model_name={model_name_str}, max_output_tokens={max_output_tokens}"
-            )
-
-            capability = detect_model_capability(context_limit, model_name_str, max_output_tokens)
-
-            class _FallbackConfig:
-                def __init__(self, capability: ModelCapability, context_limit: int) -> None:
-                    self.capability = capability
-                    self.context_limit = context_limit
-
-                @property
-                def supports_chain_of_density(self) -> bool:
-                    return self.capability == ModelCapability.ADVANCED
-
-            self.model_config = _FallbackConfig(capability, context_limit)
-
-        assert self.model_config is not None
+        provider_id = getattr(self.model_config, "provider_id", "unknown")
+        model_id = getattr(self.model_config, "model_id", "unknown")
+        logger.info(
+            "Loaded model config: provider=%s, model=%s, capability=%s",
+            provider_id,
+            model_id,
+            self.model_config.capability.value,
+        )
 
         chain_of_density = getattr(self.model_config, "supports_chain_of_density", False)
         context_limit = self.model_config.context_limit

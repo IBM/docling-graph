@@ -4,8 +4,11 @@ Processes entire document and returns single consolidated model.
 """
 
 import json
+import time
 from typing import List, Tuple, Type, cast
 
+from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
+from docling_core.transforms.chunker.tokenizer.openai import OpenAITokenizer
 from docling_core.types.doc import DoclingDocument
 from pydantic import BaseModel
 from rich import print as rich_print
@@ -72,14 +75,24 @@ class ManyToOneStrategy(BaseExtractor):
             if hasattr(backend, "client"):
                 provider = getattr(backend.client, "provider", None)
                 model_id = getattr(backend.client, "model_id", None)
+                model_config = getattr(backend.client, "model_config", None)
                 if provider:
-                    chunker_config = {"provider": provider, "model": model_id}
+                    chunker_config = {
+                        "provider": provider,
+                        "model": model_id,
+                        "model_config": model_config,
+                    }
                 else:
                     # Fallback: use context limit if available
-                    context_limit = getattr(backend.client, "context_limit", 8000)
-                    chunker_config = {"max_tokens": int(context_limit * 0.6)}
+                    context_limit = (
+                        getattr(model_config, "context_limit", None)
+                        if model_config is not None
+                        else getattr(backend.client, "context_limit", 8000)
+                    )
+                    max_tokens = max(1, int(context_limit - 2048 - 100))
+                    chunker_config = {"max_tokens": max_tokens}
             else:
-                chunker_config = {"max_tokens": 5120}
+                chunker_config = {"max_tokens": 2048}
 
         self.doc_processor = DocumentProcessor(
             docling_config=docling_config,
@@ -229,12 +242,10 @@ class ManyToOneStrategy(BaseExtractor):
     ) -> List[BaseModel]:
         """Extract using structure-aware chunks with adaptive batching."""
         try:
-            # Update chunker configuration based on schema size (no recreation)
+            # Update chunker configuration based on schema JSON (no recreation)
+            schema_json = json.dumps(template.model_json_schema())
             if self.doc_processor.chunker:
-                import json
-
-                schema_size = len(json.dumps(template.model_json_schema()))
-                self.doc_processor.chunker.update_schema_config(schema_size)
+                self.doc_processor.chunker.update_schema_config(schema_json)
 
             chunks = self.doc_processor.extract_chunks(document)
             total_chunks = len(chunks)
@@ -245,13 +256,9 @@ class ManyToOneStrategy(BaseExtractor):
             )  # Fallback for unknown backends
 
             # Get tokenizer from chunker for accurate token counting
+            tokenizer_obj = None
             tokenizer_fn = None
-            if (
-                self.doc_processor.chunker
-                and hasattr(self.doc_processor.chunker, "tokenizer")
-                and self.doc_processor.chunker.tokenizer is not None
-            ):
-                # Extract the count_tokens method from the tokenizer object
+            if self.doc_processor.chunker and self.doc_processor.chunker.tokenizer is not None:
                 tokenizer_obj = self.doc_processor.chunker.tokenizer
                 if hasattr(tokenizer_obj, "count_tokens"):
                     tokenizer_fn = tokenizer_obj.count_tokens
@@ -290,12 +297,22 @@ class ManyToOneStrategy(BaseExtractor):
             except Exception:
                 pass
             # #endregion
+            model_config = getattr(backend.client, "model_config", None)
+            reserved_output_tokens = getattr(model_config, "max_output_tokens", 2048)
+
+            # In production runs tokenizer_obj is expected to be a concrete
+            # tokenizer instance; in tests ChunkBatcher is patched with a
+            # MagicMock so we can safely cast for type checking purposes.
+            tokenizer_for_batcher = cast(HuggingFaceTokenizer | OpenAITokenizer, tokenizer_obj)
+
             batcher = ChunkBatcher(
                 context_limit=context_limit,
-                system_prompt_tokens=500,
-                response_buffer_tokens=500,
-                merge_threshold=0.85,
+                schema_json=schema_json,
+                tokenizer=tokenizer_for_batcher,
+                reserved_output_tokens=reserved_output_tokens,
                 provider=provider,
+                is_partial=True,
+                model_config=model_config,
             )
 
             # Batch chunks for efficient processing with real tokenizer
@@ -309,8 +326,6 @@ class ManyToOneStrategy(BaseExtractor):
             extracted_models: List[BaseModel] = []
 
             # Import for trace data capture
-            import time
-
             from ....pipeline.trace import ExtractionData
 
             extraction_id = 0

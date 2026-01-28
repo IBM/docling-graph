@@ -1,14 +1,9 @@
 """
-Typed LLM configuration registry and resolver.
+Lightweight LLM configuration registry and resolver.
 
-This module defines a strict, validated schema for:
-- Provider connection/auth settings
-- Routing (provider/model selection)
-- Generation defaults
-- Reliability defaults
-
-It also resolves an "effective" model config by merging:
-provider defaults -> model overrides -> runtime overrides.
+This module keeps only provider infrastructure settings that LiteLLM does not
+provide (tokenizer and merge_threshold), plus connection defaults/overrides.
+Model limits and capabilities are resolved dynamically via LiteLLM metadata.
 """
 
 from __future__ import annotations
@@ -18,12 +13,11 @@ import logging
 import os
 import time
 from enum import Enum
-from pathlib import Path
 from typing import Any, Protocol
 
-import yaml
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator, model_validator
+from rich import print as rich_print
 from typing_extensions import Self
 
 from ..exceptions import ConfigurationError
@@ -105,7 +99,7 @@ class ReliabilityDefaults(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    timeout_s: int = 300
+    timeout_s: int = 600
     max_retries: int = 2
     backoff: BackoffDefaults = Field(default_factory=BackoffDefaults)
 
@@ -148,7 +142,7 @@ class ConnectionOverrides(BaseModel):
 
 
 class ProviderDefinition(BaseModel):
-    """Provider configuration with defaults."""
+    """Provider configuration with infrastructure defaults."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -156,15 +150,10 @@ class ProviderDefinition(BaseModel):
     requires_api_key: bool = False
     requires_project_id: bool = False
     connection: ProviderConnection = Field(default_factory=ProviderConnection)
-    generation_defaults: GenerationDefaults = Field(default_factory=GenerationDefaults)
-    reliability_defaults: ReliabilityDefaults = Field(default_factory=ReliabilityDefaults)
     tokenizer: str = "sentence-transformers/all-MiniLM-L6-v2"
-    content_ratio: float = 0.8
-    merge_threshold: float = 0.85
-    rate_limit_rpm: int | None = None
-    supports_batching: bool = True
+    merge_threshold: float = 0.95
 
-    @field_validator("content_ratio", "merge_threshold")
+    @field_validator("merge_threshold")
     @classmethod
     def _validate_ratio(cls, value: float) -> float:
         if value <= 0 or value > 1:
@@ -172,63 +161,24 @@ class ProviderDefinition(BaseModel):
         return value
 
 
-class ModelDefinition(BaseModel):
-    """Definition for a single model."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    provider: str
-    model: str | None = None
-    litellm_model: str | None = None
-    context_limit: int | None = None
-    max_output_tokens: int | None = None
-    capability: ModelCapability | None = None
-    description: str = ""
-    notes: str = ""
-    generation: GenerationOverrides = Field(default_factory=GenerationOverrides)
-    reliability: ReliabilityOverrides = Field(default_factory=ReliabilityOverrides)
-
-    @field_validator("context_limit", "max_output_tokens")
-    @classmethod
-    def _validate_limits(cls, value: int | None) -> int | None:
-        if value is None:
-            return value
-        if value <= 0:
-            raise ValueError("Must be positive.")
-        return value
-
-
-class LlmRegistry(BaseModel):
-    """Registry of provider and model definitions."""
+class ProviderRegistry(BaseModel):
+    """Registry of provider definitions only (no static models)."""
 
     model_config = ConfigDict(extra="forbid")
 
     providers: dict[str, ProviderDefinition]
-    models: dict[str, ModelDefinition]
 
     @model_validator(mode="after")
-    def _normalize_and_validate(self) -> Self:
-        normalized_providers: dict[str, ProviderDefinition] = {}
+    def _normalize(self) -> Self:
+        normalized: dict[str, ProviderDefinition] = {}
         for provider_id, provider in self.providers.items():
             provider.provider_id = provider_id.lower()
-            normalized_providers[provider_id.lower()] = provider
-        self.providers = normalized_providers
-
-        for model_id, model in self.models.items():
-            model.provider = model.provider.lower()
-            if model.model is None:
-                model.model = model_id
-            if model.provider not in self.providers:
-                raise ValueError(
-                    f"Model '{model_id}' references unknown provider '{model.provider}'."
-                )
+            normalized[provider_id.lower()] = provider
+        self.providers = normalized
         return self
 
     def get_provider(self, provider_id: str) -> ProviderDefinition | None:
         return self.providers.get(provider_id.lower())
-
-    def get_model(self, model_id: str) -> ModelDefinition | None:
-        return self.models.get(model_id)
 
 
 class ResolvedConnection(BaseModel):
@@ -250,8 +200,7 @@ class EffectiveModelConfig(BaseModel):
 
     model_id: str
     provider_id: str
-    provider_model: str
-    litellm_model: str | None = None
+    litellm_model: str
     context_limit: int
     max_output_tokens: int
     capability: ModelCapability
@@ -259,10 +208,7 @@ class EffectiveModelConfig(BaseModel):
     reliability: ReliabilityDefaults
     connection: ResolvedConnection
     tokenizer: str
-    content_ratio: float
     merge_threshold: float
-    rate_limit_rpm: int | None
-    supports_batching: bool
 
     @property
     def supports_chain_of_density(self) -> bool:
@@ -289,22 +235,102 @@ class LlmRuntimeOverrides(BaseModel):
     generation: GenerationOverrides = Field(default_factory=GenerationOverrides)
     reliability: ReliabilityOverrides = Field(default_factory=ReliabilityOverrides)
     connection: ConnectionOverrides = Field(default_factory=ConnectionOverrides)
+    context_limit: int | None = None
+    max_output_tokens: int | None = None
 
-
-_registry: LlmRegistry | None = None
 
 _DEFAULT_CONTEXT_LIMIT = 8192
-_DEFAULT_MAX_OUTPUT_TOKENS = 4096
+_DEFAULT_MAX_OUTPUT_TOKENS = 2048
+
+# Track which models have already been warned to avoid duplicate warnings
+_warned_models: set[str] = set()
+
+
+def _build_default_registry() -> ProviderRegistry:
+    return ProviderRegistry(
+        providers={
+            "mistral": ProviderDefinition(
+                requires_api_key=True,
+                connection=ProviderConnection(api_key_env="MISTRAL_API_KEY"),
+                tokenizer="mistralai/Mistral-7B-Instruct-v0.2",
+                merge_threshold=0.95,
+            ),
+            "openai": ProviderDefinition(
+                requires_api_key=True,
+                connection=ProviderConnection(api_key_env="OPENAI_API_KEY"),
+                tokenizer="tiktoken",
+                merge_threshold=0.95,
+            ),
+            "gemini": ProviderDefinition(
+                requires_api_key=True,
+                connection=ProviderConnection(api_key_env="GEMINI_API_KEY"),
+                tokenizer="sentence-transformers/all-MiniLM-L6-v2",
+                merge_threshold=0.95,
+            ),
+            "watsonx": ProviderDefinition(
+                requires_api_key=True,
+                requires_project_id=True,
+                connection=ProviderConnection(
+                    api_key_env="WATSONX_API_KEY",
+                    project_id_env="WATSONX_PROJECT_ID",
+                    base_url="https://us-south.ml.cloud.ibm.com",
+                    base_url_env="WATSONX_URL",
+                ),
+                tokenizer="ibm-granite/granite-embedding-278m-multilingual",
+                merge_threshold=0.95,
+            ),
+            "vllm": ProviderDefinition(
+                requires_api_key=False,
+                connection=ProviderConnection(
+                    base_url="http://localhost:8000/v1",
+                    base_url_env="VLLM_BASE_URL",
+                    api_key=SecretStr("EMPTY"),
+                ),
+                tokenizer="sentence-transformers/all-MiniLM-L6-v2",
+                merge_threshold=0.95,
+            ),
+            "ollama": ProviderDefinition(
+                requires_api_key=False,
+                connection=ProviderConnection(
+                    base_url="http://localhost:11434",
+                    base_url_env="OLLAMA_BASE_URL",
+                ),
+                tokenizer="sentence-transformers/all-MiniLM-L6-v2",
+                merge_threshold=0.95,
+            ),
+        }
+    )
+
+
+_registry: ProviderRegistry | None = None
+
+
+def set_registry(registry: ProviderRegistry) -> None:
+    global _registry
+    _registry = registry
+
+
+def get_registry() -> ProviderRegistry:
+    global _registry
+    if _registry is None:
+        _registry = _build_default_registry()
+    return _registry
+
+
+def _get_litellm() -> Any | None:
+    try:
+        import litellm
+    except Exception:
+        return None
+    return litellm
 
 
 def _get_litellm_model_info(model_name: str | None) -> dict[str, Any] | None:
     if not model_name:
         return None
-    try:
-        import litellm
-    except Exception:
+    litellm = _get_litellm()
+    if not litellm:
         return None
-
     get_info = getattr(litellm, "get_model_info", None)
     if callable(get_info):
         try:
@@ -315,50 +341,55 @@ def _get_litellm_model_info(model_name: str | None) -> dict[str, Any] | None:
     return None
 
 
-def _resolve_model_limits(model: ModelDefinition) -> tuple[int, int]:
-    context_limit = model.context_limit
-    max_output_tokens = model.max_output_tokens
-
-    if context_limit is None or max_output_tokens is None:
-        info = _get_litellm_model_info(model.litellm_model or model.model)
-        if info:
-            context_limit = context_limit or info.get("context_window") or info.get("max_tokens")
-            max_output_tokens = max_output_tokens or info.get("max_output_tokens")
-
-            max_input_tokens = info.get("max_input_tokens")
-            if context_limit is None and max_input_tokens and max_output_tokens:
-                context_limit = int(max_input_tokens) + int(max_output_tokens)
-
-    if context_limit is None:
-        context_limit = _DEFAULT_CONTEXT_LIMIT
-    if max_output_tokens is None:
-        max_output_tokens = _DEFAULT_MAX_OUTPUT_TOKENS
-
-    return int(context_limit), int(max_output_tokens)
+def _get_litellm_max_tokens(model_name: str | None) -> int | None:
+    if not model_name:
+        return None
+    litellm = _get_litellm()
+    if not litellm:
+        return None
+    get_max = getattr(litellm, "get_max_tokens", None)
+    if callable(get_max):
+        try:
+            value = get_max(model_name)
+            return int(value) if value else None
+        except Exception:
+            return None
+    return None
 
 
-def _merge_generation(
-    base: GenerationDefaults, model_overrides: GenerationOverrides, runtime: GenerationOverrides
-) -> GenerationDefaults:
+def build_litellm_model_name(
+    provider_id: str, model_id: str, connection: ResolvedConnection | None = None
+) -> str:
+    model_name = model_id
+    provider_id = provider_id.lower()
+    base_url = connection.base_url if connection else None
+
+    if provider_id == "vllm" and base_url:
+        if model_name.startswith("vllm/"):
+            model_name = model_name.removeprefix("vllm/")
+        if model_name.startswith("hosted_vllm/"):
+            model_name = model_name.removeprefix("hosted_vllm/")
+        model_name = f"hosted_vllm/{model_name}"
+    elif provider_id not in {"openai"} and not model_name.startswith(f"{provider_id}/"):
+        model_name = f"{provider_id}/{model_name}"
+    return model_name
+
+
+def _merge_generation(base: GenerationDefaults, runtime: GenerationOverrides) -> GenerationDefaults:
     data = base.model_dump()
-    data.update(model_overrides.model_dump(exclude_none=True))
     data.update(runtime.model_dump(exclude_none=True))
     return GenerationDefaults(**data)
 
 
 def _merge_reliability(
-    base: ReliabilityDefaults, model_overrides: ReliabilityOverrides, runtime: ReliabilityOverrides
+    base: ReliabilityDefaults, runtime: ReliabilityOverrides
 ) -> ReliabilityDefaults:
     data = base.model_dump()
-    data.update(model_overrides.model_dump(exclude_none=True))
     data.update(runtime.model_dump(exclude_none=True))
 
-    if model_overrides.backoff or runtime.backoff:
+    if runtime.backoff:
         backoff_data = base.backoff.model_dump()
-        if model_overrides.backoff:
-            backoff_data.update(model_overrides.backoff.model_dump(exclude_none=True))
-        if runtime.backoff:
-            backoff_data.update(runtime.backoff.model_dump(exclude_none=True))
+        backoff_data.update(runtime.backoff.model_dump(exclude_none=True))
         data["backoff"] = BackoffDefaults(**backoff_data)
 
     return ReliabilityDefaults(**data)
@@ -395,14 +426,21 @@ def _resolve_connection(
             headers.update(overrides.headers)
 
     if provider.requires_api_key and not api_key:
-        raise ConfigurationError(
-            "Missing required API key for provider",
-            details={"provider": provider_id, "env_hint": connection.api_key_env},
+        # In library and test contexts we allow configuration to be
+        # constructed without credentials; actual API calls will still
+        # fail fast if the key is missing.
+        logger.warning(
+            "Missing required API key for provider '%s' (env hint: %s); "
+            "proceeding with empty credentials.",
+            provider_id,
+            connection.api_key_env,
         )
     if provider.requires_project_id and not project_id:
-        raise ConfigurationError(
-            "Missing required project ID for provider",
-            details={"provider": provider_id, "env_hint": connection.project_id_env},
+        logger.warning(
+            "Missing required project ID for provider '%s' (env hint: %s); "
+            "proceeding with empty project configuration.",
+            provider_id,
+            connection.project_id_env,
         )
 
     return ResolvedConnection(
@@ -414,72 +452,94 @@ def _resolve_connection(
     )
 
 
-def load_registry_from_path(config_path: Path) -> LlmRegistry:
-    if not config_path.exists():
-        raise FileNotFoundError(f"LLM registry file not found: {config_path}")
-    with open(config_path) as f:
-        data = yaml.safe_load(f) or {}
-    return LlmRegistry.model_validate(data)
+def _resolve_context_limit(litellm_model: str, override: int | None = None) -> int:
+    if override is not None:
+        return override
+    context_limit = _get_litellm_max_tokens(litellm_model)
+    if context_limit:
+        return int(context_limit)
+    # Only warn once per model to avoid duplicate warnings
+    warning_key = f"{litellm_model}:context_limit"
+    if warning_key not in _warned_models:
+        _warned_models.add(warning_key)
+        rich_print(
+            f"[yellow]Warning:[/yellow] Could not determine context limit for model "
+            f"'[purple]{litellm_model}[/purple]' from LiteLLM metadata. "
+            f"Falling back to default: [yellow]{_DEFAULT_CONTEXT_LIMIT:,}[/yellow] tokens. "
+            f"To optimize LLM extraction, consider providing [purple]--llm-context-limit[/purple] or "
+            f"[purple]llm_overrides['context_limit'][/purple] with the actual model context window size."
+        )
+    return _DEFAULT_CONTEXT_LIMIT
 
 
-def set_registry(registry: LlmRegistry) -> None:
-    global _registry
-    _registry = registry
+def _resolve_max_output_tokens(litellm_model: str, override: int | None = None) -> int:
+    if override is not None:
+        return override
+    info = _get_litellm_model_info(litellm_model)
+    if info and info.get("max_output_tokens"):
+        return int(info["max_output_tokens"])
+    # Only warn once per model to avoid duplicate warnings
+    warning_key = f"{litellm_model}:max_output_tokens"
+    if warning_key not in _warned_models:
+        _warned_models.add(warning_key)
+        rich_print(
+            f"[yellow]Warning:[/yellow] Could not determine max output tokens for model "
+            f"'[purple]{litellm_model}[/purple]' from LiteLLM metadata. "
+            f"Falling back to default: [yellow]{_DEFAULT_MAX_OUTPUT_TOKENS:,}[/yellow] tokens. "
+            f"To optimize LLM extraction, consider providing [purple]--llm-max-output-tokens[/purple] or "
+            f"[purple]llm_overrides['max_output_tokens'][/purple] with the actual model output limit."
+        )
+    return _DEFAULT_MAX_OUTPUT_TOKENS
 
 
-def get_registry() -> LlmRegistry:
-    global _registry
-    if _registry is None:
-        default_path = Path(__file__).parent / "models.yaml"
-        _registry = load_registry_from_path(default_path)
-    return _registry
+def get_provider_config(provider_id: str) -> ProviderDefinition | None:
+    return get_registry().get_provider(provider_id)
+
+
+def list_providers() -> list[str]:
+    return sorted(get_registry().providers.keys())
+
+
+def get_tokenizer_for_provider(provider_id: str) -> str:
+    provider = get_provider_config(provider_id)
+    if provider:
+        return provider.tokenizer
+    return "sentence-transformers/all-MiniLM-L6-v2"
+
+
+def get_merge_threshold_for_provider(provider_id: str) -> float:
+    provider = get_provider_config(provider_id)
+    if provider:
+        return provider.merge_threshold
+    return 0.95
 
 
 def resolve_effective_model_config(
     provider_id: str,
     model_id: str,
     overrides: LlmRuntimeOverrides | dict[str, Any] | None = None,
-    registry: LlmRegistry | None = None,
 ) -> EffectiveModelConfig:
-    registry = registry or get_registry()
-    provider = registry.get_provider(provider_id)
+    provider = get_provider_config(provider_id)
     if not provider:
-        raise ConfigurationError(
-            "Unknown LLM provider",
-            details={"provider": provider_id, "available": sorted(registry.providers.keys())},
+        logger.warning(
+            "Unknown provider '%s'; using generic defaults for tokenizer and merge threshold.",
+            provider_id,
         )
-    model = registry.get_model(model_id)
-    if not model:
-        raise ConfigurationError(
-            "Unknown LLM model",
-            details={"model": model_id, "available": sorted(registry.models.keys())},
-        )
-    if model.provider != provider_id.lower():
-        raise ConfigurationError(
-            "Model provider mismatch",
-            details={"model": model_id, "model_provider": model.provider, "provider": provider_id},
-        )
+        provider = ProviderDefinition()
 
     if overrides is None:
         overrides = LlmRuntimeOverrides()
     elif isinstance(overrides, dict):
         overrides = LlmRuntimeOverrides(**overrides)
 
-    context_limit, max_output_tokens = _resolve_model_limits(model)
-
-    capability = model.capability
-    if capability is None:
-        capability = detect_model_capability(
-            context_limit, model.model or model_id, max_output_tokens
-        )
-
-    generation = _merge_generation(
-        provider.generation_defaults, model.generation, overrides.generation
-    )
-    reliability = _merge_reliability(
-        provider.reliability_defaults, model.reliability, overrides.reliability
-    )
     connection = _resolve_connection(provider, overrides.connection, provider_id)
+    litellm_model = build_litellm_model_name(provider_id, model_id, connection)
+    context_limit = _resolve_context_limit(litellm_model, overrides.context_limit)
+    max_output_tokens = _resolve_max_output_tokens(litellm_model, overrides.max_output_tokens)
+
+    capability = detect_model_capability(context_limit, model_id, max_output_tokens)
+    generation = _merge_generation(GenerationDefaults(), overrides.generation)
+    reliability = _merge_reliability(ReliabilityDefaults(), overrides.reliability)
 
     if generation.max_tokens is None:
         generation = generation.model_copy(update={"max_tokens": max_output_tokens})
@@ -497,8 +557,7 @@ def resolve_effective_model_config(
     effective = EffectiveModelConfig(
         model_id=model_id,
         provider_id=provider_id.lower(),
-        provider_model=model.model or model_id,
-        litellm_model=model.litellm_model,
+        litellm_model=litellm_model,
         context_limit=context_limit,
         max_output_tokens=max_output_tokens,
         capability=capability,
@@ -506,12 +565,9 @@ def resolve_effective_model_config(
         reliability=reliability,
         connection=connection,
         tokenizer=provider.tokenizer,
-        content_ratio=provider.content_ratio,
         merge_threshold=provider.merge_threshold,
-        rate_limit_rpm=provider.rate_limit_rpm,
-        supports_batching=provider.supports_batching,
     )
-    # #region agent log
+
     try:
         with open(
             "/home/ayoub/github/docling-graph/.cursor/debug.log",
@@ -525,14 +581,15 @@ def resolve_effective_model_config(
                         "runId": "run1",
                         "hypothesisId": "H1",
                         "location": "llm_clients/config.py:resolve_effective_model_config",
-                        "message": "Resolved effective model config",
+                        "message": "Resolved effective model config (dynamic)",
                         "data": {
                             "provider_id": effective.provider_id,
                             "model_id": effective.model_id,
-                            "provider_model": effective.provider_model,
                             "litellm_model": effective.litellm_model,
                             "base_url": effective.connection.base_url,
                             "has_api_key": bool(effective.connection.api_key),
+                            "context_limit": effective.context_limit,
+                            "max_output_tokens": effective.max_output_tokens,
                         },
                         "timestamp": int(time.time() * 1000),
                     }
@@ -541,55 +598,8 @@ def resolve_effective_model_config(
             )
     except Exception:
         pass
-    # #endregion
+
     return effective
-
-
-def get_provider_config(provider_id: str) -> ProviderDefinition | None:
-    return get_registry().get_provider(provider_id)
-
-
-def list_providers() -> list[str]:
-    return sorted(get_registry().providers.keys())
-
-
-def get_model_config(provider_id: str, model_id: str) -> ModelDefinition | None:
-    model = get_registry().get_model(model_id)
-    if model and model.provider == provider_id.lower():
-        return model
-    return None
-
-
-def get_tokenizer_for_provider(provider_id: str) -> str:
-    provider = get_registry().get_provider(provider_id)
-    if provider:
-        return provider.tokenizer
-    return "sentence-transformers/all-MiniLM-L6-v2"
-
-
-def get_recommended_chunk_size(provider: str, model: str, schema_size: int = 0) -> int:
-    registry = get_registry()
-    model_config = registry.get_model(model)
-    provider_config = registry.get_provider(provider)
-    if not model_config or not provider_config:
-        return 5120
-
-    if schema_size > 10000:
-        output_ratio = 0.8
-    elif schema_size > 5000:
-        output_ratio = 0.5
-    elif schema_size > 0:
-        output_ratio = 0.3
-    else:
-        output_ratio = 0.4
-
-    system_prompt_tokens = 500
-    safety_buffer = 0.8
-
-    max_safe_chunk = int(model_config.max_output_tokens / output_ratio * safety_buffer)
-    max_by_context = int((model_config.context_limit - system_prompt_tokens) * 0.7)
-    chunk_size = min(max_safe_chunk, max_by_context)
-    return max(1024, chunk_size)
 
 
 def detect_model_capability(
@@ -599,46 +609,50 @@ def detect_model_capability(
 
     if any(size in name_lower for size in ["1b", "350m", "500m", "2b", "3b"]):
         logger.info(
-            f"Detected SIMPLE capability from model name: {model_name} (small parameter count)"
+            "Detected SIMPLE capability from model name: %s (small parameter count)",
+            model_name,
         )
         return ModelCapability.SIMPLE
 
     if any(size in name_lower for size in ["70b", "65b", "405b"]):
         logger.info(
-            f"Detected ADVANCED capability from model name: {model_name} (large parameter count)"
+            "Detected ADVANCED capability from model name: %s (large parameter count)",
+            model_name,
         )
         return ModelCapability.ADVANCED
 
     if max_output_tokens is not None:
         if max_output_tokens <= 2048:
             logger.info(
-                f"Detected SIMPLE capability from max_output_tokens: {max_output_tokens} "
-                "(limited output capacity)"
+                "Detected SIMPLE capability from max_output_tokens: %s (limited output capacity)",
+                max_output_tokens,
             )
             return ModelCapability.SIMPLE
         if max_output_tokens <= 4096:
-            logger.info(f"Detected STANDARD capability from max_output_tokens: {max_output_tokens}")
+            logger.info(
+                "Detected STANDARD capability from max_output_tokens: %s", max_output_tokens
+            )
             return ModelCapability.STANDARD
         logger.info(
-            f"Detected ADVANCED capability from max_output_tokens: {max_output_tokens} "
-            "(high output capacity)"
+            "Detected ADVANCED capability from max_output_tokens: %s (high output capacity)",
+            max_output_tokens,
         )
         return ModelCapability.ADVANCED
 
     if context_limit <= 4096:
         logger.warning(
-            f"Detected SIMPLE capability from context_limit: {context_limit} "
-            "(fallback heuristic, may be inaccurate)"
+            "Detected SIMPLE capability from context_limit: %s (fallback heuristic, may be inaccurate)",
+            context_limit,
         )
         return ModelCapability.SIMPLE
     if context_limit <= 32768:
         logger.warning(
-            f"Detected STANDARD capability from context_limit: {context_limit} "
-            "(fallback heuristic, may be inaccurate)"
+            "Detected STANDARD capability from context_limit: %s (fallback heuristic, may be inaccurate)",
+            context_limit,
         )
         return ModelCapability.STANDARD
     logger.warning(
-        f"Detected ADVANCED capability from context_limit: {context_limit} "
-        "(fallback heuristic, may be inaccurate for small models with large contexts)"
+        "Detected ADVANCED capability from context_limit: %s (fallback heuristic, may be inaccurate)",
+        context_limit,
     )
     return ModelCapability.ADVANCED
