@@ -21,7 +21,9 @@ from ....protocols import (
     is_vlm_backend,
 )
 from ...utils.dict_merger import deep_merge_dicts, merge_pydantic_models
+from ..chunk_batcher import ChunkBatcher
 from ..delta_models import DeltaOperation
+from ..density import calculate_dynamic_density
 from ..document_processor import DocumentProcessor
 from ..extractor_base import BaseExtractor
 
@@ -245,9 +247,7 @@ class ManyToOneStrategy(BaseExtractor):
                         "using full-document extraction"
                     )
                     try:
-                        models = self._extract_full_document(
-                            backend, full_markdown, template
-                        )
+                        models = self._extract_full_document(backend, full_markdown, template)
                     except Exception as e:
                         rich_print(
                             "[yellow][ManyToOneStrategy][/yellow] Full-document extraction failed "
@@ -312,10 +312,14 @@ class ManyToOneStrategy(BaseExtractor):
             context_limit = getattr(backend.client, "context_limit", 3500)
             if not isinstance(context_limit, int):
                 context_limit = 3500
+            # Ensure context_limit is an int to avoid MagicMock issues
+            context_limit = int(context_limit)
 
             tokenizer_fn = None
+            tokenizer_obj = None
             if self.doc_processor.chunker and self.doc_processor.chunker.tokenizer is not None:
                 tokenizer = self.doc_processor.chunker.tokenizer
+                tokenizer_obj = tokenizer
                 if hasattr(tokenizer, "count_tokens"):
                     tokenizer_fn = tokenizer.count_tokens
                     rich_print(
@@ -327,14 +331,51 @@ class ManyToOneStrategy(BaseExtractor):
             if not isinstance(reserved_output_tokens, int):
                 reserved_output_tokens = 2048
 
+            token_density_override = getattr(model_config, "token_density", None)
+            if isinstance(token_density_override, int | float) and token_density_override > 0:
+                token_density = float(token_density_override)
+                rich_print(
+                    "[blue][ManyToOneStrategy][/blue] Using overridden schema density: "
+                    f"{token_density:.2f}"
+                )
+            else:
+                token_density = calculate_dynamic_density(template, max_depth=5)
+                rich_print(
+                    "[blue][ManyToOneStrategy][/blue] Calculated schema density: "
+                    f"{token_density:.2f}"
+                )
+
+            max_generation_tokens = getattr(
+                model_config, "max_output_tokens", reserved_output_tokens
+            )
+            if not isinstance(max_generation_tokens, int):
+                max_generation_tokens = reserved_output_tokens
+            # Ensure both are ints before calling min() to avoid MagicMock issues
+            reserved_output_tokens = int(reserved_output_tokens)
+            max_generation_tokens = int(max_generation_tokens)
+            output_budget = min(reserved_output_tokens, max_generation_tokens)
+
+            if tokenizer_obj is None:
+                raise ValueError("Chunker tokenizer is required for ChunkBatcher.")
+
+            batcher = ChunkBatcher(
+                context_limit=context_limit,
+                schema_json=schema_json,
+                tokenizer=tokenizer_obj,
+                reserved_output_tokens=output_budget,
+                provider=getattr(backend.client, "provider", None),
+                is_partial=True,
+                model_config=model_config,
+                token_density=token_density,
+            )
+
             def count_tokens(text: str) -> int:
                 estimate = max(1, int(len(text) / 3.5))
                 if tokenizer_fn:
                     return max(int(tokenizer_fn(text)), estimate)
                 return estimate
 
-            schema_token_count = count_tokens(schema_json)
-            current_density = min(1.0, 0.2 + (schema_token_count / 5000))
+            current_density = token_density
 
             def iter_values(value: Any) -> Iterable[Any]:
                 if isinstance(value, BaseModel):
@@ -487,7 +528,7 @@ class ManyToOneStrategy(BaseExtractor):
                         continue
                     loc = err.get("loc")
                     if not isinstance(loc, tuple):
-                        continue
+                        continue  # type: ignore[unreachable]
                     input_value = err.get("input")
                     if input_value is None:
                         input_value = err.get("input_value")
@@ -525,8 +566,6 @@ class ManyToOneStrategy(BaseExtractor):
 
             extraction_id = 0
             step_index = 0
-            chunk_index = 0
-
             rich_print(
                 f"[blue][ManyToOneStrategy][/blue] Starting sequential extraction "
                 f"({total_chunks} chunks)..."
@@ -574,6 +613,17 @@ class ManyToOneStrategy(BaseExtractor):
                         "[yellow][ManyToOneStrategy][/yellow] Batch exceeds context window; "
                         "processing with tighter batch size."
                     )
+                    if len(batch_chunks) > 1:
+                        mid = max(1, len(batch_chunks) // 2)
+                        left_chunks = batch_chunks[:mid]
+                        right_chunks = batch_chunks[mid:]
+                        left_indices = batch_indices[:mid]
+                        right_indices = batch_indices[mid:]
+                        left_ok = process_batch(left_chunks, left_indices, current_density)
+                        right_ok = True
+                        if right_chunks:
+                            right_ok = process_batch(right_chunks, right_indices, current_density)
+                        return left_ok and right_ok
 
                 attempt = 0
                 while attempt <= max_retries:
@@ -679,69 +729,17 @@ class ManyToOneStrategy(BaseExtractor):
                             f"{batch_label} failed. Backing off to smaller batches "
                             f"({len(left_chunks)} + {len(right_chunks)})."
                         )
-                        left_ok = process_batch(
-                            left_chunks, left_indices, current_density
-                        )
+                        left_ok = process_batch(left_chunks, left_indices, current_density)
                         right_ok = True
                         if right_chunks:
-                            right_ok = process_batch(
-                                right_chunks, right_indices, current_density
-                            )
+                            right_ok = process_batch(right_chunks, right_indices, current_density)
                         return left_ok and right_ok
 
                 return False
 
-            while chunk_index < total_chunks:
-                batch_chunks: List[str] = []
-                batch_indices: List[int] = []
-                batch_text = ""
-
-                while chunk_index < total_chunks:
-                    candidate = chunks[chunk_index]
-                    candidate_text = candidate
-                    candidate_batch = (
-                        f"{batch_text}\n\n{candidate_text}" if batch_text else candidate_text
-                    )
-                    batch_tokens = count_tokens(candidate_batch)
-                    output_tokens = int(batch_tokens * current_density)
-
-                    registry_entries = collect_registry_entries(master_state)
-                    registry_list = list(registry_entries.values())
-                    registry_budget = int(context_limit * 0.5)
-                    registry_str, _pruned_ids, _registry_tokens = prune_registry(
-                        registry_list, last_seen_step, registry_budget
-                    )
-
-                    base_prompt = get_context_aware_prompt(
-                        markdown_content="",
-                        schema_json=schema_json,
-                        registry_content=registry_str,
-                        delta_schema_json=delta_schema_json,
-                        is_partial=True,
-                        model_config=model_config,
-                    )
-                    base_prompt_tokens = count_tokens(base_prompt["system"]) + count_tokens(
-                        base_prompt["user"]
-                    )
-                    input_tokens = base_prompt_tokens + batch_tokens
-
-                    if input_tokens >= context_limit or output_tokens >= reserved_output_tokens:
-                        if batch_chunks:
-                            break
-                        batch_chunks.append(candidate_text)
-                        batch_indices.append(chunk_index)
-                        chunk_index += 1
-                        break
-
-                    batch_chunks.append(candidate_text)
-                    batch_indices.append(chunk_index)
-                    batch_text = candidate_batch
-                    chunk_index += 1
-
-                if not batch_chunks:
-                    break
-
-                process_batch(batch_chunks, batch_indices, current_density)
+            batches = batcher.batch_chunks(chunks, tokenizer_fn=tokenizer_fn)
+            for batch in batches:
+                process_batch(batch.chunks, batch.chunk_indices, current_density)
 
             if not extracted_models:
                 rich_print(

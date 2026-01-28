@@ -133,8 +133,21 @@ def test_extract_with_context_called(mock_llm_backend, patch_deps):
     mock_dp, _mock_merge, mock_is_llm, _ = patch_deps
     mock_is_llm.return_value = True
 
+    # Reduce context limit and max_output_tokens to force chunk extraction
+    mock_llm_backend.client.context_limit = 1000
+    # Create a simple config object with actual int values
+    from types import SimpleNamespace
+
+    from docling_graph.llm_clients.config import ModelCapability
+
+    mock_llm_backend.client.model_config = SimpleNamespace(
+        max_output_tokens=100, capability=ModelCapability.STANDARD
+    )
+
     mock_doc_processor = mock_dp.return_value
     mock_doc_processor.extract_chunks.return_value = ["chunk1", "chunk2"]
+    # Make document too large to fit budget
+    mock_doc_processor.extract_full_markdown.return_value = "x" * 5000
 
     strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
     results, _doc = strategy.extract("test.pdf", MockTemplate)
@@ -155,9 +168,7 @@ def test_full_document_path_selected_when_budgets_fit(mock_llm_backend, patch_de
     mock_doc_processor.extract_full_markdown.return_value = "x" * 1000
 
     strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)
-    strategy._extract_full_document = Mock(
-        return_value=[MockTemplate(name="FullDoc", value=1)]
-    )
+    strategy._extract_full_document = Mock(return_value=[MockTemplate(name="FullDoc", value=1)])
     strategy._extract_with_chunks = Mock(return_value=[MockTemplate(name="Chunked", value=2)])
 
     results, _doc = strategy.extract("test.pdf", MockTemplate)
@@ -193,9 +204,13 @@ def test_full_document_failure_falls_back_to_chunks(mock_llm_backend, patch_deps
 
 def test_error_recovery_returns_empty_when_all_deltas_fail(mock_llm_backend, patch_deps):
     """Test that empty list is returned when all delta extractions fail."""
-    _mock_dp, _mock_merge, mock_is_llm, _ = patch_deps
+    mock_dp, _mock_merge, mock_is_llm, _ = patch_deps
     mock_is_llm.return_value = True
 
+    # Make full-document extraction fail by making markdown contain "fail"
+    mock_doc_processor = mock_dp.return_value
+    mock_doc_processor.extract_full_markdown.return_value = "fail"
+    # Also make chunk extraction fail
     mock_llm_backend.extract_with_context.side_effect = [None, None]
 
     strategy = ManyToOneStrategy(backend=mock_llm_backend, use_chunking=True)

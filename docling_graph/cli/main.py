@@ -34,7 +34,7 @@ def verbose_callback(ctx: typer.Context, value: bool) -> bool:
         logging.basicConfig(
             level=logging.WARNING,
             format="%(levelname)s: %(message)s",
-        )  
+        )
     return value
 
 

@@ -1,4 +1,4 @@
-""" 
+"""
 Extraction model for French home insurance policy documents (Assurance Multirisque Habitation / MRH).
 
 Robustness goals
@@ -29,11 +29,14 @@ logger = logging.getLogger(__name__)
 # 1) Docling-Graph helper (edge metadata)
 # ---------------------------------------------------------------------------
 
+
 def edge(label: str, default: Any = None, **kwargs: Any) -> Any:
     """Helper to tag relationship fields for Docling-Graph (knowledge graph edges)."""
     if "default_factory" in kwargs:
         default_factory = kwargs.pop("default_factory")
-        return Field(default_factory=default_factory, json_schema_extra={"edge_label": label}, **kwargs)
+        return Field(
+            default_factory=default_factory, json_schema_extra={"edge_label": label}, **kwargs
+        )
     return Field(default, json_schema_extra={"edge_label": label}, **kwargs)
 
 
@@ -41,11 +44,12 @@ def edge(label: str, default: Any = None, **kwargs: Any) -> Any:
 # 2) Normalization helpers
 # ---------------------------------------------------------------------------
 
+
 def _parse_french_number(v: Any) -> float | None:
     """Convert French-formatted numbers (e.g., '1 200,50') to float when possible."""
     if v is None:
         return None
-    if isinstance(v, (int, float)):
+    if isinstance(v, int | float):
         return float(v)
     if isinstance(v, str):
         clean_v = re.sub(r"[^\d,\.-]", "", v).replace(",", ".")
@@ -110,6 +114,7 @@ def _filter_list_items(v: Any, field_name: str, required_keys: list[str] | None 
 # 3) Enums (LLM should output these exact values)
 # ---------------------------------------------------------------------------
 
+
 class OccupancyStatus(str, Enum):
     """Legal/occupancy profile (often drives product variants like PNO)."""
 
@@ -153,6 +158,7 @@ class AssetCategory(str, Enum):
 # ---------------------------------------------------------------------------
 # 4) Base mixin for lightweight provenance on nodes
 # ---------------------------------------------------------------------------
+
 
 class WithProvenance(BaseModel):
     """Attach minimal traceability directly to nodes (no OCR slots/bboxes)."""
@@ -204,6 +210,7 @@ class Note(BaseModel):
 # 5) Value objects (is_entity=False) - permissive
 # ---------------------------------------------------------------------------
 
+
 class Money(BaseModel):
     """Monetary amount (permissive to partial extraction)."""
 
@@ -228,7 +235,7 @@ class Money(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def coerce_from_number(cls, v: Any) -> Any:
-        if isinstance(v, (int, float)):
+        if isinstance(v, int | float):
             return {"amount": float(v), "currency": "EUR"}
         return v
 
@@ -284,6 +291,7 @@ class CoverageCondition(BaseModel):
 # ---------------------------------------------------------------------------
 # 6) Entities (graph nodes)
 # ---------------------------------------------------------------------------
+
 
 class DefinitionTerm(WithProvenance):
     """Glossary term definition."""
@@ -487,7 +495,9 @@ class ContractClause(WithProvenance):
     definit_termes: List[DefinitionTerm] = edge(label="DEFINES_TERM", default_factory=list)
     mentionne_garanties: List[Guarantee] = edge(label="MENTIONS_GUARANTEE", default_factory=list)
     mentionne_options: List[Option] = edge(label="MENTIONS_OPTION", default_factory=list)
-    mentionne_offres: List[InsuranceOffering] = edge(label="MENTIONS_OFFERING", default_factory=list)
+    mentionne_offres: List[InsuranceOffering] = edge(
+        label="MENTIONS_OFFERING", default_factory=list
+    )
 
     notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
 
@@ -495,6 +505,7 @@ class ContractClause(WithProvenance):
 # ---------------------------------------------------------------------------
 # 7) Root document
 # ---------------------------------------------------------------------------
+
 
 class PolicyDocument(WithProvenance):
     """Entry point (root model) for MRH policy extraction."""
@@ -515,10 +526,14 @@ class PolicyDocument(WithProvenance):
     product_name: str | None = Field(None, examples=["Assurance Habitation"])
 
     liste_offres: List[InsuranceOffering] = edge(label="HAS_OFFERING", default_factory=list)
-    liste_biens_types: List[InsuredAssetType] = edge(label="MENTIONS_ASSET_TYPE", default_factory=list)
+    liste_biens_types: List[InsuredAssetType] = edge(
+        label="MENTIONS_ASSET_TYPE", default_factory=list
+    )
     liste_garanties: List[Guarantee] = edge(label="INCLUDES_GUARANTEE", default_factory=list)
     liste_options: List[Option] = edge(label="OFFERS_OPTION", default_factory=list)
-    liste_exclusions_generales: List[ExclusionClause] = edge(label="HAS_GENERAL_EXCLUSION", default_factory=list)
+    liste_exclusions_generales: List[ExclusionClause] = edge(
+        label="HAS_GENERAL_EXCLUSION", default_factory=list
+    )
     liste_clauses: List[ContractClause] = edge(label="HAS_CLAUSE", default_factory=list)
 
     notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
@@ -554,7 +569,11 @@ class PolicyDocument(WithProvenance):
             return v
         out = []
         for item in v:
-            if isinstance(item, dict) and not item.get("text_summary") and not item.get("full_text"):
+            if (
+                isinstance(item, dict)
+                and not item.get("text_summary")
+                and not item.get("full_text")
+            ):
                 logger.warning("Dropping invalid exclusion dict with no text: %r", item)
                 continue
             out.append(item)

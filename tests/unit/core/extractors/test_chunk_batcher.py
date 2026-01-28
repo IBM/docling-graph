@@ -55,3 +55,77 @@ def test_batch_chunks_respects_prompt_budget():
 
     assert batches
     assert all(batch.prompt_tokens <= batcher.prompt_budget for batch in batches)
+
+
+def test_batch_chunks_respects_output_budget():
+    tokenizer = DummyTokenizer()
+    batcher = ChunkBatcher(
+        context_limit=5000,
+        schema_json='{"title": "Schema"}',
+        tokenizer=tokenizer,
+        reserved_output_tokens=150,
+        token_density=2.0,
+        safety_margin_tokens=100,
+        merge_threshold=0.5,
+    )
+
+    chunks = ["word " * 60, "word " * 60]
+    batches = batcher.batch_chunks(chunks)
+
+    assert len(batches) == 2
+    assert all(batch.chunk_count == 1 for batch in batches)
+
+
+def test_single_chunk_overflow_warning(caplog):
+    tokenizer = DummyTokenizer()
+    batcher = ChunkBatcher(
+        context_limit=5000,
+        schema_json='{"title": "Schema"}',
+        tokenizer=tokenizer,
+        reserved_output_tokens=50,
+        token_density=2.0,
+        safety_margin_tokens=100,
+    )
+
+    with caplog.at_level("WARNING"):
+        batches = batcher.batch_chunks(["word " * 40])
+
+    assert len(batches) == 1
+    assert any("Single chunk" in record.message for record in caplog.records)
+
+
+def test_batch_chunks_respects_output_budget():
+    tokenizer = DummyTokenizer()
+    batcher = ChunkBatcher(
+        context_limit=5000,
+        schema_json='{"title": "Schema"}',
+        tokenizer=tokenizer,
+        reserved_output_tokens=150,
+        token_density=2.0,
+        safety_margin_tokens=100,
+        merge_threshold=0.5,
+    )
+
+    chunks = ["word " * 60, "word " * 60]
+    batches = batcher.batch_chunks(chunks)
+
+    assert len(batches) == 2
+    assert all(batch.chunk_count == 1 for batch in batches)
+
+
+def test_single_chunk_overflow_warning(caplog):
+    tokenizer = DummyTokenizer()
+    batcher = ChunkBatcher(
+        context_limit=5000,
+        schema_json='{"title": "Schema"}',
+        tokenizer=tokenizer,
+        reserved_output_tokens=50,
+        token_density=2.0,
+        safety_margin_tokens=100,
+    )
+
+    with caplog.at_level("WARNING"):
+        batches = batcher.batch_chunks(["word " * 40])
+
+    assert len(batches) == 1
+    assert any("Single chunk" in record.message for record in caplog.records)

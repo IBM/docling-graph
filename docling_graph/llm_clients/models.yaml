@@ -1,0 +1,113 @@
+models:
+  # Mistral (API)
+  "mistral-large-latest":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "mistral-small-latest":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "codestral-latest":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "open-mistral-7b":
+    context_limit: 32000
+    max_output_tokens: 4092
+  "open-mixtral-8x7b":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "open-mixtral-8x22b":
+    context_limit: 128000
+    max_output_tokens: 8192
+
+  # OpenAI
+  "gpt-4o":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "gpt-4o-mini":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "gpt-4.1":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "o3":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "o4-mini":
+    context_limit: 128000
+    max_output_tokens: 8192
+
+  # Gemini
+  "gemini-2.5-pro":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "gemini-2.5-flash":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "gemini-2.5-flash-lite":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "gemini-3-pro-preview":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "gemini-3-flash-preview":
+    context_limit: 128000
+    max_output_tokens: 8192
+
+  # Watsonx / IBM Granite
+  "ibm-granite/granite-4.0-micro":
+    context_limit: 32000
+    max_output_tokens: 2048
+  "ibm-granite/granite-4.0-1b":
+    context_limit: 32000
+    max_output_tokens: 2048
+  "granite-3-3-8b-instruct":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "granite-8b-code-instruct":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "granite-13b-instruct":
+    context_limit: 128000
+    max_output_tokens: 8192
+
+  # vLLM (HF-style)
+  "meta-llama/Llama-3.1-8B-Instruct":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "meta-llama/Llama-3.1-70B-Instruct":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "Qwen/Qwen2.5-14B-Instruct":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "Qwen/Qwen2.5-7B-Instruct":
+    context_limit: 32000
+    max_output_tokens: 4092
+  "mistralai/Mistral-7B-Instruct-v0.3":
+    context_limit: 32000
+    max_output_tokens: 4092
+
+  # Ollama
+  "phi3":
+    context_limit: 32000
+    max_output_tokens: 4092
+  "mistral":
+    context_limit: 32000
+    max_output_tokens: 4092
+  "llama3":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "llama3.1":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "mixtral:8x7b":
+    context_limit: 128000
+    max_output_tokens: 8192
+  "mixtral:8x22b":
+    context_limit: 128000
+    max_output_tokens: 8192
+
+  # Small (<1B)
+  "Qwen/Qwen2.5-0.5B-Instruct":
+    context_limit: 32000
+    max_output_tokens: 2048

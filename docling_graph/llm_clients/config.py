@@ -13,8 +13,11 @@ import logging
 import os
 import time
 from enum import Enum
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Protocol
 
+import yaml
 from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator, model_validator
 from rich import print as rich_print
@@ -209,6 +212,7 @@ class EffectiveModelConfig(BaseModel):
     connection: ResolvedConnection
     tokenizer: str
     merge_threshold: float
+    token_density: float | None = None
 
     @property
     def supports_chain_of_density(self) -> bool:
@@ -222,6 +226,7 @@ class EffectiveModelConfig(BaseModel):
 class ModelConfigLike(Protocol):
     capability: ModelCapability
     context_limit: int
+    token_density: float | None
 
     @property
     def supports_chain_of_density(self) -> bool: ...
@@ -237,13 +242,76 @@ class LlmRuntimeOverrides(BaseModel):
     connection: ConnectionOverrides = Field(default_factory=ConnectionOverrides)
     context_limit: int | None = None
     max_output_tokens: int | None = None
+    token_density: float | None = None
 
 
-_DEFAULT_CONTEXT_LIMIT = 8192
-_DEFAULT_MAX_OUTPUT_TOKENS = 2048
+_DEFAULT_CONTEXT_LIMIT = 32000
+_DEFAULT_MAX_OUTPUT_TOKENS = 4092
 
 # Track which models have already been warned to avoid duplicate warnings
 _warned_models: set[str] = set()
+
+
+@lru_cache(maxsize=1)
+def _load_models_registry(path: Path | None = None) -> dict[str, Any]:
+    registry_path = path or Path(__file__).with_name("models.yaml")
+    if not registry_path.exists():
+        logger.warning("models.yaml not found at %s; skipping model defaults.", registry_path)
+        return {}
+    try:
+        with registry_path.open("r", encoding="utf-8") as handle:
+            data = yaml.safe_load(handle) or {}
+    except Exception as exc:
+        logger.warning("Failed to load models.yaml (%s); skipping model defaults.", exc)
+        return {}
+    if not isinstance(data, dict):
+        logger.warning("models.yaml must be a mapping; skipping model defaults.")
+        return {}
+    models = data.get("models", {})
+    if not isinstance(models, dict):
+        logger.warning("models.yaml 'models' must be a mapping; skipping model defaults.")
+        return {}
+    return {str(key).strip().lower(): value for key, value in models.items()}
+
+
+def _get_models_yaml_overrides(model_id: str) -> dict[str, Any] | None:
+    registry = _load_models_registry()
+    if not registry:
+        return None
+    model_key = model_id.strip().lower()
+    suffix_key = model_key.split("/")[-1]
+    entry = registry.get(model_key) or registry.get(suffix_key)
+    if entry is None:
+        return None
+    if not isinstance(entry, dict):
+        logger.warning("models.yaml entry for %s must be a mapping; skipping.", model_key)
+        return None
+    if "context_limit" not in entry or "max_output_tokens" not in entry:
+        logger.warning(
+            "models.yaml entry for %s must include context_limit and max_output_tokens; skipping.",
+            model_key,
+        )
+        return None
+    context_limit = entry.get("context_limit")
+    max_output_tokens = entry.get("max_output_tokens")
+    if not isinstance(context_limit, int) or not isinstance(max_output_tokens, int):
+        logger.warning(
+            "models.yaml entry for %s must use integer context_limit/max_output_tokens; skipping.",
+            model_key,
+        )
+        return None
+    token_density = entry.get("token_density")
+    if token_density is not None and not isinstance(token_density, int | float):
+        logger.warning(
+            "models.yaml entry for %s has non-numeric token_density; skipping token_density.",
+            model_key,
+        )
+        token_density = None
+    return {
+        "context_limit": context_limit,
+        "max_output_tokens": max_output_tokens,
+        "token_density": token_density,
+    }
 
 
 def _build_default_registry() -> ProviderRegistry:
@@ -534,8 +602,19 @@ def resolve_effective_model_config(
 
     connection = _resolve_connection(provider, overrides.connection, provider_id)
     litellm_model = build_litellm_model_name(provider_id, model_id, connection)
-    context_limit = _resolve_context_limit(litellm_model, overrides.context_limit)
-    max_output_tokens = _resolve_max_output_tokens(litellm_model, overrides.max_output_tokens)
+    model_yaml = _get_models_yaml_overrides(model_id)
+    context_override = (
+        overrides.context_limit
+        if overrides.context_limit is not None
+        else (model_yaml.get("context_limit") if model_yaml else None)
+    )
+    max_output_override = (
+        overrides.max_output_tokens
+        if overrides.max_output_tokens is not None
+        else (model_yaml.get("max_output_tokens") if model_yaml else None)
+    )
+    context_limit = _resolve_context_limit(litellm_model, context_override)
+    max_output_tokens = _resolve_max_output_tokens(litellm_model, max_output_override)
 
     capability = detect_model_capability(context_limit, model_id, max_output_tokens)
     generation = _merge_generation(GenerationDefaults(), overrides.generation)
@@ -554,6 +633,11 @@ def resolve_effective_model_config(
             },
         )
 
+    token_density = (
+        overrides.token_density
+        if overrides.token_density is not None
+        else (model_yaml.get("token_density") if model_yaml else None)
+    )
     effective = EffectiveModelConfig(
         model_id=model_id,
         provider_id=provider_id.lower(),
@@ -566,6 +650,7 @@ def resolve_effective_model_config(
         connection=connection,
         tokenizer=provider.tokenizer,
         merge_threshold=provider.merge_threshold,
+        token_density=token_density,
     )
 
     try:
@@ -590,6 +675,7 @@ def resolve_effective_model_config(
                             "has_api_key": bool(effective.connection.api_key),
                             "context_limit": effective.context_limit,
                             "max_output_tokens": effective.max_output_tokens,
+                            "token_density": effective.token_density,
                         },
                         "timestamp": int(time.time() * 1000),
                     }

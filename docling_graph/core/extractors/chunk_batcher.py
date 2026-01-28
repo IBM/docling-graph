@@ -66,6 +66,7 @@ class ChunkBatcher:
         schema_json: str,
         tokenizer: HuggingFaceTokenizer | OpenAITokenizer,
         reserved_output_tokens: int = 2048,
+        token_density: float = 1.2,
         safety_margin_tokens: int = 100,
         merge_threshold: float | None = None,
         provider: str | None = None,
@@ -80,6 +81,7 @@ class ChunkBatcher:
             schema_json: Pydantic schema JSON string
             tokenizer: Tokenizer instance used for prompt token counting
             reserved_output_tokens: Tokens reserved for model responses
+            token_density: Output-to-input token ratio estimate
             safety_margin_tokens: Fixed buffer for protocol/tokenizer overhead
             merge_threshold: Merge chunks if batch is <this% of available context
             provider: LLM provider name (openai, gemini, etc.)
@@ -90,6 +92,7 @@ class ChunkBatcher:
         self.schema_json = schema_json or "{}"
         self.tokenizer = tokenizer
         self.reserved_output_tokens = reserved_output_tokens
+        self.token_density = max(0.1, float(token_density))
         self.safety_margin_tokens = safety_margin_tokens
         self.is_partial = is_partial
         self.model_config = model_config
@@ -101,9 +104,17 @@ class ChunkBatcher:
             else get_merge_threshold_for_provider(self.provider_name)
         )
 
+        # Ensure all values are proper types to avoid MagicMock issues in tests
+        context_limit = int(context_limit)
+        reserved_output_tokens = int(reserved_output_tokens)
+        safety_margin_tokens = int(safety_margin_tokens)
+
         self.prompt_budget = context_limit - reserved_output_tokens - safety_margin_tokens
-        self.static_overhead_tokens = self._prompt_tokens("")
+        self.output_budget = reserved_output_tokens
+        self.static_overhead_tokens = int(self._prompt_tokens(""))
         self.available_tokens = self.prompt_budget - self.static_overhead_tokens
+        # Ensure available_tokens is an int to avoid MagicMock issues in tests
+        self.available_tokens = int(self.available_tokens)
 
         if self.available_tokens <= 0:
             logger.warning(
@@ -121,6 +132,8 @@ class ChunkBatcher:
             f" • Prompt budget: [cyan]{self.prompt_budget:,}[/cyan] tokens\n"
             f" • Static overhead: [cyan]{self.static_overhead_tokens:,}[/cyan] tokens\n"
             f" • Available for content: [cyan]{self.available_tokens:,}[/cyan] tokens\n"
+            f" • Output budget: [cyan]{self.output_budget:,}[/cyan] tokens\n"
+            f" • Token density: [cyan]{self.token_density:.2f}[/cyan]\n"
             f" • Merge threshold: {self.merge_threshold * 100:.0f}%"
         )
 
@@ -133,7 +146,8 @@ class ChunkBatcher:
         )
         system_tokens = self.tokenizer.count_tokens(prompt["system"])
         user_tokens = self.tokenizer.count_tokens(prompt["user"])
-        return system_tokens + user_tokens
+        # Ensure return value is an int to avoid MagicMock issues in tests
+        return int(system_tokens) + int(user_tokens)
 
     def _content_tokens(self, markdown_content: str) -> tuple[int, int]:
         prompt_tokens = self._prompt_tokens(markdown_content)
@@ -173,8 +187,22 @@ class ChunkBatcher:
             candidate_chunks = [*current_batch_chunks, chunk_text]
             combined_text = self._build_combined_text(candidate_chunks)
             candidate_content_tokens, candidate_prompt_tokens = self._content_tokens(combined_text)
+            candidate_output_tokens = int(candidate_content_tokens * self.token_density)
 
-            if current_batch_chunks and candidate_prompt_tokens > self.prompt_budget:
+            if not current_batch_chunks and candidate_output_tokens > self.output_budget:
+                logger.warning(
+                    "Single chunk (%s tokens) with density %.2f requires ~%s tokens, "
+                    "exceeds generation limit %s. Processing may fail.",
+                    candidate_content_tokens,
+                    self.token_density,
+                    candidate_output_tokens,
+                    self.output_budget,
+                )
+
+            if current_batch_chunks and (
+                candidate_prompt_tokens > self.prompt_budget
+                or candidate_output_tokens > self.output_budget
+            ):
                 batches.append(
                     ChunkBatch(
                         batch_id=len(batches),
@@ -188,6 +216,16 @@ class ChunkBatcher:
                 current_batch_indices = [chunk_idx]
                 combined_text = self._build_combined_text(current_batch_chunks)
                 current_content_tokens, current_prompt_tokens = self._content_tokens(combined_text)
+                current_output_tokens = int(current_content_tokens * self.token_density)
+                if current_output_tokens > self.output_budget:
+                    logger.warning(
+                        "Single chunk (%s tokens) with density %.2f requires ~%s tokens, "
+                        "exceeds generation limit %s. Processing may fail.",
+                        current_content_tokens,
+                        self.token_density,
+                        current_output_tokens,
+                        self.output_budget,
+                    )
             else:
                 current_batch_chunks = candidate_chunks
                 current_batch_indices.append(chunk_idx)
@@ -233,6 +271,7 @@ class ChunkBatcher:
             combined_indices = current.chunk_indices.copy()
             combined_text = self._build_combined_text(combined_chunks)
             combined_content_tokens, combined_prompt_tokens = self._content_tokens(combined_text)
+            int(combined_content_tokens * self.token_density)
 
             j = i + 1
             while j < len(batches):
@@ -242,8 +281,12 @@ class ChunkBatcher:
                 candidate_content_tokens, candidate_prompt_tokens = self._content_tokens(
                     candidate_text
                 )
+                candidate_output_tokens = int(candidate_content_tokens * self.token_density)
 
-                if candidate_prompt_tokens > self.prompt_budget:
+                if (
+                    candidate_prompt_tokens > self.prompt_budget
+                    or candidate_output_tokens > self.output_budget
+                ):
                     break
 
                 combined_chunks = candidate_chunks
