@@ -1,586 +1,546 @@
-"""
-Extraction model for French home insurance policy documents (Assurance Multirisque Habitation / MRH).
-
-Robustness goals
-- Be permissive: missing or partially extracted data should not fail Pydantic validation.
-- Prefer dropping clearly invalid list items (e.g., dicts missing identifiers) rather than raising.
-- Keep semantic entities (Guarantee/Option/Offering/Asset types) while allowing partial fields.
-
-Design notes
-- No section/subsection hierarchy.
-- Traceability is represented by ContractClause + optional OCR/layout evidence spans.
-
-Version: 3.1.0
-"""
-
 from __future__ import annotations
 
 import logging
 import re
-from enum import Enum
-from typing import Any, List
+from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    AliasChoices,
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
 
 logger = logging.getLogger(__name__)
 
 
-# ---------------------------------------------------------------------------
-# 1) Docling-Graph helper (edge metadata)
-# ---------------------------------------------------------------------------
-
-
+# ----------------------------
+# Docling Graph helper
+# ----------------------------
 def edge(label: str, default: Any = None, **kwargs: Any) -> Any:
-    """Helper to tag relationship fields for Docling-Graph (knowledge graph edges)."""
+    """
+    Déclare un champ comme 'edge' pour Docling-Graph via json_schema_extra.
+    """
+    json_schema_extra = dict(kwargs.pop("json_schema_extra", {}) or {})
+    json_schema_extra["edge_label"] = label
+
     if "default_factory" in kwargs:
         default_factory = kwargs.pop("default_factory")
-        return Field(
-            default_factory=default_factory, json_schema_extra={"edge_label": label}, **kwargs
-        )
-    return Field(default, json_schema_extra={"edge_label": label}, **kwargs)
+        return Field(default_factory=default_factory, json_schema_extra=json_schema_extra, **kwargs)
+
+    return Field(default, json_schema_extra=json_schema_extra, **kwargs)
 
 
-# ---------------------------------------------------------------------------
-# 2) Normalization helpers
-# ---------------------------------------------------------------------------
-
-
-def _parse_french_number(v: Any) -> float | None:
-    """Convert French-formatted numbers (e.g., '1 200,50') to float when possible."""
+# ----------------------------
+# Parsing helpers
+# ----------------------------
+def parse_nombre_fr(v: Any) -> float | None:
     if v is None:
         return None
-    if isinstance(v, int | float):
+    if isinstance(v, (int, float)):
         return float(v)
     if isinstance(v, str):
-        clean_v = re.sub(r"[^\d,\.-]", "", v).replace(",", ".")
+        clean = re.sub(r"[^\d,.-]", "", v).replace(",", ".")
         try:
-            return float(clean_v)
+            return float(clean)
         except ValueError:
-            logger.warning("Could not parse number: %r", v)
             return None
     return None
 
 
-def _normalize_currency(v: Any) -> str | None:
-    """Normalize common currency symbols to ISO 4217."""
+def normalise_devise(v: Any) -> str | None:
     if v is None:
         return None
     if not isinstance(v, str):
         return str(v)
-    symbol_map = {"€": "EUR", "$": "USD", "£": "GBP"}
-    v_clean = v.strip().upper()
-    for sym, code in symbol_map.items():
-        if sym in v_clean:
+    vclean = v.strip().upper()
+    for sym, code in {"€": "EUR", "$": "USD", "£": "GBP"}.items():
+        if sym in vclean:
             return code
-    return v_clean if len(v_clean) == 3 else "EUR"
+    return vclean if len(vclean) == 3 else "EUR"
 
 
-def _filter_list_items(v: Any, field_name: str, required_keys: list[str] | None = None) -> Any:
-    """Drop garbage items from lists (strings/footers/invalid dicts)."""
+def _filtrer_liste(v: Any, nom_champ: str, champs_requis: list[str] | None = None) -> Any:
+    """
+    Nettoie une liste avant parsing des sous-modèles (évite dict vides / parasites).
+    """
     if not isinstance(v, list):
         return v
+    champs_requis = champs_requis or []
 
-    required_keys = required_keys or []
     out: list[Any] = []
-
     for item in v:
         if isinstance(item, BaseModel):
             out.append(item)
             continue
 
         if isinstance(item, dict):
-            missing = [k for k in required_keys if not item.get(k)]
-            if missing:
-                logger.warning(
-                    "Dropping invalid dict from %s (missing %s): %r",
-                    field_name,
-                    ",".join(missing),
-                    {k: item.get(k) for k in required_keys},
-                )
+            manquants = [k for k in champs_requis if not item.get(k)]
+            if manquants:
+                logger.warning("Suppression dict invalide dans %s (manque %s)", nom_champ, ",".join(manquants))
                 continue
             out.append(item)
             continue
 
         if isinstance(item, str):
-            logger.warning("Dropping garbage string from %s: %s...", field_name, item[:80])
+            # Très utile pour Bien: on accepte str puis conversion via model_validator
+            out.append(item)
             continue
 
-        logger.warning("Dropping garbage item from %s: %r", field_name, item)
+        logger.warning("Suppression élément parasite dans %s: %r", nom_champ, item)
 
     return out
 
 
-# ---------------------------------------------------------------------------
-# 3) Enums (LLM should output these exact values)
-# ---------------------------------------------------------------------------
+# ----------------------------
+# Components (non-entities)
+# ----------------------------
+class Montant(BaseModel):
+    """
+    Montant d'argent (souvent incomplet dans les CGV).
+    """
+    model_config = ConfigDict(is_entity=False, extra="ignore", populate_by_name=True)
 
-
-class OccupancyStatus(str, Enum):
-    """Legal/occupancy profile (often drives product variants like PNO)."""
-
-    TENANT = "tenant"
-    OWNER_OCCUPANT = "owner_occupant"
-    OWNER_NON_OCCUPANT = "owner_non_occupant"
-    CO_OWNER = "co_owner"
-    OCCUPANT_FREE = "occupant_free"  # occupant "à titre gratuit"
-    OTHER = "other"
-
-
-class ResidenceUse(str, Enum):
-    PRIMARY = "primary"
-    SECONDARY = "secondary"
-    RENTED_OUT = "rented_out"
-    HOLIDAY_RENTAL = "holiday_rental"
-    STUDENT = "student"
-    OTHER = "other"
-
-
-class PropertyType(str, Enum):
-    APARTMENT = "apartment"
-    HOUSE = "house"
-    MOBILE_HOME = "mobile_home"
-    OTHER = "other"
-
-
-class AssetCategory(str, Enum):
-    BUILDING = "building"
-    OUTBUILDING = "outbuilding"
-    CONTENTS = "contents"
-    VALUABLES = "valuables"
-    OUTDOOR = "outdoor"
-    POOL = "pool"
-    ENERGY = "energy"
-    LIABILITY = "liability"
-    ASSISTANCE = "assistance"
-    OTHER = "other"
-
-
-# ---------------------------------------------------------------------------
-# 4) Base mixin for lightweight provenance on nodes
-# ---------------------------------------------------------------------------
-
-
-class WithProvenance(BaseModel):
-    """Attach minimal traceability directly to nodes (no OCR slots/bboxes)."""
-
-    provenance_text: str | None = Field(
+    valeur: float | None = Field(
         None,
-        description=(
-            "Verbatim excerpt(s) from the document that justify this object/value. "
-            "Keep it short and copy exactly from the document (no paraphrase)."
-        ),
-        examples=[
-            "GARANTIES ET OPTIONS : ESSENTIELLE / CONFORT / CONFORT PLUS",
-            "Nous garantissons les dommages provoqués par la fuite, la rupture ou le débordement...",
-        ],
+        description="Valeur numérique si identifiable (ex. '1 500', '380', '120000').",
+        examples=[1500.0, 380.0, 120000.0],
     )
-    provenance_ref: str | None = Field(
-        None,
-        description="Optional human-readable reference (Article/Page/Table) if present.",
-        examples=["Article 2.1", "Page 4 - Tableau garanties"],
-    )
-
-
-class Note(BaseModel):
-    """Free-form note attached to an entity (debug, assumptions, extraction quirks)."""
-
-    model_config = ConfigDict(graph_id_fields=["note_id"], extra="ignore")
-
-    note_id: str | None = Field(
-        None,
-        description="Stable identifier if available (optional).",
-        examples=["note-001"],
-    )
-    text: str | None = Field(
-        None,
-        description="Note content.",
-        examples=[
-            "The table header was truncated; coverage matrix may be incomplete.",
-            "Ambiguous: 'privée' mapped to ResidenceUse.OTHER.",
-        ],
-    )
-    metadata: dict[str, Any] | None = Field(
-        None,
-        description="Optional structured metadata.",
-        examples=[{"type": "delta", "density_used": 0.35}],
-    )
-
-
-# ---------------------------------------------------------------------------
-# 5) Value objects (is_entity=False) - permissive
-# ---------------------------------------------------------------------------
-
-
-class Money(BaseModel):
-    """Monetary amount (permissive to partial extraction)."""
-
-    model_config = ConfigDict(is_entity=False, extra="ignore")
-
-    amount: float | None = Field(
-        None,
-        description="Numeric amount. If not extracted, keep null.",
-        examples=[1500.0, 380.0],
-    )
-    currency: str | None = Field(
+    devise: str | None = Field(
         "EUR",
-        description="ISO 4217 currency code (default EUR for FR MRH).",
-        examples=["EUR"],
+        description="Devise si précisée, sinon 'EUR' par défaut.",
+        examples=["EUR", "USD"],
     )
-    indexed_by: str | None = Field(
+    indexe_par: str | None = Field(
         None,
-        description="Index name if expressed as 'x fois l'indice' (FFB, IRL, etc.).",
-        examples=["FFB", "IRL"],
+        description="Référence d’indice si exprimé comme 'x fois un indice' (FFB, IRL, etc.).",
+        examples=["FFB", "IRL", "Indice du prix de la construction"],
     )
 
     @model_validator(mode="before")
     @classmethod
-    def coerce_from_number(cls, v: Any) -> Any:
-        if isinstance(v, int | float):
-            return {"amount": float(v), "currency": "EUR"}
+    def accepter_scalaires(cls, v: Any) -> Any:
+        if isinstance(v, (int, float)):
+            return {"valeur": float(v), "devise": "EUR"}
+        if isinstance(v, str):
+            return {"valeur": parse_nombre_fr(v), "devise": normalise_devise(v) or "EUR"}
         return v
 
-    @field_validator("amount", mode="before")
+    @field_validator("valeur", mode="before")
     @classmethod
-    def normalize_amount(cls, v: Any) -> Any:
-        return _parse_french_number(v)
+    def normaliser_valeur(cls, v: Any) -> Any:
+        return parse_nombre_fr(v)
 
-    @field_validator("currency", mode="before")
+    @field_validator("devise", mode="before")
     @classmethod
-    def normalize_currency(cls, v: Any) -> Any:
-        return _normalize_currency(v)
+    def normaliser_devise(cls, v: Any) -> Any:
+        return normalise_devise(v)
 
 
-class Deductible(BaseModel):
-    """Deductible/franchise (permissive)."""
+class Franchise(BaseModel):
+    """
+    Franchise applicable (souvent 'par sinistre', etc.).
+    """
+    model_config = ConfigDict(is_entity=False, extra="ignore", populate_by_name=True)
 
-    model_config = ConfigDict(is_entity=False, extra="ignore")
-
-    amount: Money | None = Field(None)
-    deductible_type: str | None = Field(
+    montant: Montant | None = Field(
         None,
-        description="Type of deductible (fixed, percentage, legal CAT-NAT deductible, etc.).",
-        examples=["Fixe", "Pourcentage", "Franchise légale"],
+        description="Montant de franchise si indiqué.",
+        examples=[{"valeur": 380.0, "devise": "EUR"}, "380 €"],
     )
-    context: str | None = Field(
+    type: str | None = Field(
         None,
-        description="Where/when it applies (per claim, per event, per guarantee).",
-        examples=["Par sinistre", "Catastrophes naturelles", "Vol"],
+        description="Type de franchise (fixe, pourcentage, franchise légale, etc.).",
+        examples=["Fixe", "Pourcentage", "Franchise légale CAT-NAT"],
+    )
+    contexte: str | None = Field(
+        None,
+        description="Contexte d’application (par sinistre, pour le vol, CAT-NAT, etc.).",
+        examples=["Par sinistre", "Vol", "Catastrophes naturelles"],
     )
 
 
-class CoverageCondition(BaseModel):
-    """Condition/prerequisite for a coverage to apply."""
+class Condition(BaseModel):
+    """
+    Condition / obligation de prévention / mesure de sécurité.
+    """
+    model_config = ConfigDict(is_entity=False, extra="ignore", populate_by_name=True)
 
-    model_config = ConfigDict(is_entity=False, extra="ignore")
-
-    text: str | None = Field(
+    texte: str | None = Field(
         None,
-        description="Condition verbatim. Leave null if not extracted.",
+        description="Condition au plus proche du texte du document (éviter de paraphraser).",
         examples=[
-            "En cas d'absence de plus de 24 heures, utiliser tous les moyens de fermeture.",
-            "Lorsque les locaux demeurent inoccupés plus de 3 jours, fermer le robinet d'alimentation générale.",
+            "En cas d'absence de plus de 24h, utiliser tous les moyens de fermeture et de protection.",
+            "Faire procéder au ramonage des conduits avant chaque hiver.",
         ],
     )
-    max_unoccupied_days: int | None = Field(
+    jours_inoccupation_max: int | None = Field(
         None,
-        description="If the condition is about inoccupation/inhabitation, extract the max days if stated.",
-        examples=[3, 30, 90],
+        description="Si la condition porte sur l’inoccupation, extraire le nombre maximal de jours si présent.",
+        examples=[3, 30, 60, 90],
     )
 
 
-# ---------------------------------------------------------------------------
-# 6) Entities (graph nodes)
-# ---------------------------------------------------------------------------
+# ----------------------------
+# Entities
+# ----------------------------
+class Bien(BaseModel):
+    """
+    Bien assuré / bien mentionné.
+    Entité (Entity) dédupliquée via nom.
+    """
+    model_config = ConfigDict(graph_id_fields=["nom"], extra="ignore", populate_by_name=True)
 
-
-class DefinitionTerm(WithProvenance):
-    """Glossary term definition."""
-
-    model_config = ConfigDict(graph_id_fields=["term"], extra="ignore")
-
-    term: str | None = Field(
+    nom: str | None = Field(
         None,
-        description="Defined term as written.",
-        examples=["Effraction", "Vétusté"],
-    )
-    definition: str | None = Field(
-        None,
-        description="Definition text (verbatim if possible).",
-    )
-
-    notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
-
-
-class Risk(WithProvenance):
-    """Peril/risk concept (covered or excluded)."""
-
-    model_config = ConfigDict(graph_id_fields=["name"], extra="ignore")
-
-    name: str | None = Field(None, examples=["Incendie", "Dégâts des eaux", "Vol"])
-
-    notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
-
-    @model_validator(mode="before")
-    @classmethod
-    def coerce_from_string(cls, v: Any) -> Any:
-        if isinstance(v, str):
-            return {"name": v}
-        return v
-
-
-class InsuredAssetType(WithProvenance):
-    """Type of insured asset explicitly mentioned by the policy."""
-
-    model_config = ConfigDict(graph_id_fields=["name"], extra="ignore")
-
-    name: str | None = Field(
-        None,
-        description="Asset type name as written (e.g., 'Dépendances', 'Mobilier', 'Piscine').",
-        examples=["Bâtiments", "Dépendances", "Mobilier", "Objets de valeur", "Jardin", "Piscine"],
-    )
-    category: AssetCategory | None = Field(
-        None,
-        description="Normalized category if possible; otherwise null.",
-    )
-    description: str | None = Field(None)
-
-    notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
-
-    @model_validator(mode="before")
-    @classmethod
-    def coerce_from_string(cls, v: Any) -> Any:
-        # Allow lists like couvre_biens: ["mobilier", "objets"]
-        if isinstance(v, str):
-            return {"name": v}
-        return v
-
-
-class ExclusionClause(WithProvenance):
-    """Exclusion clause."""
-
-    model_config = ConfigDict(graph_id_fields=["text_summary"], extra="ignore")
-
-    text_summary: str | None = Field(
-        None,
-        description="Short summary identifier (keep short).",
-        examples=["Exclusion vol sans effraction"],
-    )
-    full_text: str | None = Field(
-        None,
-        description="Full clause text (verbatim if possible).",
-    )
-
-    exclut_risques: List[Risk] = edge(
-        label="EXCLUDES_RISK",
-        default_factory=list,
-        description="Risks explicitly excluded by this clause.",
-    )
-    exclut_biens: List[InsuredAssetType] = edge(
-        label="EXCLUDES_ASSET_TYPE",
-        default_factory=list,
-        description="Asset types excluded by this clause.",
-    )
-
-    notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
-
-
-class Guarantee(WithProvenance):
-    """Guarantee/coverage."""
-
-    model_config = ConfigDict(graph_id_fields=["name"], extra="ignore")
-
-    name: str | None = Field(
-        None,
-        description="Coverage name as written.",
-        examples=["Dégâts des eaux", "Vol et Vandalisme", "Incendie et événements assimilés"],
-    )
-    description_courte: str | None = Field(
-        None,
-        description="Short description (1-2 sentences).",
-    )
-
-    couvre_risques: List[Risk] = edge(label="COVERS_RISK", default_factory=list)
-    couvre_biens: List[InsuredAssetType] = edge(label="COVERS_ASSET_TYPE", default_factory=list)
-
-    a_exclusions: List[ExclusionClause] = edge(label="HAS_EXCLUSION", default_factory=list)
-    a_conditions: List[CoverageCondition] = edge(label="HAS_CONDITION", default_factory=list)
-    a_franchises: List[Deductible] = edge(label="HAS_DEDUCTIBLE", default_factory=list)
-
-    plafond_garantie: Money | None = edge(
-        label="HAS_LIMIT",
-        default=None,
-        description="Limit/plafond for this guarantee (if any).",
-    )
-
-    notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
-
-
-class Option(WithProvenance):
-    """Optional add-on (option/pack/renfort)."""
-
-    model_config = ConfigDict(graph_id_fields=["name"], extra="ignore")
-
-    name: str | None = Field(
-        None,
-        description="Option name as written.",
-        examples=["Dommages électriques", "Jardin", "Piscine", "Rééquipement à neuf"],
-    )
-    description: str | None = Field(None)
-
-    etend_garanties: List[Guarantee] = edge(label="EXTENDS_GUARANTEE", default_factory=list)
-    couvre_biens: List[InsuredAssetType] = edge(label="COVERS_ASSET_TYPE", default_factory=list)
-
-    notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
-
-
-class InsuranceOffering(WithProvenance):
-    """Product offering/formula/tier/variant."""
-
-    model_config = ConfigDict(graph_id_fields=["name"], extra="ignore")
-
-    name: str | None = Field(
-        None,
-        description="Offering/formula name as written.",
-        examples=["Essentielle", "Confort", "Confort Plus", "Propriétaire Non Occupant"],
-    )
-    tier: int | None = Field(None, description="Tier number if expressed as n°1/n°2/n°3.")
-
-    occupancy_status: List[OccupancyStatus] = Field(
-        default_factory=list,
         description=(
-            "Use only enum values. Example mapping: 'propriétaire non occupant' -> owner_non_occupant."
+            "Nom standardisé du bien (identifiant de déduplication). "
+            "Utiliser un libellé cohérent dans tout le document (ex. 'Bâtiment', 'Mobilier')."
         ),
-        examples=[["tenant"], ["owner_non_occupant"]],
+        examples=["Bâtiment", "Mobilier", "Objets de valeur", "Jardin", "Piscine", "Dépendances", "Véranda"],
     )
-    residence_use: List[ResidenceUse] = Field(
-        default_factory=list,
-        description="Use only enum values.",
-        examples=[["primary"], ["rented_out"], ["other"]],
-    )
-    property_types: List[PropertyType] = Field(
-        default_factory=list,
-        description="Use only enum values.",
-        examples=[["apartment"], ["house"], ["apartment", "house"]],
+    description: str | None = Field(
+        None,
+        description=(
+            "Définition/description du bien (périmètre, exemples). "
+            "À extraire principalement depuis l’Article 1 'Les biens … assurés'."
+        ),
+        examples=[
+            "Les bâtiments à usage d'habitation (murs, toiture…) selon le contrat.",
+            "Biens mobiliers présents dans l'habitation (hors exclusions).",
+        ],
     )
 
-    includes_guarantees: List[Guarantee] = edge(label="INCLUDES_GUARANTEE", default_factory=list)
-    optional_guarantees: List[Guarantee] = edge(label="OPTIONAL_GUARANTEE", default_factory=list)
-    available_options: List[Option] = edge(label="AVAILABLE_OPTION", default_factory=list)
+    @model_validator(mode="before")
+    @classmethod
+    def accepter_chaine(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            return {"nom": v}
+        return v
+
+
+class Exclusion(BaseModel):
+    """
+    Clause d’exclusion (commune ou spécifique).
+    """
+    model_config = ConfigDict(graph_id_fields=["resume"], extra="ignore", populate_by_name=True)
+
+    resume: str | None = Field(
+        None,
+        description="Résumé court servant d'identifiant (utile pour la déduplication).",
+        examples=[
+            "Exclusion vol sans effraction",
+            "Exclusion défaut d'entretien",
+            "Exclusion guerre",
+            "Exclusion risque nucléaire",
+        ],
+    )
+    texte: str | None = Field(
+        None,
+        description="Texte de l’exclusion (si possible proche/verbatim).",
+        examples=[
+            "Sont exclus les vols commis sans effraction ni violence.",
+            "Sont exclus les dommages résultant d’un défaut d’entretien notoire.",
+        ],
+    )
+    biens_exclus: list[Bien] = edge(
+        label="EXCLUTBIEN",
+        default_factory=list,
+        validation_alias=AliasChoices("biens_exclus", "biensexclus"),
+        description=(
+            "Biens explicitement exclus par cette clause (si la clause cite des biens). "
+            "Renseigner au minimum le 'nom' (référence vers les biens définis à l’Article 1)."
+        ),
+        examples=[[{"nom": "Piscine"}, {"nom": "Objets de valeur"}], ["Piscine"]],
+    )
+
+    @field_validator("biens_exclus", mode="before")
+    @classmethod
+    def filtrer_biens_exclus(cls, v: Any) -> Any:
+        return _filtrer_liste(v, "biens_exclus")
+
+
+class Garantie(BaseModel):
+    """
+    Garantie (ex. 'Dégâts des eaux', 'Vol et Vandalisme', etc.).
+    """
+    model_config = ConfigDict(graph_id_fields=["nom"], extra="ignore", populate_by_name=True)
+
+    nom: str | None = Field(
+        None,
+        description="Nom de la garantie tel qu’écrit dans le document.",
+        examples=[
+            "Dégâts des eaux",
+            "Incendie et événements assimilés",
+            "Vol et Vandalisme",
+            "Bris de vitre",
+            "Catastrophes naturelles et technologiques",
+        ],
+    )
+    description: str | None = Field(
+        None,
+        description=(
+            "Description (corps du texte de la garantie). "
+            "Éviter de recopier le tableau; privilégier les paragraphes 'Nous garantissons…'."
+        ),
+    )
+
+    biens_couverts: list[Bien] = edge(
+        label="COUVREBIEN",
+        default_factory=list,
+        validation_alias=AliasChoices("biens_couverts", "bienscouverts", "biens_couverts"),
+        description=(
+            "Quels biens sont couverts par cette garantie. "
+            "Règle pratique (anti-informations dispersées) : "
+            "si la garantie parle de 'biens assurés / bien assuré' sans détailler, "
+            "renseigner au minimum les biens principaux définis à l’Article 1 (souvent 'Bâtiment' et 'Mobilier'). "
+            "Si la garantie/option vise un bien explicite (ex. 'Piscine', 'Jardin', 'Protection du mobilier'), "
+            "ajouter ce bien dans la liste."
+        ),
+        examples=[
+            [{"nom": "Bâtiment"}, {"nom": "Mobilier"}],
+            [{"nom": "Piscine"}],
+            [{"nom": "Jardin"}],
+        ],
+    )
+
+    plafond: Montant | None = edge(
+        label="APLAFOND",
+        default=None,
+        description="Plafond / limite de garantie si précisé.",
+        examples=[{"valeur": 15000.0, "devise": "EUR"}, "15 000 €"],
+    )
+
+    franchises: list[Franchise] = edge(
+        label="AFRANCHISE",
+        default_factory=list,
+        description="Franchises applicables à cette garantie.",
+        examples=[[{"montant": "380 €", "type": "Fixe", "contexte": "Par sinistre"}]],
+    )
+
+    conditions: list[Condition] = edge(
+        label="ACONDITION",
+        default_factory=list,
+        description="Conditions / mesures de sécurité / obligations liées à cette garantie.",
+        examples=[[{"texte": "Faire procéder au ramonage avant chaque hiver."}]],
+    )
+
+    exclusions_specifiques: list[Exclusion] = edge(
+        label="AEXCLUSION",
+        default_factory=list,
+        validation_alias=AliasChoices("exclusions_specifiques", "exclusions", "exclusionsspecifiques"),
+        description=(
+            "Exclusions spécifiques à cette garantie (typiquement sous un bloc 'EXCLUSIONS SPÉCIFIQUES' "
+            "dans la section de la garantie). "
+            "Ne pas y mettre les exclusions 'communes à toutes les garanties' (Article 7), "
+            "qui doivent aller dans AssuranceMRH.exclusions_communes."
+        ),
+        examples=[[{"resume": "Exclusion défaut d'entretien"}]],
+    )
+
+    @field_validator("biens_couverts", mode="before")
+    @classmethod
+    def filtrer_biens_couverts(cls, v: Any) -> Any:
+        return _filtrer_liste(v, "biens_couverts")
+
+    @field_validator("exclusions_specifiques", mode="before")
+    @classmethod
+    def filtrer_exclusions_specifiques(cls, v: Any) -> Any:
+        return _filtrer_liste(v, "exclusions_specifiques")
+
+    @model_validator(mode="after")
+    def auto_lier_biens_evidents(self) -> "Garantie":
+        """
+        Garde-fou minimal : si une garantie est *manifestement* un bien (Jardin/Piscine)
+        ou une protection ciblée (Protection du mobilier), on crée la référence Bien(nom=...).
+        """
+        if self.biens_couverts:
+            return self
+        if not self.nom:
+            return self
+
+        mapping = {
+            "Jardin": "Jardin",
+            "Piscine": "Piscine",
+            "Protection du mobilier": "Mobilier",
+        }
+        bien_nom = mapping.get(self.nom.strip())
+        if bien_nom:
+            self.biens_couverts = [Bien(nom=bien_nom)]
+        return self
+
+
+class Option(BaseModel):
+    """
+    Option / pack / extension (ex. 'Dépannage d'urgence', 'Piscine', etc.).
+    """
+    model_config = ConfigDict(graph_id_fields=["nom"], extra="ignore", populate_by_name=True)
+
+    nom: str | None = Field(
+        None,
+        description="Nom de l’option tel qu’écrit dans le document.",
+        examples=["Dommages électriques", "Rééquipement neuf", "Dépannage d'urgence", "Jardin", "Piscine"],
+    )
+    description: str | None = Field(
+        None,
+        description="Description de l’option (objectif, périmètre).",
+        examples=[
+            "Indemnisation des dommages causés par une surtension ou la foudre.",
+            "Prise en charge d’un dépannage de serrurerie/électricité/plomberie intérieure.",
+        ],
+    )
+
+    biens_couverts: list[Bien] = edge(
+        label="COUVREBIEN",
+        default_factory=list,
+        validation_alias=AliasChoices("biens_couverts", "bienscouverts", "biens_couverts"),
+        description=(
+            "Biens couverts par l’option. "
+            "Si l’option correspond à un bien explicite (ex. 'Piscine', 'Jardin'), "
+            "ajouter ce bien au minimum via son 'nom'."
+        ),
+        examples=[[{"nom": "Piscine"}], [{"nom": "Jardin"}]],
+    )
+
+    etend_garanties: list[Garantie] = edge(
+        label="ETENDGARANTIE",
+        default_factory=list,
+        validation_alias=AliasChoices("etend_garanties", "etendgaranties"),
+        description="Si indiqué, liste des garanties que l’option étend/active.",
+        examples=[[{"nom": "Incendie et événements assimilés"}]],
+    )
+
+    @field_validator("biens_couverts", mode="before")
+    @classmethod
+    def filtrer_biens_couverts(cls, v: Any) -> Any:
+        return _filtrer_liste(v, "biens_couverts")
+
+    @field_validator("etend_garanties", mode="before")
+    @classmethod
+    def filtrer_etend_garanties(cls, v: Any) -> Any:
+        return _filtrer_liste(v, "etend_garanties", champs_requis=["nom"])
+
+    @model_validator(mode="after")
+    def auto_lier_biens_evidents(self) -> "Option":
+        if self.biens_couverts:
+            return self
+        if not self.nom:
+            return self
+        if self.nom.strip() in {"Jardin", "Piscine"}:
+            self.biens_couverts = [Bien(nom=self.nom.strip())]
+        return self
+
+
+class Offre(BaseModel):
+    """
+    Offre / formule (ESSENTIELLE, CONFORT, CONFORT PLUS, PNO...).
+    """
+    model_config = ConfigDict(graph_id_fields=["nom"], extra="ignore", populate_by_name=True)
+
+    nom: str | None = Field(
+        None,
+        description="Nom de la formule tel qu’écrit.",
+        examples=["ESSENTIELLE", "CONFORT", "CONFORT PLUS", "PROPRIÉTAIRE NON OCCUPANT"],
+    )
+    niveau: int | None = Field(
+        None,
+        description="Niveau si le document l’indique (rare).",
+        examples=[1, 2, 3],
+    )
+
+    statut_occupation: list[str] = Field(
+        default_factory=list,
+        validation_alias=AliasChoices("statut_occupation", "statutoccupation"),
+        description="Profil d’occupation (ex. 'locataire', 'propriétaire occupant', 'propriétaire non occupant').",
+        examples=[["locataire"], ["propriétaire occupant"], ["propriétaire non occupant"]],
+    )
+
+    garanties_incluses: list[Garantie] = edge(
+        label="INCLUTGARANTIE",
+        default_factory=list,
+        validation_alias=AliasChoices("garanties_incluses", "garantiesincluses"),
+        description="Garanties incluses / non optionnelles dans le tableau des garanties.",
+        examples=[[{"nom": "Dégâts des eaux"}, {"nom": "Incendie et événements assimilés"}]],
+    )
+
+    garanties_optionnelles: list[Garantie] = edge(
+        label="GARANTIEOPTIONNELLE",
+        default_factory=list,
+        validation_alias=AliasChoices("garanties_optionnelles", "garantiesoptionnelles"),
+        description="Garanties marquées 'En option' dans le tableau.",
+        examples=[[{"nom": "Dommages électriques"}, {"nom": "Piscine"}]],
+    )
+
+    options_disponibles: list[Option] = edge(
+        label="PROPOSEOPTION",
+        default_factory=list,
+        validation_alias=AliasChoices("options_disponibles", "optionsdisponibles"),
+        description="Options/packs disponibles pour cette formule (si le document les distingue).",
+        examples=[[{"nom": "Dépannage d'urgence"}, {"nom": "Rééquipement neuf"}]],
+    )
 
     notes: str | None = Field(
         None,
-        description="Free text to capture matrix footnotes or 'selon la formule choisie'.",
+        description="Notes libres liées à l’offre (mentions du tableau, remarques).",
+        examples=["Certaines garanties dépendent du lieu assuré.", "Voir limites et plafonds en conditions spéciales."],
     )
 
-    node_notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
+    @field_validator("garanties_incluses", mode="before")
+    @classmethod
+    def filtrer_garanties_incluses(cls, v: Any) -> Any:
+        return _filtrer_liste(v, "garanties_incluses", champs_requis=["nom"])
+
+    @field_validator("garanties_optionnelles", mode="before")
+    @classmethod
+    def filtrer_garanties_optionnelles(cls, v: Any) -> Any:
+        return _filtrer_liste(v, "garanties_optionnelles", champs_requis=["nom"])
+
+    @field_validator("options_disponibles", mode="before")
+    @classmethod
+    def filtrer_options_disponibles(cls, v: Any) -> Any:
+        return _filtrer_liste(v, "options_disponibles", champs_requis=["nom"])
 
 
-class ContractClause(WithProvenance):
-    """Traceable text unit (article/paragraph/table row) with raw text."""
+class AssuranceMRH(BaseModel):
+    """
+    Racine du document MRH.
+    """
+    model_config = ConfigDict(graph_id_fields=["reference_document"], extra="ignore", populate_by_name=True)
 
-    model_config = ConfigDict(graph_id_fields=["reference"], extra="ignore")
-
-    reference: str | None = Field(
+    reference_document: str | None = Field(
         None,
-        description="Stable reference if available (Article/Page/Table).",
-        examples=["Article 1", "Art. 2.1", "Page 4 - Tableau garanties"],
+        validation_alias=AliasChoices("reference_document", "referencedocument"),
+        description="Référence/identifiant du document (couverture, pied de page) si présent.",
+        examples=["CGV-MRH-2023", "HABITATION 2023-10"],
     )
-    title: str | None = Field(None)
-
-    raw_text: str | None = Field(
+    assureur: str | None = Field(
         None,
-        description="Raw extracted text of this clause (optional but recommended).",
+        description="Assureur / marque si présent.",
+        examples=["Direct Assurance", "AXA", "MMA"],
     )
-
-    definit_termes: List[DefinitionTerm] = edge(label="DEFINES_TERM", default_factory=list)
-    mentionne_garanties: List[Guarantee] = edge(label="MENTIONS_GUARANTEE", default_factory=list)
-    mentionne_options: List[Option] = edge(label="MENTIONS_OPTION", default_factory=list)
-    mentionne_offres: List[InsuranceOffering] = edge(
-        label="MENTIONS_OFFERING", default_factory=list
-    )
-
-    notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
-
-
-# ---------------------------------------------------------------------------
-# 7) Root document
-# ---------------------------------------------------------------------------
-
-
-class PolicyDocument(WithProvenance):
-    """Entry point (root model) for MRH policy extraction."""
-
-    model_config = ConfigDict(graph_id_fields=["document_ref"], extra="ignore")
-
-    document_ref: str | None = Field(
+    date_version: str | None = Field(
         None,
-        description="Document reference (cover/footer). Optional.",
-        examples=["HABITATION07.25", "CGV-MRH-2023"],
+        validation_alias=AliasChoices("date_version", "dateversion"),
+        description="Date/version/édition si présente.",
+        examples=["2023-10-01", "Édition Janvier 2024"],
     )
-    nom_assureur: str | None = Field(
+    nom_produit: str | None = Field(
         None,
-        description="Insurer/brand name. Optional.",
-        examples=["Direct Assurance", "AXA", "MMA", "Macif"],
+        validation_alias=AliasChoices("nom_produit", "nomproduit"),
+        description="Nom du produit si présent.",
+        examples=["Assurance Habitation", "Multirisque Habitation", "MRH"],
     )
-    version_date: str | None = Field(None, examples=["2023-10-01", "Avril 2021"])
-    product_name: str | None = Field(None, examples=["Assurance Habitation"])
 
-    liste_offres: List[InsuranceOffering] = edge(label="HAS_OFFERING", default_factory=list)
-    liste_biens_types: List[InsuredAssetType] = edge(
-        label="MENTIONS_ASSET_TYPE", default_factory=list
+    offres: list[Offre] = edge(
+        label="AOFFRE",
+        default_factory=list,
+        description="Liste des offres/formules présentes dans le document (tableau des garanties).",
+        examples=[[{"nom": "ESSENTIELLE"}, {"nom": "CONFORT"}]],
     )
-    liste_garanties: List[Guarantee] = edge(label="INCLUDES_GUARANTEE", default_factory=list)
-    liste_options: List[Option] = edge(label="OFFERS_OPTION", default_factory=list)
-    liste_exclusions_generales: List[ExclusionClause] = edge(
-        label="HAS_GENERAL_EXCLUSION", default_factory=list
-    )
-    liste_clauses: List[ContractClause] = edge(label="HAS_CLAUSE", default_factory=list)
 
-    notes: List[Note] = edge(label="HAS_NOTE", default_factory=list)
-
-    # -------------------
-    # Guardrails: drop garbage list items before validation
-    # -------------------
-    @field_validator("liste_offres", mode="before")
+    @field_validator("offres", mode="before")
     @classmethod
-    def _filter_offers(cls, v: Any) -> Any:
-        return _filter_list_items(v, "liste_offres", required_keys=["name"])
-
-    @field_validator("liste_biens_types", mode="before")
-    @classmethod
-    def _filter_asset_types(cls, v: Any) -> Any:
-        return _filter_list_items(v, "liste_biens_types", required_keys=["name"])
-
-    @field_validator("liste_garanties", mode="before")
-    @classmethod
-    def _filter_guarantees(cls, v: Any) -> Any:
-        return _filter_list_items(v, "liste_garanties", required_keys=["name"])
-
-    @field_validator("liste_options", mode="before")
-    @classmethod
-    def _filter_options(cls, v: Any) -> Any:
-        return _filter_list_items(v, "liste_options", required_keys=["name"])
-
-    @field_validator("liste_exclusions_generales", mode="before")
-    @classmethod
-    def _filter_exclusions(cls, v: Any) -> Any:
-        # Allow partial exclusions (summary OR full_text). Drop only if both missing.
-        if not isinstance(v, list):
-            return v
-        out = []
-        for item in v:
-            if (
-                isinstance(item, dict)
-                and not item.get("text_summary")
-                and not item.get("full_text")
-            ):
-                logger.warning("Dropping invalid exclusion dict with no text: %r", item)
-                continue
-            out.append(item)
-        return _filter_list_items(out, "liste_exclusions_generales")
-
-    @field_validator("liste_clauses", mode="before")
-    @classmethod
-    def _filter_clauses(cls, v: Any) -> Any:
-        # Clauses can exist without reference/raw_text if provenance_text is present.
-        return _filter_list_items(v, "liste_clauses")
+    def filtrer_offres(cls, v: Any) -> Any:
+        return _filtrer_liste(v, "offres", champs_requis=["nom"])
