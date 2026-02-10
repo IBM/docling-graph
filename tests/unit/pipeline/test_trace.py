@@ -18,6 +18,7 @@ from docling_graph.pipeline.trace import (
     GraphData,
     PageData,
     TraceData,
+    trace_data_to_jsonable,
 )
 
 
@@ -339,3 +340,39 @@ class TestTraceData:
         assert len(trace.chunks) == 1
         assert len(trace.extractions) == 1
         assert len(trace.intermediate_graphs) == 1
+
+    def test_trace_data_to_jsonable(self):
+        """Test trace_data_to_jsonable produces JSON-serializable dict."""
+        trace = TraceData()
+        trace.pages.append(PageData(page_number=1, text_content="short", metadata={}))
+        trace.extractions.append(
+            ExtractionData(
+                extraction_id=0,
+                source_type="chunk",
+                source_id=0,
+                parsed_model=None,
+                extraction_time=0.5,
+                error=None,
+            )
+        )
+
+        out = trace_data_to_jsonable(trace)
+        assert "pages" in out
+        assert len(out["pages"]) == 1
+        assert out["pages"][0]["page_number"] == 1
+        assert out["pages"][0]["text_content"] == "short"
+        assert "extractions" in out
+        assert len(out["extractions"]) == 1
+        assert out["extractions"][0]["extraction_time"] == 0.5
+        assert out["chunks"] is None
+        assert "intermediate_graphs" in out
+
+    def test_trace_data_to_jsonable_truncates_long_text(self):
+        """Test that long text is truncated in JSON export."""
+        trace = TraceData()
+        long_text = "x" * 5000
+        trace.pages.append(PageData(page_number=1, text_content=long_text, metadata={}))
+
+        out = trace_data_to_jsonable(trace, max_text_len=100)
+        assert len(out["pages"][0]["text_content"]) < 5000
+        assert "truncated" in out["pages"][0]["text_content"].lower()

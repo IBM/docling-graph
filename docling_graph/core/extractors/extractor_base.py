@@ -14,7 +14,7 @@ class BaseExtractor(ABC):
 
     def __init__(self) -> None:
         """Initialize base extractor with optional trace data."""
-        self.trace_data: Any = None  # Will be set by pipeline if trace is enabled
+        self.trace_data: Any = None  # Set by pipeline when config.debug is True
 
     @abstractmethod
     def extract(

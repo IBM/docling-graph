@@ -74,6 +74,7 @@ class TraceData:
 
     This contains all intermediate data captured during pipeline execution,
     useful for debugging, analysis, and understanding the extraction process.
+    Populated only when config.debug is True.
     """
 
     pages: list[PageData] = field(default_factory=list)
@@ -81,3 +82,84 @@ class TraceData:
     extractions: list[ExtractionData] = field(default_factory=list)
     intermediate_graphs: list[GraphData] = field(default_factory=list)
     consolidation: ConsolidationData | None = None
+
+
+def trace_data_to_jsonable(trace_data: TraceData, max_text_len: int = 2000) -> dict:
+    """
+    Convert TraceData to a JSON-serializable dict for export.
+
+    Large text fields are truncated; graphs are exported as summaries only
+    (node_count, edge_count) to keep file size manageable.
+    """
+
+    def _truncate(s: str) -> str:
+        if len(s) <= max_text_len:
+            return s
+        return s[:max_text_len] + f"... [truncated, total {len(s)} chars]"
+
+    pages_out = [
+        {
+            "page_number": p.page_number,
+            "text_content": _truncate(p.text_content),
+            "metadata": p.metadata,
+        }
+        for p in trace_data.pages
+    ]
+
+    chunks_out: list[dict] | None = None
+    if trace_data.chunks:
+        chunks_out = [
+            {
+                "chunk_id": c.chunk_id,
+                "page_numbers": c.page_numbers,
+                "text_content": _truncate(c.text_content),
+                "token_count": c.token_count,
+                "metadata": c.metadata,
+            }
+            for c in trace_data.chunks
+        ]
+
+    extractions_out = []
+    for e in trace_data.extractions:
+        parsed = None
+        if e.parsed_model is not None and hasattr(e.parsed_model, "model_dump"):
+            parsed = e.parsed_model.model_dump()
+        extractions_out.append(
+            {
+                "extraction_id": e.extraction_id,
+                "source_type": e.source_type,
+                "source_id": e.source_id,
+                "parsed_model": parsed,
+                "extraction_time": e.extraction_time,
+                "error": e.error,
+                "metadata": e.metadata,
+            }
+        )
+
+    intermediate_graphs_out = [
+        {
+            "graph_id": g.graph_id,
+            "source_type": g.source_type,
+            "source_id": g.source_id,
+            "node_count": g.node_count,
+            "edge_count": g.edge_count,
+        }
+        for g in trace_data.intermediate_graphs
+    ]
+
+    consolidation_out: dict | None = None
+    if trace_data.consolidation is not None:
+        c = trace_data.consolidation
+        consolidation_out = {
+            "strategy": c.strategy,
+            "input_graph_ids": c.input_graph_ids,
+            "merge_conflicts": c.merge_conflicts,
+        }
+
+    return {
+        "pages": pages_out,
+        "chunks": chunks_out,
+        "extractions": extractions_out,
+        "intermediate_graphs": intermediate_graphs_out,
+        "consolidation": consolidation_out,
+    }
