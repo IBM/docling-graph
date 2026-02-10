@@ -2,12 +2,11 @@
 
 ## Overview
 
-Debug mode provides comprehensive visibility into the atomic extraction pipeline's intermediate stages, enabling debugging, performance analysis, and quality assurance. When enabled, all extraction artifacts are persisted to disk for inspection and replay.
+Debug mode provides visibility into the pipeline's intermediate stages for debugging, performance analysis, and quality assurance. When enabled, in-memory trace data is captured and optionally persisted to disk.
 
 **What's Captured:**
-- **In-memory `TraceData`**: When `debug=True`, `context.trace_data` is populated with pages, extractions, and intermediate graph summaries (see [PipelineContext](../../reference/pipeline.md)).
-- **`debug/trace_data.json`**: When debug is on and output is written to disk, a JSON snapshot of trace data (pages, extractions, graph summaries) is saved under the run's `debug/` directory. Long text fields are truncated to keep the file small.
-- **Provenance**: Document path and configuration for replay
+- **In-memory `TraceData`**: When `debug=True`, `context.trace_data` is populated with pages, chunks, extractions, intermediate graph summaries, and consolidation info (see [PipelineContext](../../reference/pipeline.md) and the `TraceData` structure below).
+- **`debug/trace_data.json`**: When debug is on and output is written to disk, a JSON snapshot of trace data is saved under the run's `debug/` directory. Long text fields are truncated to keep the file small.
 
 ---
 
@@ -15,7 +14,7 @@ Debug mode provides comprehensive visibility into the atomic extraction pipeline
 
 ### Enable Debug Mode
 
-Debug mode is controlled by a single flag - no levels, no complexity.
+Debug mode is controlled by a single flag.
 
 **CLI:**
 ```bash
@@ -33,7 +32,7 @@ from docling_graph import run_pipeline, PipelineConfig
 config = PipelineConfig(
     source="document.pdf",
     template="templates.BillingDocument",
-    debug=True  # Single flag - all or nothing
+    debug=True
 )
 
 context = run_pipeline(config)
@@ -43,7 +42,7 @@ context = run_pipeline(config)
 
 ## Output Structure
 
-When debug mode is enabled, all artifacts are saved under `outputs/{document}_{timestamp}/debug/`:
+When debug mode is enabled and the pipeline writes to disk, trace data is saved under `outputs/{document}_{timestamp}/debug/`:
 
 ```
 outputs/invoice_pdf_20260206_094500/
@@ -56,435 +55,218 @@ outputs/invoice_pdf_20260206_094500/
 │   ├── nodes.csv
 │   ├── edges.csv
 │   └── ...
-└── debug/                           # 🔍 Debug artifacts
-    ├── slots.jsonl                  # Slot metadata (one per line)
-    ├── atoms_all.jsonl              # All atomic facts (one per line)
-    ├── field_catalog.json           # Global field catalog
-    ├── reducer_report.json          # Reducer decisions and conflicts
-    ├── best_effort_model.json       # Final model output
-    ├── provenance.json              # Document path and config for replay
-    │
-    ├── slots_text/                  # Full slot text for replay
-    │   ├── slot_0.txt
-    │   ├── slot_1.txt
-    │   └── ...
-    │
-    ├── atoms/                       # Per-slot extraction attempts
-    │   ├── slot_0_attempt1.json
-    │   ├── slot_0_attempt2.json     # Retry if first failed
-    │   ├── slot_1_attempt1.json
-    │   └── ...
-    │
-    ├── field_catalog_selected/      # Per-slot field selections
-    │   ├── slot_0.json
-    │   ├── slot_1.json
-    │   └── ...
-    │
-    └── arbitration/                 # Conflict resolution
-        ├── request.json             # Conflicts sent to LLM
-        └── response.json            # LLM arbitration decisions
+└── debug/                           # Debug output (when debug=True)
+    └── trace_data.json              # Snapshot of pages, chunks, extractions, intermediate graphs, consolidation
 ```
 
 ---
 
-## Debug Artifacts Explained
+## TraceData Structure
 
-### 1. Slot Metadata (`slots.jsonl`)
+`TraceData` (and its JSON export) contains the following sections.
 
-One line per slot with compact metadata:
+### Pages
 
-```json
-{"slot_id": "slot_0", "chunk_id": 0, "page_numbers": [1, 2], "token_count": 1500, "text_hash": "a3f2e1d4c5b6...", "text_length": 8234}
-{"slot_id": "slot_1", "chunk_id": 1, "page_numbers": [3, 4], "token_count": 1450, "text_hash": "b4e3f2d5c6a7...", "text_length": 7891}
-```
-
-**Use Cases:**
-- Verify chunking strategy
-- Identify token count issues
-- Check page coverage
-
-### 2. Slot Text (`slots_text/*.txt`)
-
-Full text content for each slot, enabling replay without re-processing the document.
-
-**Use Cases:**
-- Replay extraction with different prompts
-- Analyze what the LLM actually saw
-- Debug extraction errors
-
-### 3. Atom Extractions (`atoms/*.json`)
-
-Raw LLM outputs and validated results for each extraction attempt:
+Per-page text and metadata from document processing:
 
 ```json
 {
-  "slot_id": "slot_0",
-  "attempt": 1,
-  "timestamp": "2026-02-06T09:45:00",
-  "raw_output": "{\"atoms\": [...]}",
-  "validation_success": true,
-  "error": null,
-  "validated_result": {
-    "atoms": [
-      {
-        "field_path": "invoice_number",
-        "value": "INV-2024-001",
-        "confidence": 0.95,
-        "source_quote": "Invoice #INV-2024-001"
-      }
-    ]
-  }
-}
-```
-
-**Use Cases:**
-- Debug validation failures
-- Analyze LLM output quality
-- Track retry attempts
-- Identify prompt issues
-
-### 4. All Atoms (`atoms_all.jsonl`)
-
-All atomic facts in one file (one per line) for easy analysis:
-
-```json
-{"field_path": "invoice_number", "value": "INV-2024-001", "confidence": 0.95, "source_quote": "Invoice #INV-2024-001", "slot_id": "slot_0"}
-{"field_path": "total_amount", "value": 1250.50, "confidence": 0.90, "source_quote": "Total: $1,250.50", "slot_id": "slot_0"}
-```
-
-**Use Cases:**
-- Grep for specific fields
-- Analyze confidence distributions
-- Compare facts across slots
-
-### 5. Field Catalog (`field_catalog.json`)
-
-Global catalog of all extractable fields from the template:
-
-```json
-[
-  {
-    "field_path": "invoice_number",
-    "field_type": "str",
-    "description": "Invoice number",
-    "is_required": true,
-    "is_list": false
-  },
-  {
-    "field_path": "line_items[].description",
-    "field_type": "str",
-    "description": "Item description",
-    "is_required": true,
-    "is_list": true
-  }
-]
-```
-
-**Use Cases:**
-- Verify template structure
-- Check field descriptions
-- Debug field selection
-
-### 6. Selected Field Catalog (`field_catalog_selected/*.json`)
-
-Per-slot field selections showing which fields were targeted:
-
-```json
-[
-  {
-    "field_path": "invoice_number",
-    "field_type": "str",
-    "description": "Invoice number",
-    "is_required": true,
-    "is_list": false
-  }
-]
-```
-
-**Use Cases:**
-- Verify field selection logic
-- Debug missing extractions
-- Optimize field targeting
-
-### 7. Reducer Report (`reducer_report.json`)
-
-Complete reducer state with applied/rejected facts and conflicts:
-
-```json
-{
-  "applied_facts": [
+  "pages": [
     {
-      "field_path": "invoice_number",
-      "value": "INV-2024-001",
-      "confidence": 0.95,
-      "slot_id": "slot_0"
-    }
-  ],
-  "rejected_facts": [
-    {
-      "field_path": "invoice_number",
-      "value": "INV-2024-002",
-      "confidence": 0.60,
-      "slot_id": "slot_1",
-      "reason": "Lower confidence than existing fact"
-    }
-  ],
-  "conflicts": [
-    {
-      "field_path": "total_amount",
-      "conflicting_values": [
-        {"value": 1250.50, "confidence": 0.90, "slot_id": "slot_0"},
-        {"value": 1250.00, "confidence": 0.85, "slot_id": "slot_1"}
-      ],
-      "resolution": "arbitration",
-      "winner": {"value": 1250.50, "confidence": 0.90, "slot_id": "slot_0"}
+      "page_number": 1,
+      "text_content": "Full or truncated page text...",
+      "metadata": {}
     }
   ]
 }
 ```
 
-**Use Cases:**
-- Debug conflict resolution
-- Analyze fact quality
-- Verify arbitration decisions
+**Use cases:** Verify page-level input to extraction, inspect OCR/vision output.
 
-### 8. Arbitration (`arbitration/*.json`)
+### Chunks
 
-LLM arbitration requests and responses for conflicts:
+When chunking is used, each chunk's metadata and text:
 
-**Request:**
 ```json
 {
-  "conflicts": [
+  "chunks": [
     {
-      "field_path": "total_amount",
-      "options": [
-        {"value": 1250.50, "quote": "Total: $1,250.50", "slot_id": "slot_0"},
-        {"value": 1250.00, "quote": "Amount Due: $1,250", "slot_id": "slot_1"}
-      ]
+      "chunk_id": 0,
+      "page_numbers": [1, 2],
+      "text_content": "Chunk text...",
+      "token_count": 1500,
+      "metadata": {}
     }
   ]
 }
 ```
 
-**Response:**
+**Use cases:** Verify chunking strategy, token counts, and page coverage.
+
+### Extractions
+
+One entry per extraction (per page or per chunk):
+
 ```json
 {
-  "decisions": [
+  "extractions": [
     {
-      "field_path": "total_amount",
-      "selected_value": 1250.50,
-      "reasoning": "First value includes cents, more precise"
+      "extraction_id": 0,
+      "source_type": "chunk",
+      "source_id": 0,
+      "parsed_model": { "invoice_number": "INV-001", "total_amount": 1250.50 },
+      "extraction_time": 2.34,
+      "error": null,
+      "metadata": {}
     }
   ]
 }
 ```
 
-**Use Cases:**
-- Debug arbitration logic
-- Analyze LLM reasoning
-- Improve conflict resolution
+**Use cases:** Debug extraction failures (check `error`), analyze timing, inspect parsed models.
 
-### 9. Best-Effort Model (`best_effort_model.json`)
+### Intermediate Graphs
 
-Final model output with validation status:
+Summaries of per-source graphs before consolidation (e.g. in many-to-one mode):
 
 ```json
 {
-  "template": "BillingDocument",
-  "timestamp": "2026-02-06T09:45:30",
-  "validation_success": true,
-  "model": {
-    "invoice_number": "INV-2024-001",
-    "total_amount": 1250.50,
-    "line_items": [
-      {"description": "Service A", "amount": 500.00},
-      {"description": "Service B", "amount": 750.50}
-    ]
+  "intermediate_graphs": [
+    {
+      "graph_id": 0,
+      "source_type": "chunk",
+      "source_id": 0,
+      "node_count": 6,
+      "edge_count": 4
+    }
+  ]
+}
+```
+
+**Use cases:** Verify graph generation per page/chunk, debug consolidation input.
+
+### Consolidation
+
+When graph consolidation is used:
+
+```json
+{
+  "consolidation": {
+    "strategy": "programmatic",
+    "input_graph_ids": [0, 1, 2],
+    "merge_conflicts": null
   }
 }
 ```
 
-**Use Cases:**
-- Verify final output
-- Debug validation failures
-- Compare with expected results
-
-### 10. Provenance (`provenance.json`)
-
-Document path and configuration for deterministic replay:
-
-```json
-{
-  "document_path": "/path/to/invoice.pdf",
-  "docling_config": {"pipeline": "ocr"},
-  "chunker_config": {"max_tokens": 2000},
-  "timestamp": "2026-02-06T09:45:00"
-}
-```
-
-**Use Cases:**
-- Replay extraction with same config
-- Track configuration changes
-- Debug environment issues
+**Use cases:** Understand merge strategy and conflict handling.
 
 ---
 
 ## Common Debugging Patterns
 
-### Pattern 1: Find Validation Failures
+### Pattern 1: Find Extraction Errors
 
-```bash
-# Check atom extraction attempts for errors
-cd outputs/invoice_pdf_20260206_094500/debug/atoms/
-grep -l '"validation_success": false' *.json
+```python
+# From API – use in-memory trace_data
+context = run_pipeline(PipelineConfig(source="doc.pdf", template="templates.MyTemplate", debug=True))
 
-# View specific failure
-cat slot_0_attempt1.json | jq '.error'
+if context.trace_data:
+    for e in context.trace_data.extractions:
+        if e.error:
+            print(f"Extraction {e.extraction_id} ({e.source_type} {e.source_id}): {e.error}")
 ```
 
-### Pattern 2: Analyze Confidence Distribution
-
 ```bash
-# Extract all confidence scores
-cd outputs/invoice_pdf_20260206_094500/debug/
-cat atoms_all.jsonl | jq -r '.confidence' | sort -n
+# From disk – use trace_data.json
+cat outputs/doc_pdf_*/debug/trace_data.json | jq '.extractions[] | select(.error != null) | {extraction_id, source_type, source_id, error}'
 ```
 
-### Pattern 3: Find Conflicts
+### Pattern 2: Inspect Page/Chunk Coverage
 
 ```bash
-# Check reducer report for conflicts
-cd outputs/invoice_pdf_20260206_094500/debug/
-cat reducer_report.json | jq '.conflicts'
+# Page count
+cat outputs/doc_pdf_*/debug/trace_data.json | jq '.pages | length'
+
+# Chunk count and token usage
+cat outputs/doc_pdf_*/debug/trace_data.json | jq '.chunks[] | {chunk_id, page_numbers, token_count}'
 ```
 
-### Pattern 4: Verify Field Coverage
+### Pattern 3: Analyze Extraction Times
 
-```bash
-# List all extracted fields
-cd outputs/invoice_pdf_20260206_094500/debug/
-cat atoms_all.jsonl | jq -r '.field_path' | sort -u
+```python
+import json
+from pathlib import Path
+
+with open(Path("outputs/doc_pdf_123/debug/trace_data.json")) as f:
+    data = json.load(f)
+
+times = [e["extraction_time"] for e in data["extractions"]]
+print(f"Extractions: {len(times)}, total time: {sum(times):.2f}s, avg: {sum(times)/len(times):.2f}s")
 ```
 
-### Pattern 5: Compare Slot Extractions
+### Pattern 4: Verify Intermediate Graphs
 
 ```bash
-# Compare what each slot extracted
-cd outputs/invoice_pdf_20260206_094500/debug/atoms/
-for f in slot_*_attempt1.json; do
-  echo "=== $f ==="
-  cat "$f" | jq '.validated_result.atoms | length'
-done
+# Summarize intermediate graphs
+cat outputs/doc_pdf_*/debug/trace_data.json | jq '.intermediate_graphs'
 ```
 
 ---
 
 ## Programmatic Analysis
 
-### Load Debug Artifacts in Python
+### Load trace_data.json in Python
 
 ```python
 import json
 from pathlib import Path
 
 debug_dir = Path("outputs/invoice_pdf_20260206_094500/debug")
+with open(debug_dir / "trace_data.json") as f:
+    trace = json.load(f)
 
-# Load slot metadata
-slots = []
-with open(debug_dir / "slots.jsonl") as f:
-    for line in f:
-        slots.append(json.loads(line))
-
-# Load all atoms
-atoms = []
-with open(debug_dir / "atoms_all.jsonl") as f:
-    for line in f:
-        atoms.append(json.loads(line))
-
-# Load reducer report
-with open(debug_dir / "reducer_report.json") as f:
-    report = json.load(f)
-
-# Analyze
-print(f"Total slots: {len(slots)}")
-print(f"Total atoms: {len(atoms)}")
-print(f"Conflicts: {len(report['conflicts'])}")
+print(f"Pages: {len(trace['pages'])}")
+print(f"Chunks: {len(trace.get('chunks') or [])}")
+print(f"Extractions: {len(trace['extractions'])}")
+print(f"Intermediate graphs: {len(trace['intermediate_graphs'])}")
 ```
 
-### Analyze Extraction Quality
+### Use In-Memory trace_data (API)
 
 ```python
-import json
-from pathlib import Path
-from collections import Counter
+from docling_graph import run_pipeline, PipelineConfig
 
-debug_dir = Path("outputs/invoice_pdf_20260206_094500/debug")
+config = PipelineConfig(
+    source="document.pdf",
+    template="templates.BillingDocument",
+    debug=True
+)
+context = run_pipeline(config)
 
-# Load all atoms
-atoms = []
-with open(debug_dir / "atoms_all.jsonl") as f:
-    for line in f:
-        atoms.append(json.loads(line))
-
-# Confidence distribution
-confidences = [a['confidence'] for a in atoms]
-print(f"Average confidence: {sum(confidences) / len(confidences):.2f}")
-print(f"Min confidence: {min(confidences):.2f}")
-print(f"Max confidence: {max(confidences):.2f}")
-
-# Field coverage
-fields = Counter(a['field_path'] for a in atoms)
-print("\nField extraction counts:")
-for field, count in fields.most_common():
-    print(f"  {field}: {count}")
-```
-
-### Find Problematic Slots
-
-```python
-import json
-from pathlib import Path
-
-debug_dir = Path("outputs/invoice_pdf_20260206_094500/debug")
-atoms_dir = debug_dir / "atoms"
-
-# Find slots with validation failures
-failed_slots = []
-for attempt_file in atoms_dir.glob("*_attempt*.json"):
-    with open(attempt_file) as f:
-        attempt = json.load(f)
-        if not attempt['validation_success']:
-            failed_slots.append({
-                'slot_id': attempt['slot_id'],
-                'attempt': attempt['attempt'],
-                'error': attempt['error']
-            })
-
-print(f"Found {len(failed_slots)} failed attempts:")
-for failure in failed_slots:
-    print(f"  {failure['slot_id']} (attempt {failure['attempt']}): {failure['error']}")
+if context.trace_data:
+    for e in context.trace_data.extractions:
+        if e.parsed_model:
+            print(e.parsed_model.model_dump())
 ```
 
 ---
 
 ## Best Practices
 
-### 1. Enable Debug Mode During Development
+### 1. Enable Debug During Development
 
 ```python
-# ✅ Good - Debug enabled during development
 config = PipelineConfig(
     source="document.pdf",
     template="templates.BillingDocument",
-    debug=True  # Enable for development
+    debug=True
 )
 ```
 
-### 2. Disable Debug Mode in Production
+### 2. Disable Debug in Production
 
 ```python
-# ✅ Good - Debug disabled in production
 import os
 
 config = PipelineConfig(
@@ -494,115 +276,55 @@ config = PipelineConfig(
 )
 ```
 
-### 3. Use Debug Artifacts for Testing
+### 3. Use Trace Data in Tests
 
 ```python
-def test_extraction_quality():
-    """Test extraction quality using debug artifacts."""
+def test_extraction_succeeds():
     config = PipelineConfig(
         source="test_document.pdf",
         template="templates.BillingDocument",
         debug=True
     )
-    
     context = run_pipeline(config)
-    
-    # Load debug artifacts
-    debug_dir = Path(context.output_dir) / "debug"
-    
-    # Verify no validation failures
-    atoms_dir = debug_dir / "atoms"
-    for attempt_file in atoms_dir.glob("*_attempt*.json"):
-        with open(attempt_file) as f:
-            attempt = json.load(f)
-            assert attempt['validation_success'], f"Validation failed: {attempt['error']}"
-    
-    # Verify confidence thresholds
-    with open(debug_dir / "atoms_all.jsonl") as f:
-        for line in f:
-            atom = json.loads(line)
-            assert atom['confidence'] >= 0.7, f"Low confidence: {atom}"
-```
 
-### 4. Archive Debug Artifacts
-
-```bash
-# Archive debug artifacts for later analysis
-cd outputs/
-tar -czf invoice_debug_20260206.tar.gz invoice_pdf_20260206_094500/debug/
+    assert context.trace_data is not None
+    errors = [e for e in context.trace_data.extractions if e.error]
+    assert len(errors) == 0, f"Extraction errors: {errors}"
 ```
 
 ---
 
 ## Troubleshooting
 
-### 🐛 No Debug Artifacts Generated
+### No trace_data / trace_data.json
 
-**Problem:** Debug directory is empty or missing.
+**Problem:** `context.trace_data` is `None` or `debug/trace_data.json` is missing.
 
-**Solution:**
-```python
-# Ensure debug=True is set
-config = PipelineConfig(
-    source="document.pdf",
-    template="templates.BillingDocument",
-    debug=True  # Must be True
-)
-```
+**Solution:** Ensure `debug=True` in `PipelineConfig` (or `--debug` in CLI). The JSON file is only written when output is written to disk (e.g. CLI or when the pipeline is configured to dump results).
 
-### 🐛 Validation Failures
+### Extraction Errors in trace_data
 
-**Problem:** Many atom extraction attempts show `validation_success: false`.
+**Problem:** Some entries in `trace_data.extractions` have non-null `error`.
 
-**Solution:**
-1. Check `atoms/*_attempt*.json` for error messages
-2. Review field descriptions in `field_catalog.json`
-3. Examine slot text in `slots_text/*.txt`
-4. Adjust template or prompts based on errors
+**Solution:** Inspect `error` and `source_type`/`source_id` to locate the failing page or chunk. Check input text in `trace_data.pages` or `trace_data.chunks` and template/field definitions.
 
-### 🐛 Low Confidence Scores
+### Large trace_data.json
 
-**Problem:** Atoms have consistently low confidence scores.
+**Problem:** File is very large.
 
-**Solution:**
-1. Review `atoms_all.jsonl` for confidence distribution
-2. Check `slots_text/*.txt` for text quality
-3. Verify field descriptions are clear
-4. Consider adjusting chunking strategy
-
-### 🐛 Many Conflicts
-
-**Problem:** Reducer report shows many conflicts.
-
-**Solution:**
-1. Review `reducer_report.json` for conflict patterns
-2. Check `arbitration/request.json` and `response.json`
-3. Analyze overlapping slot content in `slots_text/`
-4. Consider adjusting chunking to reduce overlap
+**Solution:** Text in `trace_data.json` is truncated (see `trace_data_to_jsonable(..., max_text_len=2000)`). For full text, use the in-memory `context.trace_data` during the run or add custom export logic.
 
 ---
 
 ## Performance Considerations
 
-### Disk Space
-
-Debug mode saves all intermediate artifacts, which can use significant disk space:
-
-- **Small documents** (1-5 pages): ~1-5 MB
-- **Medium documents** (10-50 pages): ~10-50 MB
-- **Large documents** (100+ pages): ~100+ MB
-
-**Recommendation:** Clean up old debug artifacts regularly.
-
-### Processing Time
-
-Debug mode adds minimal overhead (~1-2% slower) since artifacts are written asynchronously.
+- **Memory:** Debug mode keeps full trace data in memory (pages, chunks, extraction results). For very large documents, this can be significant.
+- **Disk:** Only one debug file is written (`trace_data.json`); size depends on document size and truncation. Clean up old debug directories when no longer needed.
 
 ---
 
 ## Next Steps
 
-- **[CLI Documentation](../../usage/cli/convert-command.md)** - CLI usage with debug flag
-- **[API Documentation](../../usage/api/pipeline-config.md)** - API usage with debug mode
-- **[Testing Guide](../advanced/testing.md)** - Using debug artifacts in tests
-- **[Batch Processing](../api/batch-processing.md)** - Process multiple documents
+- **[CLI Documentation](../../usage/cli/convert-command.md)** – CLI usage with `--debug`
+- **[Pipeline reference](../../reference/pipeline.md)** – PipelineContext and stages
+- **[Configuration API](../../reference/config.md)** – PipelineConfig options
