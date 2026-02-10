@@ -48,7 +48,7 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 
 - **✨ Batch Optimization**: [Provider-specific batching](docs/usage/advanced/performance-tuning.md#provider-specific-batching) with [real tokenizers](docs/usage/advanced/performance-tuning.md#real-tokenizer-integration) and [improved GPU utilization](docs/usage/advanced/performance-tuning.md#clean-up-resources) for faster inference and better memory handling.
 
-- **🔌 LiteLLM abstraction**: Single interface to local and remote LLM providers (vLLM, Mistral, OpenAI, WatsonX, etc.) via [LiteLLM](docs/reference/llm-clients.md).
+- **🔌 LiteLLM abstraction**: Unified interface to local and remote LLM providers (vLLM, Mistral, OpenAI, WatsonX, etc.) via [LiteLLM](docs/reference/llm-clients.md), offering improved support and greater flexibility.
 
 - **🐛 Trace Capture**: [Comprehensive debug data](docs/usage/advanced/trace-data-debugging.md) via [`TraceData`](docling_graph/pipeline/trace.py) captures pages, chunks and intermediate schemas and graphs.
 

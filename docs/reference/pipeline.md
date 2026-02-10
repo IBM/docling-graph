@@ -154,124 +154,28 @@ Internal context object passed between stages:
 @dataclass
 class PipelineContext:
     """Shared context for pipeline stages."""
-    
-    # Configuration
-    config: Dict[str, Any]
-    
-    # Paths
-    source: Path
-    output_dir: Path
-    
-    # Pipeline state
-    template: Type[BaseModel] | None = None
-    docling_doc: Any = None
-    extracted_models: List[BaseModel] | None = None
-    graph: nx.MultiDiGraph | None = None
-    
-    # Output management
+
+    config: PipelineConfig
+    template: type[BaseModel] | None = None
+    extractor: BaseExtractor | None = None
+    extracted_models: list[BaseModel] | None = None
+    docling_document: Any = None
+    knowledge_graph: nx.DiGraph | None = None
+    graph_metadata: GraphMetadata | None = None
+    output_dir: Path | None = None
+    node_registry: Any | None = None
+
+    # Input normalization
+    normalized_source: Union[str, Path, Any] | None = None
+    input_metadata: Dict[str, Any] | None = None
+    input_type: Any | None = None
+
+    # Output and debug
     output_manager: OutputDirectoryManager | None = None
-    output_dir: str | None = None
-    
-    # Metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    trace_data: TraceData | None = None  # Populated when config.debug is True
 ```
 
-**Note:** The old `trace_data` field has been replaced with the new debug system. When `debug=True` in the config, all intermediate artifacts are saved to disk in the `debug/` directory. See [Debug Mode Documentation](../usage/advanced/trace-data-debugging.md) for details.
-
----
-
-## Debug Artifacts
-
-When `debug=True` in the pipeline configuration, all intermediate extraction artifacts are saved to `outputs/{document}_{timestamp}/debug/`:
-
-- **slots.jsonl** - Slot metadata (chunks/pages with token counts)
-- **atoms_all.jsonl** - All atomic facts extracted
-- **field_catalog.json** - Global field catalog
-- **reducer_report.json** - Reducer decisions and conflicts
-- **best_effort_model.json** - Final model output
-- **slots_text/** - Full slot text for replay
-- **atoms/** - Per-slot extraction attempts
-- **field_catalog_selected/** - Per-slot field selections
-- **arbitration/** - Conflict resolution requests/responses
-
-See [Debug Mode Documentation](../usage/advanced/trace-data-debugging.md) for complete details on debug artifacts and usage patterns.
-
----
-
-## Legacy Trace Data (Deprecated)
-
-The old `TraceData` structure with `pages`, `chunks`, `extractions`, and `intermediate_graphs` has been replaced by the new debug system. If you have code using `context.trace_data`, migrate to the new debug artifacts:
-
-**Old approach:**
-```python
-if context.trace_data:
-    for extraction in context.trace_data.extractions:
-        print(extraction.error)
-```
-
-**New approach:**
-```python
-import json
-from pathlib import Path
-
-# Enable debug mode
-config = PipelineConfig(source="doc.pdf", template="templates.MyTemplate", debug=True)
-context = run_pipeline(config)
-
-# Analyze debug artifacts
-debug_dir = Path(context.output_dir) / "debug"
-atoms_dir = debug_dir / "atoms"
-
-# Check for validation errors
-for attempt_file in atoms_dir.glob("*_attempt*.json"):
-    with open(attempt_file) as f:
-        attempt = json.load(f)
-        if not attempt['validation_success']:
-            print(f"Error in {attempt['slot_id']}: {attempt['error']}")
-```
-
-@dataclass
-class ChunkData:
-    """Data for a single chunk."""
-    chunk_id: int
-    text_content: str
-    page_numbers: List[int]
-    token_count: int
-    metadata: Dict[str, Any] = field(default_factory=dict)
-```
-
-### ExtractionData
-
-Captures data for each extraction operation:
-
-```python
-@dataclass
-class ExtractionData:
-    """Data for a single extraction."""
-    extraction_id: int
-    source_type: Literal["page", "chunk"]
-    source_id: int
-    parsed_model: BaseModel | None
-    extraction_time: float
-    error: str | None = None
-```
-
-### GraphData
-
-Captures intermediate graphs before consolidation:
-
-```python
-@dataclass
-class GraphData:
-    """Data for an intermediate graph."""
-    graph_id: int
-    source_type: Literal["page", "chunk"]
-    source_id: int
-    graph: nx.DiGraph
-    pydantic_model: BaseModel
-    node_count: int
-    edge_count: int
-```
+When `debug=True`, `trace_data` is populated with pages, chunks, extractions, intermediate graph summaries, and consolidation info. When output is written to disk, a snapshot is saved as `debug/trace_data.json`. See [Debug Mode](../usage/advanced/trace-data-debugging.md) for details.
 
 ---
 
@@ -422,33 +326,8 @@ outputs/
     │   ├── graph.html                # Interactive visualization
     │   └── report.md                 # Extraction report
     │
-    └── debug/                        # Debug artifacts (if debug=True)
-        ├── slots.jsonl               # Slot metadata (one per line)
-        ├── atoms_all.jsonl           # All atomic facts (one per line)
-        ├── field_catalog.json        # Global field catalog
-        ├── reducer_report.json       # Reducer decisions and conflicts
-        ├── best_effort_model.json    # Final model output
-        ├── provenance.json           # Document path and config for replay
-        │
-        ├── slots_text/               # Full slot text for replay
-        │   ├── slot_0.txt
-        │   ├── slot_1.txt
-        │   └── ...
-        │
-        ├── atoms/                    # Per-slot extraction attempts
-        │   ├── slot_0_attempt1.json
-        │   ├── slot_0_attempt2.json  # Retry if first failed
-        │   ├── slot_1_attempt1.json
-        │   └── ...
-        │
-        ├── field_catalog_selected/   # Per-slot field selections
-        │   ├── slot_0.json
-        │   ├── slot_1.json
-        │   └── ...
-        │
-        └── arbitration/              # Conflict resolution
-            ├── request.json          # Conflicts sent to LLM
-            └── response.json         # LLM arbitration decisions
+    └── debug/                        # Debug output (if debug=True)
+        └── trace_data.json           # Pages, chunks, extractions, intermediate graphs, consolidation
 ```
 
 ### metadata.json Structure
@@ -485,23 +364,6 @@ The `metadata.json` file contains pipeline configuration, results, and performan
     "nodes": 25,
     "edges": 18,
     "extracted_models": 4
-  },
-  "trace_summary": {
-    "pages": 3,
-    "chunks": 4,
-    "extractions": 4,
-    "intermediate_graphs": {
-      "count": 4,
-      "details": [
-        {
-          "graph_id": 0,
-          "source_type": "chunk",
-          "source_id": 0,
-          "nodes": 6,
-          "edges": 4
-        }
-      ]
-    }
   }
 }
 ```
@@ -515,16 +377,18 @@ from docling_graph.core.utils.output_manager import OutputDirectoryManager
 
 # Create manager
 manager = OutputDirectoryManager(
-    base_output_dir="outputs",
+    base_output_dir=Path("outputs"),
     source_filename="document.pdf"
 )
 
-# Get directories
+# Main output directories
 docling_dir = manager.get_docling_dir()
-consolidated_dir = manager.get_consolidated_graph_dir()
-trace_dir = manager.get_trace_dir()
-per_chunk_dir = manager.get_per_chunk_dir(chunk_id=0)
-per_page_dir = manager.get_per_page_dir(page_number=1)
+graph_dir = manager.get_docling_graph_dir()
+debug_dir = manager.get_debug_dir()
+
+# Optional debug subdirs (per-page / per-chunk)
+per_page_dir = manager.get_per_page_dir()
+per_chunk_dir = manager.get_per_chunk_dir()
 ```
 
 ---
@@ -596,12 +460,15 @@ run_pipeline({
     "output_dir": "outputs"
 })
 
-# Inspect graph
-graph_path = Path("outputs/graph.json")
-with open(graph_path) as f:
-    graph_data = json.load(f)
-    print(f"Nodes: {len(graph_data['nodes'])}")
-    print(f"Edges: {len(graph_data['links'])}")
+# Inspect graph (path depends on output_dir and document name)
+from docling_graph.core.utils.output_manager import OutputDirectoryManager
+manager = OutputDirectoryManager(Path("outputs"), "document.pdf")
+graph_path = manager.get_docling_graph_dir() / "graph.json"
+if graph_path.exists():
+    with open(graph_path) as f:
+        graph_data = json.load(f)
+        print(f"Nodes: {len(graph_data.get('nodes', []))}")
+        print(f"Edges: {len(graph_data.get('links', []))}")
 ```
 
 ---
