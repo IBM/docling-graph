@@ -25,6 +25,7 @@ from .stages import (
     TemplateLoadingStage,
     VisualizationStage,
 )
+from .trace import TraceData
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +91,10 @@ class PipelineOrchestrator:
 
         context = PipelineContext(config=self.config)
         current_stage = None
+
+        # Initialize in-memory trace when debug is enabled (CLI --debug or PipelineConfig(debug=True))
+        if self.config.debug:
+            context.trace_data = TraceData()
 
         # Initialize OutputDirectoryManager if dumping to disk
         if self.dump_to_disk:
@@ -175,6 +180,24 @@ class PipelineOrchestrator:
                 logger.info(
                     f"Saved metadata to {context.output_manager.get_document_dir() / 'metadata.json'}"
                 )
+
+            # Export trace data to debug dir when debug is on and we're writing to disk
+            if context.trace_data and context.output_manager and self.dump_to_disk:
+                import json
+
+                from .trace import trace_data_to_jsonable
+
+                debug_dir = context.output_manager.get_debug_dir()
+                trace_path = debug_dir / "trace_data.json"
+                with open(trace_path, "w", encoding="utf-8") as f:
+                    json.dump(
+                        trace_data_to_jsonable(context.trace_data),
+                        f,
+                        indent=2,
+                        ensure_ascii=False,
+                        default=str,
+                    )
+                logger.info(f"Saved trace data to {trace_path}")
 
             # Log final output directory after all exports complete
             if context.output_manager and self.dump_to_disk:

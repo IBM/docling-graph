@@ -98,7 +98,14 @@ class OneToOneStrategy(BaseExtractor):
         # Import for trace data capture
         import time
 
-        from ....pipeline.trace import ExtractionData
+        from ....pipeline.trace import ExtractionData, PageData
+
+        # Capture page trace when debug/trace is enabled
+        if hasattr(self, "trace_data") and self.trace_data:
+            for page_num, page_md in enumerate(page_markdowns, start=1):
+                self.trace_data.pages.append(
+                    PageData(page_number=page_num, text_content=page_md, metadata={})
+                )
 
         extraction_id = 0
         for page_num, page_md in enumerate(page_markdowns, start=1):

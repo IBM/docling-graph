@@ -8,6 +8,7 @@ testable, and follows the single responsibility principle.
 
 import importlib
 import logging
+import time
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Tuple, cast
@@ -405,6 +406,8 @@ class ExtractionStage(PipelineStage):
         # Default path: PDF/Image processing (existing behavior)
         logger.info(f"[{self.name()}] Creating extractor...")
         context.extractor = self._create_extractor(context)
+        if context.trace_data and hasattr(context.extractor, "trace_data"):
+            context.extractor.trace_data = context.trace_data
 
         logger.info(f"[{self.name()}] Extracting from: {context.config.source}")
         context.extracted_models, context.docling_document = context.extractor.extract(
@@ -589,15 +592,30 @@ class ExtractionStage(PipelineStage):
 
         # Import LlmBackend here to avoid circular imports
         from ..core.extractors.backends.llm_backend import LlmBackend
+        from .trace import ExtractionData
 
         llm_backend = LlmBackend(llm_client)
 
+        start_time = time.time()
         extracted_model = llm_backend.extract_from_markdown(
             markdown=context.normalized_source,
             template=context.template,
             context="text input",
             is_partial=False,
         )
+        extraction_time = time.time() - start_time
+
+        if context.trace_data is not None:
+            context.trace_data.extractions.append(
+                ExtractionData(
+                    extraction_id=0,
+                    source_type="chunk",
+                    source_id=0,
+                    parsed_model=extracted_model,
+                    extraction_time=extraction_time,
+                    error=None,
+                )
+            )
 
         if not extracted_model:
             raise ExtractionError(
@@ -636,6 +654,8 @@ class ExtractionStage(PipelineStage):
         if not context.extractor:
             logger.info(f"[{self.name()}] Creating extractor for DoclingDocument...")
             context.extractor = self._create_extractor(context)
+        if context.trace_data and hasattr(context.extractor, "trace_data"):
+            context.extractor.trace_data = context.trace_data
 
         # Get the document processor and backend from the extractor
         doc_processor = getattr(context.extractor, "doc_processor", None)

@@ -6,6 +6,7 @@ full-document (or full-text) extraction in a single LLM call.
 """
 
 import logging
+import time
 from typing import Tuple, Type, cast
 
 from docling_core.types.doc import DoclingDocument
@@ -180,12 +181,28 @@ class ManyToOneStrategy(BaseExtractor):
         logger.info("Direct mode: full-text extraction")
 
         try:
+            start_time = time.time()
             model = backend.extract_from_markdown(
                 markdown=text,
                 template=template,
                 context="text input",
                 is_partial=False,
             )
+            extraction_time = time.time() - start_time
+
+            if hasattr(self, "trace_data") and self.trace_data:
+                from ....pipeline.trace import ExtractionData
+
+                self.trace_data.extractions.append(
+                    ExtractionData(
+                        extraction_id=0,
+                        source_type="chunk",
+                        source_id=0,
+                        parsed_model=model,
+                        extraction_time=extraction_time,
+                        error=None,
+                    )
+                )
 
             if model:
                 logger.info("Direct text extraction successful")
@@ -196,6 +213,19 @@ class ManyToOneStrategy(BaseExtractor):
 
         except Exception as e:
             logger.error(f"Direct text extraction failed: {e}")
+            if hasattr(self, "trace_data") and self.trace_data:
+                from ....pipeline.trace import ExtractionData
+
+                self.trace_data.extractions.append(
+                    ExtractionData(
+                        extraction_id=0,
+                        source_type="chunk",
+                        source_id=0,
+                        parsed_model=None,
+                        extraction_time=0.0,
+                        error=str(e),
+                    )
+                )
             return [], None
 
     def _extract_direct_mode(
@@ -208,14 +238,39 @@ class ManyToOneStrategy(BaseExtractor):
         logger.info("Direct mode: full-document extraction")
 
         try:
+            if hasattr(self, "trace_data") and self.trace_data:
+                from ....pipeline.trace import PageData
+
+                page_markdowns = self.doc_processor.extract_page_markdowns(document)
+                for page_num, page_md in enumerate(page_markdowns, start=1):
+                    self.trace_data.pages.append(
+                        PageData(page_number=page_num, text_content=page_md, metadata={})
+                    )
+
             full_markdown = self.doc_processor.extract_full_markdown(document)
 
+            start_time = time.time()
             model = backend.extract_from_markdown(
                 markdown=full_markdown,
                 template=template,
                 context="full document",
                 is_partial=False,
             )
+            extraction_time = time.time() - start_time
+
+            if hasattr(self, "trace_data") and self.trace_data:
+                from ....pipeline.trace import ExtractionData
+
+                self.trace_data.extractions.append(
+                    ExtractionData(
+                        extraction_id=0,
+                        source_type="chunk",
+                        source_id=0,
+                        parsed_model=model,
+                        extraction_time=extraction_time,
+                        error=None,
+                    )
+                )
 
             if model:
                 logger.info("Direct extraction successful")
@@ -226,4 +281,17 @@ class ManyToOneStrategy(BaseExtractor):
 
         except Exception as e:
             logger.error(f"Direct extraction failed: {e}")
+            if hasattr(self, "trace_data") and self.trace_data:
+                from ....pipeline.trace import ExtractionData
+
+                self.trace_data.extractions.append(
+                    ExtractionData(
+                        extraction_id=0,
+                        source_type="chunk",
+                        source_id=0,
+                        parsed_model=None,
+                        extraction_time=0.0,
+                        error=str(e),
+                    )
+                )
             return [], document

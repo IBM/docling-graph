@@ -42,7 +42,7 @@ class PipelineContext:
         input_metadata: Processing hints from input normalization
         input_type: Detected input type
         output_manager: Output directory manager for unified structure
-        trace_data: Trace data for debugging (only if include_trace=True)
+        trace_data: Trace data for debugging (populated only when config.debug is True)
     """
 
     config: PipelineConfig

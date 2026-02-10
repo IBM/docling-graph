@@ -1,11 +1,12 @@
 """Integration tests for debug mode functionality."""
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from pydantic import BaseModel
 
-from docling_graph import PipelineConfig
+from docling_graph import PipelineConfig, run_pipeline
 from docling_graph.pipeline.context import PipelineContext
 from docling_graph.pipeline.orchestrator import PipelineOrchestrator
 
@@ -283,3 +284,79 @@ class TestDebugConfiguration:
         config_dict = config.to_dict()
         assert "debug" in config_dict
         assert config_dict["debug"] is False
+
+
+class TestTraceDataWithDebug:
+    """Tests for trace_data population and export with debug flag."""
+
+    @patch("docling_graph.core.converters.graph_converter.validate_graph_structure")
+    @patch("docling_graph.core.extractors.backends.llm_backend.LlmBackend.extract_from_markdown")
+    def test_trace_data_none_when_debug_false(self, mock_extract, mock_validate, tmp_path):
+        """When debug=False, context.trace_data is None after pipeline run."""
+        mock_validate.return_value = True
+        source_file = tmp_path / "doc.md"
+        source_file.write_text("name: Test\nvalue: 42")
+        mock_extract.return_value = SimpleTestModel(name="Test", value=42)
+
+        config = PipelineConfig(
+            source=str(source_file),
+            template=SimpleTestModel,
+            backend="llm",
+            processing_mode="many-to-one",
+            debug=False,
+            dump_to_disk=False,
+            output_dir=str(tmp_path),
+        )
+
+        context = run_pipeline(config, mode="api")
+        assert context.trace_data is None
+
+    @patch("docling_graph.core.converters.graph_converter.validate_graph_structure")
+    @patch("docling_graph.core.extractors.backends.llm_backend.LlmBackend.extract_from_markdown")
+    def test_trace_data_populated_when_debug_true_api(self, mock_extract, mock_validate, tmp_path):
+        """When debug=True and API mode, context.trace_data is populated."""
+        mock_validate.return_value = True
+        source_file = tmp_path / "doc.md"
+        source_file.write_text("name: Test\nvalue: 42")
+        mock_extract.return_value = SimpleTestModel(name="Test", value=42)
+
+        config = PipelineConfig(
+            source=str(source_file),
+            template=SimpleTestModel,
+            backend="llm",
+            processing_mode="many-to-one",
+            debug=True,
+            dump_to_disk=False,
+            output_dir=str(tmp_path),
+        )
+
+        context = run_pipeline(config, mode="api")
+        assert context.trace_data is not None
+        assert len(context.trace_data.extractions) >= 1
+        assert context.trace_data.extractions[0].parsed_model is not None
+
+    @patch("docling_graph.core.converters.graph_converter.validate_graph_structure")
+    @patch("docling_graph.core.extractors.backends.llm_backend.LlmBackend.extract_from_markdown")
+    def test_trace_data_json_exported_when_debug_and_dump(
+        self, mock_extract, mock_validate, tmp_path
+    ):
+        """When debug=True and dump_to_disk=True, debug/trace_data.json is written."""
+        mock_validate.return_value = True
+        source_file = tmp_path / "doc.md"
+        source_file.write_text("name: Test\nvalue: 42")
+        mock_extract.return_value = SimpleTestModel(name="Test", value=42)
+
+        config = PipelineConfig(
+            source=str(source_file),
+            template=SimpleTestModel,
+            backend="llm",
+            processing_mode="many-to-one",
+            debug=True,
+            dump_to_disk=True,
+            output_dir=str(tmp_path),
+        )
+
+        run_pipeline(config, mode="api")
+        trace_files = list(tmp_path.rglob("trace_data.json"))
+        assert len(trace_files) >= 1
+        assert trace_files[0].parent.name == "debug"
