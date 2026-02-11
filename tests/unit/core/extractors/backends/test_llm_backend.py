@@ -191,9 +191,14 @@ class TestExtractFromMarkdown:
 
         assert result is None
 
-    @patch("docling_graph.core.extractors.backends.llm_backend.StagedOrchestrator")
-    def test_staged_contract_uses_multi_pass_flow(self, mock_orchestrator_cls, mock_llm_client):
-        backend = LlmBackend(llm_client=mock_llm_client, extraction_contract="staged")
+    @patch("docling_graph.core.extractors.backends.llm_backend.CatalogOrchestrator")
+    def test_staged_contract_uses_catalog_flow(self, mock_orchestrator_cls, mock_llm_client):
+        """Staged contract uses CatalogOrchestrator (3-pass node catalog)."""
+        backend = LlmBackend(
+            llm_client=mock_llm_client,
+            extraction_contract="staged",
+            staged_config={"catalog_max_nodes_per_call": 5},
+        )
         orchestrator = mock_orchestrator_cls.return_value
         orchestrator.extract.return_value = {"name": "Alice", "age": 21}
 
@@ -274,7 +279,10 @@ class TestFillMissingRequiredFieldsStableSyntheticIds:
 
     def test_content_fingerprint_deterministic(self, llm_backend):
         """_content_fingerprint is deterministic for same entity."""
-        entity = {"objective": "Study colloidal stability", "experiments": [{"experiment_id": "E1"}]}
+        entity = {
+            "objective": "Study colloidal stability",
+            "experiments": [{"experiment_id": "E1"}],
+        }
         fp1 = llm_backend._content_fingerprint(entity, exclude_keys=set())
         fp2 = llm_backend._content_fingerprint(entity, exclude_keys=set())
         assert fp1 == fp2
@@ -497,3 +505,28 @@ class TestCleanup:
 
         # GC should still be called
         mock_gc_collect.assert_called_once()
+
+
+class TestStagedPromptRetries:
+    """Test staged prompt retries and max-token override behavior."""
+
+    def test_call_prompt_retries_on_truncation(self, mock_llm_client):
+        backend = LlmBackend(
+            llm_client=mock_llm_client,
+            extraction_contract="staged",
+            staged_config={"retry_on_truncation": True, "id_max_tokens": 256},
+        )
+        Exception("wrapper")
+        from docling_graph.exceptions import ClientError
+
+        trunc = ClientError(
+            "truncated",
+            details={"truncated": True, "max_tokens": 256},
+        )
+        mock_llm_client.get_json_response.side_effect = [trunc, {"name": "A", "age": 1}]
+
+        out = backend._call_prompt(
+            {"system": "s", "user": "u"}, "{}", "doc catalog_id_pass_shard_0"
+        )
+        assert out == {"name": "A", "age": 1}
+        assert mock_llm_client.get_json_response.call_count == 2

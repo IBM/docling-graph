@@ -108,12 +108,10 @@ class TestReportGeneratorReportSections:
         section = ReportGenerator._create_extraction_diagnostics(
             extraction_contract="staged",
             staged_passes_count=5,
-            llm_consolidation_used=1,
         )
         assert "## Extraction Diagnostics" in section
         assert "staged" in section
         assert "5" in section
-        assert "1" in section
 
     def test_create_extraction_diagnostics_empty(self):
         """Should create placeholder when no diagnostics."""
@@ -186,11 +184,9 @@ class TestReportGeneratorOutput:
             source_model_count=1,
             extraction_contract="staged",
             staged_passes_count=4,
-            llm_consolidation_used=1,
         )
 
         content = output_path.read_text()
         assert "## Extraction Diagnostics" in content
         assert "staged" in content
         assert "4" in content
-        assert "LLM consolidation" in content
