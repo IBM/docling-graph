@@ -99,9 +99,9 @@ class TestResponseHandler:
         assert "empty" in str(exc_info.value).lower()
 
     def test_parse_json_with_trailing_comma(self):
-        """Test parsing JSON with trailing comma (should fail)."""
-        with pytest.raises(ClientError):
-            ResponseHandler.parse_json_response('{"key": "value",}', "TestClient")
+        """Test parsing JSON with trailing comma (best-effort repair)."""
+        response = ResponseHandler.parse_json_response('{"key": "value",}', "TestClient")
+        assert response == {"key": "value"}
 
     def test_parse_json_with_comments_fails(self):
         """Test that JSON with comments fails (not valid JSON)."""
@@ -148,6 +148,14 @@ class TestResponseHandler:
         assert response["true_val"] is True
         assert response["false_val"] is False
         assert response["null_val"] is None
+
+    def test_parse_json_repairs_missing_value_to_null(self):
+        """Repair malformed JSON where a key has no value before comma."""
+        malformed = '{"nodes":[{"path":"","ids":{"document_number":"3139"},"parent":null},{"path":"buyer","ids":{"name":"x"},"parent":,}]}'
+        response = ResponseHandler.parse_json_response(malformed, "TestClient")
+        assert isinstance(response, dict)
+        assert "nodes" in response
+        assert response["nodes"][1]["parent"] is None
 
     def test_parse_large_json(self):
         """Test parsing large JSON object."""

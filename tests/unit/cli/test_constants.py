@@ -3,8 +3,8 @@ import pytest
 from docling_graph.cli.constants import (
     API_PROVIDERS,
     BACKENDS,
-    EXTRACTION_CONTRACTS,
     EXPORT_FORMATS,
+    EXTRACTION_CONTRACTS,
     INFERENCE_LOCATIONS,
     LOCAL_PROVIDERS,
     PROCESSING_MODES,
@@ -38,3 +38,13 @@ class TestConstants:
     def test_inference_locations_contains_valid_values(self):
         assert "local" in INFERENCE_LOCATIONS
         assert "remote" in INFERENCE_LOCATIONS
+
+    def test_staged_config_knobs_in_to_dict(self):
+        """PipelineConfig.to_dict() includes staged_id_shard_size from preset."""
+        cfg = PipelineConfig(staged_tuning_preset="advanced")
+        d = cfg.to_dict()
+        assert "staged_id_shard_size" in d
+        assert d["staged_id_shard_size"] == 0  # advanced preset default: no sharding
+        cfg_std = PipelineConfig(staged_tuning_preset="standard")
+        d_std = cfg_std.to_dict()
+        assert d_std["staged_id_shard_size"] == 0  # standard preset default: no sharding

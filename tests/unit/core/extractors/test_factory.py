@@ -25,7 +25,6 @@ def test_create_llm_many_to_one(mock_strategy, mock_backend):
         llm_client=mock_llm_client,
         extraction_contract="direct",
         staged_config=None,
-        llm_consolidation=False,
     )
     mock_strategy.assert_called_once()
 
@@ -62,7 +61,6 @@ def test_create_one_to_one(mock_strategy, mock_backend):
         llm_client=mock_llm_client,
         extraction_contract="direct",
         staged_config=None,
-        llm_consolidation=False,
     )
     mock_strategy.assert_called_once()
 
@@ -84,7 +82,6 @@ def test_staged_contract_falls_back_to_direct_for_one_to_one(mock_strategy, mock
         llm_client=mock_llm_client,
         extraction_contract="direct",
         staged_config=None,
-        llm_consolidation=False,
     )
     mock_strategy.assert_called_once()
 
