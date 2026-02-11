@@ -182,7 +182,11 @@ class ManyToOneStrategy(BaseExtractor):
         logger.info("Contract-driven mode: full-text extraction")
 
         try:
-            if hasattr(self, "trace_data") and self.trace_data is not None and hasattr(backend, "trace_data"):
+            if (
+                hasattr(self, "trace_data")
+                and self.trace_data is not None
+                and hasattr(backend, "trace_data")
+            ):
                 backend.trace_data = self.trace_data
 
             start_time = time.time()
@@ -253,7 +257,11 @@ class ManyToOneStrategy(BaseExtractor):
 
             full_markdown = self.doc_processor.extract_full_markdown(document)
 
-            if hasattr(self, "trace_data") and self.trace_data is not None and hasattr(backend, "trace_data"):
+            if (
+                hasattr(self, "trace_data")
+                and self.trace_data is not None
+                and hasattr(backend, "trace_data")
+            ):
                 backend.trace_data = self.trace_data
 
             start_time = time.time()
@@ -268,12 +276,13 @@ class ManyToOneStrategy(BaseExtractor):
             if hasattr(self, "trace_data") and self.trace_data:
                 from ....pipeline.trace import ExtractionData
 
-                extraction_metadata = {}
-                if hasattr(self.trace_data, "staged_passes") and self.trace_data.staged_passes:
+                extraction_metadata: dict[str, str | int] = {}
+                if getattr(self.trace_data, "staged_trace", None):
+                    extraction_metadata["extraction_contract"] = "staged"
+                    extraction_metadata["staged_passes_count"] = 3
+                elif hasattr(self.trace_data, "staged_passes") and self.trace_data.staged_passes:
                     extraction_metadata["extraction_contract"] = "staged"
                     extraction_metadata["staged_passes_count"] = len(self.trace_data.staged_passes)
-                if hasattr(self.trace_data, "conflict_resolutions") and self.trace_data.conflict_resolutions:
-                    extraction_metadata["llm_consolidation_used"] = len(self.trace_data.conflict_resolutions)
                 self.trace_data.extractions.append(
                     ExtractionData(
                         extraction_id=0,

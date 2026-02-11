@@ -65,4 +65,3 @@ def summarize_comparison(standard_dir: Path, advanced_dir: Path) -> dict[str, An
         "advanced": advanced_metrics,
         "delta": delta,
     }
-

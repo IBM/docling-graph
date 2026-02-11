@@ -23,7 +23,6 @@ class ExtractorFactory:
         backend_name: Literal["vlm", "llm"],
         extraction_contract: Literal["direct", "staged"] = "direct",
         staged_config: dict | None = None,
-        llm_consolidation: bool = False,
         model_name: str | None = None,
         llm_client: LLMClientProtocol | None = None,
         docling_config: str = "ocr",
@@ -64,7 +63,6 @@ class ExtractorFactory:
                 llm_client=llm_client,
                 extraction_contract=effective_contract,
                 staged_config=staged_config,
-                llm_consolidation=llm_consolidation,
             )
         else:
             raise ValueError(f"Unknown backend: {backend_name}")

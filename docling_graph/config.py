@@ -30,7 +30,6 @@ class ExtractorConfig(BaseModel):
     extraction_contract: Literal["direct", "staged"] = Field(default="direct")
     docling_config: Literal["ocr", "vision"] = Field(default="ocr")
     use_chunking: bool = Field(default=True)
-    llm_consolidation: bool = Field(default=False)
     chunker_config: Dict[str, Any] | None = Field(default=None)
 
 
@@ -74,6 +73,30 @@ class ModelsConfig(BaseModel):
 
     llm: LLMConfig = Field(default_factory=LLMConfig)
     vlm: VLMConfig = Field(default_factory=VLMConfig)
+
+
+# Staged (3-pass) preset defaults: (pass_retries, workers, nodes_fill_cap, id_shard_size).
+_STAGED_PRESETS: Dict[str, tuple[int, int, int, int]] = {
+    "standard": (2, 1, 5, 0),
+    "advanced": (1, 1, 15, 0),
+}
+
+
+def get_effective_staged_tuning(
+    preset: str,
+    pass_retries: int | None,
+    workers: int | None,
+    nodes_fill_cap: int | None,
+    id_shard_size: int | None = None,
+) -> tuple[int, int, int, int]:
+    """Return (pass_retries, workers, nodes_fill_cap, id_shard_size) with preset defaults applied."""
+    r, w, n, s = _STAGED_PRESETS.get(preset, _STAGED_PRESETS["standard"])
+    return (
+        pass_retries if pass_retries is not None else r,
+        workers if workers is not None else w,
+        nodes_fill_cap if nodes_fill_cap is not None else n,
+        id_shard_size if id_shard_size is not None else s,
+    )
 
 
 class PipelineConfig(BaseModel):
@@ -128,33 +151,53 @@ class PipelineConfig(BaseModel):
         default=False, description="Enable debug artifacts (controlled by --debug flag)"
     )
     max_batch_size: int = 1
-    staged_max_fields_per_group: int = Field(
-        default=6, description="Max number of scalar fields per staged extraction group."
+
+    # Staged (3-pass) tuning: ID pass → fill pass (bottom-up) → merge. Preset sets defaults; overrides apply when not None.
+    staged_tuning_preset: Literal["standard", "advanced"] = Field(
+        default="standard",
+        description="Preset: 'standard' for typical LLMs; 'advanced' for larger context (more paths per ID-pass call, larger fill batches).",
     )
-    staged_max_skeleton_fields: int = Field(
-        default=10, description="Max number of root fields in staged skeleton pass."
+    staged_pass_retries: int | None = Field(
+        default=None,
+        description="Retries per staged pass when LLM returns invalid JSON (None = use preset).",
     )
-    staged_max_repair_rounds: int = Field(
-        default=2, description="Maximum targeted repair rounds for staged extraction."
+    staged_workers: int | None = Field(
+        default=None, description="Parallel workers for fill pass (None = use preset)."
     )
-    staged_max_pass_retries: int = Field(
-        default=1, description="Retries per staged pass before giving up."
+    staged_nodes_fill_cap: int | None = Field(
+        default=None, description="Max nodes per LLM call in fill pass (None = use preset)."
     )
-    staged_quality_depth: int = Field(
-        default=3, description="Recursive depth for staged quality analysis."
-    )
-    staged_include_prior_context: bool = Field(
-        default=True, description="Include prior pass output in staged prompts."
-    )
-    llm_consolidation: bool = Field(
-        default=False,
-        description="Use LLM for conflict resolution when heuristic staged reconciliation is insufficient.",
-    )
-    staged_merge_similarity_fallback: bool = Field(
-        default=True,
-        description="When True (default), merge entity list items by similarity (e.g. overlapping children) when ID/identity match fails; logs a warning when used.",
+    staged_id_shard_size: int | None = Field(
+        default=None, description="Paths per ID-pass call; 0 = single call (None = use preset)."
     )
 
+    staged_id_identity_only: bool = Field(
+        default=True, description="Discover only identity-bearing paths in ID pass."
+    )
+    staged_id_compact_prompt: bool = Field(
+        default=True, description="Use compact ID-pass prompt to reduce token pressure."
+    )
+    staged_id_auto_shard_threshold: int = Field(
+        default=10, description="Auto-shard ID pass when catalog paths exceed this threshold."
+    )
+    staged_id_shard_min_size: int = Field(
+        default=2, description="Minimum split size when retrying failed ID shards."
+    )
+    staged_quality_require_root: bool = Field(
+        default=True, description="Require root descriptor in staged quality gate."
+    )
+    staged_quality_min_instances: int = Field(
+        default=1, description="Minimum ID instances required by staged quality gate."
+    )
+    staged_quality_max_parent_lookup_miss: int = Field(
+        default=0, description="Maximum allowed parent lookup misses before fallback."
+    )
+    staged_id_max_tokens: int | None = Field(
+        default=None, description="Optional max_tokens override for staged ID calls."
+    )
+    staged_fill_max_tokens: int | None = Field(
+        default=None, description="Optional max_tokens override for staged fill calls."
+    )
     # Export settings (with defaults)
     export_format: Literal["csv", "cypher"] = Field(default="csv")
     export_docling: bool = Field(default=True)
@@ -193,6 +236,18 @@ class PipelineConfig(BaseModel):
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert config to dictionary format expected by run_pipeline."""
+        (
+            effective_retries,
+            effective_workers,
+            effective_nodes_fill_cap,
+            effective_id_shard_size,
+        ) = get_effective_staged_tuning(
+            self.staged_tuning_preset,
+            self.staged_pass_retries,
+            self.staged_workers,
+            self.staged_nodes_fill_cap,
+            self.staged_id_shard_size,
+        )
         return {
             "source": self.source,
             "template": self.template,
@@ -206,14 +261,20 @@ class PipelineConfig(BaseModel):
             "debug": self.debug,
             "model_override": self.model_override,
             "provider_override": self.provider_override,
-            "staged_max_fields_per_group": self.staged_max_fields_per_group,
-            "staged_max_skeleton_fields": self.staged_max_skeleton_fields,
-            "staged_max_repair_rounds": self.staged_max_repair_rounds,
-            "staged_max_pass_retries": self.staged_max_pass_retries,
-            "staged_quality_depth": self.staged_quality_depth,
-            "staged_include_prior_context": self.staged_include_prior_context,
-            "llm_consolidation": self.llm_consolidation,
-            "staged_merge_similarity_fallback": self.staged_merge_similarity_fallback,
+            "staged_tuning_preset": self.staged_tuning_preset,
+            "staged_pass_retries": effective_retries,
+            "staged_workers": effective_workers,
+            "staged_nodes_fill_cap": effective_nodes_fill_cap,
+            "staged_id_shard_size": effective_id_shard_size,
+            "staged_id_identity_only": self.staged_id_identity_only,
+            "staged_id_compact_prompt": self.staged_id_compact_prompt,
+            "staged_id_auto_shard_threshold": self.staged_id_auto_shard_threshold,
+            "staged_id_shard_min_size": self.staged_id_shard_min_size,
+            "staged_quality_require_root": self.staged_quality_require_root,
+            "staged_quality_min_instances": self.staged_quality_min_instances,
+            "staged_quality_max_parent_lookup_miss": self.staged_quality_max_parent_lookup_miss,
+            "staged_id_max_tokens": self.staged_id_max_tokens,
+            "staged_fill_max_tokens": self.staged_fill_max_tokens,
             "export_format": self.export_format,
             "export_docling": self.export_docling,
             "export_docling_json": self.export_docling_json,
@@ -249,14 +310,20 @@ class PipelineConfig(BaseModel):
                 "extraction_contract": default_config.extraction_contract,
                 "export_format": default_config.export_format,
                 "chunk_max_tokens": default_config.chunk_max_tokens,
-                "staged_max_fields_per_group": default_config.staged_max_fields_per_group,
-                "staged_max_skeleton_fields": default_config.staged_max_skeleton_fields,
-                "staged_max_repair_rounds": default_config.staged_max_repair_rounds,
-                "staged_max_pass_retries": default_config.staged_max_pass_retries,
-                "staged_quality_depth": default_config.staged_quality_depth,
-                "staged_include_prior_context": default_config.staged_include_prior_context,
-                "llm_consolidation": default_config.llm_consolidation,
-                "staged_merge_similarity_fallback": default_config.staged_merge_similarity_fallback,
+                "staged_tuning_preset": default_config.staged_tuning_preset,
+                "staged_pass_retries": default_config.staged_pass_retries,
+                "staged_workers": default_config.staged_workers,
+                "staged_nodes_fill_cap": default_config.staged_nodes_fill_cap,
+                "staged_id_shard_size": default_config.staged_id_shard_size,
+                "staged_id_identity_only": default_config.staged_id_identity_only,
+                "staged_id_compact_prompt": default_config.staged_id_compact_prompt,
+                "staged_id_auto_shard_threshold": default_config.staged_id_auto_shard_threshold,
+                "staged_id_shard_min_size": default_config.staged_id_shard_min_size,
+                "staged_quality_require_root": default_config.staged_quality_require_root,
+                "staged_quality_min_instances": default_config.staged_quality_min_instances,
+                "staged_quality_max_parent_lookup_miss": default_config.staged_quality_max_parent_lookup_miss,
+                "staged_id_max_tokens": default_config.staged_id_max_tokens,
+                "staged_fill_max_tokens": default_config.staged_fill_max_tokens,
             },
             "docling": {
                 "pipeline": default_config.docling_config,

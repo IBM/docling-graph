@@ -73,7 +73,7 @@ class StagedPassData:
 
     pass_id: int
     stage_name: str
-    stage_type: Literal["skeleton", "group", "repair"]
+    stage_type: Literal["id_pass", "fill_pass", "merge"]
     success: bool
     attempts: int
     errors: list[str]
@@ -112,6 +112,8 @@ class TraceData:
     consolidation: ConsolidationData | None = None
     staged_passes: list[StagedPassData] = field(default_factory=list)
     conflict_resolutions: list[ConflictResolutionData] = field(default_factory=list)
+    # Catalog-based staged extraction trace (config, timings, per_path_counts, etc.)
+    staged_trace: dict | None = None
 
 
 def trace_data_to_jsonable(trace_data: TraceData, max_text_len: int = 2000) -> dict:
@@ -214,6 +216,12 @@ def trace_data_to_jsonable(trace_data: TraceData, max_text_len: int = 2000) -> d
         for r in trace_data.conflict_resolutions
     ]
 
+    staged_trace_out = (
+        trace_data.staged_trace
+        if hasattr(trace_data, "staged_trace") and trace_data.staged_trace is not None
+        else None
+    )
+
     return {
         "pages": pages_out,
         "chunks": chunks_out,
@@ -222,4 +230,5 @@ def trace_data_to_jsonable(trace_data: TraceData, max_text_len: int = 2000) -> d
         "consolidation": consolidation_out,
         "staged_passes": staged_passes_out,
         "conflict_resolutions": conflict_resolutions_out,
+        "staged_trace": staged_trace_out,
     }
