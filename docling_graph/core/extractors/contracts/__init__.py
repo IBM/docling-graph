@@ -8,8 +8,7 @@ This package provides extraction contracts:
 Import from: `from .contracts import direct, staged`
 """
 
-from . import direct
-from . import staged
+from . import direct, staged
 
 __all__ = [
     "direct",

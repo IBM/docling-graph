@@ -132,8 +132,8 @@ def _child_fingerprints(entity: Dict) -> set[str]:
             for item in v:
                 content = json.dumps(item, sort_keys=True, default=str)
                 fingerprints.add(hashlib.blake2b(content.encode(), digest_size=8).hexdigest())
-        elif v is not None and not isinstance(v, (dict, list)):
-            fingerprints.add(f"{k}:{str(v)}")
+        elif v is not None and not isinstance(v, dict | list):
+            fingerprints.add(f"{k}:{v!s}")
     return fingerprints
 
 

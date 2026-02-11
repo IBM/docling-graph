@@ -408,6 +408,20 @@ class ResponseHandler:
         # Strategy 4: Fix common syntax errors (missing commas between fields)
         # This handles cases like: "field1": "value1"\n"field2": "value2"
         # Should be: "field1": "value1",\n"field2": "value2"
+        #
+        # Also handle missing values before comma/brace (common in small models):
+        #   "parent": ,
+        #   "tax": }
+        # by inserting null as a safe placeholder for validation/retry loops.
+        missing_value_fixed = re.sub(r":\s*(?=,|}|])", ": null", content)
+        missing_value_fixed = re.sub(r",\s*([}\]])", r"\1", missing_value_fixed)
+        if missing_value_fixed != content:
+            try:
+                result = json.loads(missing_value_fixed)
+                return result if isinstance(result, dict | list) else None
+            except json.JSONDecodeError:
+                pass
+
         fixed_content = ResponseHandler._fix_missing_commas(content)
         if fixed_content != content:
             try:

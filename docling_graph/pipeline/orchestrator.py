@@ -167,26 +167,18 @@ class PipelineOrchestrator:
                             "extraction_contract": getattr(
                                 self.config, "extraction_contract", "direct"
                             ),
-                            "llm_consolidation": getattr(
-                                self.config, "llm_consolidation", False
+                            "staged_tuning_preset": getattr(
+                                self.config, "staged_tuning_preset", "standard"
                             ),
-                            "staged_max_fields_per_group": getattr(
-                                self.config, "staged_max_fields_per_group", 6
+                            "staged_pass_retries": getattr(
+                                self.config, "staged_pass_retries", None
                             ),
-                            "staged_max_skeleton_fields": getattr(
-                                self.config, "staged_max_skeleton_fields", 10
+                            "staged_workers": getattr(self.config, "staged_workers", None),
+                            "staged_nodes_fill_cap": getattr(
+                                self.config, "staged_nodes_fill_cap", None
                             ),
-                            "staged_max_repair_rounds": getattr(
-                                self.config, "staged_max_repair_rounds", 2
-                            ),
-                            "staged_max_pass_retries": getattr(
-                                self.config, "staged_max_pass_retries", 1
-                            ),
-                            "staged_quality_depth": getattr(
-                                self.config, "staged_quality_depth", 3
-                            ),
-                            "staged_include_prior_context": getattr(
-                                self.config, "staged_include_prior_context", True
+                            "staged_id_shard_size": getattr(
+                                self.config, "staged_id_shard_size", None
                             ),
                         },
                     },
@@ -197,12 +189,17 @@ class PipelineOrchestrator:
                         "extracted_models": len(context.extracted_models)
                         if context.extracted_models
                         else 0,
-                        "staged_passes_count": len(context.trace_data.staged_passes)
-                        if context.trace_data and hasattr(context.trace_data, "staged_passes")
-                        else 0,
-                        "llm_consolidation_used": len(context.trace_data.conflict_resolutions)
-                        if context.trace_data and hasattr(context.trace_data, "conflict_resolutions")
-                        else 0,
+                        "staged_passes_count": (
+                            3
+                            if context.trace_data
+                            and getattr(context.trace_data, "staged_trace", None)
+                            else (
+                                len(context.trace_data.staged_passes)
+                                if context.trace_data
+                                and hasattr(context.trace_data, "staged_passes")
+                                else 0
+                            )
+                        ),
                     },
                 }
 

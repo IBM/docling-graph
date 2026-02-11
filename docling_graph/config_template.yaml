@@ -8,15 +8,23 @@ defaults:
   backend: llm                  # llm | vlm
   inference: local              # local | remote
   export_format: csv            # csv | cypher
-  # Max tokens per chunk when chunking is used (null = use default 2048)
+  # Max tokens per chunk when chunking is used (null = use default 512)
   chunk_max_tokens: null
-  staged_max_fields_per_group: 10
-  staged_max_skeleton_fields: 20
-  staged_max_repair_rounds: 2
-  staged_max_pass_retries: 1
-  staged_quality_depth: 10
-  staged_include_prior_context: true
-  llm_consolidation: false  # Use LLM for conflict resolution when heuristic reconciliation fails
+  # Staged (3-pass) tuning: ID pass → fill (bottom-up) → merge. Preset + optional overrides.
+  staged_tuning_preset: standard  # standard | advanced (advanced = larger ID-pass shards, larger fill batches)
+  staged_pass_retries: null       # retries per pass when LLM returns invalid JSON; null = use preset
+  staged_workers: null           # parallel workers for fill pass; null = use preset
+  staged_nodes_fill_cap: null    # max nodes per LLM call in fill pass; null = use preset
+  staged_id_shard_size: null     # paths per ID-pass call; 0 = single call; null = use preset
+  staged_id_identity_only: true  # discover only identity-bearing paths during ID pass
+  staged_id_compact_prompt: true # compact ID prompt to reduce token usage
+  staged_id_auto_shard_threshold: 10
+  staged_id_shard_min_size: 2
+  staged_quality_require_root: true
+  staged_quality_min_instances: 1
+  staged_quality_max_parent_lookup_miss: 0
+  staged_id_max_tokens: null
+  staged_fill_max_tokens: null
 
 # Docling pipeline configuration
 docling:

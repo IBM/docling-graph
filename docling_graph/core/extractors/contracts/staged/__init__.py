@@ -1,27 +1,8 @@
 """
-Staged extraction contract.
+Staged extraction contract (3-pass node catalog strategy).
 
-Provides prompt and schema utilities for multi-pass extraction to improve
-small-model quality while keeping deterministic reconciliation.
+Provides catalog build, ID discovery, fill, and edge assembly for staged extraction.
 """
-
-from .prompts import (
-    ExtractionFieldPlan,
-    QualityIssue,
-    QualityReport,
-    TemplateGraphMetadata,
-    assess_quality,
-    build_root_subschema,
-    detect_quality_issues,
-    get_template_graph_metadata,
-    get_group_prompt,
-    plan_extraction_passes,
-    get_root_field_groups,
-    get_skeleton_fields,
-    get_skeleton_prompt,
-    get_repair_prompt,
-    get_consolidation_prompt,
-)
 
 from .benchmark import (
     QualityDelta,
@@ -30,38 +11,38 @@ from .benchmark import (
     load_run_metrics,
     summarize_comparison,
 )
-from .orchestrator import (
-    ExtractionPassResult,
-    StagedOrchestrator,
-    StagedPassConfig,
+from .catalog import (
+    EdgeSpec,
+    NodeCatalog,
+    NodeSpec,
+    build_discovery_schema,
+    build_node_catalog,
+    flat_nodes_to_path_lists,
+    get_discovery_prompt,
+    get_model_for_path,
+    validate_id_pass_skeleton_response,
+    write_catalog_artifact,
+    write_id_pass_artifact,
 )
-from .reconciliation import ReconciliationPolicy, merge_pass_output
+from .orchestrator import CatalogOrchestrator, CatalogOrchestratorConfig
 
 __all__ = [
-    "ExtractionPassResult",
+    "CatalogOrchestrator",
+    "CatalogOrchestratorConfig",
+    "EdgeSpec",
+    "NodeCatalog",
+    "NodeSpec",
     "QualityDelta",
-    "ReconciliationPolicy",
     "RunMetrics",
-    "StagedOrchestrator",
-    "StagedPassConfig",
-    "ExtractionFieldPlan",
-    "QualityIssue",
-    "QualityReport",
-    "TemplateGraphMetadata",
-    "assess_quality",
-    "build_root_subschema",
-    "detect_quality_issues",
-    "get_template_graph_metadata",
-    "get_group_prompt",
-    "plan_extraction_passes",
-    "get_root_field_groups",
-    "get_skeleton_fields",
-    "get_skeleton_prompt",
-    "get_repair_prompt",
-    "get_consolidation_prompt",
+    "build_discovery_schema",
+    "build_node_catalog",
     "compare_metrics",
+    "flat_nodes_to_path_lists",
+    "get_discovery_prompt",
+    "get_model_for_path",
     "load_run_metrics",
-    "merge_pass_output",
     "summarize_comparison",
+    "validate_id_pass_skeleton_response",
+    "write_catalog_artifact",
+    "write_id_pass_artifact",
 ]
-

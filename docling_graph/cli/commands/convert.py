@@ -23,8 +23,8 @@ from ..config_utils import load_config
 from ..validators import (
     validate_backend_type,
     validate_docling_config,
-    validate_extraction_contract,
     validate_export_format,
+    validate_extraction_contract,
     validate_inference,
     validate_processing_mode,
     validate_vlm_constraints,
@@ -57,9 +57,7 @@ def convert_command(
     ] = None,
     extraction_contract: Annotated[
         str | None,
-        typer.Option(
-            "--extraction-contract", help="Extraction contract: 'direct' or 'staged'."
-        ),
+        typer.Option("--extraction-contract", help="Extraction contract: 'direct' or 'staged'."),
     ] = None,
     backend: Annotated[
         str | None, typer.Option("--backend", "-b", help="Backend: 'llm' or 'vlm'.")
@@ -83,63 +81,39 @@ def convert_command(
         int | None,
         typer.Option(
             "--chunk-max-tokens",
-            help="Max tokens per chunk when chunking is used (default: 2048).",
+            help="Max tokens per chunk when chunking is used (default: 512).",
         ),
     ] = None,
-    staged_max_fields_per_group: Annotated[
+    staged_tuning_preset: Annotated[
+        str | None,
+        typer.Option(
+            "--staged-tuning",
+            help="Staged preset: 'standard' or 'advanced' (larger ID-pass shards, larger fill batches).",
+        ),
+    ] = None,
+    staged_pass_retries: Annotated[
         int | None,
         typer.Option(
-            "--staged-max-fields-per-group",
-            help="Max scalar fields per staged extraction group.",
+            "--staged-retries",
+            help="Retries per staged pass when LLM returns invalid JSON (overrides preset).",
         ),
     ] = None,
-    staged_max_skeleton_fields: Annotated[
+    staged_workers: Annotated[
+        int | None,
+        typer.Option("--staged-workers", help="Parallel workers for fill pass (overrides preset)."),
+    ] = None,
+    staged_nodes_fill_cap: Annotated[
         int | None,
         typer.Option(
-            "--staged-max-skeleton-fields",
-            help="Max root fields in staged skeleton pass.",
+            "--staged-nodes-fill-cap",
+            help="Max nodes per LLM call in fill pass (overrides preset).",
         ),
     ] = None,
-    staged_max_repair_rounds: Annotated[
+    staged_id_shard_size: Annotated[
         int | None,
         typer.Option(
-            "--staged-max-repair-rounds",
-            help="Maximum targeted repair rounds for staged extraction.",
-        ),
-    ] = None,
-    staged_max_pass_retries: Annotated[
-        int | None,
-        typer.Option(
-            "--staged-max-pass-retries",
-            help="Retries per staged pass.",
-        ),
-    ] = None,
-    staged_quality_depth: Annotated[
-        int | None,
-        typer.Option(
-            "--staged-quality-depth",
-            help="Recursive depth for staged quality checks.",
-        ),
-    ] = None,
-    staged_include_prior_context: Annotated[
-        bool | None,
-        typer.Option(
-            "--staged-include-prior-context/--no-staged-include-prior-context",
-            help="Include prior pass output in staged prompts.",
-        ),
-    ] = None,
-    llm_consolidation: Annotated[
-        bool | None,
-        typer.Option(
-            "--llm-consolidation/--no-llm-consolidation",
-            help="Use LLM for conflict resolution when heuristic staged reconciliation fails.",
-        ),
-    ] = None,
-    staged_merge_similarity_fallback: Annotated[
-        bool | None,
-        typer.Option(
-            "--staged-merge-similarity-fallback/--no-staged-merge-similarity-fallback",
-            help="Use similarity merge when ID/identity match fails (default: on; logs warning when used).",
+            "--staged-id-shard-size",
+            help="Paths per ID pass call (0 = no sharding, overrides preset).",
         ),
     ] = None,
     # Docling export options
@@ -244,43 +218,30 @@ def convert_command(
     final_chunk_max_tokens = (
         chunk_max_tokens if chunk_max_tokens is not None else defaults.get("chunk_max_tokens")
     )
-    final_staged_max_fields_per_group = (
-        staged_max_fields_per_group
-        if staged_max_fields_per_group is not None
-        else defaults.get("staged_max_fields_per_group", 10)
+    final_staged_tuning_preset = (
+        staged_tuning_preset
+        if staged_tuning_preset is not None
+        else defaults.get("staged_tuning_preset", "standard")
     )
-    final_staged_max_skeleton_fields = (
-        staged_max_skeleton_fields
-        if staged_max_skeleton_fields is not None
-        else defaults.get("staged_max_skeleton_fields", 20)
+    if final_staged_tuning_preset not in ("standard", "advanced"):
+        final_staged_tuning_preset = "standard"
+    final_staged_pass_retries = (
+        staged_pass_retries
+        if staged_pass_retries is not None
+        else defaults.get("staged_pass_retries")
     )
-    final_staged_max_repair_rounds = (
-        staged_max_repair_rounds
-        if staged_max_repair_rounds is not None
-        else defaults.get("staged_max_repair_rounds", 2)
+    final_staged_workers = (
+        staged_workers if staged_workers is not None else defaults.get("staged_workers")
     )
-    final_staged_max_pass_retries = (
-        staged_max_pass_retries
-        if staged_max_pass_retries is not None
-        else defaults.get("staged_max_pass_retries", 1)
+    final_staged_nodes_fill_cap = (
+        staged_nodes_fill_cap
+        if staged_nodes_fill_cap is not None
+        else defaults.get("staged_nodes_fill_cap")
     )
-    final_staged_quality_depth = (
-        staged_quality_depth
-        if staged_quality_depth is not None
-        else defaults.get("staged_quality_depth", 10)
-    )
-    final_staged_include_prior_context = (
-        staged_include_prior_context
-        if staged_include_prior_context is not None
-        else defaults.get("staged_include_prior_context", True)
-    )
-    final_llm_consolidation = (
-        llm_consolidation if llm_consolidation is not None else defaults.get("llm_consolidation", False)
-    )
-    final_staged_merge_similarity_fallback = (
-        staged_merge_similarity_fallback
-        if staged_merge_similarity_fallback is not None
-        else defaults.get("staged_merge_similarity_fallback", True)
+    final_staged_id_shard_size = (
+        staged_id_shard_size
+        if staged_id_shard_size is not None
+        else defaults.get("staged_id_shard_size")
     )
 
     # Docling export settings - use config file as fallback
@@ -332,7 +293,7 @@ def convert_command(
     rich_print(f"  • Inference: [cyan]{inference_val}[/cyan]")
     rich_print(f"  • Export: [cyan]{export_format_val}[/cyan]")
     rich_print(f"  • Reverse edges: [cyan]{reverse_edges}[/cyan]")
-    
+
     # Display Docling export settings
     rich_print("[yellow][DoclingExport][/yellow]")
     rich_print(f"  • Document JSON: [cyan]{final_export_docling_json}[/cyan]")
@@ -347,17 +308,21 @@ def convert_command(
     if final_chunk_max_tokens is not None:
         rich_print(f"  • Chunk Max Tokens: [cyan]{final_chunk_max_tokens}[/cyan]")
     if extraction_contract_val == "staged":
-        rich_print(
-            "  • Staged Tuning: "
-            f"[cyan]groups={final_staged_max_fields_per_group}, "
-            f"skeleton={final_staged_max_skeleton_fields}, "
-            f"repair={final_staged_max_repair_rounds}, "
-            f"retries={final_staged_max_pass_retries}, "
-            f"quality_depth={final_staged_quality_depth}, "
-            f"prior={final_staged_include_prior_context}[/cyan]"
+        from docling_graph.config import get_effective_staged_tuning
+
+        eff_retries, eff_workers, eff_fill_cap, eff_id_shard_size = get_effective_staged_tuning(
+            final_staged_tuning_preset,
+            final_staged_pass_retries,
+            final_staged_workers,
+            final_staged_nodes_fill_cap,
+            final_staged_id_shard_size,
         )
-    rich_print(f"  • LLM consolidation: [cyan]{final_llm_consolidation}[/cyan]")
-    rich_print(f"  • Staged merge similarity fallback: [cyan]{final_staged_merge_similarity_fallback}[/cyan]")
+        rich_print("[yellow][StagedTuning][/yellow]")
+        rich_print(f"  • Preset: [cyan]{final_staged_tuning_preset}[/cyan]")
+        rich_print(f"  • Retries: [cyan]{eff_retries}[/cyan]")
+        rich_print(f"  • Workers: [cyan]{eff_workers}[/cyan]")
+        rich_print(f"  • Nodes Fill Cap: [cyan]{eff_fill_cap}[/cyan]")
+        rich_print(f"  • ID shard size: [cyan]{eff_id_shard_size}[/cyan]")
 
     # Build typed config
     logger.debug("Building PipelineConfig object")
@@ -392,14 +357,11 @@ def convert_command(
         llm_overrides=llm_overrides,
         debug=debug,
         chunk_max_tokens=final_chunk_max_tokens,
-        staged_max_fields_per_group=final_staged_max_fields_per_group,
-        staged_max_skeleton_fields=final_staged_max_skeleton_fields,
-        staged_max_repair_rounds=final_staged_max_repair_rounds,
-        staged_max_pass_retries=final_staged_max_pass_retries,
-        staged_quality_depth=final_staged_quality_depth,
-        staged_include_prior_context=final_staged_include_prior_context,
-        llm_consolidation=final_llm_consolidation,
-        staged_merge_similarity_fallback=final_staged_merge_similarity_fallback,
+        staged_tuning_preset=final_staged_tuning_preset,
+        staged_pass_retries=final_staged_pass_retries,
+        staged_workers=final_staged_workers,
+        staged_nodes_fill_cap=final_staged_nodes_fill_cap,
+        staged_id_shard_size=final_staged_id_shard_size,
         export_format=export_format_val,
         export_docling=True,
         export_docling_json=final_export_docling_json,

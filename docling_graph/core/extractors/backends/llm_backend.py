@@ -17,9 +17,13 @@ from typing import Any, Literal, Type
 from pydantic import BaseModel, ValidationError
 from rich import print as rich_print
 
+from ....exceptions import ClientError
 from ....protocols import LLMClientProtocol
-from ..contracts import direct, staged as staged_contracts
-from ..contracts.staged import StagedOrchestrator, StagedPassConfig
+from ..contracts import direct
+from ..contracts.staged.orchestrator import (
+    CatalogOrchestrator,
+    CatalogOrchestratorConfig,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +40,6 @@ class LlmBackend:
         llm_client: LLMClientProtocol,
         extraction_contract: Literal["direct", "staged"] = "direct",
         staged_config: dict[str, Any] | None = None,
-        llm_consolidation: bool = False,
     ) -> None:
         """
         Initialize LLM backend with a client.
@@ -46,8 +49,7 @@ class LlmBackend:
         """
         self.client = llm_client
         self.extraction_contract: Literal["direct", "staged"] = extraction_contract
-        self.staged_config = StagedPassConfig.from_dict(staged_config)
-        self.llm_consolidation = llm_consolidation
+        self._staged_config_raw = staged_config or {}
         self.trace_data: Any = None  # Set by strategy when config.debug is True
 
         # Get model identifier for logging
@@ -346,17 +348,67 @@ class LlmBackend:
             self._log_error(f"Error during LLM call for {context}", e)
             return None
 
+    def _get_staged_call_max_tokens(self, context: str) -> int | None:
+        """Select staged max_tokens override by call type."""
+        cfg = self._staged_config_raw or {}
+        if "catalog_id_pass" in context:
+            v = cfg.get("id_max_tokens")
+            return int(v) if v is not None else None
+        if "fill_call_" in context:
+            v = cfg.get("fill_max_tokens")
+            return int(v) if v is not None else None
+        return None
+
+    def _call_with_optional_max_tokens(
+        self, prompt: dict[str, str], schema_json: str, max_tokens: int | None
+    ) -> dict | list | None:
+        """Invoke client with temporary max_tokens override when supported."""
+        generation = getattr(self.client, "_generation", None)
+        if generation is None or max_tokens is None:
+            return self.client.get_json_response(prompt=prompt, schema_json=schema_json)
+        original = getattr(generation, "max_tokens", None)
+        try:
+            generation.max_tokens = max_tokens
+            return self.client.get_json_response(prompt=prompt, schema_json=schema_json)
+        finally:
+            generation.max_tokens = original
+
     def _call_prompt(
         self, prompt: dict[str, str], schema_json: str, context: str
     ) -> dict | list | None:
-        """Call LLM with explicit prompt and schema."""
+        """Call LLM with explicit prompt/schema and staged truncation recovery."""
         try:
-            parsed_json = self.client.get_json_response(prompt=prompt, schema_json=schema_json)
+            max_tokens = self._get_staged_call_max_tokens(context)
+            parsed_json = self._call_with_optional_max_tokens(prompt, schema_json, max_tokens)
             if not parsed_json:
                 self._log_warning(f"No valid JSON returned from LLM for {context}")
                 return None
             return parsed_json
         except Exception as e:
+            details = getattr(e, "details", {}) if isinstance(e, ClientError) else {}
+            truncated = bool(details.get("truncated")) if isinstance(details, dict) else False
+            if truncated:
+                cfg = self._staged_config_raw or {}
+                if bool(cfg.get("retry_on_truncation", True)):
+                    retry_max = self._get_staged_call_max_tokens(context)
+                    if retry_max is not None:
+                        retry_max = max(retry_max, retry_max * 2)
+                    elif isinstance(details, dict) and isinstance(details.get("max_tokens"), int):
+                        retry_max = int(details["max_tokens"]) * 2
+                    else:
+                        retry_max = None
+                    if retry_max is not None:
+                        try:
+                            self._log_warning(
+                                f"Retrying truncated staged call for {context} with max_tokens={retry_max}"
+                            )
+                            parsed_json = self._call_with_optional_max_tokens(
+                                prompt, schema_json, retry_max
+                            )
+                            if parsed_json:
+                                return parsed_json
+                        except Exception as retry_e:
+                            self._log_error(f"Retry after truncation failed for {context}", retry_e)
             self._log_error(f"Error during LLM call for {context}", e)
             return None
 
@@ -368,96 +420,27 @@ class LlmBackend:
         template: Type[BaseModel] | None = None,
         trace_data: Any = None,
     ) -> dict | list | None:
-        """
-        Multi-pass extraction for small models:
-        skeleton -> focused groups -> targeted repair.
-        """
-        on_pass_complete = None
-        if trace_data is not None and hasattr(trace_data, "staged_passes"):
-            on_pass_complete = trace_data.staged_passes.append
+        """3-pass catalog extraction: ID discovery, fill nodes, assemble edges."""
+        if template is None:
+            logger.warning("Staged extraction requires a template; skipping.")
+            return None
+        debug_dir = self._staged_config_raw.get("debug_dir") or ""
+        catalog_config = CatalogOrchestratorConfig.from_dict(self._staged_config_raw)
 
-        run_llm_consolidation = None
-        if self.llm_consolidation:
-            run_llm_consolidation = lambda merged, md, fields, schema: self._run_llm_consolidation(
-                merged, md, fields, schema, trace_data, template
-            )
+        def _on_trace(trace_dict: dict) -> None:
+            if trace_data is not None and hasattr(trace_data, "staged_trace"):
+                trace_data.staged_trace = trace_dict
 
-        orchestrator = StagedOrchestrator(
+        orchestrator = CatalogOrchestrator(
             llm_call_fn=self._call_prompt,
             schema_json=schema_json,
             template=template,
-            config=self.staged_config,
-            on_pass_complete=on_pass_complete,
-            run_llm_consolidation=run_llm_consolidation,
+            config=catalog_config,
+            debug_dir=debug_dir or None,
+            on_trace=_on_trace if trace_data is not None else None,
         )
+        logger.info("[StagedExtraction] Starting catalog extraction (ID + fill + edges)")
         return orchestrator.extract(markdown=markdown, context=context)
-
-    def _run_llm_consolidation(
-        self,
-        merged: dict[str, Any],
-        markdown: str,
-        target_fields: list[str],
-        schema_json: str,
-        trace_data: Any = None,
-        template: Type[BaseModel] | None = None,
-    ) -> dict[str, Any] | None:
-        """Run LLM-backed conflict resolution for target fields; return resolved JSON or None."""
-        import time
-
-        from ....pipeline.trace import ConflictResolutionData
-
-        if not target_fields:
-            return None
-        subschema = staged_contracts.build_root_subschema(schema_json, target_fields)
-        issue_summary = "Quality issues or missing/placeholder values in staged extraction."
-        identity_hint = ""
-        if template is not None:
-            meta = staged_contracts.get_template_graph_metadata(template, schema_json)
-            if meta.root_identity_fields:
-                identity_hint = f"Identity fields (keep consistent): {', '.join(meta.root_identity_fields)}"
-        prompt = staged_contracts.get_consolidation_prompt(
-            markdown_content=markdown,
-            schema_json=subschema,
-            current_extraction=merged,
-            target_fields=target_fields,
-            issue_summary=issue_summary,
-            identity_hint=identity_hint,
-        )
-        start = time.perf_counter()
-        try:
-            result = self._call_prompt(
-                prompt=prompt,
-                schema_json=subschema,
-                context="llm_consolidation",
-            )
-            duration = time.perf_counter() - start
-            if trace_data is not None and hasattr(trace_data, "conflict_resolutions"):
-                trace_data.conflict_resolutions.append(
-                    ConflictResolutionData(
-                        trigger="quality_stalled",
-                        conflict_fields=target_fields,
-                        success=isinstance(result, dict) and bool(result),
-                        duration_seconds=duration,
-                        error=None,
-                        metadata={},
-                    )
-                )
-            return result if isinstance(result, dict) else None
-        except Exception as e:
-            duration = time.perf_counter() - start
-            logger.warning("LLM consolidation failed: %s", e)
-            if trace_data is not None and hasattr(trace_data, "conflict_resolutions"):
-                trace_data.conflict_resolutions.append(
-                    ConflictResolutionData(
-                        trigger="quality_stalled",
-                        conflict_fields=target_fields,
-                        success=False,
-                        duration_seconds=duration,
-                        error=str(e),
-                        metadata={},
-                    )
-                )
-            return None
 
     def _repair_json(self, raw_text: str) -> str:
         """

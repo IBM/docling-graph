@@ -440,15 +440,27 @@ class ExtractionStage(PipelineStage):
             Literal["direct", "staged"], conf.get("extraction_contract", "direct")
         )
         staged_config = {
-            "max_fields_per_group": conf.get("staged_max_fields_per_group", 6),
-            "max_skeleton_fields": conf.get("staged_max_skeleton_fields", 10),
-            "max_repair_rounds": conf.get("staged_max_repair_rounds", 2),
-            "max_pass_retries": conf.get("staged_max_pass_retries", 1),
-            "quality_depth": conf.get("staged_quality_depth", 3),
-            "include_prior_context": conf.get("staged_include_prior_context", True),
-            "merge_similarity_fallback": conf.get("staged_merge_similarity_fallback", True),
+            "max_pass_retries": conf.get("staged_pass_retries", 1),
+            "catalog_max_nodes_per_call": conf.get("staged_nodes_fill_cap", 5),
+            "parallel_workers": conf.get("staged_workers", 1),
+            "id_shard_size": conf.get("staged_id_shard_size", 0),
+            "id_identity_only": conf.get("staged_id_identity_only", True),
+            "id_compact_prompt": conf.get("staged_id_compact_prompt", True),
+            "id_auto_shard_threshold": conf.get("staged_id_auto_shard_threshold", 10),
+            "id_shard_min_size": conf.get("staged_id_shard_min_size", 2),
+            "quality_require_root": conf.get("staged_quality_require_root", True),
+            "quality_min_instances": conf.get("staged_quality_min_instances", 1),
+            "quality_max_parent_lookup_miss": conf.get("staged_quality_max_parent_lookup_miss", 0),
+            "id_max_tokens": conf.get("staged_id_max_tokens"),
+            "fill_max_tokens": conf.get("staged_fill_max_tokens"),
         }
-        llm_consolidation = bool(conf.get("llm_consolidation", False))
+        if conf.get("debug"):
+            if context.output_manager is not None:
+                staged_config["debug_dir"] = str(context.output_manager.get_debug_dir())
+            elif conf.get("output_dir"):
+                from pathlib import Path
+
+                staged_config["debug_dir"] = str(Path(conf["output_dir"]) / "debug")
         backend = cast(Literal["vlm", "llm"], conf["backend"])
         inference = cast(str, conf["inference"])
 
@@ -468,7 +480,6 @@ class ExtractionStage(PipelineStage):
                 backend_name="vlm",
                 extraction_contract=extraction_contract,
                 staged_config=staged_config,
-                llm_consolidation=llm_consolidation,
                 model_name=model_config["model"],
                 docling_config=conf["docling_config"],
             )
@@ -486,7 +497,6 @@ class ExtractionStage(PipelineStage):
                 backend_name="llm",
                 extraction_contract=extraction_contract,
                 staged_config=staged_config,
-                llm_consolidation=llm_consolidation,
                 llm_client=llm_client,
                 docling_config=conf["docling_config"],
             )
@@ -619,20 +629,31 @@ class ExtractionStage(PipelineStage):
             else "direct"
         )
         staged_config = {
-            "max_fields_per_group": conf.get("staged_max_fields_per_group", 6),
-            "max_skeleton_fields": conf.get("staged_max_skeleton_fields", 10),
-            "max_repair_rounds": conf.get("staged_max_repair_rounds", 2),
-            "max_pass_retries": conf.get("staged_max_pass_retries", 1),
-            "quality_depth": conf.get("staged_quality_depth", 3),
-            "include_prior_context": conf.get("staged_include_prior_context", True),
-            "merge_similarity_fallback": conf.get("staged_merge_similarity_fallback", True),
+            "max_pass_retries": conf.get("staged_pass_retries", 1),
+            "catalog_max_nodes_per_call": conf.get("staged_nodes_fill_cap", 5),
+            "parallel_workers": conf.get("staged_workers", 1),
+            "id_shard_size": conf.get("staged_id_shard_size", 0),
+            "id_identity_only": conf.get("staged_id_identity_only", True),
+            "id_compact_prompt": conf.get("staged_id_compact_prompt", True),
+            "id_auto_shard_threshold": conf.get("staged_id_auto_shard_threshold", 12),
+            "id_shard_min_size": conf.get("staged_id_shard_min_size", 2),
+            "quality_require_root": conf.get("staged_quality_require_root", True),
+            "quality_min_instances": conf.get("staged_quality_min_instances", 1),
+            "quality_max_parent_lookup_miss": conf.get("staged_quality_max_parent_lookup_miss", 0),
+            "id_max_tokens": conf.get("staged_id_max_tokens"),
+            "fill_max_tokens": conf.get("staged_fill_max_tokens"),
         }
-        llm_consolidation = bool(conf.get("llm_consolidation", False))
+        if conf.get("debug"):
+            if context.output_manager is not None:
+                staged_config["debug_dir"] = str(context.output_manager.get_debug_dir())
+            elif conf.get("output_dir"):
+                from pathlib import Path
+
+                staged_config["debug_dir"] = str(Path(conf["output_dir"]) / "debug")
         llm_backend = LlmBackend(
             llm_client,
             extraction_contract=extraction_contract,
             staged_config=staged_config,
-            llm_consolidation=llm_consolidation,
         )
         if context.trace_data is not None:
             llm_backend.trace_data = context.trace_data
@@ -821,9 +842,16 @@ class GraphConversionStage(PipelineStage):
         if context.trace_data and context.config.processing_mode == "many-to-one":
             from ..pipeline.trace import GraphData
 
+            # Use a converter without cleanup/validation for trace to avoid duplicate logs
+            trace_converter = GraphConverter(
+                add_reverse_edges=context.config.reverse_edges,
+                validate_graph=False,
+                auto_cleanup=False,
+                registry=context.node_registry,
+            )
             for i, model in enumerate(context.extracted_models):
-                # Create individual graph for this model
-                temp_graph, temp_metadata = converter.pydantic_list_to_graph([model])
+                # Create individual graph for this model (no cleanup/validation logs)
+                temp_graph, temp_metadata = trace_converter.pydantic_list_to_graph([model])
 
                 graph_data = GraphData(
                     graph_id=i,
@@ -919,23 +947,18 @@ class VisualizationStage(PipelineStage):
         # Use generic filenames instead of source-based names
         report_path = output_dir / "report"
         extraction_contract = getattr(context.config, "extraction_contract", None)
-        staged_passes_count = (
-            len(context.trace_data.staged_passes)
-            if context.trace_data and hasattr(context.trace_data, "staged_passes")
-            else 0
-        )
-        llm_consolidation_used = (
-            len(context.trace_data.conflict_resolutions)
-            if context.trace_data and hasattr(context.trace_data, "conflict_resolutions")
-            else 0
-        )
+        staged_passes_count = 0
+        if context.trace_data:
+            if getattr(context.trace_data, "staged_trace", None):
+                staged_passes_count = 3
+            elif hasattr(context.trace_data, "staged_passes"):
+                staged_passes_count = len(context.trace_data.staged_passes)
         ReportGenerator().visualize(
             context.knowledge_graph,
             report_path,
             source_model_count=len(context.extracted_models),
             extraction_contract=extraction_contract,
             staged_passes_count=staged_passes_count,
-            llm_consolidation_used=llm_consolidation_used,
         )
         logger.info(f"Generated markdown report at {report_path}.md")
 

@@ -1,326 +1,817 @@
-"""
-Orchestrator for staged extraction (skeleton -> groups -> repair).
+"""Catalog orchestrator: 3-pass staged extraction (catalog → ID → fill → edges).
+
+With --extraction-contract staged and --debug, artifacts are written under
+debug/: node_catalog.json, id_pass.json, id_pass_schema.json, id_pass_prompt.json,
+fill_pass.json, edges_pass.json, merged_output.json, staged_trace.json.
 """
 
 from __future__ import annotations
 
+import json
 import logging
+import os
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Any, Callable
 
 from pydantic import BaseModel
+from rich import print as rich_print
 
-from . import prompts
-from .materialize_nested_edges import materialize_nested_edges
-from .reconciliation import ReconciliationPolicy, merge_pass_output
+from . import catalog as catalog_mod
+from .catalog import (
+    EdgeSpec,
+    NodeCatalog,
+    NodeSpec,
+    flat_nodes_to_path_lists,
+    get_id_pass_shards,
+    get_id_pass_shards_v2,
+    get_model_for_path,
+    merge_and_dedupe_flat_nodes,
+)
 
 logger = logging.getLogger(__name__)
 
+# Max chars to keep in prompt artifacts (avoid huge debug files)
+_DEBUG_PROMPT_USER_TRUNCATE = 8000
+
+
+def _build_staged_trace(
+    *,
+    template_name: str,
+    config: CatalogOrchestratorConfig,
+    catalog: NodeCatalog,
+    id_elapsed: float,
+    fill_elapsed: float,
+    total_elapsed: float,
+    per_path_counts: dict[str, int],
+    id_validation_ok: bool,
+    id_validation_errors: list[str],
+    fill_batches: list[dict[str, Any]],
+    merged_keys: list[str],
+    edges_count: int,
+    merge_stats: dict[str, int],
+    quality_gate: dict[str, Any] | None = None,
+    fallback_reason: str | None = None,
+) -> dict[str, Any]:
+    """Build the staged-trace dict (config, catalog summary, timings, pass details)."""
+    return {
+        "template": template_name,
+        "config": {
+            "max_nodes_per_call": config.max_nodes_per_call,
+            "parallel_workers": config.parallel_workers,
+            "max_pass_retries": config.max_pass_retries,
+            "id_shard_size": config.id_shard_size,
+            "id_identity_only": config.id_identity_only,
+            "id_compact_prompt": config.id_compact_prompt,
+        },
+        "catalog": catalog.to_dict(),
+        "timings_seconds": {
+            "id_pass": round(id_elapsed, 3),
+            "fill_pass": round(fill_elapsed, 3),
+            "total": round(total_elapsed, 3),
+        },
+        "per_path_counts": per_path_counts,
+        "total_instances": sum(per_path_counts.values()),
+        "id_pass_validation": {
+            "ok": id_validation_ok,
+            "errors": id_validation_errors[:20],
+        },
+        "fill_batches": fill_batches,
+        "merge_stats": merge_stats,
+        "merged_output_keys": merged_keys,
+        "edges_resolved_count": edges_count,
+        "quality_gate": quality_gate or {"ok": True, "reasons": []},
+        "fallback_reason": fallback_reason,
+    }
+
+
+def _write_staged_trace(debug_dir: str, trace: dict[str, Any]) -> None:
+    """Write staged_trace.json with the given trace dict."""
+    os.makedirs(debug_dir, exist_ok=True)
+    path = os.path.join(debug_dir, "staged_trace.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(trace, f, indent=2, default=str)
+
 
 @dataclass
-class StagedPassConfig:
-    max_fields_per_group: int = 6
-    max_skeleton_fields: int = 10
-    max_repair_rounds: int = 2
+class CatalogOrchestratorConfig:
+    max_nodes_per_call: int = 5
+    parallel_workers: int = 1
     max_pass_retries: int = 1
-    quality_depth: int = 3
-    include_prior_context: bool = True
-    merge_similarity_fallback: bool = True
+    id_shard_size: int = 0  # paths per ID-pass call; 0 = auto planning
+    id_identity_only: bool = True
+    id_compact_prompt: bool = True
+    id_auto_shard_threshold: int = 12
+    id_shard_min_size: int = 2
+    quality_require_root: bool = True
+    quality_min_instances: int = 1
+    quality_max_parent_lookup_miss: int = 0
 
     @classmethod
-    def from_dict(cls, values: dict[str, Any] | None) -> StagedPassConfig:
+    def from_dict(cls, values: dict[str, Any] | None) -> CatalogOrchestratorConfig:
         if not values:
             return cls()
         return cls(
-            max_fields_per_group=int(values.get("max_fields_per_group", 6)),
-            max_skeleton_fields=int(values.get("max_skeleton_fields", 10)),
-            max_repair_rounds=int(values.get("max_repair_rounds", 2)),
+            max_nodes_per_call=int(values.get("catalog_max_nodes_per_call", 5)),
+            parallel_workers=int(values.get("parallel_workers", 1)),
             max_pass_retries=int(values.get("max_pass_retries", 1)),
-            quality_depth=int(values.get("quality_depth", 3)),
-            include_prior_context=bool(values.get("include_prior_context", True)),
-            merge_similarity_fallback=bool(values.get("merge_similarity_fallback", True)),
+            id_shard_size=int(values.get("id_shard_size", 0)),
+            id_identity_only=bool(values.get("id_identity_only", True)),
+            id_compact_prompt=bool(values.get("id_compact_prompt", True)),
+            id_auto_shard_threshold=int(values.get("id_auto_shard_threshold", 12)),
+            id_shard_min_size=int(values.get("id_shard_min_size", 2)),
+            quality_require_root=bool(values.get("quality_require_root", True)),
+            quality_min_instances=int(values.get("quality_min_instances", 1)),
+            quality_max_parent_lookup_miss=int(values.get("quality_max_parent_lookup_miss", 0)),
         )
 
 
-@dataclass
-class ExtractionPassResult:
-    stage: str
-    success: bool
-    data: dict[str, Any]
-    attempts: int
-    errors: list[str]
-    duration_seconds: float = 0.0
+def get_fill_batch_prompt(
+    markdown_content: str,
+    path: str,
+    spec: NodeSpec,
+    instances: list[dict[str, Any]],
+    schema_json: str,
+) -> dict[str, str]:
+    """instances: list of ID descriptors (path, ids, parent). Preview uses ids only."""
+    n = len(instances)
+    preview_items = [{**(inst.get("ids") or {})} for inst in instances[:3]]
+    instances_preview = json.dumps(preview_items, indent=2, default=str)
+    if n > 3:
+        instances_preview += f"\n... and {n - 3} more"
+    system_prompt = (
+        "You are a precise extraction assistant. Fill each of the given node instances "
+        f"with all schema fields from the document. Path: {path} ({spec.node_type}). "
+        "Return a JSON array with one object per instance in the same order."
+    )
+    user_prompt = (
+        "Fill these node instances from the document.\n\n=== DOCUMENT ===\n"
+        f"{markdown_content}\n=== END DOCUMENT ===\n\n"
+        "=== INSTANCES ===\n" + instances_preview + "\n=== END ===\n\n"
+        "=== SCHEMA ===\n" + schema_json + "\n=== END ===\n\n"
+        f"Return a JSON array of exactly {n} objects."
+    )
+    return {"system": system_prompt, "user": user_prompt}
 
 
-class StagedOrchestrator:
+def _id_tuple(
+    spec: NodeSpec, ids: dict[str, Any], instance_key: str | None = None
+) -> tuple[Any, ...]:
+    """Stable tuple of id values for lookup key."""
+    if not spec.id_fields:
+        return (instance_key or "",)
+    return tuple(ids.get(f) for f in spec.id_fields)
+
+
+def merge_filled_into_root(
+    path_filled: dict[str, list[Any]],
+    path_descriptors: dict[str, list[dict[str, Any]]],
+    catalog: NodeCatalog,
+    stats: dict[str, int] | None = None,
+) -> dict[str, Any]:
     """
-    Coordinates staged extraction passes and deterministic reconciliation.
+    Build root dict by attaching filled nodes to their parent using parent path + ids.
+    Lookup: (path, id_tuple) -> filled object. Root and root-children attach to root; others to parent object.
     """
+    root: dict[str, Any] = {}
+    merge_stats = {
+        "descriptor_length_mismatch": 0,
+        "non_dict_filled_objects": 0,
+        "missing_parent_descriptor": 0,
+        "parent_lookup_miss": 0,
+        "attached_list_items": 0,
+        "attached_scalar_items": 0,
+    }
+    spec_by_path = {spec.path: spec for spec in catalog.nodes}
+    lookup: dict[tuple[str, tuple[Any, ...]], dict[str, Any]] = {}
 
+    for spec in catalog.nodes:
+        path = spec.path
+        filled_list = path_filled.get(path, [])
+        descriptors = path_descriptors.get(path, [])
+        if len(filled_list) != len(descriptors):
+            merge_stats["descriptor_length_mismatch"] += 1
+            logger.warning(
+                "[StagedExtraction] merge input mismatch for path '%s': %s filled vs %s descriptors",
+                path,
+                len(filled_list),
+                len(descriptors),
+            )
+        for i, obj in enumerate(filled_list):
+            if not isinstance(obj, dict):
+                merge_stats["non_dict_filled_objects"] += 1
+                continue
+            desc = descriptors[i] if i < len(descriptors) else {}
+            ids = desc.get("ids") or {}
+            instance_key = desc.get("__instance_key") if isinstance(desc, dict) else None
+            key = (path, _id_tuple(spec, ids, instance_key=instance_key))
+            lookup[key] = obj
+
+    for spec in catalog.nodes:
+        path = spec.path
+        filled_list = path_filled.get(path, [])
+        descriptors = path_descriptors.get(path, [])
+        if not filled_list:
+            continue
+        if path == "":
+            if filled_list and isinstance(filled_list[0], dict):
+                root.update(filled_list[0])
+            continue
+        parent_path = spec.parent_path
+        field_name = spec.field_name
+        is_list = spec.is_list
+        if not field_name:
+            continue
+        if parent_path == "":
+            if is_list:
+                root[field_name] = filled_list
+            else:
+                root[field_name] = filled_list[0] if filled_list else None
+            continue
+        parent_spec = spec_by_path.get(parent_path)
+        if not parent_spec:
+            continue
+        for i, obj in enumerate(filled_list):
+            if not isinstance(obj, dict):
+                merge_stats["non_dict_filled_objects"] += 1
+                continue
+            desc = descriptors[i] if i < len(descriptors) else {}
+            parent = desc.get("parent")
+            if not parent or not isinstance(parent, dict):
+                merge_stats["missing_parent_descriptor"] += 1
+                continue
+            parent_ids = parent.get("ids") or {}
+            parent_instance_key = parent.get("__instance_key") if isinstance(parent, dict) else None
+            parent_key = (
+                parent_path,
+                _id_tuple(parent_spec, parent_ids, instance_key=parent_instance_key),
+            )
+            parent_obj = lookup.get(parent_key)
+            if parent_obj is None:
+                merge_stats["parent_lookup_miss"] += 1
+                continue
+            if is_list:
+                parent_obj.setdefault(field_name, []).append(obj)
+                merge_stats["attached_list_items"] += 1
+            else:
+                parent_obj[field_name] = obj
+                merge_stats["attached_scalar_items"] += 1
+    if stats is not None:
+        stats.update(merge_stats)
+    return root
+
+
+def _maybe_resolve_conflicts(
+    merged: dict[str, Any],
+    catalog: NodeCatalog,
+    llm_call_fn: Callable[[dict[str, str], str, str], dict | list | None],
+    context: str,
+) -> dict[str, Any]:
+    """
+    If conflicts are detected in the merged root, send them with context to the LLM for resolution
+    and apply the result. Otherwise return merged unchanged.
+    """
+    conflicts = _detect_merge_conflicts(merged)
+    if not conflicts:
+        return merged
+    # TODO: build prompt with conflicts + context, call llm_call_fn, parse resolution, apply to merged
+    return merged
+
+
+def _detect_merge_conflicts(merged: dict[str, Any]) -> list[dict[str, Any]]:
+    """Detect conflicts in merged root (e.g. duplicate keys, inconsistent nesting). Returns list of conflict descriptors."""
+    # Placeholder: no conflicts detected. Can be extended with schema-defined or structural rules.
+    return []
+
+
+def assemble_edges_from_merged(
+    merged: dict[str, Any],
+    catalog: NodeCatalog,
+) -> list[dict[str, Any]]:
+    """
+    Assemble edges implied by nesting from merged root.
+    Returns list of {source_id, target_id, edge_label} for debug/trace.
+    Graph conversion uses the merged structure; this is for diagnostics.
+    """
+    resolved: list[dict[str, Any]] = []
+    for edge in catalog.edges:
+        resolved.append(
+            {
+                "edge_label": edge.edge_label,
+                "source_path": edge.source_path,
+                "target_path": edge.target_path,
+                "implied_by_nesting": True,
+            }
+        )
+    return resolved
+
+
+def _build_projected_fill_schema(
+    template: type[BaseModel], spec: NodeSpec, catalog: NodeCatalog
+) -> str:
+    """Return a schema for fill restricted to this path (blocks nested over-expansion)."""
+    model = get_model_for_path(template, spec.path)
+    if model is None:
+        return "{}"
+    schema = model.model_json_schema()
+    props = schema.get("properties") if isinstance(schema, dict) else None
+    if not isinstance(props, dict):
+        return json.dumps(schema, indent=2)
+
+    child_fields = {
+        child.field_name
+        for child in catalog.nodes
+        if child.parent_path == spec.path and child.field_name
+    }
+    keep_props = {k: v for k, v in props.items() if k not in child_fields}
+    schema["properties"] = keep_props
+    if isinstance(schema.get("required"), list):
+        schema["required"] = [k for k in schema["required"] if k in keep_props]
+    return json.dumps(schema, indent=2)
+
+
+def _sanitize_filled_objects(
+    filled: list[Any],
+    allowed_keys: set[str],
+    descriptors: list[dict[str, Any]],
+    id_fields: list[str],
+) -> list[dict[str, Any]]:
+    """Drop unexpected nested keys and preserve descriptor IDs when missing."""
+    out: list[dict[str, Any]] = []
+    for i, obj in enumerate(filled):
+        src = obj if isinstance(obj, dict) else {}
+        clean = {k: v for k, v in src.items() if k in allowed_keys}
+        ids = (
+            descriptors[i].get("ids")
+            if i < len(descriptors) and isinstance(descriptors[i], dict)
+            else {}
+        )
+        if isinstance(ids, dict):
+            for f in id_fields:
+                if f in ids and f not in clean:
+                    clean[f] = ids[f]
+        out.append(clean)
+    return out
+
+
+def _evaluate_quality_gate(
+    *,
+    config: CatalogOrchestratorConfig,
+    per_path_counts: dict[str, int],
+    merge_stats: dict[str, int],
+    merged: dict[str, Any] | None,
+) -> tuple[bool, list[str]]:
+    reasons: list[str] = []
+    total_instances = sum(per_path_counts.values())
+    if config.quality_require_root and per_path_counts.get("", 0) <= 0:
+        reasons.append("missing_root_instance")
+    if total_instances < max(0, int(config.quality_min_instances)):
+        reasons.append("insufficient_id_instances")
+    if merge_stats.get("parent_lookup_miss", 0) > max(
+        0, int(config.quality_max_parent_lookup_miss)
+    ):
+        reasons.append("excess_parent_lookup_miss")
+    if not isinstance(merged, dict) or not merged:
+        reasons.append("empty_merged_output")
+    return (len(reasons) == 0), reasons
+
+
+class CatalogOrchestrator:
     def __init__(
         self,
         llm_call_fn: Callable[[dict[str, str], str, str], dict | list | None],
         schema_json: str,
-        template: type[BaseModel] | None,
-        config: StagedPassConfig,
-        on_pass_complete: Callable[[Any], None] | None = None,
-        run_llm_consolidation: Callable[
-            [dict[str, Any], str, list[str], str], dict[str, Any] | None
-        ] | None = None,
+        template: type[BaseModel],
+        config: CatalogOrchestratorConfig,
+        debug_dir: str | None = None,
+        on_trace: Callable[[dict[str, Any]], None] | None = None,
     ) -> None:
-        self._llm_call_fn = llm_call_fn
+        self._llm = llm_call_fn
         self._schema_json = schema_json
         self._template = template
         self._config = config
-        self._on_pass_complete = on_pass_complete
-        self._run_llm_consolidation = run_llm_consolidation
-        self._metadata = prompts.get_template_graph_metadata(template, schema_json)
-        self._plan = prompts.plan_extraction_passes(
-            schema_json=schema_json,
-            template_metadata=self._metadata,
-            max_fields_per_group=config.max_fields_per_group,
-            max_skeleton_fields=config.max_skeleton_fields,
+        self._debug_dir = debug_dir or ""
+        self._on_trace = on_trace
+        self._catalog = catalog_mod.build_node_catalog(template)
+
+    def _run_id_pass(
+        self, markdown: str, context: str
+    ) -> tuple[
+        list[dict[str, Any]],
+        dict[str, int],
+        float,
+        bool,
+        list[str],
+    ]:
+        """Run identity discovery pass (sharded, with retries and optional split)."""
+        id_start = time.perf_counter()
+        shard_size = max(0, int(self._config.id_shard_size))
+        if shard_size <= 0 and len(self._catalog.nodes) > int(self._config.id_auto_shard_threshold):
+            shard_size = max(int(self._config.id_shard_min_size), 4)
+        shards = get_id_pass_shards_v2(
+            self._catalog,
+            shard_size,
+            identity_only=self._config.id_identity_only,
+            root_first=True,
         )
-        self._pass_id_counter = 0
-
-    def _emit_pass_telemetry(
-        self,
-        result: ExtractionPassResult,
-        stage_type: str,
-        fields_requested: list[str],
-        fields_returned: list[str],
-        duration_seconds: float,
-    ) -> None:
-        if self._on_pass_complete is None:
-            return
-        self._pass_id_counter += 1
-        from .....pipeline.trace import StagedPassData
-
-        data = StagedPassData(
-            pass_id=self._pass_id_counter,
-            stage_name=result.stage,
-            stage_type=stage_type,
-            success=result.success,
-            attempts=result.attempts,
-            errors=result.errors,
-            duration_seconds=duration_seconds,
-            fields_requested=fields_requested,
-            fields_returned=fields_returned,
-            metadata={},
-        )
-        self._on_pass_complete(data)
-
-    def _run_pass(
-        self,
-        *,
-        stage_name: str,
-        stage_type: str,
-        prompt: dict[str, str],
-        schema_json: str,
-        fields_requested: list[str],
-    ) -> ExtractionPassResult:
-        attempts = self._config.max_pass_retries + 1
-        errors: list[str] = []
-        start = time.perf_counter()
-        for attempt_idx in range(attempts):
-            logger.info(
-                "[staged] pass=%s stage_type=%s attempt=%s/%s fields=%s",
-                stage_name,
-                stage_type,
-                attempt_idx + 1,
-                attempts,
-                fields_requested[:10] if len(fields_requested) > 10 else fields_requested,
+        max_retries = max(0, int(self._config.max_pass_retries))
+        all_flat: list[list[dict[str, Any]]] = []
+        id_validation_ok = True
+        id_validation_errors: list[str] = []
+        for shard_idx, (primary_paths, allowed_paths) in enumerate(shards):
+            ok, errs, shard_flat = self._run_id_pass_shard(
+                markdown,
+                context,
+                shard_idx,
+                primary_paths,
+                allowed_paths,
+                max_retries,
+                all_flat,
+                id_validation_errors,
             )
-            result = self._llm_call_fn(prompt, schema_json, f"{stage_name} attempt {attempt_idx + 1}")
-            if isinstance(result, dict):
-                duration = time.perf_counter() - start
-                fields_returned = list(result.keys())
-                res = ExtractionPassResult(
-                    stage_name, True, result, attempt_idx + 1, errors, duration_seconds=duration
+            if not ok:
+                id_validation_ok = False
+                id_validation_errors.extend(errs[:15])
+            else:
+                all_flat.append(shard_flat)
+        flat_nodes, per_path_counts = merge_and_dedupe_flat_nodes(all_flat, self._catalog)
+        id_elapsed = time.perf_counter() - id_start
+        total_instances = sum(per_path_counts.values())
+        rich_print(
+            f"[green][IdentityDiscovery][/green] ID pass done in [cyan]{id_elapsed:.1f}s[/cyan]: "
+            f"[cyan]{total_instances}[/cyan] instances across paths "
+        )
+        if self._debug_dir:
+            catalog_mod.write_id_pass_artifact(
+                {"nodes": flat_nodes}, per_path_counts, self._debug_dir
+            )
+        return (flat_nodes, per_path_counts, id_elapsed, id_validation_ok, id_validation_errors)
+
+    def _run_id_pass_shard(
+        self,
+        markdown: str,
+        context: str,
+        shard_idx: int,
+        primary_paths: list[str],
+        allowed_paths: list[str],
+        max_retries: int,
+        all_flat: list[list[dict[str, Any]]],
+        id_validation_errors: list[str],
+    ) -> tuple[bool, list[str], list[dict[str, Any]]]:
+        """Run one ID pass shard (with retries and optional split on failure). Returns (ok, errs, shard_flat)."""
+        id_prompt = catalog_mod.get_discovery_prompt(
+            markdown,
+            self._catalog,
+            primary_paths=primary_paths,
+            allowed_paths=allowed_paths,
+            compact=self._config.id_compact_prompt,
+            include_schema_in_user=not self._config.id_compact_prompt,
+        )
+        id_schema = catalog_mod.build_discovery_schema(self._catalog, allowed_paths)
+        if self._debug_dir and shard_idx == 0:
+            os.makedirs(self._debug_dir, exist_ok=True)
+            with open(
+                os.path.join(self._debug_dir, "id_pass_schema.json"), "w", encoding="utf-8"
+            ) as f:
+                f.write(id_schema)
+            prompt_artifact = {
+                "system": id_prompt["system"],
+                "user": id_prompt["user"][:_DEBUG_PROMPT_USER_TRUNCATE]
+                + (
+                    "\n... [truncated]"
+                    if len(id_prompt["user"]) > _DEBUG_PROMPT_USER_TRUNCATE
+                    else ""
+                ),
+            }
+            with open(
+                os.path.join(self._debug_dir, "id_pass_prompt.json"), "w", encoding="utf-8"
+            ) as f:
+                json.dump(prompt_artifact, f, indent=2)
+        shard_flat: list[dict[str, Any]] = []
+        ok = False
+        errs: list[str] = []
+        for attempt in range(max_retries + 1):
+            id_result = self._llm(
+                id_prompt, id_schema, f"{context} catalog_id_pass_shard_{shard_idx}"
+            )
+            if isinstance(id_result, list):
+                id_result = {"nodes": id_result}
+            if not isinstance(id_result, dict):
+                logger.warning(
+                    "%s ID pass shard %s attempt %s returned no dict",
+                    "[IdentityDiscovery]",
+                    shard_idx + 1,
+                    attempt + 1,
                 )
-                if self._on_pass_complete is not None:
-                    self._emit_pass_telemetry(
-                        res, stage_type, fields_requested, fields_returned, duration
+                if attempt < max_retries:
+                    err_feedback = (
+                        "The previous response was not valid JSON. Please return a single JSON object with "
+                        '"nodes": [{"path": "...", "ids": {...}, "parent": null|{...}}].'
                     )
-                logger.info(
-                    "[staged] pass=%s stage_type=%s success=true attempts=%s duration_seconds=%.2f fields_returned=%s",
-                    stage_name,
-                    stage_type,
-                    attempt_idx + 1,
-                    duration,
-                    len(fields_returned),
-                )
-                return res
-            errors.append(f"empty_or_invalid_response_attempt_{attempt_idx + 1}")
+                    id_prompt["user"] = id_prompt["user"] + "\n\n=== FIX ===\n" + err_feedback
+                continue
+            ok, errs, shard_flat, _ = catalog_mod.validate_id_pass_skeleton_response(
+                id_result, self._catalog, allowed_paths_override=set(allowed_paths)
+            )
+            if ok:
+                return (True, errs, shard_flat)
             logger.warning(
-                "[staged] pass=%s stage_type=%s attempt=%s failed (empty or invalid JSON)",
-                stage_name,
-                stage_type,
-                attempt_idx + 1,
+                "%s ID pass shard %s validation (attempt %s): %s",
+                "[IdentityDiscovery]",
+                shard_idx + 1,
+                attempt + 1,
+                errs[:5],
             )
-        duration = time.perf_counter() - start
-        res = ExtractionPassResult(
-            stage_name, False, {}, attempts, errors, duration_seconds=duration
-        )
-        if self._on_pass_complete is not None:
-            self._emit_pass_telemetry(res, stage_type, fields_requested, [], duration)
-        logger.warning(
-            "[staged] pass=%s stage_type=%s success=false attempts=%s errors=%s",
-            stage_name,
-            stage_type,
-            attempts,
-            errors,
-        )
-        return res
-
-    def extract(self, markdown: str, context: str) -> dict[str, Any] | None:
-        merged: dict[str, Any] = {}
-        identity_fields_map = self._metadata.nested_entity_identity_fields
-
-        # Pass 1: Skeleton
-        if self._plan.skeleton_fields:
-            skeleton_schema = prompts.build_root_subschema(self._schema_json, self._plan.skeleton_fields)
-            skeleton_hints = {
-                k: v
-                for k, v in self._metadata.nested_edge_targets.items()
-                if k in self._plan.skeleton_fields
-            } or None
-            skeleton_prompt = prompts.get_skeleton_prompt(
-                markdown_content=markdown,
-                schema_json=skeleton_schema,
-                anchor_fields=self._plan.skeleton_fields,
-                prior_extraction=merged if self._config.include_prior_context else None,
-                nested_edge_hints=skeleton_hints,
-            )
-            result = self._run_pass(
-                stage_name=f"{context} skeleton",
-                stage_type="skeleton",
-                prompt=skeleton_prompt,
-                schema_json=skeleton_schema,
-                fields_requested=self._plan.skeleton_fields,
-            )
-            if result.success:
-                merge_pass_output(
-                    merged,
-                    result.data,
-                    context_tag="staged:skeleton",
-                    identity_fields_map=identity_fields_map,
-                    policy=ReconciliationPolicy(),
-                    merge_similarity_fallback=self._config.merge_similarity_fallback,
+            if attempt < max_retries:
+                err_feedback = "Fix these validation errors:\n" + "\n".join(errs[:15])
+                err_feedback += (
+                    "\n\nRules reminder:\n"
+                    '- Root path "" must have parent null.\n'
+                    "- Every non-root node must have parent object {path, ids}.\n"
+                    "- For paths with no id_fields, use ids: {} exactly.\n"
+                    "- Return strict JSON only (no trailing commas, no comments)."
                 )
-
-        # Pass 2: Disjoint groups
-        for idx, fields in enumerate(self._plan.groups):
-            group_schema = prompts.build_root_subschema(self._schema_json, fields)
-            group_hints = {
-                k: v for k, v in self._metadata.nested_edge_targets.items() if k in fields
-            } or None
-            group_prompt = prompts.get_group_prompt(
-                markdown_content=markdown,
-                schema_json=group_schema,
-                group_name=f"group_{idx}",
-                focus_fields=fields,
-                prior_extraction=merged if self._config.include_prior_context else None,
-                critical_fields=self._plan.critical_fields,
-                nested_edge_hints=group_hints,
-            )
-            result = self._run_pass(
-                stage_name=f"{context} group_{idx}",
-                stage_type="group",
-                prompt=group_prompt,
-                schema_json=group_schema,
-                fields_requested=fields,
-            )
-            if result.success:
-                merge_pass_output(
-                    merged,
-                    result.data,
-                    context_tag=f"staged:group:{idx}",
-                    identity_fields_map=identity_fields_map,
-                    policy=ReconciliationPolicy(),
-                    merge_similarity_fallback=self._config.merge_similarity_fallback,
+                id_prompt = catalog_mod.get_discovery_prompt(
+                    markdown,
+                    self._catalog,
+                    primary_paths=primary_paths,
+                    allowed_paths=allowed_paths,
+                    compact=self._config.id_compact_prompt,
+                    include_schema_in_user=not self._config.id_compact_prompt,
                 )
-
-        # Pass 3: Quality-based targeted repair
-        previous_report: prompts.QualityReport | None = None
-        for repair_round in range(self._config.max_repair_rounds):
-            report = prompts.assess_quality(
-                candidate_data=merged,
-                schema_json=self._schema_json,
-                critical_fields=self._plan.critical_fields,
-                max_depth=self._config.quality_depth,
+                id_prompt["user"] = id_prompt["user"] + "\n\n=== FIX ===\n" + err_feedback
+        if not ok and len(primary_paths) > max(1, int(self._config.id_shard_min_size)):
+            split_size = max(1, len(primary_paths) // 2)
+            sub_shards = get_id_pass_shards_v2(
+                self._catalog,
+                split_size,
+                identity_only=False,
+                root_first=False,
             )
-            fields_to_repair = report.root_fields()
-            logger.info(
-                "[staged] repair_round=%s quality_issues=%s fields_to_repair=%s",
-                repair_round + 1,
-                len(report.issues),
-                fields_to_repair[:12] if len(fields_to_repair) > 12 else fields_to_repair,
-            )
-            if not fields_to_repair:
-                break
-            if previous_report is not None and not report.improved_over(previous_report):
-                logger.info("[staged] repair quality stalled; stopping repair loop")
-                break
-
-            repair_schema = prompts.build_root_subschema(self._schema_json, fields_to_repair)
-            nested_obligations = report.nested_path_obligations(self._metadata)
-            repair_prompt = prompts.get_repair_prompt(
-                markdown_content=markdown,
-                schema_json=repair_schema,
-                failed_fields=fields_to_repair,
-                prior_extraction=merged if self._config.include_prior_context else None,
-                issue_summary=", ".join(issue.reason for issue in report.issues[:8]),
-                nested_obligations=nested_obligations if nested_obligations else None,
-            )
-            result = self._run_pass(
-                stage_name=f"{context} repair",
-                stage_type="repair",
-                prompt=repair_prompt,
-                schema_json=repair_schema,
-                fields_requested=fields_to_repair,
-            )
-            if result.success:
-                merge_pass_output(
-                    merged,
-                    result.data,
-                    context_tag="staged:repair",
-                    identity_fields_map=identity_fields_map,
-                    policy=ReconciliationPolicy(repair_override_roots=set(fields_to_repair)),
-                    merge_similarity_fallback=self._config.merge_similarity_fallback,
+            for sub_primary, sub_allowed in sub_shards:
+                if not set(sub_primary).issubset(set(primary_paths)):
+                    continue
+                sub_prompt = catalog_mod.get_discovery_prompt(
+                    markdown,
+                    self._catalog,
+                    primary_paths=sub_primary,
+                    allowed_paths=sub_allowed,
+                    compact=self._config.id_compact_prompt,
+                    include_schema_in_user=not self._config.id_compact_prompt,
                 )
-            previous_report = report
-
-        # Optional LLM consolidation when heuristic repair left issues
-        if merged and self._run_llm_consolidation is not None:
-            final_report = prompts.assess_quality(
-                candidate_data=merged,
-                schema_json=self._schema_json,
-                critical_fields=self._plan.critical_fields,
-                max_depth=self._config.quality_depth,
-            )
-            fields_with_issues = final_report.root_fields()
-            if fields_with_issues:
-                logger.info(
-                    "[staged] triggering LLM consolidation for fields=%s",
-                    fields_with_issues[:15] if len(fields_with_issues) > 15 else fields_with_issues,
+                sub_schema = catalog_mod.build_discovery_schema(self._catalog, sub_allowed)
+                sub_result = self._llm(
+                    sub_prompt,
+                    sub_schema,
+                    f"{context} catalog_id_pass_shard_{shard_idx}_split",
                 )
-                consolidation_result = self._run_llm_consolidation(
-                    merged, markdown, fields_with_issues, self._schema_json
-                )
-                if isinstance(consolidation_result, dict) and consolidation_result:
-                    merge_pass_output(
-                        merged,
-                        consolidation_result,
-                        context_tag="staged:llm_consolidation",
-                        identity_fields_map=identity_fields_map,
-                        policy=ReconciliationPolicy(repair_override_roots=set(fields_with_issues)),
-                        merge_similarity_fallback=self._config.merge_similarity_fallback,
+                if isinstance(sub_result, list):
+                    sub_result = {"nodes": sub_result}
+                if isinstance(sub_result, dict):
+                    sub_ok, sub_errs, sub_flat, _ = catalog_mod.validate_id_pass_skeleton_response(
+                        sub_result,
+                        self._catalog,
+                        allowed_paths_override=set(sub_allowed),
                     )
-                    logger.info("[staged] LLM consolidation merged successfully")
+                    if sub_ok:
+                        all_flat.append(sub_flat)
+                    else:
+                        id_validation_errors.extend(sub_errs[:10])
+            return (False, errs, shard_flat)
+        if not ok:
+            all_flat.append(shard_flat)
+        return (ok, errs, shard_flat)
 
-        if merged and self._template is not None:
-            materialize_nested_edges(merged, self._metadata)
+    def _run_fill_pass(
+        self,
+        markdown: str,
+        context: str,
+        path_to_descriptors: dict[str, list[dict[str, Any]]],
+    ) -> tuple[dict[str, list[dict[str, Any]]], list[dict[str, Any]], float]:
+        """Run fill pass (batch jobs sequential or parallel). Returns (path_filled, fill_batches_trace, fill_elapsed)."""
+        path_filled: dict[str, list[dict[str, Any]]] = {}
+        fill_batches_trace: list[dict[str, Any]] = []
+        fill_debug_batches: list[dict[str, Any]] = []
+        workers = max(1, int(self._config.parallel_workers))
+        max_nodes_per_call = self._config.max_nodes_per_call
 
-        return merged or None
+        def run_one_batch(
+            spec: NodeSpec,
+            batch_descriptors: list[dict[str, Any]],
+            batch_idx: int,
+            sub_schema: str,
+            call_index: int,
+        ) -> tuple[str, int, list[dict[str, Any]], dict[str, Any]]:
+            prompt = get_fill_batch_prompt(markdown, spec.path, spec, batch_descriptors, sub_schema)
+            out = self._llm(prompt, sub_schema, f"{context} fill_call_{call_index}")
+            if isinstance(out, list):
+                result_raw = out
+            elif isinstance(out, dict) and "items" in out:
+                result_raw = out["items"]
+            else:
+                result_raw = [{}] * len(batch_descriptors)
+            model = get_model_for_path(self._template, spec.path)
+            allowed_keys = set(model.model_fields.keys()) if model is not None else set()
+            result = _sanitize_filled_objects(
+                result_raw,
+                allowed_keys=allowed_keys,
+                descriptors=batch_descriptors,
+                id_fields=spec.id_fields,
+            )
+            debug_entry = {
+                "call_index": call_index,
+                "path": spec.path,
+                "batch_idx": batch_idx,
+                "instance_count": len(batch_descriptors),
+                "filled": result,
+            }
+            return (spec.path, batch_idx, result, debug_entry)
+
+        def _path_depth(p: str) -> int:
+            return (p.count(".") + 1) if p else 0
+
+        specs_by_depth = sorted(
+            self._catalog.nodes,
+            key=lambda s: _path_depth(s.path),
+            reverse=True,
+        )
+        fill_jobs: list[tuple[NodeSpec, list[dict[str, Any]], int, str]] = []
+        for spec in specs_by_depth:
+            descriptors = path_to_descriptors.get(spec.path, [])
+            if not descriptors:
+                continue
+            sub_schema = _build_projected_fill_schema(self._template, spec, self._catalog)
+            batches = [
+                descriptors[i : i + max_nodes_per_call]
+                for i in range(0, len(descriptors), max_nodes_per_call)
+            ]
+            for bi, batch in enumerate(batches):
+                fill_jobs.append((spec, batch, bi, sub_schema))
+
+        num_calls = len(fill_jobs)
+        fill_start = time.perf_counter()
+        rich_print(
+            f"[blue][NodesProvisioning][/blue] Fill pass [cyan]{num_calls}[/cyan] LLM call(s) "
+            f"(max [cyan]{max_nodes_per_call}[/cyan] nodes/call, [cyan]{workers}[/cyan] worker(s))..."
+        )
+        if workers <= 1:
+            for call_index, (spec, batch, batch_idx, sub_schema) in enumerate(fill_jobs):
+                _, _, result, debug_entry = run_one_batch(
+                    spec, batch, batch_idx, sub_schema, call_index
+                )
+                path_filled.setdefault(spec.path, []).extend(result)
+                fill_batches_trace.append(
+                    {
+                        "call_index": call_index,
+                        "path": spec.path,
+                        "batch_idx": batch_idx,
+                        "instance_count": len(batch),
+                    }
+                )
+                if self._debug_dir:
+                    fill_debug_batches.append(debug_entry)
+        else:
+
+            def run_job(
+                item: tuple[int, tuple],
+            ) -> tuple[str, int, list[dict[str, Any]], dict[str, Any]]:
+                call_index, (spec, batch, batch_idx, sub_schema) = item
+                return run_one_batch(spec, batch, batch_idx, sub_schema, call_index)
+
+            job_items = [(ci, job) for ci, job in enumerate(fill_jobs)]
+            with ThreadPoolExecutor(max_workers=workers) as ex:
+                completed = list(ex.map(run_job, job_items))
+            by_path: dict[str, list[tuple[int, list[dict[str, Any]]]]] = {}
+            for path, batch_idx, result, debug_entry in completed:
+                by_path.setdefault(path, []).append((batch_idx, result))
+                fill_batches_trace.append(
+                    {
+                        "call_index": debug_entry["call_index"],
+                        "path": path,
+                        "batch_idx": batch_idx,
+                        "instance_count": debug_entry["instance_count"],
+                    }
+                )
+                if self._debug_dir:
+                    fill_debug_batches.append(debug_entry)
+            for path, batch_results in by_path.items():
+                batch_results.sort(key=lambda x: x[0])
+                path_filled[path] = []
+                for _, result in batch_results:
+                    path_filled[path].extend(result)
+            fill_debug_batches.sort(key=lambda e: e["call_index"])
+
+        fill_elapsed = time.perf_counter() - fill_start
+        if self._debug_dir and fill_debug_batches:
+            os.makedirs(self._debug_dir, exist_ok=True)
+            with open(os.path.join(self._debug_dir, "fill_pass.json"), "w", encoding="utf-8") as f:
+                json.dump({"batches": fill_debug_batches}, f, indent=2, default=str)
+        rich_print(
+            f"[green][NodesProvisioning][/green] Fill pass done in [cyan]{fill_elapsed:.1f}s[/cyan]."
+        )
+        return (path_filled, fill_batches_trace, fill_elapsed)
+
+    def _finalize_and_return(
+        self,
+        path_filled: dict[str, list[dict[str, Any]]],
+        path_descriptors: dict[str, list[dict[str, Any]]],
+        per_path_counts: dict[str, int],
+        id_elapsed: float,
+        fill_elapsed: float,
+        id_validation_ok: bool,
+        id_validation_errors: list[str],
+        fill_batches_trace: list[dict[str, Any]],
+        start_total: float,
+        context: str,
+    ) -> dict[str, Any] | None:
+        """Merge, resolve conflicts, assemble edges, run quality gate, write debug/trace, return merged or None."""
+        rich_print("[blue][StagedExtraction][/blue] Merging and assembling edges...")
+        merge_stats: dict[str, int] = {}
+        merged = merge_filled_into_root(
+            path_filled, path_descriptors, self._catalog, stats=merge_stats
+        )
+        merged = _maybe_resolve_conflicts(merged, self._catalog, self._llm, context)
+        edges_resolved = assemble_edges_from_merged(merged, self._catalog)
+        quality_ok, quality_reasons = _evaluate_quality_gate(
+            config=self._config,
+            per_path_counts=per_path_counts,
+            merge_stats=merge_stats,
+            merged=merged,
+        )
+        total_elapsed = time.perf_counter() - start_total
+        trace = _build_staged_trace(
+            template_name=getattr(self._template, "__name__", "Unknown"),
+            config=self._config,
+            catalog=self._catalog,
+            id_elapsed=id_elapsed,
+            fill_elapsed=fill_elapsed,
+            total_elapsed=total_elapsed,
+            per_path_counts=per_path_counts,
+            id_validation_ok=id_validation_ok,
+            id_validation_errors=id_validation_errors,
+            fill_batches=fill_batches_trace,
+            merged_keys=list(merged.keys()) if isinstance(merged, dict) else [],
+            edges_count=len(edges_resolved),
+            merge_stats=merge_stats,
+            quality_gate={"ok": quality_ok, "reasons": quality_reasons},
+            fallback_reason=("quality_gate_failed" if not quality_ok else None),
+        )
+        if self._debug_dir:
+            os.makedirs(self._debug_dir, exist_ok=True)
+            p = os.path.join(self._debug_dir, "edges_pass.json")
+            with open(p, "w", encoding="utf-8") as f:
+                json.dump(
+                    {
+                        "edges": [e.to_dict() for e in self._catalog.edges],
+                        "resolved": edges_resolved,
+                    },
+                    f,
+                    indent=2,
+                )
+            with open(
+                os.path.join(self._debug_dir, "merged_output.json"), "w", encoding="utf-8"
+            ) as f:
+                json.dump(merged, f, indent=2, default=str)
+            _write_staged_trace(self._debug_dir, trace)
+        if self._on_trace is not None:
+            self._on_trace(trace)
+        logger.info("%s Staged extraction done in %.2fs", "[StagedExtraction]", total_elapsed)
+        rich_print(
+            f"[green][StagedExtraction][/green] Staged extraction complete in [cyan]{total_elapsed:.1f}s[/cyan] "
+            f"(ID: [cyan]{id_elapsed:.1f}s[/cyan], fill: [cyan]{fill_elapsed:.1f}s[/cyan])."
+        )
+        if not quality_ok:
+            logger.warning("[StagedExtraction] Quality gate failed: %s", ", ".join(quality_reasons))
+            return None
+        return merged
+
+    def extract(self, markdown: str, context: str = "document") -> dict[str, Any] | None:
+        start_total = time.perf_counter()
+        n_paths = len(self._catalog.nodes)
+        rich_print(
+            f"[blue][StagedExtraction][/blue] Nodes Catalog: [cyan]{n_paths}[/cyan] paths identified"
+        )
+        if self._debug_dir:
+            catalog_mod.write_catalog_artifact(self._catalog, self._debug_dir)
+        rich_print("[blue][IdentityDiscovery][/blue] ID pass in progress...")
+        flat_nodes, per_path_counts, id_elapsed, id_validation_ok, id_validation_errors = (
+            self._run_id_pass(markdown, context)
+        )
+        path_to_descriptors = flat_nodes_to_path_lists(flat_nodes)
+        path_descriptors = {p: list(lst) for p, lst in path_to_descriptors.items()}
+        path_filled, fill_batches_trace, fill_elapsed = self._run_fill_pass(
+            markdown, context, path_to_descriptors
+        )
+        return self._finalize_and_return(
+            path_filled,
+            path_descriptors,
+            per_path_counts,
+            id_elapsed,
+            fill_elapsed,
+            id_validation_ok,
+            id_validation_errors,
+            fill_batches_trace,
+            start_total,
+            context,
+        )
