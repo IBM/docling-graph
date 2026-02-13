@@ -89,14 +89,17 @@ class OneToOneStrategy(BaseExtractor):
         self, backend: TextExtractionBackendProtocol, source: str, template: Type[BaseModel]
     ) -> Tuple[List[BaseModel], DoclingDocument | None]:
         """LLM path: convert to markdown and process per page."""
+        import time
+
+        conversion_started_at = time.time()
         document = self.doc_processor.convert_to_docling_doc(source)
+        conversion_runtime_seconds = time.time() - conversion_started_at
+        page_markdown_started_at = time.time()
         page_markdowns = self.doc_processor.extract_page_markdowns(document)
+        conversion_runtime_seconds += time.time() - page_markdown_started_at
 
         extracted_models: List[BaseModel] = []
         total_pages = len(page_markdowns)
-
-        # Import for trace data capture
-        import time
 
         # Capture page trace when debug/trace is enabled
         if hasattr(self, "trace_data") and self.trace_data:
@@ -106,6 +109,21 @@ class OneToOneStrategy(BaseExtractor):
                     "extraction",
                     {"page_number": page_num, "text_content": page_md, "metadata": {}},
                 )
+            if not page_markdowns:
+                self.trace_data.emit(
+                    "page_markdown_extracted",
+                    "extraction",
+                    {"page_number": 1, "text_content": "", "metadata": {}},
+                )
+            self.trace_data.emit(
+                "docling_conversion_completed",
+                "extraction",
+                {
+                    "runtime_seconds": conversion_runtime_seconds,
+                    "page_count": len(page_markdowns) if page_markdowns else 1,
+                    "source": "docling_document_conversion",
+                },
+            )
 
         extraction_id = 0
         for page_num, page_md in enumerate(page_markdowns, start=1):

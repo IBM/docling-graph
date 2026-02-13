@@ -47,6 +47,11 @@ class TestEventTrace:
         trace = EventTrace()
         trace.emit("pipeline_started", "pipeline", {"source": "doc.pdf"})
         trace.emit("page_markdown_extracted", "extraction", {"page_number": 1})
+        trace.emit(
+            "docling_conversion_completed",
+            "extraction",
+            {"runtime_seconds": 2.1542, "page_count": 1, "source": "docling_document_conversion"},
+        )
         trace.emit("extraction_completed", "extraction", {"extraction_id": 0})
         trace.emit("graph_created", "graph_conversion", {"node_count": 1, "edge_count": 0})
 
@@ -59,6 +64,10 @@ class TestEventTrace:
         assert payload["summary"]["edge_count"] == 0
         step_names = [step["name"] for step in payload["steps"]]
         assert step_names == ["pipeline", "docling_conversion", "data_extraction", "graph_mapping"]
+        docling_step = next(
+            step for step in payload["steps"] if step["name"] == "docling_conversion"
+        )
+        assert docling_step["runtime_seconds"] == 2.1542
 
         for step in payload["steps"]:
             assert "runtime_seconds" in step

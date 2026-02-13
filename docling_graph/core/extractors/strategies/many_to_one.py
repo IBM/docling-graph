@@ -143,8 +143,15 @@ class ManyToOneStrategy(BaseExtractor):
     ) -> Tuple[list[BaseModel], DoclingDocument | None]:
         """Extract using LLM backend (contract-driven full-document extraction)."""
         try:
+            conversion_started_at = time.time()
             document = self.doc_processor.convert_to_docling_doc(source)
-            return self._extract_direct_mode(backend, document, template)
+            conversion_runtime_seconds = time.time() - conversion_started_at
+            return self._extract_direct_mode(
+                backend,
+                document,
+                template,
+                conversion_runtime_seconds=conversion_runtime_seconds,
+            )
         except Exception as e:
             logger.error(f"LLM extraction failed: {e}")
             import traceback
@@ -182,6 +189,22 @@ class ManyToOneStrategy(BaseExtractor):
         logger.info("Contract-driven mode: full-text extraction")
 
         try:
+            # Emit one docling_conversion event so the step appears (conversion skipped / text input)
+            if hasattr(self, "trace_data") and self.trace_data:
+                self.trace_data.emit(
+                    "page_markdown_extracted",
+                    "extraction",
+                    {
+                        "page_number": 1,
+                        "text_content": text or "",
+                        "metadata": {"source": "text_input"},
+                    },
+                )
+                self.trace_data.emit(
+                    "docling_conversion_completed",
+                    "extraction",
+                    {"runtime_seconds": 0.0, "page_count": 1, "source": "text_input"},
+                )
             if (
                 hasattr(self, "trace_data")
                 and self.trace_data is not None
@@ -247,21 +270,41 @@ class ManyToOneStrategy(BaseExtractor):
         backend: TextExtractionBackendProtocol,
         document: DoclingDocument,
         template: Type[BaseModel],
+        conversion_runtime_seconds: float = 0.0,
     ) -> Tuple[list[BaseModel], DoclingDocument | None]:
         """Contract-driven full-document extraction."""
         logger.info("Contract-driven mode: full-document extraction")
 
         try:
+            full_markdown = self.doc_processor.extract_full_markdown(document)
             if hasattr(self, "trace_data") and self.trace_data:
+                page_markdown_started_at = time.time()
                 page_markdowns = self.doc_processor.extract_page_markdowns(document)
-                for page_num, page_md in enumerate(page_markdowns, start=1):
+                page_markdown_runtime_seconds = time.time() - page_markdown_started_at
+                if len(page_markdowns) == 0:
+                    # Ensure docling_conversion step appears (e.g. single-page or non-paged doc)
                     self.trace_data.emit(
                         "page_markdown_extracted",
                         "extraction",
-                        {"page_number": page_num, "text_content": page_md, "metadata": {}},
+                        {"page_number": 1, "text_content": full_markdown or "", "metadata": {}},
                     )
-
-            full_markdown = self.doc_processor.extract_full_markdown(document)
+                else:
+                    for page_num, page_md in enumerate(page_markdowns, start=1):
+                        self.trace_data.emit(
+                            "page_markdown_extracted",
+                            "extraction",
+                            {"page_number": page_num, "text_content": page_md, "metadata": {}},
+                        )
+                self.trace_data.emit(
+                    "docling_conversion_completed",
+                    "extraction",
+                    {
+                        "runtime_seconds": conversion_runtime_seconds
+                        + page_markdown_runtime_seconds,
+                        "page_count": len(page_markdowns) if page_markdowns else 1,
+                        "source": "docling_document_conversion",
+                    },
+                )
 
             if (
                 hasattr(self, "trace_data")
