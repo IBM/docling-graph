@@ -703,6 +703,18 @@ class ExtractionStage(PipelineStage):
             logger.info(f"[{self.name()}] Converting DoclingDocument to markdown")
             markdown_text = context.docling_document.export_to_markdown()
 
+            # Emit one docling_conversion event so the step appears in trace (conversion was pre-done)
+            if context.trace_data:
+                context.trace_data.emit(
+                    "page_markdown_extracted",
+                    "extraction",
+                    {
+                        "page_number": 1,
+                        "text_content": markdown_text or "",
+                        "metadata": {"source": "docling_document"},
+                    },
+                )
+
             extracted_model = backend.extract_from_markdown(
                 markdown=markdown_text,
                 template=context.template,
