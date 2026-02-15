@@ -65,7 +65,7 @@ def _fuzzy_similarity(a: str, b: str) -> float:
     if not a or not b:
         return 0.0
     try:
-        from rapidfuzz import fuzz  # type: ignore
+        from rapidfuzz import fuzz
 
         return float(fuzz.token_sort_ratio(a, b)) / 100.0
     except Exception:
@@ -76,7 +76,7 @@ def _semantic_similarity(a: str, b: str) -> tuple[float, str | None]:
     if not a or not b:
         return 0.0, None
     try:
-        import spacy  # type: ignore
+        import spacy
 
         nlp = spacy.blank("en")
         doc_a = nlp(a)
