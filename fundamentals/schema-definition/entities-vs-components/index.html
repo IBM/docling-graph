@@ -1370,6 +1370,23 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#staged-extraction-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Staged extraction considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Staged extraction considerations">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#pattern-2-measurements-in-research" class="md-nav__link">
     <span class="md-ellipsis">
@@ -1605,6 +1622,34 @@
     
   
     Advanced Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../staged-extraction-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction Schema
   
 
     
@@ -2147,14 +2192,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../../extraction-process/model-capabilities/" class="md-nav__link">
+      <a href="../../extraction-process/delta-extraction/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Model Capabilities
+    Delta Extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extraction-process/staged-extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction
   
 
     
@@ -4455,6 +4528,23 @@
   
 </li>
         
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#staged-extraction-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Staged extraction considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Staged extraction considerations">
+      <ul class="md-nav__list">
+        
           <li class="md-nav__item">
   <a href="#pattern-2-measurements-in-research" class="md-nav__link">
     <span class="md-ellipsis">
@@ -4710,6 +4800,7 @@
 1. <strong>Together form a natural unique identifier</strong>
 2. <strong>Are stable</strong> (don't change frequently)
 3. <strong>Are likely to be present</strong> in extracted data</p>
+<p><strong>Staged and delta extraction:</strong> When using <code>extraction_contract="staged"</code> or <code>"delta"</code>, the catalog collects <strong>identity examples</strong> from (1) the parent field's list-of-dict examples and (2) the child model's identity fields' scalar <code>examples</code>. Provide identity examples either on the parent field (e.g. <code>studies = Field(examples=[{"study_id": "3.1", ...}])</code>) or on the entity's ID fields (e.g. <code>study_id = Field(examples=["3.1", "STUDY-BINDER-MW"])</code>) so the LLM sees valid-ID formats. Prefer required, short, document-derived ID fields. See <a href="../staged-extraction-schema/">Schema design for staged extraction</a>.</p>
 <h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Single field ID</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Organization</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -5095,6 +5186,15 @@ flowchart TD
 <a id="__codelineno-25-16" name="__codelineno-25-16" href="#__codelineno-25-16"></a>    <span class="n">addresses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Address</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;LOCATED_AT&quot;</span><span class="p">,</span> <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Result:</strong> Same address node is shared across multiple people/organizations.</p>
+<hr />
+<h2 id="staged-extraction-considerations">Staged extraction considerations<a class="headerlink" href="#staged-extraction-considerations" title="Permanent link">&para;</a></h2>
+<p>When using <strong>staged extraction</strong> (<code>extraction_contract="staged"</code>):</p>
+<ul>
+<li><strong>Entities</strong> that should participate in the ID pass must have <code>graph_id_fields</code>. Components (<code>is_entity=False</code>) do not appear as separate identity paths when <code>staged_id_identity_only=True</code>.</li>
+<li><strong>Components</strong> are included in the staged catalog only when the relationship uses <code>edge()</code> with an <code>edge_label</code>. Components without an edge label are not separate catalog nodes.</li>
+<li><strong>Parent linkage</strong> in the fill/merge phase uses <code>(path, id_tuple)</code> and parent <code>(parent_path, parent_id_tuple)</code>. Ensure parent entities have stable, extractable <code>graph_id_fields</code> so references resolve and the quality gate (e.g. <code>staged_quality_max_parent_lookup_miss</code>) can pass.</li>
+</ul>
+<p>For full guidance (identity choices, depth, troubleshooting), see <a href="../staged-extraction-schema/">Schema design for staged extraction</a>.</p>
 <h3 id="pattern-2-measurements-in-research">Pattern 2: Measurements in Research<a class="headerlink" href="#pattern-2-measurements-in-research" title="Permanent link">&para;</a></h3>
 <p><strong>Scenario:</strong> Multiple experiments report the same measurement value.</p>
 <p><strong>Solution:</strong> Make Measurement a component.</p>

@@ -1171,6 +1171,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../schema-definition/staged-extraction-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../schema-definition/best-practices/" class="md-nav__link">
         
   
@@ -1693,14 +1721,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../model-capabilities/" class="md-nav__link">
+      <a href="../delta-extraction/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Model Capabilities
+    Delta Extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../staged-extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction
   
 
     
@@ -5416,7 +5472,7 @@ flowchart LR
 <a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="c1"># Or use smaller chunks</span>
 <a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="n">chunker</span> <span class="o">=</span> <span class="n">DocumentChunker</span><span class="p">(</span>
 <a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>    <span class="n">provider</span><span class="o">=</span><span class="s2">&quot;mistral&quot;</span><span class="p">,</span>
-<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>    <span class="n">max_tokens</span><span class="o">=</span><span class="mi">3000</span>  <span class="c1"># Smaller chunks (was 4096)</span>
+<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>    <span class="n">max_tokens</span><span class="o">=</span><span class="mi">3000</span>  <span class="c1"># Smaller chunks</span>
 <a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="p">)</span>
 </code></pre></div></p>
 <hr />

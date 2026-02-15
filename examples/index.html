@@ -1156,6 +1156,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../fundamentals/schema-definition/staged-extraction-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../fundamentals/schema-definition/best-practices/" class="md-nav__link">
         
   
@@ -1672,14 +1700,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../fundamentals/extraction-process/model-capabilities/" class="md-nav__link">
+      <a href="../fundamentals/extraction-process/delta-extraction/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Model Capabilities
+    Delta Extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fundamentals/extraction-process/staged-extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction
   
 
     
@@ -3705,15 +3761,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-scripts-0112" class="md-nav__link">
+  <a href="#example-scripts-0113" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Example Scripts (01–12)
+        Example Scripts (01–13)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Example Scripts (01–12)">
+    <nav class="md-nav" aria-label="Example Scripts (01–13)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3809,7 +3865,7 @@
 <tbody>
 <tr>
 <td><code>docs/examples/scripts/</code></td>
-<td>Python example scripts (01–12)</td>
+<td>Python example scripts (01–13)</td>
 </tr>
 <tr>
 <td><code>docs/examples/templates/</code></td>
@@ -3817,7 +3873,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="example-scripts-0112">Example Scripts (01–12)<a class="headerlink" href="#example-scripts-0112" title="Permanent link">&para;</a></h2>
+<h2 id="example-scripts-0113">Example Scripts (01–13)<a class="headerlink" href="#example-scripts-0113" title="Permanent link">&para;</a></h2>
 <h3 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong><code>01_quickstart_vlm_image.py</code></strong> — VLM extraction from an invoice image</li>
@@ -3836,8 +3892,9 @@
 <li><strong><code>08_chunking_consolidation.py</code></strong> — Chunking and merge behavior</li>
 <li><strong><code>09_batch_processing.py</code></strong> — Batch processing with error handling</li>
 <li><strong><code>10_provider_configs.py</code></strong> — OpenAI, Mistral, Gemini, WatsonX</li>
-<li><strong><code>11_custom_litellm_call.py</code></strong> — One-off LiteLLM completion (direct call)</li>
+<li><strong><code>11_staged_extraction.py</code></strong> — Staged extraction (ID pass → fill pass → merge) for complex templates</li>
 <li><strong><code>12_custom_llm_client.py</code></strong> — Custom LLM client (bring your own URL) with full pipeline</li>
+<li><strong><code>13_delta_extraction.py</code></strong> — Delta extraction (chunk → batch → graph IR → merge → projection) for long documents</li>
 </ol>
 <p>For CLI usage, see <a href="../usage/cli/">CLI Reference</a> and <a href="../usage/cli/convert-command/">convert command</a>.</p>
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>

@@ -12,13 +12,13 @@
         <meta name="author" content="IBM Research">
       
       
-        <link rel="canonical" href="https://ibm.github.io/docling-graph/fundamentals/extraction-process/model-capabilities/">
+        <link rel="canonical" href="https://ibm.github.io/docling-graph/fundamentals/extraction-process/delta-extraction/">
       
       
         <link rel="prev" href="../extraction-backends/">
       
       
-        <link rel="next" href="../model-merging/">
+        <link rel="next" href="../staged-extraction/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Model Capabilities - Docling Graph Documentation</title>
+        <title>Delta Extraction - Docling Graph Documentation</title>
       
     
     
@@ -121,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Model Capabilities
+              Delta Extraction
             
           </span>
         </div>
@@ -1171,6 +1171,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../schema-definition/staged-extraction-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../schema-definition/best-practices/" class="md-nav__link">
         
   
@@ -1707,7 +1735,7 @@
   <span class="md-ellipsis">
     
   
-    Model Capabilities
+    Delta Extraction
   
 
     
@@ -1725,7 +1753,7 @@
   <span class="md-ellipsis">
     
   
-    Model Capabilities
+    Delta Extraction
   
 
     
@@ -1760,22 +1788,88 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#model-capability-tiers" class="md-nav__link">
+  <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Model Capability Tiers
+        How It Works
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Model Capability Tiers">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-and-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration and options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration and options">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tier-classification" class="md-nav__link">
+  <a href="#batching-and-parallelism" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Tier Classification
+        Batching and parallelism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ir-normalizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IR normalizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resolvers-post-merge-dedup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolvers (post-merge dedup)
       
     </span>
   </a>
@@ -1788,22 +1882,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automatic-detection" class="md-nav__link">
+  <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automatic Detection
+        Usage
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Automatic Detection">
+    <nav class="md-nav" aria-label="Usage">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#detection-logic" class="md-nav__link">
+  <a href="#python-api" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Detection Logic
+        Python API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI
       
     </span>
   </a>
@@ -1816,99 +1921,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adaptive-behavior" class="md-nav__link">
+  <a href="#trace-and-debugging" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Adaptive Behavior
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Adaptive Behavior">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#simple-models-1b-7b" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SIMPLE Models (1B-7B)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#standard-models-7b-13b" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        STANDARD Models (7B-13B)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#advanced-models-13b" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ADVANCED Models (13B+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#chain-of-density-consolidation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Chain of Density Consolidation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Chain of Density Consolidation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#three-step-refinement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Three-Step Refinement
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#when-to-use-chain-of-density" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        When to Use Chain of Density
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#supported-models" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Supported Models
+        Trace and debugging
       
     </span>
   </a>
@@ -1916,149 +1932,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance-implications" class="md-nav__link">
+  <a href="#related" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance Implications
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Implications">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#speed-vs-accuracy-trade-off" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Speed vs Accuracy Trade-off
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-results" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Benchmark Results
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#best-practices" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Best Practices
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Best Practices">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#match-tier-to-task-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        👍 Match Tier to Task Complexity
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#start-small-scale-up" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        👍 Start Small, Scale Up
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#use-chain-of-density-wisely" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        👍 Use Chain of Density Wisely
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#model-not-detected-correctly" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🐛 Model Not Detected Correctly
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#poor-accuracy-with-simple-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🐛 Poor Accuracy with SIMPLE Model
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#slow-processing-with-advanced-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🐛 Slow Processing with ADVANCED Model
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Next Steps
+        Related
       
     </span>
   </a>
@@ -2069,6 +1946,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../staged-extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -4089,22 +3994,88 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#model-capability-tiers" class="md-nav__link">
+  <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Model Capability Tiers
+        How It Works
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Model Capability Tiers">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-and-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration and options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration and options">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#tier-classification" class="md-nav__link">
+  <a href="#batching-and-parallelism" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Tier Classification
+        Batching and parallelism
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality gate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#identity-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ir-normalizer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IR normalizer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resolvers-post-merge-dedup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolvers (post-merge dedup)
       
     </span>
   </a>
@@ -4117,22 +4088,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#automatic-detection" class="md-nav__link">
+  <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automatic Detection
+        Usage
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Automatic Detection">
+    <nav class="md-nav" aria-label="Usage">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#detection-logic" class="md-nav__link">
+  <a href="#python-api" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Detection Logic
+        Python API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI
       
     </span>
   </a>
@@ -4145,99 +4127,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adaptive-behavior" class="md-nav__link">
+  <a href="#trace-and-debugging" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Adaptive Behavior
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Adaptive Behavior">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#simple-models-1b-7b" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SIMPLE Models (1B-7B)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#standard-models-7b-13b" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        STANDARD Models (7B-13B)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#advanced-models-13b" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ADVANCED Models (13B+)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#chain-of-density-consolidation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Chain of Density Consolidation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Chain of Density Consolidation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#three-step-refinement" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Three-Step Refinement
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#when-to-use-chain-of-density" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        When to Use Chain of Density
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#supported-models" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Supported Models
+        Trace and debugging
       
     </span>
   </a>
@@ -4245,149 +4138,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance-implications" class="md-nav__link">
+  <a href="#related" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance Implications
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Performance Implications">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#speed-vs-accuracy-trade-off" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Speed vs Accuracy Trade-off
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-results" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Benchmark Results
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#best-practices" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Best Practices
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Best Practices">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#match-tier-to-task-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        👍 Match Tier to Task Complexity
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#start-small-scale-up" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        👍 Start Small, Scale Up
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#use-chain-of-density-wisely" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        👍 Use Chain of Density Wisely
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Troubleshooting
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#model-not-detected-correctly" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🐛 Model Not Detected Correctly
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#poor-accuracy-with-simple-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🐛 Poor Accuracy with SIMPLE Model
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#slow-processing-with-advanced-model" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🐛 Slow Processing with ADVANCED Model
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Next Steps
+        Related
       
     </span>
   </a>
@@ -4414,383 +4168,408 @@
   
 
 
-<h1 id="model-capabilities">Model Capabilities<a class="headerlink" href="#model-capabilities" title="Permanent link">&para;</a></h1>
+<h1 id="delta-extraction">Delta Extraction<a class="headerlink" href="#delta-extraction" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>Docling-Graph automatically classifies models into <strong>three capability tiers</strong> to optimize extraction quality and performance. This intelligent system adapts prompts, consolidation strategies, and processing approaches based on model size and capabilities.</p>
-<p><strong>What You'll Learn:</strong>
-- Model capability tier system
-- Automatic model detection
-- Adaptive behavior per tier
-- Performance implications
-- Supported models by tier</p>
+<p><strong>Delta extraction</strong> is an LLM extraction contract for <strong>many-to-one</strong> processing that turns document chunks into a <strong>flat graph IR</strong> (nodes and relationships), then normalizes, merges, and projects the result into your Pydantic template. It is designed for long documents and chunk-based workflows.</p>
+<p>Set <code>extraction_contract="delta"</code> in your config or use <code>--extraction-contract delta</code> on the CLI. Chunking must be enabled (<code>use_chunking=True</code>, which is the default for many-to-one).</p>
+<p><strong>When to use:</strong></p>
+<ul>
+<li>Long documents where you want <strong>token-bounded batching</strong> (multiple chunks per LLM call, then merge by identity).</li>
+<li>You prefer a <strong>graph-first</strong> representation: entities as nodes with <code>path</code>, <code>ids</code>, and <code>parent</code>, then projected to the template.</li>
+<li>You want optional <strong>post-merge resolvers</strong> (fuzzy/semantic) to merge near-duplicate entities.</li>
+</ul>
+<p><strong>When to use direct (default) or staged:</strong></p>
+<ul>
+<li><strong>Direct</strong>: Flat or simple templates; single-pass extraction and programmatic merge.</li>
+<li><strong>Staged</strong>: Complex nested templates; ID pass → fill pass → merge (no chunk batching).</li>
+</ul>
 <hr />
-<h2 id="model-capability-tiers">Model Capability Tiers<a class="headerlink" href="#model-capability-tiers" title="Permanent link">&para;</a></h2>
-<h3 id="tier-classification">Tier Classification<a class="headerlink" href="#tier-classification" title="Permanent link">&para;</a></h3>
+<h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
+<p>Delta extraction runs these steps:</p>
+<pre class="mermaid"><code>%%{init: {'theme': 'redux-dark', 'look': 'default', 'layout': 'elk'}}%%
+flowchart TB
+    %% 1. Define Classes
+    classDef input fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1
+    classDef config fill:#FFF8E1,stroke:#FFECB3,color:#5D4037
+    classDef output fill:#E8F5E9,stroke:#A5D6A7,color:#1B5E20
+    classDef decision fill:#FFE0B2,stroke:#FFB74D,color:#E65100
+    classDef data fill:#EDE7F6,stroke:#B39DDB,color:#4527A0
+    classDef operator fill:#F3E5F5,stroke:#CE93D8,color:#6A1B9A
+    classDef process fill:#ECEFF1,stroke:#B0BEC5,color:#263238
+
+    classDef subgraph_style fill:none,stroke:#969696,stroke-width:2px,stroke-dasharray: 5 5,color:#969696
+
+    %% 2. Define Nodes
+    n1@{ shape: terminal, label: "Source Chunks" }
+    n2@{ shape: terminal, label: "Delta Template Config" }
+
+    n3@{ shape: procs, label: "Batch Planning" }
+    n3a@{ shape: lin-proc, label: "Greedy Token Packing" }
+
+    n4@{ shape: tag-proc, label: "Per-batch LLM" }
+    n5@{ shape: db, label: "Raw DeltaGraph" }
+
+    n6@{ shape: lin-proc, label: "IR Normalization" }
+    n7@{ shape: procs, label: "Graph Merge &amp; Deduplication" }
+
+    n8@{ shape: tag-proc, label: "Resolvers (Optional)" }
+    n9@{ shape: tag-proc, label: "Identity Filter (Optional)" }
+
+    n10@{ shape: procs, label: "Projection" }
+    n11@{ shape: lin-proc, label: "Quality Gate Check" }
+
+    n12@{ shape: tag-proc, label: "Direct Extraction Fallback" }
+    n13@{ shape: terminal, label: "Final Result" }
+
+    %% 3. Define Connections
+    n1 &amp; n2 --&gt; n3
+    n3 --&gt; n3a
+    n3a --&gt; n4
+    n4 --&gt; n5
+    n5 --&gt; n6
+    n6 --&gt; n7
+
+    %% Sequence of Logic
+    n7 --&gt; n8
+    n8 --&gt; n9
+    n9 --&gt; n10
+    n10 --&gt; n11
+
+    %% Branching Logic
+    n11 -- "Pass" --&gt; n13
+    n11 -- "Fail" --&gt; n12
+    n12 --&gt; n13
+
+    %% 4. Apply Classes
+    class n1 input
+    class n2 config
+    class n5 data
+    class n3,n7,n10,n11 process
+    class n3a,n6 process
+    class n4,n8,n9,n12 operator
+    class n13 output</code></pre>
+<ol>
+<li>
+<p><strong>Chunking</strong> — Done outside delta (document processor or strategy). Produces chunks and optional chunk metadata (e.g. token counts, page numbers).</p>
+</li>
+<li>
+<p><strong>Batch planning</strong> — Chunks are packed into token-bounded batches (<code>llm_batch_token_size</code>). Each batch is sent in one LLM call.</p>
+</li>
+<li>
+<p><strong>Per-batch LLM</strong> — For each batch, the LLM receives the batch document plus a <strong>path catalog</strong> and <strong>semantic guide</strong> from your template. It returns a <strong>DeltaGraph</strong>: <code>nodes</code> (path, ids, parent, properties) and optional <code>relationships</code>. Output is validated with retries on failure.</p>
+</li>
+<li>
+<p><strong>IR normalization</strong> — Batch results are normalized: paths canonicalized to catalog paths, IDs normalized and optionally inferred from path indices, parent references repaired, nested properties stripped, provenance attached. Unknown paths can be dropped if <code>delta_normalizer_validate_paths</code> is true.</p>
+</li>
+<li>
+<p><strong>Graph merge</strong> — Normalized graphs are merged with deduplication by (path, identity). Node properties are merged (e.g. prefer longer string on conflict). Relationships are deduplicated by edge and endpoints.</p>
+</li>
+<li>
+<p><strong>Resolvers</strong> (optional) — If <code>delta_resolvers_enabled</code> is true, a post-merge pass can merge near-duplicate nodes by fuzzy or semantic similarity (<code>delta_resolvers_mode</code>: <code>fuzzy</code>, <code>semantic</code>, or <code>chain</code>).</p>
+</li>
+<li>
+<p><strong>Identity filter</strong> (optional) — If <code>delta_identity_filter_enabled</code> is true, entity nodes whose identity looks like a section/chapter title are dropped. With <code>delta_identity_filter_strict</code> true, only identities in the schema allowlist are kept.</p>
+</li>
+<li>
+<p><strong>Projection</strong> — The merged graph is projected into a template-shaped root dict: nodes are attached to parents via (path, ids). When a parent is missing (e.g. dropped by the identity filter), a <strong>best-effort</strong> attachment to the first available parent of the same path is attempted so more nodes stay in the tree.</p>
+</li>
+<li>
+<p><strong>Quality gate</strong> — The gate uses <strong>attached node count</strong> (nodes that made it into the root tree), not raw graph size. If <code>attached_node_count</code> is below <code>delta_quality_min_instances</code> (default 20) or parent lookup misses exceed the allowed tolerance, the gate fails. On fail, delta returns <code>None</code> and the many-to-one strategy <strong>falls back to direct extraction</strong> (full-document, single LLM call), which usually yields a richer graph for sparse delta runs.</p>
+</li>
+</ol>
+<hr />
+<h2 id="schema-requirements">Schema Requirements<a class="headerlink" href="#schema-requirements" title="Permanent link">&para;</a></h2>
+<p>Delta uses a <strong>catalog</strong> derived from your Pydantic template (same idea as staged):</p>
+<ul>
+<li><strong>Paths</strong> — Root <code>""</code>, then nested paths like <code>line_items[]</code>, <code>line_items[].item</code>. The LLM must use only these catalog paths.</li>
+<li><strong>Identity</strong> — Entities with <code>graph_id_fields</code> get stable keys for dedup and parent linkage; list items often use a field like <code>line_number</code> or <code>index</code>.</li>
+<li><strong>Flat properties</strong> — Node and relationship properties must be flat (scalars or lists of scalars). Nested objects are stripped by the normalizer.</li>
+<li><strong>Root required fields</strong> — Required root-level fields (e.g. <code>reference_document</code>, <code>title</code>) should be documented in the template so the LLM can fill them; the catalog hints the root path to include required root-level fields when present in the document.</li>
+</ul>
+<p>For identity and linkage best practices, see <a href="../../schema-definition/staged-extraction-schema/">Schema design for staged extraction</a> (same concepts apply to delta).</p>
+<hr />
+<h2 id="configuration-and-options">Configuration and options<a class="headerlink" href="#configuration-and-options" title="Permanent link">&para;</a></h2>
+<p>All options can be set in Python via <code>PipelineConfig</code> or a config dict passed to <code>run_pipeline()</code>. CLI flags (when available) override config-file defaults.</p>
+<h3 id="batching-and-parallelism">Batching and parallelism<a class="headerlink" href="#batching-and-parallelism" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>Tier</th>
-<th>Model Size</th>
-<th>Characteristics</th>
-<th>Use Cases</th>
+<th>Python (<code>PipelineConfig</code> / config dict)</th>
+<th>CLI flag</th>
+<th>Default</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>SIMPLE</strong></td>
-<td>1B-7B params</td>
-<td>Fast, basic understanding</td>
-<td>Simple forms, invoices, quick extraction</td>
+<td><code>extraction_contract</code></td>
+<td><code>--extraction-contract</code></td>
+<td><code>"direct"</code></td>
+<td>Set to <code>"delta"</code> to enable delta extraction.</td>
 </tr>
 <tr>
-<td><strong>STANDARD</strong></td>
-<td>7B-13B params</td>
-<td>Balanced speed/accuracy</td>
-<td>General documents, contracts</td>
+<td><code>use_chunking</code></td>
+<td><code>--use-chunking</code> / <code>--no-use-chunking</code></td>
+<td><code>True</code></td>
+<td>Must be enabled for delta (chunk → batch flow).</td>
 </tr>
 <tr>
-<td><strong>ADVANCED</strong></td>
-<td>13B+ params</td>
-<td>High accuracy, complex reasoning</td>
-<td>Rheology researchs, legal documents, complex analysis</td>
+<td><code>llm_batch_token_size</code></td>
+<td><code>--llm-batch-token-size</code></td>
+<td><code>2048</code></td>
+<td>Max input tokens per LLM batch; a new call is started when a batch would exceed this.</td>
+</tr>
+<tr>
+<td><code>parallel_workers</code></td>
+<td><code>--parallel-workers</code></td>
+<td><code>1</code> (or preset)</td>
+<td>Number of parallel workers for delta batch LLM calls.</td>
+</tr>
+<tr>
+<td><code>staged_pass_retries</code></td>
+<td><code>--staged-retries</code></td>
+<td><code>1</code></td>
+<td>Retries per batch when the LLM returns invalid JSON (used as <code>max_pass_retries</code> for delta).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quality-gate">Quality gate<a class="headerlink" href="#quality-gate" title="Permanent link">&para;</a></h3>
+<p>The gate uses <strong>attached node count</strong> (nodes successfully attached into the root tree during projection). If the gate fails, delta returns <code>None</code> and the strategy <strong>falls back to direct extraction</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Python (config dict)</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>delta_quality_require_root</code></td>
+<td><code>True</code></td>
+<td>Require at least one root instance (<code>path=""</code>).</td>
+</tr>
+<tr>
+<td><code>delta_quality_min_instances</code></td>
+<td><code>20</code></td>
+<td>Minimum attached nodes; below this, gate fails and direct extraction is used.</td>
+</tr>
+<tr>
+<td><code>delta_quality_max_parent_lookup_miss</code></td>
+<td><code>4</code></td>
+<td>Max allowed parent lookup misses before fail.</td>
+</tr>
+<tr>
+<td><code>delta_quality_adaptive_parent_lookup</code></td>
+<td><code>True</code></td>
+<td>When root exists, allow higher effective miss tolerance (e.g. ~25% of instances, cap 150).</td>
+</tr>
+<tr>
+<td><code>delta_quality_require_relationships</code></td>
+<td><code>False</code></td>
+<td>Require at least one relationship in the graph.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="identity-filter">Identity filter<a class="headerlink" href="#identity-filter" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Python (config dict)</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>delta_identity_filter_enabled</code></td>
+<td><code>True</code></td>
+<td>Drop entity nodes whose identity looks like a section/chapter title.</td>
+</tr>
+<tr>
+<td><code>delta_identity_filter_strict</code></td>
+<td><code>False</code></td>
+<td>If true, drop any entity whose identity is not in the schema allowlist (for paths with <code>identity_example_values</code>). If false, only section-title heuristic is applied.</td>
+</tr>
+</tbody>
+</table>
+<p>Other gate options (e.g. <code>delta_quality_require_structural_attachments</code>, <code>quality_max_unknown_path_drops</code>, <code>quality_max_id_mismatch</code>, <code>quality_max_nested_property_drops</code>) are documented in the config reference. Quality gate and identity filter options are not CLI flags; set them in a config file or config dict.</p>
+<h3 id="ir-normalizer">IR normalizer<a class="headerlink" href="#ir-normalizer" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Python (config dict)</th>
+<th>CLI flag</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>delta_normalizer_validate_paths</code></td>
+<td><code>--delta-normalizer-validate-paths</code> / <code>--no-delta-normalizer-validate-paths</code></td>
+<td><code>True</code></td>
+<td>Drop or repair nodes with unknown catalog paths.</td>
+</tr>
+<tr>
+<td><code>delta_normalizer_canonicalize_ids</code></td>
+<td><code>--delta-normalizer-canonicalize-ids</code> / <code>--no-delta-normalizer-canonicalize-ids</code></td>
+<td><code>True</code></td>
+<td>Canonicalize ID values before merge.</td>
+</tr>
+<tr>
+<td><code>delta_normalizer_strip_nested_properties</code></td>
+<td><code>--delta-normalizer-strip-nested-properties</code> / <code>--no-delta-normalizer-strip-nested-properties</code></td>
+<td><code>True</code></td>
+<td>Drop nested dict/list-of-dict properties from nodes and relationships.</td>
+</tr>
+<tr>
+<td><code>delta_normalizer_attach_provenance</code></td>
+<td><em>(config only)</em></td>
+<td><code>True</code></td>
+<td>Attach batch/chunk provenance to normalized nodes and relationships.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="resolvers-post-merge-dedup">Resolvers (post-merge dedup)<a class="headerlink" href="#resolvers-post-merge-dedup" title="Permanent link">&para;</a></h3>
+<p>Optional pass to merge near-duplicate entities after the graph merge.</p>
+<table>
+<thead>
+<tr>
+<th>Python (config dict)</th>
+<th>CLI flag</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>delta_resolvers_enabled</code></td>
+<td><code>--delta-resolvers-enabled</code> / <code>--no-delta-resolvers-enabled</code></td>
+<td><code>True</code></td>
+<td>Enable the resolver pass.</td>
+</tr>
+<tr>
+<td><code>delta_resolvers_mode</code></td>
+<td><code>--delta-resolvers-mode</code></td>
+<td><code>"semantic"</code></td>
+<td>One of <code>off</code>, <code>fuzzy</code>, <code>semantic</code>, <code>chain</code>.</td>
+</tr>
+<tr>
+<td><code>delta_resolver_fuzzy_threshold</code></td>
+<td><code>--delta-resolver-fuzzy-threshold</code></td>
+<td><code>0.9</code></td>
+<td>Similarity threshold for fuzzy matching.</td>
+</tr>
+<tr>
+<td><code>delta_resolver_semantic_threshold</code></td>
+<td><code>--delta-resolver-semantic-threshold</code></td>
+<td><code>0.92</code></td>
+<td>Similarity threshold for semantic matching.</td>
+</tr>
+<tr>
+<td><code>delta_resolver_properties</code></td>
+<td><em>(config only)</em></td>
+<td><code>None</code></td>
+<td>List of property names used for matching; default uses catalog fallback fields.</td>
+</tr>
+<tr>
+<td><code>delta_resolver_paths</code></td>
+<td><em>(config only)</em></td>
+<td><code>None</code></td>
+<td>Restrict resolver to these catalog paths; empty means all.</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="automatic-detection">Automatic Detection<a class="headerlink" href="#automatic-detection" title="Permanent link">&para;</a></h2>
-<p>Models are automatically classified based on their name and known characteristics:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.llm_clients.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">detect_model_capability</span><span class="p">,</span> <span class="n">ModelCapability</span>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<h3 id="python-api">Python API<a class="headerlink" href="#python-api" title="Permanent link">&para;</a></h3>
+<p>Pass options via <code>PipelineConfig</code> or a dict to <code>run_pipeline()</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">PipelineConfig</span><span class="p">,</span> <span class="n">run_pipeline</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Automatic detection examples</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">capability</span> <span class="o">=</span> <span class="n">detect_model_capability</span><span class="p">(</span><span class="s2">&quot;llama-3.1-8b&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">print</span><span class="p">(</span><span class="n">capability</span><span class="p">)</span>  <span class="c1"># ModelCapability.STANDARD</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">capability</span> <span class="o">=</span> <span class="n">detect_model_capability</span><span class="p">(</span><span class="s2">&quot;gpt-4-turbo&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">capability</span><span class="p">)</span>  <span class="c1"># ModelCapability.ADVANCED</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">capability</span> <span class="o">=</span> <span class="n">detect_model_capability</span><span class="p">(</span><span class="s2">&quot;granite-4.0-1b&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">capability</span><span class="p">)</span>  <span class="c1"># ModelCapability.SIMPLE</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">processing_mode</span><span class="o">=</span><span class="s2">&quot;many-to-one&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">extraction_contract</span><span class="o">=</span><span class="s2">&quot;delta&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">use_chunking</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="c1"># Batching and parallelism</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">llm_batch_token_size</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">parallel_workers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">staged_pass_retries</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="c1"># Quality gate (optional overrides)</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">delta_quality_require_root</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">delta_quality_min_instances</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="n">delta_quality_max_parent_lookup_miss</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="n">delta_quality_adaptive_parent_lookup</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="c1"># IR normalizer</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="n">delta_normalizer_validate_paths</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="n">delta_normalizer_canonicalize_ids</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    <span class="n">delta_normalizer_strip_nested_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    <span class="n">delta_normalizer_attach_provenance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    <span class="c1"># Resolvers (optional)</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    <span class="n">delta_resolvers_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    <span class="n">delta_resolvers_mode</span><span class="o">=</span><span class="s2">&quot;semantic&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    <span class="n">delta_resolver_fuzzy_threshold</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    <span class="n">delta_resolver_semantic_threshold</span><span class="o">=</span><span class="mf">0.92</span><span class="p">,</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="p">)</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="n">context</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="detection-logic">Detection Logic<a class="headerlink" href="#detection-logic" title="Permanent link">&para;</a></h3>
-<p>The system uses a <strong>3-tier priority system</strong> for accurate capability detection:</p>
-<p><strong>Priority 1: Model Name Pattern Matching</strong> (Most Reliable)
-- Detects parameter count from model name (e.g., "1b", "8b", "70b")
-- Small models (1B-3B) → SIMPLE
-- Large models (70B+) → ADVANCED</p>
-<p><strong>Priority 2: Max Output Tokens</strong> (Better Proxy)
-- Uses <code>max_new_tokens</code> as capability indicator
-- ≤2048 tokens → SIMPLE (limited output capacity)
-- ≤4096 tokens → STANDARD
-- &gt;4096 tokens → ADVANCED</p>
-<p><strong>Priority 3: Context Window</strong> (Fallback)</p>
+<p>The options <code>delta_quality_require_relationships</code> and <code>delta_quality_require_structural_attachments</code> are not fields on <code>PipelineConfig</code>; set them in a config file (e.g. <code>defaults</code> in your YAML) or in a config dict: <code>run_pipeline({..., "delta_quality_require_relationships": False})</code>.</p>
+<h3 id="cli">CLI<a class="headerlink" href="#cli" title="Permanent link">&para;</a></h3>
+<p>All delta-related flags (when using <code>--extraction-contract delta</code>):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Required for delta</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>--template<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>--extraction-contract<span class="w"> </span>delta
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="c1"># Batching and parallelism</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span>--template<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span>--extraction-contract<span class="w"> </span>delta<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span>--use-chunking<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span>--llm-batch-token-size<span class="w"> </span><span class="m">2048</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span>--parallel-workers<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">  </span>--staged-retries<span class="w"> </span><span class="m">1</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="c1"># IR normalizer (toggles)</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">  </span>--extraction-contract<span class="w"> </span>delta<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">  </span>--template<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">  </span>--delta-normalizer-validate-paths<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">  </span>--delta-normalizer-canonicalize-ids<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">  </span>--no-delta-normalizer-strip-nested-properties
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="c1"># Resolvers</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>uv<span class="w"> </span>run<span class="w"> </span>docling-graph<span class="w"> </span>convert<span class="w"> </span>document.pdf<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">  </span>--extraction-contract<span class="w"> </span>delta<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">  </span>--template<span class="w"> </span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">  </span>--delta-resolvers-enabled<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">  </span>--delta-resolvers-mode<span class="w"> </span>fuzzy<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">  </span>--delta-resolver-fuzzy-threshold<span class="w"> </span><span class="m">0</span>.9<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">  </span>--delta-resolver-semantic-threshold<span class="w"> </span><span class="m">0</span>.92
+</code></pre></div>
+<p>Quality gate and resolver list options (<code>delta_resolver_properties</code>, <code>delta_resolver_paths</code>, <code>delta_quality_*</code>, <code>quality_max_*</code>) are not CLI flags; use a config file (e.g. <code>defaults</code> in <code>config_template.yaml</code> or your project config) to set them.</p>
+<hr />
+<h2 id="trace-and-debugging">Trace and debugging<a class="headerlink" href="#trace-and-debugging" title="Permanent link">&para;</a></h2>
+<p>When delta runs, the pipeline emits a <strong>trace</strong> (e.g. via <code>trace_data</code> or debug artifacts) containing:</p>
 <ul>
-<li>Uses context limit only when other signals unavailable</li>
-<li>Includes warnings when using this heuristic</li>
+<li><code>contract: "delta"</code></li>
+<li><code>chunk_count</code>, <code>batch_count</code>, <code>batch_timings</code>, <code>batch_errors</code></li>
+<li><code>path_counts</code>, <code>normalizer_stats</code>, <code>merge_stats</code>, <code>resolver</code> (if enabled)</li>
+<li><code>quality_gate</code>: <code>{ ok, reasons }</code></li>
+<li><code>diagnostics</code>: e.g. top missing-id paths, unknown path examples, parent lookup miss examples</li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Context Window Caveat</p>
-<p>Modern small models can have large contexts (e.g., Granite 1B with 128K)</p>
-</div>
-<p><strong>LiteLLM Metadata:</strong>
-- Capability is inferred from LiteLLM context window and model name
-- Fallback detection only applies when metadata is unavailable</p>
+<p>With <code>debug=True</code>, artifacts like <code>delta_trace.json</code>, <code>delta_merged_graph.json</code>, and <code>delta_merged_output.json</code> can be written to the debug directory.</p>
 <hr />
-<h2 id="adaptive-behavior">Adaptive Behavior<a class="headerlink" href="#adaptive-behavior" title="Permanent link">&para;</a></h2>
-<p>The extraction system automatically adapts based on model capability:</p>
-<h3 id="simple-models-1b-7b">SIMPLE Models (1B-7B)<a class="headerlink" href="#simple-models-1b-7b" title="Permanent link">&para;</a></h3>
-<p><strong>Optimized for Speed</strong></p>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
-<li>✅ <strong>Minimal Instructions</strong>: Focused, concise prompts</li>
-<li>✅ <strong>Basic Consolidation</strong>: Simple programmatic merging</li>
-<li>✅ <strong>Fast Processing</strong>: Optimized for throughput</li>
-<li>✅ <strong>Lower Memory</strong>: Efficient resource usage</li>
+<li><a href="../staged-extraction/">Staged Extraction</a> — Multi-pass ID → fill → merge (no chunk batching)</li>
+<li><a href="../extraction-backends/">Extraction Backends</a> — LLM vs VLM and extraction contracts</li>
+<li><a href="../../../reference/config/">Configuration reference</a> — Full config API</li>
+<li><a href="../../../usage/cli/convert-command/">convert command</a> — CLI flags for delta</li>
 </ul>
-<p><strong>Best For:</strong>
-- Simple forms and invoices
-- Structured data extraction
-- High-volume processing
-- Resource-constrained environments</p>
-<p><strong>Example Models:</strong>
-- <code>ibm-granite/granite-4.0-1b</code>
-- <code>meta-llama/Llama-3.2-1B</code>
-- <code>numind/NuExtract-2.0-2B</code></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_pipeline</span><span class="p">,</span> <span class="n">PipelineConfig</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;invoice.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;ibm-granite/granite-4.0-1b&quot;</span>  <span class="c1"># SIMPLE tier</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">)</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div>
-<hr />
-<h3 id="standard-models-7b-13b">STANDARD Models (7B-13B)<a class="headerlink" href="#standard-models-7b-13b" title="Permanent link">&para;</a></h3>
-<p><strong>Balanced Performance</strong></p>
-<ul>
-<li>✅ <strong>Balanced Instructions</strong>: Moderate detail level</li>
-<li>✅ <strong>Standard Consolidation</strong>: Programmatic + optional LLM</li>
-<li>✅ <strong>Good Accuracy</strong>: Reliable for most documents</li>
-<li>✅ <strong>Reasonable Speed</strong>: Good throughput</li>
-</ul>
-<p><strong>Best For:</strong>
-- General business documents
-- Multi-page contracts
-- Standard extraction tasks
-- Production workloads</p>
-<p><strong>Example Models:</strong>
-- <code>meta-llama/Llama-3.1-8B</code>
-- <code>mistralai/Mistral-7B-v0.1</code>
-- <code>numind/NuExtract-2.0-8B</code></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;contract.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Contract&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;local&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;meta-llama/Llama-3.1-8B&quot;</span>  <span class="c1"># STANDARD tier</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">)</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div>
-<hr />
-<h3 id="advanced-models-13b">ADVANCED Models (13B+)<a class="headerlink" href="#advanced-models-13b" title="Permanent link">&para;</a></h3>
-<p><strong>Maximum Accuracy</strong></p>
-<ul>
-<li>✅ <strong>Detailed Instructions</strong>: Comprehensive prompts</li>
-<li>✅ <strong>Chain of Density</strong>: Multi-turn consolidation</li>
-<li>✅ <strong>High Accuracy</strong>: Best extraction quality</li>
-<li>✅ <strong>Complex Reasoning</strong>: Handles nuanced content</li>
-</ul>
-<p><strong>Best For:</strong>
-- Rheology researchs
-- Legal documents
-- Complex technical content
-- High-accuracy requirements</p>
-<p><strong>Example Models:</strong>
-- <code>gpt-4-turbo</code> (OpenAI)
-- <code>claude-3.5-sonnet</code> (Anthropic)
-- <code>gemini-2.5-flash</code> (Google)
-- <code>mistral-large-latest</code> (Mistral)</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;research_paper.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.ScholarlyRheologyPaper&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;remote&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">provider_override</span><span class="o">=</span><span class="s2">&quot;openai&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;gpt-4-turbo&quot;</span><span class="p">,</span>  <span class="c1"># ADVANCED tier</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Enable Chain of Density</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="p">)</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div>
-<hr />
-<h2 id="chain-of-density-consolidation">Chain of Density Consolidation<a class="headerlink" href="#chain-of-density-consolidation" title="Permanent link">&para;</a></h2>
-<p><strong>ADVANCED models</strong> automatically use Chain of Density consolidation when <code>llm_consolidation=True</code>:</p>
-<h3 id="three-step-refinement">Three-Step Refinement<a class="headerlink" href="#three-step-refinement" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Initial Extraction</strong>: Extract from raw document chunks</li>
-<li><strong>Refinement</strong>: Merge with programmatic consolidation</li>
-<li><strong>Final Polish</strong>: LLM refines for consistency and completeness</li>
-</ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Chain of Density is automatic for ADVANCED models</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;complex_document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.ComplexTemplate&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">inference</span><span class="o">=</span><span class="s2">&quot;remote&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;gpt-4-turbo&quot;</span><span class="p">,</span>  <span class="c1"># ADVANCED tier</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Enables Chain of Density</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">processing_mode</span><span class="o">=</span><span class="s2">&quot;many-to-one&quot;</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="p">)</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="when-to-use-chain-of-density">When to Use Chain of Density<a class="headerlink" href="#when-to-use-chain-of-density" title="Permanent link">&para;</a></h3>
-<p>✅ <strong>Use When:</strong>
-- Document has conflicting information
-- Need highest accuracy
-- Complex narrative content
-- Using ADVANCED tier models</p>
-<p>❌ <strong>Skip When:</strong>
-- Simple structured data
-- Speed is critical
-- Using SIMPLE/STANDARD models
-- Budget constraints</p>
-<hr />
-<h2 id="supported-models">Supported Models<a class="headerlink" href="#supported-models" title="Permanent link">&para;</a></h2>
-<p>Model capability tiers are derived from LiteLLM metadata at runtime.
-The project no longer keeps a static model list; use LiteLLM's model catalog
-or your provider documentation for supported models.</p>
-<hr />
-<h2 id="performance-implications">Performance Implications<a class="headerlink" href="#performance-implications" title="Permanent link">&para;</a></h2>
-<h3 id="speed-vs-accuracy-trade-off">Speed vs Accuracy Trade-off<a class="headerlink" href="#speed-vs-accuracy-trade-off" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Tier</th>
-<th>Speed</th>
-<th>Accuracy</th>
-<th>Memory</th>
-<th>Cost</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>SIMPLE</strong></td>
-<td>⚡⚡⚡ Very Fast</td>
-<td>🟡 Moderate</td>
-<td>2-4 GB</td>
-<td>$ Low</td>
-</tr>
-<tr>
-<td><strong>STANDARD</strong></td>
-<td>⚡⚡ Fast</td>
-<td>🟢 Good</td>
-<td>8-16 GB</td>
-<td>$$ Medium</td>
-</tr>
-<tr>
-<td><strong>ADVANCED</strong></td>
-<td>⚡ Moderate</td>
-<td>💎 Excellent</td>
-<td>16-32 GB</td>
-<td>$$$ High</td>
-</tr>
-</tbody>
-</table>
-<h3 id="benchmark-results">Benchmark Results<a class="headerlink" href="#benchmark-results" title="Permanent link">&para;</a></h3>
-<p><strong>Document</strong>: 10-page contract</p>
-<table>
-<thead>
-<tr>
-<th>Model Tier</th>
-<th>Time</th>
-<th>Accuracy</th>
-<th>Tokens Used</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>SIMPLE (1B)</td>
-<td>15s</td>
-<td>85%</td>
-<td>2,500</td>
-</tr>
-<tr>
-<td>STANDARD (8B)</td>
-<td>45s</td>
-<td>92%</td>
-<td>3,200</td>
-</tr>
-<tr>
-<td>ADVANCED (GPT-4)</td>
-<td>90s</td>
-<td>97%</td>
-<td>4,100</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
-<h3 id="match-tier-to-task-complexity">👍 Match Tier to Task Complexity<a class="headerlink" href="#match-tier-to-task-complexity" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># ✅ Good - Simple task, simple model</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;invoice.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;granite-4.0-1b&quot;</span>  <span class="c1"># SIMPLE tier</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="p">)</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1"># ✅ Good - Complex task, advanced model</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;research_paper.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.ScholarlyRheologyPaper&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;gpt-4-turbo&quot;</span>  <span class="c1"># ADVANCED tier</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="p">)</span>
-<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
-<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="c1"># ❌ Avoid - Overkill</span>
-<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;simple_form.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.SimpleForm&quot;</span><span class="p">,</span>
-<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;gpt-4-turbo&quot;</span>  <span class="c1"># Unnecessary</span>
-<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="p">)</span>
-</code></pre></div>
-<h3 id="start-small-scale-up">👍 Start Small, Scale Up<a class="headerlink" href="#start-small-scale-up" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Start with SIMPLE tier</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.MyTemplate&quot;</span><span class="p">,</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;granite-4.0-1b&quot;</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="p">)</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">result</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="c1"># If accuracy insufficient, upgrade to STANDARD</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="k">if</span> <span class="n">accuracy_check</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.90</span><span class="p">:</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>    <span class="n">config</span><span class="o">.</span><span class="n">model_override</span> <span class="o">=</span> <span class="s2">&quot;llama-3.1-8b&quot;</span>
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="c1"># If still insufficient, upgrade to ADVANCED</span>
-<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="k">if</span> <span class="n">accuracy_check</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.95</span><span class="p">:</span>
-<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>    <span class="n">config</span><span class="o">.</span><span class="n">model_override</span> <span class="o">=</span> <span class="s2">&quot;gpt-4-turbo&quot;</span>
-<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>    <span class="n">config</span><span class="o">.</span><span class="n">llm_consolidation</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="use-chain-of-density-wisely">👍 Use Chain of Density Wisely<a class="headerlink" href="#use-chain-of-density-wisely" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># ✅ Good - Complex document with ADVANCED model</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;complex_legal.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.LegalDocument&quot;</span><span class="p">,</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;gpt-4-turbo&quot;</span><span class="p">,</span>  <span class="c1"># ADVANCED</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Enable Chain of Density</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="p">)</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="c1"># ❌ Avoid - Chain of Density with SIMPLE model</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;invoice.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
-<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;granite-4.0-1b&quot;</span><span class="p">,</span>  <span class="c1"># SIMPLE</span>
-<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>    <span class="n">llm_consolidation</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Won&#39;t use Chain of Density</span>
-<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="p">)</span>
-</code></pre></div>
-<hr />
-<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
-<h3 id="model-not-detected-correctly">🐛 Model Not Detected Correctly<a class="headerlink" href="#model-not-detected-correctly" title="Permanent link">&para;</a></h3>
-<p><strong>Solution:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Override automatic detection</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">docling_graph.llm_clients.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelCapability</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Force specific capability</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.MyTemplate&quot;</span><span class="p">,</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;custom-model-7b&quot;</span><span class="p">,</span>
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    <span class="c1"># Note: Capability override not directly exposed</span>
-<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>    <span class="c1"># Model will be detected based on name patterns</span>
-<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="p">)</span>
-</code></pre></div></p>
-<h3 id="poor-accuracy-with-simple-model">🐛 Poor Accuracy with SIMPLE Model<a class="headerlink" href="#poor-accuracy-with-simple-model" title="Permanent link">&para;</a></h3>
-<p><strong>Solution:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Upgrade to STANDARD or ADVANCED tier</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.MyTemplate&quot;</span><span class="p">,</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;llama-3.1-8b&quot;</span>  <span class="c1"># STANDARD tier</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="p">)</span>
-</code></pre></div></p>
-<h3 id="slow-processing-with-advanced-model">🐛 Slow Processing with ADVANCED Model<a class="headerlink" href="#slow-processing-with-advanced-model" title="Permanent link">&para;</a></h3>
-<p><strong>Solution:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Try STANDARD tier first</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.MyTemplate&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="n">model_override</span><span class="o">=</span><span class="s2">&quot;mistral-small-latest&quot;</span>  <span class="c1"># STANDARD tier</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="p">)</span>
-</code></pre></div></p>
-<hr />
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
-<p>Now that you understand model capabilities:</p>
-<ol>
-<li><strong><a href="../extraction-backends/">Extraction Backends →</a></strong> - Learn about LLM and VLM backends</li>
-<li><strong><a href="../../pipeline-configuration/model-configuration/">Model Configuration →</a></strong> - Configure model settings</li>
-<li><strong><a href="../../../usage/advanced/performance-tuning/">Performance Tuning →</a></strong> - Optimize for your use case</li>
-</ol>
 
 
 

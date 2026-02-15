@@ -1171,6 +1171,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../schema-definition/staged-extraction-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../schema-definition/best-practices/" class="md-nav__link">
         
   
@@ -1756,6 +1784,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Backend Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extraction-contracts-llm-many-to-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extraction contracts (LLM + many-to-one)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2010,10 +2055,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-model-merging" class="md-nav__link">
+  <a href="#4-staged-extraction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Model Merging
+        4. Staged Extraction
       
     </span>
   </a>
@@ -2021,10 +2066,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-batch-processing" class="md-nav__link">
+  <a href="#5-delta-extraction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Batch Processing
+        5. Delta Extraction
       
     </span>
   </a>
@@ -2032,10 +2077,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-pipeline-orchestration" class="md-nav__link">
+  <a href="#6-model-merging" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Pipeline Orchestration
+        6. Model Merging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-batch-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Batch Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-pipeline-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Pipeline Orchestration
       
     </span>
   </a>
@@ -2297,14 +2364,42 @@
   
   
     <li class="md-nav__item">
-      <a href="model-capabilities/" class="md-nav__link">
+      <a href="delta-extraction/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Model Capabilities
+    Delta Extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="staged-extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Staged Extraction
   
 
     
@@ -4441,6 +4536,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Backend Comparison">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extraction-contracts-llm-many-to-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extraction contracts (LLM + many-to-one)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4695,10 +4807,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-model-merging" class="md-nav__link">
+  <a href="#4-staged-extraction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Model Merging
+        4. Staged Extraction
       
     </span>
   </a>
@@ -4706,10 +4818,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#5-batch-processing" class="md-nav__link">
+  <a href="#5-delta-extraction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Batch Processing
+        5. Delta Extraction
       
     </span>
   </a>
@@ -4717,10 +4829,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#6-pipeline-orchestration" class="md-nav__link">
+  <a href="#6-model-merging" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Pipeline Orchestration
+        6. Model Merging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-batch-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Batch Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-pipeline-orchestration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Pipeline Orchestration
       
     </span>
   </a>
@@ -5055,6 +5189,13 @@ flowchart LR
 </tr>
 </tbody>
 </table>
+<h3 id="extraction-contracts-llm-many-to-one">Extraction contracts (LLM + many-to-one)<a class="headerlink" href="#extraction-contracts-llm-many-to-one" title="Permanent link">&para;</a></h3>
+<p>For LLM many-to-one extraction you can choose:</p>
+<ul>
+<li><strong>direct</strong> (default): Single-pass extraction then programmatic merge.</li>
+<li><strong>staged</strong>: Catalog → ID pass → fill pass → merge; better for complex nested templates. See <a href="staged-extraction/">Staged Extraction</a>.</li>
+<li><strong>delta</strong>: Chunk → token-bounded batches → flat graph IR → normalize → merge → projection; for long documents and graph-first extraction. Supports optional resolvers and configurable quality gates. Use <code>docling-graph init</code> and select <strong>delta</strong> to configure resolvers and quality interactively. See <a href="delta-extraction/">Delta Extraction</a>.</li>
+</ul>
 <hr />
 <h2 id="pipeline-stages-in-code">Pipeline Stages in Code<a class="headerlink" href="#pipeline-stages-in-code" title="Permanent link">&para;</a></h2>
 <h3 id="stage-overview">Stage Overview<a class="headerlink" href="#stage-overview" title="Permanent link">&para;</a></h3>
@@ -5200,9 +5341,10 @@ document = processor.convert_to_docling_doc("document.pdf")</code></p>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">extractor</span> <span class="o">=</span> <span class="n">ExtractorFactory</span><span class="o">.</span><span class="n">create_extractor</span><span class="p">(</span>
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">processing_mode</span><span class="o">=</span><span class="s2">&quot;many-to-one&quot;</span><span class="p">,</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">backend_name</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">llm_client</span><span class="o">=</span><span class="n">client</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">)</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">models</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="n">extractor</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">extraction_contract</span><span class="o">=</span><span class="s2">&quot;direct&quot;</span><span class="p">,</span>  <span class="c1"># or &quot;staged&quot; / &quot;delta&quot; for complex or chunk-based extraction</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">llm_client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">)</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="n">models</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="n">extractor</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Learn more:</strong> <a href="extraction-backends/">Extraction Backends →</a></p>
 <hr />
@@ -5247,9 +5389,8 @@ document = processor.convert_to_docling_doc("document.pdf")</code></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">config</span> <span class="o">=</span> <span class="n">PipelineConfig</span><span class="p">(</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">use_chunking</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>      <span class="c1"># Enable chunking</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="n">max_batch_size</span><span class="o">=</span><span class="mi">5</span>        <span class="c1"># Process 5 chunks at once</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="p">)</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">use_chunking</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="p">)</span>
 </code></pre></div>
 <hr />
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
@@ -5294,9 +5435,22 @@ document = processor.convert_to_docling_doc("document.pdf")</code></p>
 - LLM backend (text-based)
 - VLM backend (vision-based)
 - Backend selection
-- Performance comparison</p>
+- Extraction contracts (direct, staged, delta)</p>
 <hr />
-<h3 id="4-model-merging">4. <a href="model-merging/">Model Merging</a><a class="headerlink" href="#4-model-merging" title="Permanent link">&para;</a></h3>
+<h3 id="4-staged-extraction">4. <a href="staged-extraction/">Staged Extraction</a><a class="headerlink" href="#4-staged-extraction" title="Permanent link">&para;</a></h3>
+<p>Multi-pass extraction for complex nested templates (ID pass → fill pass → merge).</p>
+<p><strong>Topics:</strong>
+- When to use staged
+- Tuning (presets, parallel_workers, fill cap, id shard size)</p>
+<hr />
+<h3 id="5-delta-extraction">5. <a href="delta-extraction/">Delta Extraction</a><a class="headerlink" href="#5-delta-extraction" title="Permanent link">&para;</a></h3>
+<p>Chunk-based graph extraction: token-bounded batches → flat graph IR → normalize → merge → projection.</p>
+<p><strong>Topics:</strong>
+- When to use delta
+- Batch planning, IR normalizer, resolvers, quality gate
+- Configuration (llm_batch_token_size, parallel_workers, delta_* options)</p>
+<hr />
+<h3 id="6-model-merging">6. <a href="model-merging/">Model Merging</a><a class="headerlink" href="#6-model-merging" title="Permanent link">&para;</a></h3>
 <p>Learn how multiple extractions are consolidated into single models.</p>
 <p><strong>Topics:</strong>
 - Programmatic merging
@@ -5304,7 +5458,7 @@ document = processor.convert_to_docling_doc("document.pdf")</code></p>
 - Conflict resolution
 - Validation strategies</p>
 <hr />
-<h3 id="5-batch-processing">5. <a href="batch-processing/">Batch Processing</a><a class="headerlink" href="#5-batch-processing" title="Permanent link">&para;</a></h3>
+<h3 id="7-batch-processing">7. <a href="batch-processing/">Batch Processing</a><a class="headerlink" href="#7-batch-processing" title="Permanent link">&para;</a></h3>
 <p>Optimize extraction with intelligent batching.</p>
 <p><strong>Topics:</strong>
 - Chunk batching
@@ -5312,7 +5466,7 @@ document = processor.convert_to_docling_doc("document.pdf")</code></p>
 - Adaptive batch sizing
 - Performance tuning</p>
 <hr />
-<h3 id="6-pipeline-orchestration">6. Pipeline Orchestration<a class="headerlink" href="#6-pipeline-orchestration" title="Permanent link">&para;</a></h3>
+<h3 id="8-pipeline-orchestration">8. Pipeline Orchestration<a class="headerlink" href="#8-pipeline-orchestration" title="Permanent link">&para;</a></h3>
 <p>Understand how pipeline stages are coordinated through the extraction process.</p>
 <p><strong>Topics:</strong>
 - Stage execution
@@ -5349,11 +5503,10 @@ document = processor.convert_to_docling_doc("document.pdf")</code></p>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;large_document.pdf&quot;</span><span class="p">,</span>
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.Contract&quot;</span><span class="p">,</span>
 <a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">,</span>
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="n">use_chunking</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>          <span class="c1"># Enable chunking</span>
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>    <span class="n">max_batch_size</span><span class="o">=</span><span class="mi">3</span>            <span class="c1"># Smaller batches</span>
-<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="p">)</span>
-<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
-<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="n">use_chunking</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="p">)</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="n">run_pipeline</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </code></pre></div>
 <hr />
 <h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
@@ -5391,8 +5544,7 @@ document = processor.convert_to_docling_doc("document.pdf")</code></p>
 <a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;document.pdf&quot;</span><span class="p">,</span>
 <a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>    <span class="n">template</span><span class="o">=</span><span class="s2">&quot;templates.BillingDocument&quot;</span><span class="p">,</span>
 <a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>    <span class="n">use_chunking</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>    <span class="n">max_batch_size</span><span class="o">=</span><span class="mi">1</span>  <span class="c1"># Smaller batches</span>
-<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="p">)</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="p">)</span>
 </code></pre></div></p>
 <h3 id="slow-extraction">🐛 Slow Extraction<a class="headerlink" href="#slow-extraction" title="Permanent link">&para;</a></h3>
 <p><strong>Solution:</strong>
