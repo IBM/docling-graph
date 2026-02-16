@@ -53,8 +53,8 @@ def build_catalog_prompt_block(catalog: DeltaNodeCatalog) -> str:
         path_label = '""' if spec.path == "" else spec.path
         ids_label = ", ".join(spec.id_fields) if spec.id_fields else "none (use ids={})"
         desc = (spec.description or "").strip()
-        if len(desc) > 220:
-            desc = desc[:220].rstrip() + "..."
+        if len(desc) > 120:
+            desc = desc[:120].rstrip() + "..."
         example_hint = (spec.example_hint or "").strip()
         line = f"- {path_label} ({spec.node_type}, {spec.kind}) ids=[{ids_label}]"
         if spec.id_fields:
@@ -77,6 +77,7 @@ def build_catalog_prompt_block(catalog: DeltaNodeCatalog) -> str:
             line += f" Valid {id_label}: only values from the document (e.g. {examples_str}). Do not use section or chapter titles."
             line += " Emit only when this batch contains the table/structure that defines these identities; otherwise omit."
         if spec.path.endswith("[]") and spec.kind == "entity":
+            line += " Set from document; required for parent attachment."
             has_child_list = any(
                 p != spec.path and p.startswith(spec.path + ".") and "[]" in p
                 for p in catalog_paths
@@ -103,7 +104,7 @@ def project_graph_to_template_root(
     for node in merged_graph.get("nodes", []):
         if not isinstance(node, dict):
             continue
-        path = str(node.get("path") or "")
+        path = str(node.get("path") or "").strip()
         ids = node.get("ids") if isinstance(node.get("ids"), dict) else {}
         parent = node.get("parent") if isinstance(node.get("parent"), dict) else None
         if parent is None and path != "":

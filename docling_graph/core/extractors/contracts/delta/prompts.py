@@ -12,6 +12,7 @@ def get_delta_batch_prompt(
     path_catalog_block: str,
     batch_index: int,
     total_batches: int,
+    global_context: str | None = None,
 ) -> dict[str, str]:
     """Build system/user prompts for one delta batch extraction."""
 
@@ -19,46 +20,30 @@ def get_delta_batch_prompt(
         "You are an expert extraction engine for graph construction. "
         "Return ONLY strict JSON with top-level keys 'nodes' and 'relationships'.\n\n"
         "Rules:\n"
-        "1. Model nested entities as separate nodes and relationships; do not emit nested objects as properties.\n"
-        "2. Keep node and relationship properties flat: primitives or lists of primitives only. "
-        "If a property would be nested, omit it.\n"
-        "3. Use exact catalog paths for 'path' and parent references. Never invent new paths. "
-        "Do not use class names or slash-separated paths (e.g., ScholarlyRheologyPaper, a/b).\n"
-        "4. ids keys must exactly match the template identity fields for that path when applicable. "
-        "If catalog ids are [none], set ids to {}.\n"
-        "5. ONLY put identity fields in ids. Put all non-identity extracted values in properties "
-        "on valid catalog paths.\n"
-        "6. For entity paths with ids=[...], repeat the same identity values in flat properties "
-        "(e.g., ids.line_number=2 implies properties.line_number=2 when known).\n"
-        "7. Do not create synthetic pseudo-path nodes for scalar fields. "
-        "For example, never emit nodes for property-like labels as paths unless those exact paths exist "
-        "in the catalog.\n"
-        "8. If data is not evidenced in this batch, omit it instead of fabricating placeholders.\n"
-        "9. Keep identifiers stable across the entire document (not only this batch), "
-        "and keep ID formatting canonical.\n"
-        "10. Canonicalize scalar values: trim whitespace, keep stable casing for names, "
-        "use uppercase codes (e.g., currencies), normalize units, and emit numeric/date scalars "
-        "in machine form when possible.\n"
-        "   Example amount: 'CHF 3360.00' -> 3360.00\n"
-        "   Example date: '18 May 2024' -> '2024-05-18'\n"
-        "11. Return valid JSON only (no markdown).\n"
-        "12. Do not copy batch metadata (e.g. batch numbers or 'Delta extraction batch' text) into any "
-        "node property; extract only from the BATCH DOCUMENT content below.\n"
-        "13. Use TEMPLATE PATH CATALOG descriptions and SEMANTIC FIELD GUIDANCE to decide what qualifies as "
-        "an instance for each path. Do not treat generic section headings or layout labels as entity instances "
-        "unless the schema guidance explicitly describes them as such.\n"
-        "14. For list-entity paths that have identity examples in the catalog (e.g. paths ending with []): "
-        "emit nodes ONLY when this batch clearly contains the corresponding document structure (e.g. guarantee table, "
-        "formula names). If this batch contains only a sommaire, section headings, or article titles, emit ZERO nodes "
-        "for that path.\n"
-        "15. For each list path, put only the fields that belong to that path's schema; use the child path for nested "
-        "entities (e.g. use path studies[] only for study fields like study_id and objective; use path "
-        "studies[].experiments[] for individual experiments with experiment_id and description). Do not put child-entity "
-        "fields or nested content on the parent path."
+        "1. Use exact catalog paths for 'path' and parent; never invent paths or use class names. "
+        "Put only identity fields in ids; other values go in properties. ids keys must match catalog.\n"
+        "2. Model nested entities as separate nodes (flat properties only; no nested objects in properties). "
+        "For any list-entity path in the catalog (paths ending in [] with id_fields): set identity in ids from the "
+        "document (tables, section titles, captions that name the entity). Put child entities on the child path with "
+        "parent reference; when emitting children whose parent is a list path, also emit a parent-path node with ids "
+        "set from the document so parent lookup can attach them. Never put child content under the parent's id field.\n"
+        "3. Identity MUST come from the document (tables, captions, section titles that name entities). "
+        "Keep identifiers stable and consistent across the entire document so they merge across batches. "
+        "Omit when not evidenced in this batch.\n"
+        "4. Use catalog and guidance to decide instances; omit generic headings. Emit list-entity nodes (path ending in []) "
+        "only when this batch contains the defining structure for that identity.\n"
+        "5. Canonicalize: trim whitespace, stable casing, numeric/date in machine form. Valid JSON only; no markdown "
+        "or batch metadata in node content."
     )
 
-    user_prompt = (
-        f"[Batch {batch_index + 1}/{total_batches} — for context only; do not put this into any field.]\n\n"
+    user_prompt = f"[Batch {batch_index + 1}/{total_batches} — for context only; do not put this into any field.]\n\n"
+    if global_context:
+        user_prompt += (
+            "=== DOCUMENT CONTEXT (use for stable identity values across batches) ===\n"
+            f"{global_context}\n"
+            "=== END DOCUMENT CONTEXT ===\n\n"
+        )
+    user_prompt += (
         "=== BATCH DOCUMENT ===\n"
         f"{batch_markdown}\n"
         "=== END BATCH DOCUMENT ===\n\n"
@@ -68,17 +53,10 @@ def get_delta_batch_prompt(
         "=== SEMANTIC FIELD GUIDANCE ===\n"
         f"{schema_semantic_guide}\n"
         "=== END GUIDANCE ===\n\n"
-        "Important: Use each catalog line's ids=[...] as the required identity contract for that path. "
-        'Identity values must be strings (e.g. line_number: "1" not 1). '
-        'Parent must be an object: {"path": "<catalog path>", "ids": {}} or null for root.\n'
-        "Important: Use schema-derived descriptions/examples in the catalog/guidance to decide entity "
-        "membership for each path; when uncertain, omit instead of classifying from heading style alone.\n"
-        'Example good root scalar placement: node path="" with properties.<root_field>=<scalar_value> '
-        '(NOT a node path "<root_field>").\n'
-        'Example good list-entity placement: node path="<list_entity_path>" with ids.<id_field>="..." and '
-        "properties.<entity_field>=<scalar_value>.\n\n"
-        'Return JSON: {"nodes": [...], "relationships": [...]} where each node contains '
-        "{path, node_type?, ids, parent, properties}."
+        'Identity from document only; use catalog ids=[...] per path. Parent: {"path": "<catalog path>", "ids": {}} or null for root. '
+        "For list-entity paths in the catalog, set ids from the document; when emitting children under a list parent, "
+        "also emit the parent-path node with ids set so parent lookup can attach.\n\n"
+        'Return JSON: {"nodes": [...], "relationships": [...]} with each node: {path, node_type?, ids, parent, properties}.'
     )
 
     return {"system": system_prompt, "user": user_prompt}

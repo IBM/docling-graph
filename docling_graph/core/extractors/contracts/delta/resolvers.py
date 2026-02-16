@@ -190,6 +190,11 @@ def _compute_merge_decision(
             skipped_reason = fallback_reason
         if score >= float(config.semantic_threshold):
             return True, score, "semantic", skipped_reason
+        # When semantic fails (e.g. spaCy not installed), fall back to fuzzy so resolvers still run.
+        if fallback_reason and mode in ("semantic", "chain"):
+            fuzzy_score = _fuzzy_similarity(text_left, text_right)
+            if fuzzy_score >= float(config.fuzzy_threshold):
+                return True, fuzzy_score, "fuzzy", skipped_reason
 
     return False, score, resolver_kind, skipped_reason
 

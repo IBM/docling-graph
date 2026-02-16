@@ -257,6 +257,13 @@ def convert_command(
     reverse_edges: Annotated[
         bool, typer.Option("--reverse-edges", "-r", help="Create bidirectional edges.")
     ] = False,
+    delta_quality_min_instances: Annotated[
+        int | None,
+        typer.Option(
+            "--delta-quality-min-instances",
+            help="Minimum attached nodes for delta quality gate; below this, fallback to direct. Default 20; use a lower value (e.g. 5) for small documents.",
+        ),
+    ] = None,
 ) -> None:
     """Convert a document to a knowledge graph."""
     logger.debug("Starting convert command")
@@ -356,6 +363,11 @@ def convert_command(
     final_quality_max_id_mismatch = int(defaults.get("quality_max_id_mismatch", -1))
     final_quality_max_nested_property_drops = int(
         defaults.get("quality_max_nested_property_drops", -1)
+    )
+    final_delta_quality_min_instances = (
+        delta_quality_min_instances
+        if delta_quality_min_instances is not None
+        else int(defaults.get("delta_quality_min_instances", 20))
     )
     final_staged_nodes_fill_cap = (
         staged_nodes_fill_cap
@@ -524,6 +536,7 @@ def convert_command(
         quality_max_unknown_path_drops=final_quality_max_unknown_path_drops,
         quality_max_id_mismatch=final_quality_max_id_mismatch,
         quality_max_nested_property_drops=final_quality_max_nested_property_drops,
+        delta_quality_min_instances=final_delta_quality_min_instances,
         staged_nodes_fill_cap=final_staged_nodes_fill_cap,
         staged_id_shard_size=final_staged_id_shard_size,
         export_format=export_format_val,

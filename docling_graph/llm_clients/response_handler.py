@@ -374,6 +374,15 @@ class ResponseHandler:
         """
         content = content.strip()
 
+        # Strategy 0: Fix key-quote errors (LLM outputs "key': value" instead of "key": value)
+        key_quote_fixed = re.sub(r"\"([^\"]*)'\s*:", r'"\1":', content)
+        if key_quote_fixed != content:
+            try:
+                result = json.loads(key_quote_fixed)
+                return result if isinstance(result, dict | list) else None
+            except json.JSONDecodeError:
+                content = key_quote_fixed
+
         # Strategy 1: Fix unterminated strings (common with small LLMs)
         # Find the last complete object and truncate there
         try:

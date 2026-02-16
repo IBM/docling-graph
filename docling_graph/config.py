@@ -357,6 +357,45 @@ class PipelineConfig(BaseModel):
             )
         return self
 
+    def to_metadata_config_dict(
+        self,
+        *,
+        resolved_model: str | None = None,
+        resolved_provider: str | None = None,
+    ) -> Dict[str, Any]:
+        """
+        Return full effective config as a JSON-serializable dict for metadata.json.
+        Includes all options with their effective values (including defaults not overridden).
+        """
+        (
+            effective_retries,
+            effective_workers,
+            effective_nodes_fill_cap,
+            effective_id_shard_size,
+        ) = get_effective_staged_tuning(
+            self.staged_tuning_preset,
+            self.staged_pass_retries,
+            self.parallel_workers,
+            self.staged_nodes_fill_cap,
+            self.staged_id_shard_size,
+        )
+        # Full dump, JSON-serializable (Path -> str, etc.), exclude non-serializable
+        data = self.model_dump(mode="json", exclude={"llm_client", "template"})
+        # template can be a Pydantic model class; serialize as dotted path string
+        if isinstance(self.template, str):
+            data["template"] = self.template
+        else:
+            data["template"] = f"{self.template.__module__}.{self.template.__qualname__}"
+        data["staged_pass_retries"] = effective_retries
+        data["parallel_workers"] = effective_workers
+        data["staged_nodes_fill_cap"] = effective_nodes_fill_cap
+        data["staged_id_shard_size"] = effective_id_shard_size
+        if resolved_model is not None:
+            data["resolved_model"] = resolved_model
+        if resolved_provider is not None:
+            data["resolved_provider"] = resolved_provider
+        return data
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert config to dictionary format expected by run_pipeline."""
         (

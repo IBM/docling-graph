@@ -155,6 +155,12 @@ class PipelineOrchestrator:
                         actual_model = actual_model or self.config.models.vlm.local.model
                         actual_provider = actual_provider or self.config.models.vlm.local.provider
 
+                # Full effective config (all options including defaults) for reproducibility
+                full_config = self.config.to_metadata_config_dict(
+                    resolved_model=actual_model,
+                    resolved_provider=actual_provider,
+                )
+
                 metadata = {
                     "pipeline_version": __version__,
                     "timestamp": datetime.now().isoformat(),
@@ -162,38 +168,7 @@ class PipelineOrchestrator:
                         "source": str(self.config.source),
                         "template": str(self.config.template),
                     },
-                    "config": {
-                        "pipeline": {
-                            "processing_mode": self.config.processing_mode,
-                            "debug": self.config.debug,
-                            "reverse_edges": self.config.reverse_edges,
-                            "docling": self.config.docling_config,
-                        },
-                        "extraction": {
-                            "backend": self.config.backend,
-                            "inference": self.config.inference,
-                            "model": actual_model,
-                            "provider": actual_provider,
-                            "use_chunking": self.config.use_chunking,
-                            "max_batch_size": self.config.max_batch_size,
-                            "extraction_contract": getattr(
-                                self.config, "extraction_contract", "direct"
-                            ),
-                            "staged_tuning_preset": getattr(
-                                self.config, "staged_tuning_preset", "standard"
-                            ),
-                            "staged_pass_retries": getattr(
-                                self.config, "staged_pass_retries", None
-                            ),
-                            "parallel_workers": getattr(self.config, "parallel_workers", None),
-                            "staged_nodes_fill_cap": getattr(
-                                self.config, "staged_nodes_fill_cap", None
-                            ),
-                            "staged_id_shard_size": getattr(
-                                self.config, "staged_id_shard_size", None
-                            ),
-                        },
-                    },
+                    "config": full_config,
                     "processing_time_seconds": round(pipeline_processing_time, 2),
                     "results": {
                         "nodes": context.graph_metadata.node_count if context.graph_metadata else 0,

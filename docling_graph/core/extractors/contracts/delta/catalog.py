@@ -329,6 +329,199 @@ def _canonicalize_id_value(value: Any) -> str:
     return str(value)
 
 
+def _collect_objects_by_path(
+    root: dict[str, Any],
+    catalog: DeltaNodeCatalog,
+    *,
+    skip_keys: set[str] | None = None,
+) -> dict[str, list[Any]]:
+    """Walk template-shaped root and collect path -> list of objects for each catalog path."""
+    skip_keys = skip_keys or {"__orphans__"}
+    path_to_objs: dict[str, list[Any]] = {}
+
+    def walk(obj: Any, current_path: str) -> None:
+        if not isinstance(obj, dict):
+            return
+        path_to_objs.setdefault(current_path, []).append(obj)
+        for spec in catalog.nodes:
+            if spec.parent_path != current_path:
+                continue
+            field_name = spec.field_name
+            if not field_name or field_name in skip_keys:
+                continue
+            value = obj.get(field_name)
+            if value is None:
+                continue
+            if spec.is_list and isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict):
+                        walk(item, spec.path)
+            elif isinstance(value, dict):
+                walk(value, spec.path)
+
+    walk(root, "")
+    return path_to_objs
+
+
+def fix_scalar_id_fields_holding_lists(
+    merged_root: dict[str, Any],
+    catalog: DeltaNodeCatalog,
+    *,
+    orphan_field_name: str = "__orphans__",
+) -> None:
+    """
+    When an entity's id field (e.g. study_id) incorrectly holds a list (e.g. experiment
+    objects), move that list to the correct list field (e.g. experiments) and set the
+    id field to a scalar. Use a non-empty placeholder so templates that require the
+    id (e.g. nom for Offre) do not drop the entity. Mutates merged_root in place.
+    """
+    path_to_objs = _collect_objects_by_path(merged_root, catalog, skip_keys={orphan_field_name})
+    # Placeholder when id was a list so validators (e.g. required nom) do not drop the entity
+    id_placeholder = "Unknown"
+    for spec in catalog.nodes:
+        if not spec.id_fields or not spec.path.endswith("[]"):
+            continue
+        child_list_specs = [
+            s for s in catalog.nodes if s.parent_path == spec.path and s.is_list and s.field_name
+        ]
+        for obj in path_to_objs.get(spec.path, []):
+            if not isinstance(obj, dict):
+                continue
+            for id_field in spec.id_fields:
+                val = obj.get(id_field)
+                # Preserve existing non-empty string id (e.g. from projection); do not overwrite with placeholder
+                if isinstance(val, str) and val.strip():
+                    continue
+                if not isinstance(val, list):
+                    continue
+                list_field = None
+                for child in child_list_specs:
+                    if child.field_name:
+                        list_field = child.field_name
+                        break
+                if not list_field:
+                    obj[id_field] = id_placeholder
+                    continue
+                existing = obj.get(list_field)
+                if not isinstance(existing, list):
+                    existing = []
+                obj[list_field] = list(val) + list(existing)
+                obj[id_field] = id_placeholder
+
+
+def reattach_orphans(
+    merged_root: dict[str, Any],
+    catalog: DeltaNodeCatalog,
+    *,
+    orphan_field_name: str = "__orphans__",
+) -> dict[str, Any]:
+    """
+    Try to reattach orphan nodes to the tree when there is exactly one parent candidate.
+    Mutates merged_root and returns it.
+    """
+    orphans = merged_root.get(orphan_field_name)
+    if not isinstance(orphans, list) or not orphans:
+        return merged_root
+    path_to_objs = _collect_objects_by_path(merged_root, catalog, skip_keys={orphan_field_name})
+    spec_by_path = {spec.path: spec for spec in catalog.nodes}
+    still_orphans: list[dict[str, Any]] = []
+    for item in orphans:
+        if not isinstance(item, dict):
+            still_orphans.append(item)
+            continue
+        path = str(item.get("path") or "")
+        parent_path = str(item.get("parent_path") or "")
+        data = item.get("data")
+        if path not in spec_by_path or not isinstance(data, dict):
+            still_orphans.append(item)
+            continue
+        spec = spec_by_path[path]
+        field_name = spec.field_name
+        if not field_name:
+            still_orphans.append(item)
+            continue
+        candidates = path_to_objs.get(parent_path, [])
+        if len(candidates) != 1:
+            still_orphans.append(item)
+            continue
+        parent_obj = candidates[0]
+        if spec.is_list:
+            existing = parent_obj.get(field_name)
+            if not isinstance(existing, list):
+                parent_obj[field_name] = []
+            parent_obj[field_name].append(data)
+        else:
+            parent_obj[field_name] = data
+    merged_root[orphan_field_name] = still_orphans
+    return merged_root
+
+
+def _infer_missing_list_entity_parents(
+    path_filled: dict[str, list[Any]],
+    path_descriptors: dict[str, list[dict[str, Any]]],
+    catalog: DeltaNodeCatalog,
+) -> None:
+    """
+    Add synthetic list-entity parent descriptors and filled objects when children
+    reference (parent_path, parent_ids) that have no existing node. Domain-agnostic:
+    uses only catalog list paths and id_fields so it works for any schema.
+    Mutates path_filled and path_descriptors in place.
+    """
+    spec_by_path = {spec.path: spec for spec in catalog.nodes}
+    list_entity_paths = {
+        spec.path
+        for spec in catalog.nodes
+        if spec.path.endswith("[]") and spec.id_fields and spec.field_name
+    }
+    seen_keys: set[tuple[str, tuple[Any, ...]]] = set()
+    needed: list[tuple[str, dict[str, Any]]] = []
+    for path, descriptors in path_descriptors.items():
+        if not descriptors:
+            continue
+        child_spec = spec_by_path.get(path)
+        if not child_spec:
+            continue
+        parent_path = child_spec.parent_path
+        if parent_path not in list_entity_paths:
+            continue
+        parent_spec = spec_by_path.get(parent_path)
+        if not parent_spec or not parent_spec.id_fields:
+            continue
+        for desc in descriptors:
+            parent = desc.get("parent") if isinstance(desc, dict) else None
+            if not isinstance(parent, dict):
+                continue
+            parent_ids = parent.get("ids") or {}
+            if not parent_ids:
+                continue
+            if not all(parent_ids.get(f) not in (None, "") for f in parent_spec.id_fields):
+                continue
+            key = (parent_path, _id_tuple(parent_spec, parent_ids))
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
+            existing_descriptors = path_descriptors.get(parent_path, [])
+            found = False
+            for existing_desc in existing_descriptors:
+                existing_ids = existing_desc.get("ids") or {}
+                if _id_tuple(parent_spec, existing_ids) == key[1]:
+                    found = True
+                    break
+            if found:
+                continue
+            needed.append((parent_path, dict(parent_ids)))
+    for parent_path, parent_ids in needed:
+        parent_spec = spec_by_path[parent_path]
+        filled_obj = {f: parent_ids.get(f) for f in parent_spec.id_fields}
+        descriptor = {
+            "path": parent_path,
+            "ids": parent_ids,
+            "parent": {"path": "", "ids": {}},
+        }
+        path_filled.setdefault(parent_path, []).append(filled_obj)
+        path_descriptors.setdefault(parent_path, []).append(descriptor)
+
+
 def merge_delta_filled_into_root(  # noqa: C901
     path_filled: dict[str, list[Any]],
     path_descriptors: dict[str, list[dict[str, Any]]],
@@ -339,6 +532,7 @@ def merge_delta_filled_into_root(  # noqa: C901
     orphan_field_name: str = "__orphans__",
 ) -> dict[str, Any]:
     """Attach filled nodes to parent descriptors and build root object."""
+    _infer_missing_list_entity_parents(path_filled, path_descriptors, catalog)
     root: dict[str, Any] = {}
     merge_counters: dict[str, int] = {
         "descriptor_length_mismatch": 0,
@@ -487,14 +681,16 @@ def merge_delta_filled_into_root(  # noqa: C901
                         merge_counters["parent_lookup_repaired_single_candidate"] += 1
                 if parent_obj is None and not parent_ids:
                     parent_candidates = path_filled.get(parent_path, [])
-                    if 0 <= i < len(parent_candidates):
+                    # Only use positional when there is exactly one parent candidate (no id conflict).
+                    if len(parent_candidates) == 1 and 0 <= i < len(parent_candidates):
                         positional_parent = parent_candidates[i]
                         if isinstance(positional_parent, dict):
                             parent_obj = positional_parent
                             merge_counters["parent_lookup_repaired_positional"] += 1
                 if parent_obj is None:
                     candidates = lookup_by_path.get(parent_path, [])
-                    if candidates:
+                    # Only attach to "first" parent when there is exactly one candidate; avoid wrong parent when multiple exist.
+                    if len(candidates) == 1:
                         parent_obj = candidates[0]
                         merge_counters["parent_lookup_repaired_best_effort"] += 1
             if parent_obj is None:
@@ -516,6 +712,15 @@ def merge_delta_filled_into_root(  # noqa: C901
                         parent_path,
                     )
                 continue
+            # Backfill empty or placeholder list-entity id from first attaching child (domain-agnostic: use catalog id_fields)
+            if parent_spec.id_fields and parent_ids:
+                for id_f in parent_spec.id_fields:
+                    current = parent_obj.get(id_f)
+                    if current in (None, "", "Unknown") and parent_ids.get(id_f) not in (
+                        None,
+                        "",
+                    ):
+                        parent_obj[id_f] = parent_ids[id_f]
             if is_list:
                 existing = parent_obj.get(field_name)
                 if not isinstance(existing, list):
@@ -556,4 +761,5 @@ def merge_delta_filled_into_root(  # noqa: C901
             merge_counters["missing_parent_descriptor"],
             salvage_orphans,
         )
+    fix_scalar_id_fields_holding_lists(root, catalog, orphan_field_name=orphan_field_name)
     return root

@@ -13,11 +13,12 @@ from typing import Any, Callable, cast
 
 from pydantic import BaseModel, ValidationError
 
-from .catalog import build_delta_node_catalog
+from .catalog import build_delta_node_catalog, reattach_orphans
 from .helpers import (
     DedupPolicy,
     build_dedup_policy,
     chunk_batches_by_token_limit,
+    ensure_root_node,
     filter_entity_nodes_by_identity,
     merge_delta_graphs,
     per_path_counts,
@@ -165,6 +166,8 @@ class DeltaOrchestrator:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2, ensure_ascii=True, default=str)
 
+    _GLOBAL_CONTEXT_MAX_CHARS = 600
+
     def _run_one_batch(
         self,
         *,
@@ -173,6 +176,7 @@ class DeltaOrchestrator:
         batch: list[tuple[int, str, int]],
         semantic_guide: str,
         catalog_block: str,
+        global_context: str | None = None,
     ) -> tuple[int, dict[str, Any] | None, list[str], float]:
         batch_markdown = format_batch_markdown([chunk for _, chunk, _ in batch])
         delta_schema_json = json.dumps(DeltaGraph.model_json_schema(), indent=2)
@@ -185,6 +189,7 @@ class DeltaOrchestrator:
             path_catalog_block=catalog_block,
             batch_index=batch_index,
             total_batches=total_batches,
+            global_context=global_context,
         )
 
         last_parsed: dict | list | None = None
@@ -264,7 +269,7 @@ class DeltaOrchestrator:
         attached_node_count = int(merge_stats.get("attached_node_count", 0) or 0)
         allowed_parent_lookup_miss = max(0, self._config.quality_max_parent_lookup_miss)
         if self._config.quality_adaptive_parent_lookup and path_counts.get("", 0) > 0:
-            adaptive_cap = min(150, max(8, total_instances // 4))
+            adaptive_cap = min(200, max(8, total_instances // 3))
             allowed_parent_lookup_miss = max(allowed_parent_lookup_miss, adaptive_cap)
         if self._config.quality_require_root and path_counts.get("", 0) <= 0:
             reasons.append("missing_root_instance")
@@ -475,6 +480,14 @@ class DeltaOrchestrator:
         schema_dict = self._template.model_json_schema()
         semantic_guide = build_delta_semantic_guide(self._template, schema_dict)
         catalog_block = build_catalog_prompt_block(self._catalog)
+        global_context: str | None = None
+        if chunks:
+            first_chunk = chunks[0].strip()
+            if first_chunk:
+                max_len = getattr(self, "_GLOBAL_CONTEXT_MAX_CHARS", 600)
+                global_context = first_chunk[:max_len] + (
+                    "..." if len(first_chunk) > max_len else ""
+                )
 
         successful_results: list[dict[str, Any]] = []
         effective_batch_plan: list[list[tuple[int, str, int]]] = []
@@ -495,6 +508,7 @@ class DeltaOrchestrator:
                         batch=batch,
                         semantic_guide=semantic_guide,
                         catalog_block=catalog_block,
+                        global_context=global_context,
                     ): i
                     for i, batch in enumerate(batch_plan)
                 }
@@ -515,6 +529,7 @@ class DeltaOrchestrator:
                     batch=batch,
                     semantic_guide=semantic_guide,
                     catalog_block=catalog_block,
+                    global_context=global_context,
                 )
                 batch_timings.append({"batch_index": batch_idx, "elapsed_seconds": elapsed})
                 if graph_dict is not None:
@@ -543,6 +558,7 @@ class DeltaOrchestrator:
                         batch=sub_batch,
                         semantic_guide=semantic_guide,
                         catalog_block=catalog_block,
+                        global_context=global_context,
                     )
                     batch_timings.append(
                         {
@@ -596,7 +612,9 @@ class DeltaOrchestrator:
             enabled=self._config.identity_filter_enabled,
             strict=self._config.identity_filter_strict,
         )
+        ensure_root_node(merged_graph)
         merged_root, merge_stats = project_graph_to_template_root(merged_graph, self._template)
+        reattach_orphans(merged_root, self._catalog)
         path_counts = per_path_counts(merged_graph.get("nodes", []))
         property_sparsity = self._compute_property_sparsity(
             merged_graph=merged_graph, merged_root=merged_root

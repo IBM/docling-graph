@@ -184,7 +184,7 @@ class GraphCleaner:
         node_groups: Dict[str, List[str]] = {}
 
         for node_id, node_data in graph.nodes(data=True):
-            content_hash = self._compute_content_hash(node_data)
+            content_hash = self._compute_content_hash(node_data, node_id=node_id)
 
             if content_hash not in node_groups:
                 node_groups[content_hash] = []
@@ -262,11 +262,13 @@ class GraphCleaner:
 
         return len(duplicate_edges)
 
-    def _compute_content_hash(self, node_data: dict) -> str:
+    def _compute_content_hash(self, node_data: dict, node_id: str = "") -> str:
         """
         Compute a content-based hash for a node.
 
         Nodes with identical content (ignoring ID) get the same hash.
+        When a node has a placeholder identity (e.g. nom="Unknown"), include node_id
+        in the hash so list siblings with the same placeholder are not merged.
         """
         import hashlib
         import json
@@ -278,6 +280,10 @@ class GraphCleaner:
 
         # Normalize and sort
         content_str = json.dumps(content_fields, sort_keys=True, default=str)
+
+        # If any field is the exact placeholder "Unknown", include node_id so list siblings stay distinct
+        if any(v == "Unknown" for v in content_fields.values() if isinstance(v, str)):
+            content_str += f"|{node_id}"
 
         # Hash
         return hashlib.blake2b(content_str.encode()).hexdigest()[:16]

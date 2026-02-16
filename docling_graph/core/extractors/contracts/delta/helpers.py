@@ -495,8 +495,9 @@ def filter_entity_nodes_by_identity(
     section_title_patterns: Sequence[str] = (),
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """
-    Remove entity nodes whose identity value is not in the schema allowlist or
-    looks like a section title. Optionally remove relationships whose endpoint was removed.
+    Remove entity nodes only when their identity value looks like a section/chapter title.
+    Schema identity_example_values are used for prompt hints only; we do not drop nodes
+    whose value is not in that allowlist (document-derived ids are kept).
     """
     stats: dict[str, Any] = {
         "identity_filter_dropped": 0,
@@ -517,8 +518,7 @@ def filter_entity_nodes_by_identity(
             continue
         path = str(node.get("path") or "")
         spec = spec_by_path.get(path)
-        identity_values = getattr(spec, "identity_example_values", None) if spec else None
-        if not identity_values or not spec or not spec.id_fields:
+        if not spec or not spec.id_fields:
             kept_nodes.append(node)
             continue
 
@@ -533,22 +533,12 @@ def filter_entity_nodes_by_identity(
         raw_value = ids.get(primary_field) or props.get(primary_field)
         value = _coerce_identity_to_str(raw_value)
 
-        allowlist_normalized = {_normalize_identity_for_allowlist(v) for v in identity_values if v}
-        value_norm = _normalize_identity_for_allowlist(value)
-
-        if value_norm in allowlist_normalized:
-            kept_nodes.append(node)
-            continue
         if not value:
             kept_nodes.append(node)
             continue
 
-        # Strict mode (config): drop if not in allowlist. Otherwise only drop section-title heuristic.
-        if strict:
-            removed_keys.add(node_identity_key(node, dedup_policy=dedup_policy))
-            stats["identity_filter_dropped"] += 1
-            stats["identity_filter_dropped_by_path"][path] += 1
-            continue
+        # Only drop when the value clearly looks like a section/chapter title.
+        # Do not use schema identity_example_values as a drop allowlist (document-derived ids are kept).
         if _looks_like_section_title(value, patterns=patterns):
             removed_keys.add(node_identity_key(node, dedup_policy=dedup_policy))
             stats["identity_filter_dropped"] += 1
@@ -597,3 +587,47 @@ def per_path_counts(nodes: Sequence[dict[str, Any]]) -> dict[str, int]:
         path = str(node.get("path") or "")
         counts[path] += 1
     return dict(counts)
+
+
+def ensure_root_node(merged_graph: dict[str, Any]) -> None:
+    """
+    If the graph has root-level children but no node with path \"\", add one synthetic root node
+    so projection and quality gate can succeed (avoids missing_root_instance when no batch emitted root).
+    Mutates merged_graph in place.
+    """
+    nodes = merged_graph.get("nodes")
+    if not isinstance(nodes, list):
+        return
+    has_root = any(isinstance(n, dict) and str(n.get("path") or "") == "" for n in nodes)
+    if has_root:
+        return
+    has_root_child = any(
+        isinstance(n, dict)
+        and isinstance(n.get("parent"), dict)
+        and str((n.get("parent") or {}).get("path") or "") == ""
+        for n in nodes
+    )
+    if not has_root_child:
+        return
+    synthetic: dict[str, Any] = {
+        "path": "",
+        "ids": {},
+        "parent": None,
+        "properties": {},
+    }
+    synthetic_ids = synthetic["ids"]
+    synthetic_props = synthetic["properties"]
+    assert isinstance(synthetic_ids, dict) and isinstance(synthetic_props, dict)
+    for n in nodes:
+        if not isinstance(n, dict):
+            continue
+        parent = n.get("parent")
+        if not isinstance(parent, dict) or str(parent.get("path") or "") != "":
+            continue
+        parent_ids = parent.get("ids")
+        if isinstance(parent_ids, dict) and parent_ids:
+            synthetic_ids.update(parent_ids)
+            for k, v in parent_ids.items():
+                if v is not None:
+                    synthetic_props[k] = v
+    nodes.append(synthetic)

@@ -61,7 +61,9 @@ def _backfill_missing_identity_ids(
     ids_raw: Any,
     identity_fields: tuple[str, ...],
     remapped_properties: dict[str, Any],
+    parent_ids: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], int]:
+    """Backfill missing identity fields from node properties and, if present, parent ref."""
     if not isinstance(ids_raw, dict):
         ids_raw = {}
     if not identity_fields:
@@ -69,13 +71,25 @@ def _backfill_missing_identity_ids(
 
     repaired = 0
     out = dict(ids_raw)
+    parent = parent_ids if isinstance(parent_ids, dict) else {}
     for key in identity_fields:
         current = out.get(key)
         if _is_non_empty(current):
             continue
         candidate = remapped_properties.get(key)
         if _is_non_empty(candidate):
-            out[key] = candidate
+            out[key] = (
+                str(candidate).strip() if not isinstance(candidate, dict | list) else str(candidate)
+            )
+            repaired += 1
+            continue
+        parent_val = parent.get(key)
+        if _is_non_empty(parent_val):
+            out[key] = (
+                str(parent_val).strip()
+                if not isinstance(parent_val, dict | list)
+                else str(parent_val)
+            )
             repaired += 1
     return out, repaired
 
@@ -613,11 +627,16 @@ def normalize_delta_ir_batch_results(  # noqa: C901
             )
             if node_id_inferred:
                 stats["node_id_inferred"] += 1
-            if policy is not None and len(policy.identity_fields) == 1:
+            if policy is not None and policy.identity_fields:
+                parent_raw = raw_node.get("parent")
+                parent_ids_for_backfill = (
+                    parent_raw.get("ids") if isinstance(parent_raw, dict) else {}
+                )
                 ids_raw, backfilled_count = _backfill_missing_identity_ids(
                     ids_raw=ids_raw,
                     identity_fields=policy.identity_fields,
                     remapped_properties=remapped_props,
+                    parent_ids=parent_ids_for_backfill,
                 )
                 stats["id_backfilled_from_properties"] += backfilled_count
             ids, id_stats = _normalize_ids(

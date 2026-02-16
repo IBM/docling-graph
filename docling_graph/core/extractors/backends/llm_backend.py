@@ -5,6 +5,7 @@ Performs direct full-document extraction via extract_from_markdown() in a single
 Best-effort: coerces QuantityWithUnit scalars and prunes invalid fields on validation errors.
 """
 
+import ast
 import copy
 import gc
 import hashlib
@@ -471,9 +472,24 @@ class LlmBackend:
             if isinstance(value, list):
                 continue
             try:
-                # For list[str], split comma-separated string into list when applicable
-                if isinstance(value, str) and "," in value:
-                    list_value = [s.strip() for s in value.split(",") if s.strip()]
+                # String that looks like a Python list literal (e.g. "['locataire']")
+                if isinstance(value, str):
+                    s = value.strip()
+                    if s.startswith("[") and s.endswith("]"):
+                        try:
+                            parsed = ast.literal_eval(s)
+                            if isinstance(parsed, list):
+                                list_value = list(parsed)
+                                self._set_at_path(data, loc, list_value)
+                                seen_locs.add(loc)
+                                changed = True
+                                continue
+                        except (ValueError, SyntaxError):
+                            pass
+                    if "," in value:
+                        list_value = [s.strip() for s in value.split(",") if s.strip()]
+                    else:
+                        list_value = [value]
                 else:
                     list_value = [value]
                 self._set_at_path(data, loc, list_value)

@@ -30,14 +30,18 @@ class QualityDelta:
 def load_run_metrics(run_dir: Path) -> RunMetrics:
     metadata_path = run_dir / "metadata.json"
     payload = json.loads(metadata_path.read_text(encoding="utf-8"))
-    extraction = payload.get("config", {}).get("extraction", {})
+    config = payload.get("config", {})
+    # Support both: full flat config (resolved_model/resolved_provider) and legacy nested extraction
+    extraction = config.get("extraction", {})
+    model = str(config.get("resolved_model") or extraction.get("model", "") or "")
+    provider = str(config.get("resolved_provider") or extraction.get("provider", "") or "")
     results = payload.get("results", {})
     return RunMetrics(
         nodes=int(results.get("nodes", 0)),
         edges=int(results.get("edges", 0)),
         extracted_models=int(results.get("extracted_models", 0)),
-        model=str(extraction.get("model", "")),
-        provider=str(extraction.get("provider", "")),
+        model=model,
+        provider=provider,
     )
 
 
