@@ -268,9 +268,9 @@ def convert_command(
         bool,
         typer.Option(
             "--gleaning-enabled/--no-gleaning-enabled",
-            help="Run optional second-pass extraction to improve recall (direct and delta). Default: disabled.",
+            help="Run optional second-pass extraction to improve recall (direct and delta). Default: enabled.",
         ),
-    ] = False,
+    ] = True,
     gleaning_max_passes: Annotated[
         int | None,
         typer.Option(
@@ -403,7 +403,7 @@ def convert_command(
         if structured_sparse_check is not None
         else bool(defaults.get("structured_sparse_check", True))
     )
-    final_gleaning_enabled = gleaning_enabled or bool(defaults.get("gleaning_enabled", False))
+    final_gleaning_enabled = gleaning_enabled or bool(defaults.get("gleaning_enabled", True))
     final_gleaning_max_passes = (
         gleaning_max_passes
         if gleaning_max_passes is not None

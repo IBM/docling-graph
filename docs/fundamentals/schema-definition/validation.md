@@ -343,6 +343,67 @@ class Payment(BaseModel):
         return self
 ```
 
+#### 📍 Semantic sanity: clear wrong unit/amount
+
+When a field pair has a clear semantic (e.g. amount + unit), use a **model_validator** to clear both if the unit indicates a different quantity type (e.g. temperature or viscosity mistaken for amount). Prefer **clearing** over raising so extraction still validates:
+
+```python
+import re
+from typing_extensions import Self
+
+class Component(BaseModel):
+    """Component with amount; amount_unit must be a quantity unit, not a property unit."""
+    amount_value: float | None = Field(None)
+    amount_unit: str | None = Field(None)
+    # ... other fields
+
+    @model_validator(mode="after")
+    def clear_amount_if_property_unit(self) -> Self:
+        """Clear amount_value/amount_unit when unit indicates a property (temp, viscosity), not a quantity."""
+        unit = self.amount_unit
+        if not unit or not isinstance(unit, str):
+            return self
+        normalized = re.sub(r"[\s·]", "", unit.lower())
+        # Forbidden: temperature, viscosity, pressure
+        forbidden = ("°c", "k", "pa.s", "pas", "mpa.s", "mpas")
+        if any(f in normalized for f in forbidden) or normalized == "pa":
+            object.__setattr__(self, "amount_value", None)
+            object.__setattr__(self, "amount_unit", None)
+        return self
+```
+
+#### 📍 Deduplicate root-level list by key
+
+For root-level list fields that have no identity (e.g. authors), chunked extraction can append the same item multiple times. Use a **model_validator** to keep first occurrence per key:
+
+```python
+from typing import List
+from typing_extensions import Self
+
+class PersonIdentity(BaseModel):
+    full_name: str = Field(...)
+
+class Document(BaseModel):
+    """Root document."""
+    authors: List[PersonIdentity] = Field(default_factory=list)
+    # ... other fields
+
+    @model_validator(mode="after")
+    def deduplicate_authors_by_name(self) -> Self:
+        """Keep first occurrence of each author per full_name (removes duplicates from chunked extraction)."""
+        if not self.authors:
+            return self
+        seen: set[str] = set()
+        unique: list[PersonIdentity] = []
+        for a in self.authors:
+            key = (getattr(a, "full_name", None) or "").strip().lower()
+            if key not in seen:
+                seen.add(key)
+                unique.append(a)
+        object.__setattr__(self, "authors", unique)
+        return self
+```
+
 ---
 
 ## Common Validation Patterns

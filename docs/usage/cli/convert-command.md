@@ -310,14 +310,14 @@ See [Delta Extraction](../../fundamentals/extraction-process/delta-extraction.md
 
 #### Gleaning (direct and delta)
 
-Optional second-pass extraction ("what did you miss?") to improve recall. Applies to **direct** and **delta** contracts only (not staged). Disabled by default.
+Optional second-pass extraction ("what did you miss?") to improve recall. Applies to **direct** and **delta** contracts only (not staged). Enabled by default.
 
 ```bash
 --gleaning-enabled / --no-gleaning-enabled
 --gleaning-max-passes INT
 ```
 
-- `--gleaning-enabled`: run one extra extraction pass and merge additional entities/relations (default: disabled).
+- `--gleaning-enabled`: run one extra extraction pass and merge additional entities/relations (default: enabled).
 - `--gleaning-max-passes`: max number of gleaning passes when enabled (default: 1).
 
 **Example (delta with gleaning):**
