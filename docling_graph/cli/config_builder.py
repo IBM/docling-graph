@@ -327,6 +327,7 @@ class ConfigurationBuilder:
                 option_help={
                     "vllm": "Use vLLM server (OpenAI-compatible)",
                     "ollama": "Use Ollama server (local inference)",
+                    "lmstudio": "Use LM Studio local server (OpenAI-compatible)",
                     "custom": "Enter a custom LiteLLM provider ID",
                 },
             )

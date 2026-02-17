@@ -27,6 +27,11 @@ class TestValidateProvider:
         result = validate_provider("vllm", "local")
         assert result == "vllm"
 
+    def test_validate_provider_local_lmstudio(self):
+        """Should validate lmstudio as local provider."""
+        result = validate_provider("lmstudio", "local")
+        assert result == "lmstudio"
+
     def test_validate_provider_remote_mistral(self):
         """Should validate mistral as remote provider."""
         result = validate_provider("mistral", "remote")

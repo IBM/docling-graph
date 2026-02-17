@@ -170,6 +170,6 @@ For OpenAI-compatible endpoints, use a model string like `openai/<model-name>` s
 
 ## See Also
 
-- **[API Keys Setup](../fundamentals/installation/api-keys.md)** - Configure API keys including WatsonX
-- **[Model Configuration](../fundamentals/pipeline-configuration/model-configuration.md)** - Model setup
+- **[API Keys Setup](../fundamentals/installation/api-keys.md)** - Configure API keys (including optional LM Studio API key and WatsonX)
+- **[Model Configuration](../fundamentals/pipeline-configuration/model-configuration.md)** - Model setup (vLLM, Ollama, LM Studio, remote providers)
 - **[Remote Inference](../fundamentals/pipeline-configuration/backend-selection.md)** - Backend selection

@@ -89,7 +89,7 @@ Runtime behavior:
 - If schema mode succeeds but the returned JSON is clearly sparse for the schema, it performs
   the same one-time legacy retry to prevent silent quality regressions.
 
-API keys are not passed via CLI; use environment variables or `llm_overrides.connection.api_key` in config. For on-prem OpenAI-compatible servers: use `provider=openai`, `--llm-base-url`, and set `CUSTOM_LLM_BASE_URL` / `CUSTOM_LLM_API_KEY`.
+API keys are not passed via CLI; use environment variables or `llm_overrides.connection.api_key` in config. For on-prem OpenAI-compatible servers: use `provider=openai`, `--llm-base-url`, and set `CUSTOM_LLM_BASE_URL` / `CUSTOM_LLM_API_KEY`. For **LM Studio** (`provider=lmstudio`): use optional `LM_STUDIO_API_BASE` and `LM_STUDIO_API_KEY` (or `llm_overrides.connection`) when needed.
 
 ## Recommended Quality Metrics
 

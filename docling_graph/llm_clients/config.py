@@ -285,6 +285,16 @@ def _build_default_registry() -> ProviderRegistry:
                 tokenizer="sentence-transformers/all-MiniLM-L6-v2",
                 merge_threshold=0.95,
             ),
+            "lmstudio": ProviderDefinition(
+                requires_api_key=False,
+                connection=ProviderConnection(
+                    base_url="http://localhost:1234/v1",
+                    base_url_env="LM_STUDIO_API_BASE",
+                    api_key_env="LM_STUDIO_API_KEY",
+                ),
+                tokenizer="sentence-transformers/all-MiniLM-L6-v2",
+                merge_threshold=0.95,
+            ),
         }
     )
 
@@ -357,6 +367,10 @@ def build_litellm_model_name(
         if model_name.startswith("hosted_vllm/"):
             model_name = model_name.removeprefix("hosted_vllm/")
         model_name = f"hosted_vllm/{model_name}"
+    elif provider_id == "lmstudio":
+        if model_name.startswith("lm_studio/"):
+            model_name = model_name.removeprefix("lm_studio/")
+        model_name = f"lm_studio/{model_name}"
     elif provider_id not in {"openai"} and not model_name.startswith(f"{provider_id}/"):
         model_name = f"{provider_id}/{model_name}"
     return model_name

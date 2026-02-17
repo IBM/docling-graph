@@ -113,7 +113,34 @@ ollama pull llama3.1:8b
 - `mixtral:8x7b`
 - Any model in Ollama library
 
-#### 3. Docling VLM (For VLM Backend)
+#### 3. LM Studio
+
+**Best for:** Local inference via the LM Studio app (OpenAI-compatible server)
+
+```python
+config = PipelineConfig(
+    source="document.pdf",
+    template="templates.BillingDocument",
+    inference="local",
+    model_override="llama-3.2-3b-instruct",  # Must match model name in LM Studio
+    provider_override="lmstudio"
+)
+```
+
+**Setup:**
+
+1. Install [LM Studio](https://lmstudio.ai/) and load a model
+2. Enable **Local Server** (OpenAI-compatible API)
+3. Default URL: `http://localhost:1234/v1`
+
+**Environment variables:**
+
+- `LM_STUDIO_API_BASE` (optional): Override base URL (e.g. `http://localhost:1234/v1`)
+- `LM_STUDIO_API_KEY` (optional): Only if the server requires authentication
+
+**Model name:** Must match the model identifier shown in LM Studio's server/API (user-defined when you load the model).
+
+#### 4. Docling VLM (For VLM Backend)
 
 **Best for:** Vision-based extraction
 
@@ -163,6 +190,8 @@ nvidia-smi  # Verify CUDA installation
 uv add vllm  # For vLLM
 # or
 # Install Ollama from ollama.ai
+# or
+# Install LM Studio from lmstudio.ai and start Local Server
 ```
 
 **See:** [Installation: GPU Setup](../installation/gpu-setup.md)
