@@ -6,6 +6,7 @@ from docling_graph.cli.constants import (
     EXPORT_FORMATS,
     EXTRACTION_CONTRACTS,
     INFERENCE_LOCATIONS,
+    LOCAL_PROVIDER_DEFAULTS,
     LOCAL_PROVIDERS,
     PROCESSING_MODES,
 )
@@ -22,6 +23,12 @@ class TestConstants:
         cfg = PipelineConfig()
         assert cfg.models.llm.remote.provider in API_PROVIDERS
         assert cfg.models.llm.local.provider in LOCAL_PROVIDERS
+
+    def test_lmstudio_in_local_providers_and_defaults(self):
+        """LM Studio is a supported local provider with a default model placeholder."""
+        assert "lmstudio" in LOCAL_PROVIDERS
+        assert "lmstudio" in LOCAL_PROVIDER_DEFAULTS
+        assert LOCAL_PROVIDER_DEFAULTS["lmstudio"] == "local-model"
 
     def test_processing_modes_contains_valid_values(self):
         assert "one-to-one" in PROCESSING_MODES

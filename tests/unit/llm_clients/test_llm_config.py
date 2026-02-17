@@ -7,6 +7,7 @@ from pydantic import SecretStr, ValidationError
 from docling_graph.llm_clients.config import (
     LlmRuntimeOverrides,
     ProviderDefinition,
+    build_litellm_model_name,
     resolve_effective_model_config,
 )
 
@@ -153,3 +154,23 @@ def test_connection_overrides_backward_compat(_info, _max_tokens):
     )
     effective = resolve_effective_model_config("openai", "gpt-4o", overrides=overrides)
     assert effective.connection.base_url == "https://legacy.example.com"
+
+
+def test_build_litellm_model_name_lmstudio():
+    """LM Studio provider produces lm_studio/<model_id> for LiteLLM."""
+    assert build_litellm_model_name("lmstudio", "my-model", None) == "lm_studio/my-model"
+    assert build_litellm_model_name("lmstudio", "llama-3.2-3b", None) == "lm_studio/llama-3.2-3b"
+
+
+def test_build_litellm_model_name_lmstudio_strips_prefix():
+    """LM Studio model_id with existing lm_studio/ prefix is normalized."""
+    assert build_litellm_model_name("lmstudio", "lm_studio/my-model", None) == "lm_studio/my-model"
+
+
+@patch("docling_graph.llm_clients.config._get_litellm_max_tokens", return_value=8192)
+@patch("docling_graph.llm_clients.config._get_litellm_model_info", return_value=None)
+def test_resolve_effective_model_config_lmstudio_produces_litellm_model(_info, _max_tokens):
+    """Resolving lmstudio provider yields litellm_model with lm_studio/ prefix."""
+    effective = resolve_effective_model_config("lmstudio", "my-local-model")
+    assert effective.litellm_model == "lm_studio/my-local-model"
+    assert effective.provider_id == "lmstudio"

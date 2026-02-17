@@ -33,7 +33,7 @@ DOCLING_PIPELINES: Final[list[str]] = ["ocr", "vision"]
 DOCLING_EXPORT_FORMATS: Final[list[str]] = ["markdown", "json", "document"]
 
 # Providers (enum for validation)
-LOCAL_PROVIDERS: Final[list[str]] = ["vllm", "ollama", "custom"]
+LOCAL_PROVIDERS: Final[list[str]] = ["vllm", "ollama", "lmstudio", "custom"]
 API_PROVIDERS: Final[list[str]] = ["mistral", "openai", "gemini", "watsonx", "custom"]
 
 # Provider-specific default models (for CLI prompts)
@@ -48,6 +48,7 @@ PROVIDER_DEFAULT_MODELS: Final[dict[str, str]] = {
 LOCAL_PROVIDER_DEFAULTS: Final[dict[str, str]] = {
     "vllm": "ibm-granite/granite-4.0-1b",
     "ollama": "llama-3.1-8b",
+    "lmstudio": "local-model",
 }
 
 # VLM default model

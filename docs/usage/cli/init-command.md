@@ -106,8 +106,10 @@ You choose the Docling pipeline (ocr / vision) and whether to export Docling JSO
 Choose local LLM provider:
 1. vLLM (recommended for GPU)
 2. Ollama (recommended for CPU)
+3. LM Studio (OpenAI-compatible local server)
+4. Custom
 
-Your choice [1-2]:
+Your choice [1-4]:
 ```
 
 **For Remote LLM:**
@@ -193,6 +195,32 @@ models:
     local:
       model: llama3:8b
       provider: ollama
+    remote:
+      model: mistral-small-latest
+      provider: mistral
+  vlm:
+    local:
+      model: numind/NuExtract-2.0-8B
+      provider: docling
+
+output:
+  directory: outputs
+```
+
+### Example: Local LLM (LM Studio)
+
+```yaml
+defaults:
+  processing_mode: many-to-one
+  backend: llm
+  inference: local
+  export_format: csv
+
+models:
+  llm:
+    local:
+      model: llama-3.2-3b-instruct   # Must match model name in LM Studio
+      provider: lmstudio
     remote:
       model: mistral-small-latest
       provider: mistral
@@ -303,15 +331,17 @@ Next steps:
 
 ### Local Provider Setup
 
+If you selected **LM Studio**: start the Local Server in the LM Studio app; set `LM_STUDIO_API_KEY` only if your server requires authentication.
+
 ```
 Next steps:
 1. Install dependencies:
    uv sync
 
-2. Start Ollama server:
+2. Start Ollama server (if using Ollama):
    ollama serve
 
-3. Pull the model:
+3. Pull the model (if using Ollama):
    ollama pull llama3:8b
 
 4. Run your first conversion:

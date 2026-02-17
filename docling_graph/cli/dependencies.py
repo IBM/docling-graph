@@ -112,6 +112,13 @@ OPTIONAL_DEPS: Dict[str, OptionalDependency] = {
         description="vLLM local inference provider",
         inference_type="local",
     ),
+    "lmstudio": OptionalDependency(
+        name="lmstudio",
+        package="litellm",
+        extra="all",
+        description="LM Studio local server (OpenAI-compatible)",
+        inference_type="local",
+    ),
     # Remote/API providers
     "mistral": OptionalDependency(
         name="mistral",
@@ -152,7 +159,7 @@ OPTIONAL_DEPS: Dict[str, OptionalDependency] = {
 
 # Mapping of inference types to their providers
 INFERENCE_PROVIDERS: Dict[str, List[str]] = {
-    "local": ["ollama", "vllm"],
+    "local": ["ollama", "vllm", "lmstudio"],
     "remote": ["mistral", "openai", "gemini", "ibm-watsonx-ai"],
 }
 

@@ -97,6 +97,7 @@ class TestOptionalDepsRegistry:
         """Should have all local providers."""
         assert "ollama" in OPTIONAL_DEPS
         assert "vllm" in OPTIONAL_DEPS
+        assert "lmstudio" in OPTIONAL_DEPS
 
     def test_optional_deps_has_required_remote_providers(self):
         """Should have all remote providers."""
@@ -115,7 +116,7 @@ class TestOptionalDepsRegistry:
         """Should have correct inference type mappings."""
         assert "local" in INFERENCE_PROVIDERS
         assert "remote" in INFERENCE_PROVIDERS
-        assert set(INFERENCE_PROVIDERS["local"]) == {"ollama", "vllm"}
+        assert set(INFERENCE_PROVIDERS["local"]) == {"ollama", "vllm", "lmstudio"}
         assert set(INFERENCE_PROVIDERS["remote"]) == {
             "mistral",
             "openai",

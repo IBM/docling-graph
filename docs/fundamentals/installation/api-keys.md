@@ -13,7 +13,7 @@ Remote LLM providers require API keys for authentication. This guide covers:
     API keys are **not required** for:
     
     - Local VLM (NuExtract)
-    - Local LLM (vLLM, Ollama)
+    - Local LLM (vLLM, Ollama, LM Studio)
 
 ## Quick Setup
 
@@ -104,6 +104,21 @@ export CUSTOM_LLM_API_KEY="your-api-key"
 ```
 
 Run `docling-graph init` and choose "Use custom endpoint" for guided setup.
+
+### LM Studio (optional API key)
+
+The LM Studio local server usually does **not** require an API key when running on localhost. When an API key is needed (e.g. remote LM Studio or a secured server), set it in the environment or in config:
+
+- **Environment:** `export LM_STUDIO_API_KEY="your-key"`
+- **Config:** Set `llm_overrides.connection.api_key` in your `config.yaml` (prefer env for secrets)
+
+To use a non-default server URL (e.g. a different port or host), set:
+
+```bash
+export LM_STUDIO_API_BASE="http://localhost:1234/v1"
+```
+
+See [Model Configuration](../pipeline-configuration/model-configuration.md) for full LM Studio setup with `provider=lmstudio`.
 
 ## Provider-Specific Setup
 
