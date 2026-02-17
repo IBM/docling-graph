@@ -288,7 +288,7 @@ class PipelineConfig(BaseModel):
         description="If True, drop any entity node whose identity is not in allowlist; if False, also drop when section-title heuristic matches.",
     )
     gleaning_enabled: bool = Field(
-        default=False,
+        default=True,
         description="Run optional second-pass extraction (what did you miss?) for direct and delta contracts.",
     )
     gleaning_max_passes: int = Field(

@@ -71,7 +71,7 @@ class DeltaOrchestratorConfig:
     batch_split_max_retries: int = 1
     identity_filter_enabled: bool = True
     identity_filter_strict: bool = False
-    gleaning_enabled: bool = False
+    gleaning_enabled: bool = True
     gleaning_max_passes: int = 1
     ir_normalizer: DeltaIrNormalizerConfig = field(default_factory=DeltaIrNormalizerConfig)
     resolvers: DeltaResolverConfig = field(default_factory=DeltaResolverConfig)
@@ -122,7 +122,7 @@ class DeltaOrchestratorConfig:
             batch_split_max_retries=max(0, int(conf.get("delta_batch_split_max_retries", 1) or 0)),
             identity_filter_enabled=bool(conf.get("delta_identity_filter_enabled", True)),
             identity_filter_strict=bool(conf.get("delta_identity_filter_strict", False)),
-            gleaning_enabled=bool(conf.get("gleaning_enabled", False)),
+            gleaning_enabled=bool(conf.get("gleaning_enabled", True)),
             gleaning_max_passes=max(0, int(conf.get("gleaning_max_passes", 1) or 1)),
             ir_normalizer=DeltaIrNormalizerConfig(
                 validate_paths=bool(conf.get("delta_normalizer_validate_paths", True)),

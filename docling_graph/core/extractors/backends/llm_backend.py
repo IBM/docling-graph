@@ -327,13 +327,14 @@ class LlmBackend:
                     if enum_default is not None:
                         value = enum_default
                     else:
+                        # Identity-like fields (e.g. *_id) get stable generated IDs; other strings get ""
                         fingerprint = self._content_fingerprint(parent, exclude_keys={field_name})
                         if field_name.endswith("_id"):
                             prefix = field_name[:-3].upper()
                             prefix = prefix[:4] if len(prefix) > 4 else prefix
                             value = f"{prefix}-{fingerprint}"
                         else:
-                            value = f"GEN-{field_name.upper()}-{fingerprint[:8]}"
+                            value = ""
                 else:
                     fingerprint = self._content_fingerprint(parent, exclude_keys={field_name})
                     if field_name.endswith("_id"):
@@ -341,16 +342,16 @@ class LlmBackend:
                         prefix = prefix[:4] if len(prefix) > 4 else prefix
                         value = f"{prefix}-{fingerprint}"
                     else:
-                        value = f"GEN-{field_name.upper()}-{fingerprint[:8]}"
+                        value = ""
             else:
-                # Deterministic ID from entity content so same logical entity => same ID
+                # No template: identity-like fields get generated ID; other strings get ""
                 fingerprint = self._content_fingerprint(parent, exclude_keys={field_name})
                 if field_name.endswith("_id"):
                     prefix = field_name[:-3].upper()
                     prefix = prefix[:4] if len(prefix) > 4 else prefix
                     value = f"{prefix}-{fingerprint}"
                 else:
-                    value = f"GEN-{field_name.upper()}-{fingerprint[:8]}"
+                    value = ""
             self._set_at_path(data, loc, value)
             seen_locs.add(loc)
             changed = True
@@ -448,6 +449,8 @@ class LlmBackend:
                 coerced = str(value)
             elif isinstance(value, list | dict):
                 coerced = self._extract_string_from_list_or_dict(value)
+                if coerced is None:
+                    coerced = ""
             if coerced is None:
                 continue
             try:

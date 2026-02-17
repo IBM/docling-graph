@@ -461,6 +461,22 @@ class TestCoerceStringTypeErrors:
         assert result.items[1].name == "Second"
         assert result.items[2].name == "Third"
 
+    def test_coerce_string_fallback_when_list_dict_yields_no_string(self, llm_backend):
+        """When schema expects string but value is list/dict with no extractable string, use '' so validation passes."""
+        from pydantic import BaseModel, Field
+
+        class Dataset(BaseModel):
+            dataset_id: str = Field(description="ID")
+
+        class Root(BaseModel):
+            datasets: list[Dataset] = Field(default_factory=list)
+
+        data = {"datasets": [{"dataset_id": [{}]}]}
+        result = llm_backend._validate_extraction(data, Root, context="test")
+        assert result is not None
+        assert len(result.datasets) == 1
+        assert result.datasets[0].dataset_id == ""
+
 
 class TestCoerceListTypeErrors:
     """Test that scalar in list field is coerced to single-element list so validation can pass."""

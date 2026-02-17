@@ -118,7 +118,7 @@ Optional second-pass extraction to improve recall. Applies to **direct** and **d
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `gleaning_enabled` | `bool` | `False` | Run one extra extraction pass ("what did you miss?") and merge additional entities/relations. |
+| `gleaning_enabled` | `bool` | `True` | Run one extra extraction pass ("what did you miss?") and merge additional entities/relations. |
 | `gleaning_max_passes` | `int` | `1` | Max number of gleaning passes when `gleaning_enabled` is True. |
 
 #### Export Configuration

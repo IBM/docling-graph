@@ -117,11 +117,11 @@ Optional pass to merge near-duplicate entities after the graph merge.
 
 ### Gleaning (direct and delta)
 
-Optional second-pass extraction ("what did you miss?") to improve recall. Applies to **direct** and **delta** contracts only (not staged). Disabled by default.
+Optional second-pass extraction ("what did you miss?") to improve recall. Applies to **direct** and **delta** contracts only (not staged). Enabled by default.
 
 | Python (`PipelineConfig` / config dict) | CLI flag | Default | Description |
 |----------------------------------------|----------|---------|-------------|
-| `gleaning_enabled` | `--gleaning-enabled` / `--no-gleaning-enabled` | `False` | Run one extra extraction pass and merge additional entities/relations. |
+| `gleaning_enabled` | `--gleaning-enabled` / `--no-gleaning-enabled` | `True` | Run one extra extraction pass and merge additional entities/relations. |
 | `gleaning_max_passes` | `--gleaning-max-passes` | `1` | Max number of gleaning passes when gleaning is enabled. |
 
 ---
@@ -162,7 +162,7 @@ config = PipelineConfig(
     delta_resolver_fuzzy_threshold=0.9,
     delta_resolver_semantic_threshold=0.92,
     # Gleaning (optional second-pass recall; also applies to direct)
-    gleaning_enabled=False,
+    gleaning_enabled=True,
     gleaning_max_passes=1,
 )
 context = run_pipeline(config)
