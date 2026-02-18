@@ -1,33 +1,271 @@
 # CHANGELOG
 
+<!-- version list -->
+
+## v1.4.0 (2026-02-18)
+
+### Bug Fixes
+
+- **ci**: Allow semantic-release on protected main
+  ([`9291bf5`](https://github.com/docling-project/docling-graph/commit/9291bf5df13575189d285aae5b03f16f658ebbfd))
+
+- **ci**: Refactor semantic release workflow
+  ([`7480a3e`](https://github.com/docling-project/docling-graph/commit/7480a3e735c63135ea65932f2af813f9f550dac8))
+
+- **ci**: Simplify semantic release to single job
+  ([`b10041f`](https://github.com/docling-project/docling-graph/commit/b10041ff904fb5d0e99f121789ea77001963a412))
+
+- **ci**: Use inline DCO check to satisfy org action allowlist
+  ([`3bfd298`](https://github.com/docling-project/docling-graph/commit/3bfd29816ee572b9aac2031e317c00ed7967417e))
+
+- **delta**: Improve parent lookup quality gate handling with -1 disable and adaptive adjustment
+  ([`d25567d`](https://github.com/docling-project/docling-graph/commit/d25567d393583d3fa67c69800ca6b374177720c0))
+
+- **logs**: Add extraction-phase progress and move raw extracted payloads to trace only
+  ([`dd32f66`](https://github.com/docling-project/docling-graph/commit/dd32f663d98fc9267769abb61b303a24c43a8da1))
+
+- **schema**: Strengthen schema validation, guidance and deduplication; add string coercion fallback
+  in backend
+  ([`61e7520`](https://github.com/docling-project/docling-graph/commit/61e7520e99d13670a93e3f4f83100c01f3624905))
+
+### Chores
+
+- **ci**: Run ruff-format to fix pre-commit failure in delta runtime tests
+  ([`ab1469c`](https://github.com/docling-project/docling-graph/commit/ab1469c705b5b90820961c55819ddd1012fa42f9))
+
+- **deps**: Update types-setuptools requirement
+  ([`15e7fa8`](https://github.com/docling-project/docling-graph/commit/15e7fa8c1915c7f6054ecab81ec426a79d5ad4f8))
+
+- **refs**: Update documentation to new repository URL
+  ([`f14fcd9`](https://github.com/docling-project/docling-graph/commit/f14fcd9b2a87ae3f76e797e24fbb930183b0eb79))
+
+### Documentation
+
+- **schema**: Update guides on descriptive IDs, enum synonyms, and deduplication patterns
+  ([`7db205d`](https://github.com/docling-project/docling-graph/commit/7db205d6188e22166ecb79c67eb9a1e320ffb95a))
+
+### Features
+
+- **core**: Add entity name normalizer, description merge helper, and gleaning retry logic
+  ([`8e5858a`](https://github.com/docling-project/docling-graph/commit/8e5858a425daf1bc20ee0ec3b647d555fe3fb7de))
+
+- **delta**: Persist orphan parent_ids and reattach orphans by id match when multiple parent
+  candidates exist
+  ([`ead9096`](https://github.com/docling-project/docling-graph/commit/ead90968ac1e900ba4c98e0ab3f709ed73c93daf))
+
+- **llm**: Support LM Studio as a local inference provider
+  ([`d317459`](https://github.com/docling-project/docling-graph/commit/d31745914291d917760cb75f2e2b4a8ace62491d))
+
+### Testing
+
+- **coverage**: Add targeted unit tests to raise Codecov patch coverage
+  ([`c39e02c`](https://github.com/docling-project/docling-graph/commit/c39e02cedc12e5e9cf2650e984699e2837d31c1a))
+
+- **coverage**: Cover remaining patch lines in llm_backend, catalog, and convert
+  ([`e09998d`](https://github.com/docling-project/docling-graph/commit/e09998da851f6880758b542ac420e1b76570d053))
+
+- **coverage**: Further extend test coverage
+  ([`5ec1562`](https://github.com/docling-project/docling-graph/commit/5ec156214c49b99599af284d8d9fa8acfd6d1b2f))
+
+
+## v1.3.1 (2026-02-16)
+
+### Bug Fixes
+
+- **delta**: Backfill root ids, normalize paths, and repair scalar id fields before validation
+  ([`6877b38`](https://github.com/docling-project/docling-graph/commit/6877b380673f553a8c10cd598d143ea9a3132992))
+
+### Chores
+
+- **deps**: Bump pillow from 11.3.0 to 12.1.1
+  ([`9faa614`](https://github.com/docling-project/docling-graph/commit/9faa614b681559f234531640f596a949cbc374ea))
+
+
+## v1.3.0 (2026-02-15)
+
+### Bug Fixes
+
+- **ci**: Remove unused mypy ignores for rapidfuzz and spacy imports
+  ([`9fa8f75`](https://github.com/docling-project/docling-graph/commit/9fa8f75a453ec8f42c5aaa9f4174e42cbcb7344d))
+
+- **delta**: Improve entity ID quality, limiting index-based ID inference, and enabling
+  content-based dedup
+  ([`4767e26`](https://github.com/docling-project/docling-graph/commit/4767e26e9bf5ffba10a094edc97a767d1ebc852d))
+
+- **delta**: Prevent spurious list-entity nodes by adding identity allowlists and post-merge
+  filtering
+  ([`f45f790`](https://github.com/docling-project/docling-graph/commit/f45f790b670437d74d6bebb9ce22eaf402b39683))
+
+### Chores
+
+- **docs**: Update staged extraction docs, schema definition and performance tuning guides
+  ([`bfabcbb`](https://github.com/docling-project/docling-graph/commit/bfabcbbf9d8a76cff5ff075407bffb9a004f13ad))
+
+- **tests**: Update staged extraction tests and remove obsolete structure-only coverage
+  ([`2483a4b`](https://github.com/docling-project/docling-graph/commit/2483a4b4027082ad85ca8c1b5e8064f356304771))
+
+### Documentation
+
+- **delta**: Document delta extraction contract (flat graph IR), config/CLI flags, and migration
+  notes
+  ([`66aa6be`](https://github.com/docling-project/docling-graph/commit/66aa6bee837a1211fa6879d76b16c8157cffab7b))
+
+- **traces**: Refresh pages with updated output handling and debug artifacts
+  ([`07e0cbc`](https://github.com/docling-project/docling-graph/commit/07e0cbc985727e7c9502493d09c52aba3532b855))
+
+### Features
+
+- **contracts**: Harden llm pipeline w/ contract dispatch, staged extraction, deterministic merge &
+  observability
+  ([`92a5089`](https://github.com/docling-project/docling-graph/commit/92a50895a6f3ec94c1036bc56149afc3c78ee949))
+
+- **contracts**: Improve catalog definition, flatten ID discovery & add validation retries
+  ([`a1aba89`](https://github.com/docling-project/docling-graph/commit/a1aba893f4fd0527f1164b047c228628d9bddc00))
+
+- **delta**: Add opt-in delta contract with flat graph IR batching, global merge/dedup, and template
+  projection controls
+  ([`0b19e08`](https://github.com/docling-project/docling-graph/commit/0b19e089bda1ce1c47b4e0b6022c479a82bab155))
+
+- **llm**: Enable default schema-enforced structured output via LiteLLM with prompt-schema fallback
+  ([`6e96f54`](https://github.com/docling-project/docling-graph/commit/6e96f543db9c0f24b8ff8db38e4055fdcd9ec004))
+
+- **llm_clients**: Support custom OpenAI-compatible endpoints via env-based auth and init
+  scaffolding
+  ([`0bebc44`](https://github.com/docling-project/docling-graph/commit/0bebc44beb2030e05eebcacb7ea366b7dcfe427f))
+
+### Refactoring
+
+- **input**: Unify ingestion via Docling conversion with DoclingDocument passthrough
+  ([`689426b`](https://github.com/docling-project/docling-graph/commit/689426b085c78cfcefa65f969745f3cc463926fa))
+
+- **trace**: Improve stage naming and split serializer into helpers
+  ([`0378f65`](https://github.com/docling-project/docling-graph/commit/0378f651a46ebd4fd59d693a03018ad8043e0e0c))
+
+- **trace**: Revamp debug trace_data into a chronological event log
+  ([`4ba4b5b`](https://github.com/docling-project/docling-graph/commit/4ba4b5bd3df54a5052e523d8456784c97b922267))
+
+### Testing
+
+- **delta**: Update unit + integration coverage for delta batching/merge/projection and contract
+  routing
+  ([`8150def`](https://github.com/docling-project/docling-graph/commit/8150defb14bbb56f158f090164836c534b2e8254))
+
+
+## v1.2.4 (2026-02-10)
+
+### Bug Fixes
+
+- **ci**: Use typing_extensions.Self in Pydantic templates for Python 3.10 compatibility
+  ([`912e16c`](https://github.com/docling-project/docling-graph/commit/912e16c62d4267c405f0b7a6126967a530e17c84))
+
+### Chores
+
+- **deps**: Bump nbconvert from 7.16.6 to 7.17.0
+  ([`1485e5d`](https://github.com/docling-project/docling-graph/commit/1485e5d0828f3f538d5ecf52ef20e854110fd8a2))
+
+- **deps**: Update types-setuptools requirement
+  ([`6e4fc37`](https://github.com/docling-project/docling-graph/commit/6e4fc37086bf7a923e9cf8eb013211ad2ac8cd9b))
+
+- **docs**: Document and exemplify custom LLM client (BYO URL/auth)
+  ([`87e730a`](https://github.com/docling-project/docling-graph/commit/87e730a5652a363efadfa82e8d9c13b709f2ce6b))
+
+### Refactoring
+
+- **llm_clients**: Use LiteLLM as single gateway for local and remote providers
+  ([`94cad99`](https://github.com/docling-project/docling-graph/commit/94cad99ef4bd86f8832180a784c84fc20a323bdf))
+
+- **trace**: Unify TraceData and debug flow
+  ([`d25ef06`](https://github.com/docling-project/docling-graph/commit/d25ef06a46d216e4a86a6ad7f2e03d6ebea4485f))
+
+
+## v1.2.3 (2026-01-26)
+
+### Documentation
+
+- **pages**: Update references and examples related to rheology template
+  ([`35a9243`](https://github.com/docling-project/docling-graph/commit/35a9243e59bad9f0ed084269c27670e8aee19bd3))
+
+- **templates**: Fix broken references to ScholarlyRheologyPaper template
+  ([`a6d994b`](https://github.com/docling-project/docling-graph/commit/a6d994b1dec497d39f1a61de8c824500fd5c2a0f))
+
+### Refactoring
+
+- **templates**: Improve slurry-battery rheology Pydantic schema
+  ([`b737343`](https://github.com/docling-project/docling-graph/commit/b737343db31433f6be64fb437750a6e044aa3d92))
+
+
+## v1.2.2 (2026-01-26)
+
+### Bug Fixes
+
+- **converters**: Preserve component data during graph pruning
+  ([`8552ea5`](https://github.com/docling-project/docling-graph/commit/8552ea55aa5ce76d9b284f4582217ba15ae39dcc))
+
+- **converters**: Tighten error logging, and improve node-id collision detection
+  ([`bafab02`](https://github.com/docling-project/docling-graph/commit/bafab024238fd59adfa5153611d8643abdf8794f))
+
+- **input**: Add User-Agent header for URL downloads to avoid 403 and add tests
+  ([`77dbd02`](https://github.com/docling-project/docling-graph/commit/77dbd029351741354c4d6c2c21cbb19002b98df2))
+
+- **pipeline**: Auto-clean empty output directories on failure when dump_to_disk is enabled
+  ([`9e4c031`](https://github.com/docling-project/docling-graph/commit/9e4c0312528fc1352fa403dc34a17403e952447c))
+
+- **release**: Restore default semantic-release templates and regenerate changelog
+  ([`59b2f43`](https://github.com/docling-project/docling-graph/commit/59b2f43caa4541140579eba5bedf4da73e9fd91f))
+
+- **validation**: Make billing template validators lenient with coercion logging
+  ([`fb1bb37`](https://github.com/docling-project/docling-graph/commit/fb1bb3707e16b5282a17f308d249718efbd92c33))
+
+- **visualization**: Render nested node/edge details as formatted JSON
+  ([`014778a`](https://github.com/docling-project/docling-graph/commit/014778ac9fc6cc8609d476d6f6e2ff7a098f1ceb))
+
+### Chores
+
+- **deps**: Update aiofiles requirement
+  ([`afc6d52`](https://github.com/docling-project/docling-graph/commit/afc6d52a1371c45fc879e914215a68a60691723a))
+
+- **docs**: Refine wording and improve styling
+  ([`e7b7f0a`](https://github.com/docling-project/docling-graph/commit/e7b7f0af509958b8bb48e27ac21553eff2671e32))
+
+- **docs**: Update examples and navigation to align with BillingDocument schema references
+  ([`c254825`](https://github.com/docling-project/docling-graph/commit/c254825ffd17cab7f88f9c9ca35f2f823ca2d6e7))
+
+### Documentation
+
+- **problem-statement**: Update content to reflect recent docling-graph improvements
+  ([`872a3a3`](https://github.com/docling-project/docling-graph/commit/872a3a37d11a6c89fd11df91bec604a34c6b60b9))
+
+### Refactoring
+
+- **templates**: Add comprehensive billing document Pydantic extraction template
+  ([`21a2200`](https://github.com/docling-project/docling-graph/commit/21a22002520f113a3ba2c8f17a67cdcec05a1232))
+
+- **templates**: Simplify BillingDocument schema and prompts for better extraction
+  ([`81fdbc9`](https://github.com/docling-project/docling-graph/commit/81fdbc912ce3164f979b37e06aaada73aec906d9))
+
 
 ## v1.2.1 (2026-01-25)
 
 ### Bug Fixes
 
-- **ci**: Remove invalid dependabot commit-message include property
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
 - **ci**: Apply ruff formatter to codebase
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+  ([`a224192`](https://github.com/docling-project/docling-graph/commit/a2241925b9cc0410916c34d954fe651e03ef5406))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
-### Documentation
-
-- **examples**: Replace legacy content with updated scripts and CLI references
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **ci**: Remove invalid dependabot commit-message include property
+  ([`f4c9cff`](https://github.com/docling-project/docling-graph/commit/f4c9cff47787934a7fd8d840a752effc7f062aad))
 
 ### Chores
 
 - **mkdocs**: Streamline structure, align API refs, and convert notes to admonitions
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+  ([`3b03b63`](https://github.com/docling-project/docling-graph/commit/3b03b63c740971ea87dccc9746fc38e2d6e9d403))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+### Documentation
+
+- **examples**: Replace legacy content with updated scripts and CLI recipes guide
+  ([`005597d`](https://github.com/docling-project/docling-graph/commit/005597d79b40678380d533d097c535c56a835d5f))
+
+- **examples**: Replace legacy content with updated scripts and CLI recipes guide
+  ([`84bf728`](https://github.com/docling-project/docling-graph/commit/84bf728763ca12aec449818688bf407b6b7df242))
 
 
 ## v1.2.0 (2026-01-25)
@@ -35,128 +273,105 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Bug Fixes
 
 - **llm**: Restore accurate model capability detection and provider resolution
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+  ([`5efd6bc`](https://github.com/docling-project/docling-graph/commit/5efd6bccefd76e46f874a5c324b240d102e1d966))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **llm_clients**: Handle Mistral SDK timeout incompatibility and model attribute access
+  ([`6691be4`](https://github.com/docling-project/docling-graph/commit/6691be43c8bc591e4eba0f1c888fc98d5b43f50d))
 
-- **llm_clients**: Handle Mistral SDK timeout incompatibility and model listing
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+- **pipeline**: Correct trace data table detection and visualization directory handling
+  ([`38b1e0b`](https://github.com/docling-project/docling-graph/commit/38b1e0b0a51eb9974d1ee150f3423012b8574ed4))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
-- **pipeline**: Prevent unwanted disk exports in API mode with dump_to_disk flag
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
-- **pipeline**: Correct trace data table detection and visualization display
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **pipeline**: Prevent unwanted disk exports in API mode with dump_to_disk control
+  ([`ffb4264`](https://github.com/docling-project/docling-graph/commit/ffb4264ca9bbe02fdc164e78c9a013b7de10fa1c))
 
 - **pipeline**: Resolve trace collection & output dir structure
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+  ([`35d1f0f`](https://github.com/docling-project/docling-graph/commit/35d1f0f536c57d1eaa31ec2082f09088c822fa6b))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+### Chores
+
+- **build**: Stop tracking generated mkdocs dir
+  ([`e0b8f7e`](https://github.com/docling-project/docling-graph/commit/e0b8f7ea27a217fa09fda7f665241a554fc9a77b))
 
 ### Features
 
-- **export**: Add trace data system, unified exports, and optimized i/o
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **export**: Add trace data system, unified exports, and optimized io ops
+  ([`b52e342`](https://github.com/docling-project/docling-graph/commit/b52e342759a2e51773969a3dc260b0849dd19fd3))
 
 ### Refactoring
 
-- **metadata**: Add source for intermediate graphs info to trace_data.json
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **metadata**: Add source for intermediate graphs info to trace_summary
+  ([`3a90796`](https://github.com/docling-project/docling-graph/commit/3a907962d5f69b97b6126123777239d2e822aa57))
 
 - **metadata**: Use dynamic version and improve json layout
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`6d431d8`](https://github.com/docling-project/docling-graph/commit/6d431d817b4413a89a3debc8f22ecb9f9e1b1a28))
 
 - **pipeline**: Streamline output structure and content
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`2ee6d42`](https://github.com/docling-project/docling-graph/commit/2ee6d4261c468991d7184e3e30143f29850799a8))
 
 
 ## v1.1.0 (2026-01-24)
 
 ### Bug Fixes
 
-- **llm**: Prevent vLLM hanging with max token limits and request timeouts
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
 - **llm**: Handle max_tokens truncation with partial recovery and clear warnings
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+  ([`f0b2f53`](https://github.com/docling-project/docling-graph/commit/f0b2f530692f42d7a8af02411cf38fc2f8adde94))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **llm**: Prevent vLLM hanging with max token limits and request timeouts
+  ([`605bc99`](https://github.com/docling-project/docling-graph/commit/605bc9977872b4dde89daa1bbe8c80e5d4e3d0cb))
 
-### Features
+### Chores
 
-- **docs**: Enable dynamic Mermaid flowchart loading with custom styling
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+- **docs**: Improve GitHub Pages styling and layout
+  ([`78d6a02`](https://github.com/docling-project/docling-graph/commit/78d6a022ceadd47e83dc55be0eaaadfdae96dc2b))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **docs**: Update docs with latest features and changes
+  ([`8994f72`](https://github.com/docling-project/docling-graph/commit/8994f72323dacd94959e33b0051582d9c13b486f))
 
-- **extraction**: Overhaul extraction layer with adaptive prompting
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **docs**: Update Python badge to remove pre-release notation
+  ([`4588eb0`](https://github.com/docling-project/docling-graph/commit/4588eb0cc1837737c18ee0a642841c0fc6c58a9a))
 
 ### Documentation
 
 - **structure**: Reorganize documentation into minimalist layout
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+  ([`d705039`](https://github.com/docling-project/docling-graph/commit/d7050394219e3302813624471271af5b1b9fd4c7))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+### Features
 
-### Chores
+- **docs**: Enable dynamic Mermaid flowchart loading with custom styling
+  ([`2c16d25`](https://github.com/docling-project/docling-graph/commit/2c16d25899f2581d3bbb3dcf7766aed84d051a72))
 
-- **docs**: Update docs with latest features and changes
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
-- **build**: Stop tracking generated mkdocs dir
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
-- **release**: Require manual git tags for major version bumps
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **extraction**: Overhaul extraction layer with adaptive prompting, batching optimization, and
+  robust recovery
+  ([`1507dec`](https://github.com/docling-project/docling-graph/commit/1507dec68363df4b84e71cd2ed8c8bebefd910a4))
 
 
 ## v1.0.0 (2026-01-23)
 
-### Features
+### Chores
 
-- **input**: Add multi-format input support and normalization layer
-  ([#34](https://github.com/IBM/docling-graph/pull/34))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **docling**: Bump docling dependency to version 2.70
+  ([#34](https://github.com/docling-project/docling-graph/pull/34),
+  [`023841f`](https://github.com/docling-project/docling-graph/commit/023841fec00cdcdc92689048e0416e94a8ca66c8))
 
 ### Documentation
 
-- **docs**: Improve GitHub Pages styling and layout
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+- Review and polish documentation for GitHub Pages
+  ([#34](https://github.com/docling-project/docling-graph/pull/34),
+  [`023841f`](https://github.com/docling-project/docling-graph/commit/023841fec00cdcdc92689048e0416e94a8ca66c8))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **flowcharts**: Update diagrams and add multi-input logic
+  ([#34](https://github.com/docling-project/docling-graph/pull/34),
+  [`023841f`](https://github.com/docling-project/docling-graph/commit/023841fec00cdcdc92689048e0416e94a8ca66c8))
 
-### Chores
+### Features
 
-- **docs**: Update Python badge to remove pre-release notation
-  ([`commit`](https://github.com/IBM/docling-graph/commit/))
+- **input**: Add multi-format input support and normalization layer
+  ([#34](https://github.com/docling-project/docling-graph/pull/34),
+  [`023841f`](https://github.com/docling-project/docling-graph/commit/023841fec00cdcdc92689048e0416e94a8ca66c8))
 
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+- **input**: Complete multi-format input extension for Docling Graph pipeline
+  ([#34](https://github.com/docling-project/docling-graph/pull/34),
+  [`023841f`](https://github.com/docling-project/docling-graph/commit/023841fec00cdcdc92689048e0416e94a8ca66c8))
 
 
 ## v0.4.1 (2026-01-22)
@@ -164,9 +379,7 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Bug Fixes
 
 - **ci**: Fix -exec syntax in GitHub release workflow
-  ([`f40d189`](https://github.com/IBM/docling-graph/commit/f40d18931055df5286013ecc61b32a909c7a574b))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`f40d189`](https://github.com/docling-project/docling-graph/commit/f40d18931055df5286013ecc61b32a909c7a574b))
 
 
 ## v0.4.0 (2026-01-22)
@@ -174,37 +387,27 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Chores
 
 - **ci**: Correct PyPI deployment in release workflow
-  ([`c985d25`](https://github.com/IBM/docling-graph/commit/c985d25059629fa5b63e36f9b283678158c392b7))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`c985d25`](https://github.com/docling-project/docling-graph/commit/c985d25059629fa5b63e36f9b283678158c392b7))
 
 ### Documentation
 
 - **module**: Refactor complete documentation suite for docling-graph
-  ([`7b8cd6c`](https://github.com/IBM/docling-graph/commit/7b8cd6c8bb92e3c10b6bc105d4888ad9a90f6a67))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`7b8cd6c`](https://github.com/docling-project/docling-graph/commit/7b8cd6c8bb92e3c10b6bc105d4888ad9a90f6a67))
 
 ### Features
 
 - **cli**: Align CLI with refactored core and improve performance
-  ([`d87f8c8`](https://github.com/IBM/docling-graph/commit/d87f8c835d8314a2a2661e21064e55b5b8513bd0))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`d87f8c8`](https://github.com/docling-project/docling-graph/commit/d87f8c835d8314a2a2661e21064e55b5b8513bd0))
 
 ### Refactoring
 
 - **core**: Major LLM client and pipeline simplification
-  ([`20b904c`](https://github.com/IBM/docling-graph/commit/20b904c8695146a5e1803480d720ee674c41816f))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`20b904c`](https://github.com/docling-project/docling-graph/commit/20b904c8695146a5e1803480d720ee674c41816f))
 
 ### Testing
 
 - **core**: Update unit and integration tests for refactored architecture
-  ([`7d61dd7`](https://github.com/IBM/docling-graph/commit/7d61dd734af22243738329f5d146fc71a61408f7))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`7d61dd7`](https://github.com/docling-project/docling-graph/commit/7d61dd734af22243738329f5d146fc71a61408f7))
 
 
 ## v0.3.0 (2026-01-22)
@@ -212,124 +415,36 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Bug Fixes
 
 - **release**: Resolve semantic-release changelog config deprecation
-  ([`aa64dab`](https://github.com/IBM/docling-graph/commit/aa64dab707daf5225569edce98286a1702781c37))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`aa64dab`](https://github.com/docling-project/docling-graph/commit/aa64dab707daf5225569edce98286a1702781c37))
 
 ### Chores
 
 - **ci**: Exclude attestation files from GitHub releases
-  ([`1ae2685`](https://github.com/IBM/docling-graph/commit/1ae2685ccba1234ed99d6eb95e5f8f39525237bf))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`1ae2685`](https://github.com/docling-project/docling-graph/commit/1ae2685ccba1234ed99d6eb95e5f8f39525237bf))
 
 - **deps**: Bump the all-actions group with 5 updates
-  ([#30](https://github.com/IBM/docling-graph/pull/30),
-  [`e7eace5`](https://github.com/IBM/docling-graph/commit/e7eace5eb73ef3cb2a4ddb155e1698710986b16b))
-
-Bumps the all-actions group with 5 updates:
-
-| Package | From | To | | --- | --- | --- | |
-  [actions/checkout](https://github.com/actions/checkout) | `4` | `6` | |
-  [actions/setup-python](https://github.com/actions/setup-python) | `5` | `6` | |
-  [astral-sh/setup-uv](https://github.com/astral-sh/setup-uv) | `4` | `7` | |
-  [actions/upload-artifact](https://github.com/actions/upload-artifact) | `4` | `6` | |
-  [actions/download-artifact](https://github.com/actions/download-artifact) | `4` | `7` |
-
-Updates `actions/checkout` from 4 to 6 - [Release
-  notes](https://github.com/actions/checkout/releases) -
-  [Changelog](https://github.com/actions/checkout/blob/main/CHANGELOG.md) -
-  [Commits](https://github.com/actions/checkout/compare/v4...v6)
-
-Updates `actions/setup-python` from 5 to 6 - [Release
-  notes](https://github.com/actions/setup-python/releases) -
-  [Commits](https://github.com/actions/setup-python/compare/v5...v6)
-
-Updates `astral-sh/setup-uv` from 4 to 7 - [Release
-  notes](https://github.com/astral-sh/setup-uv/releases) -
-  [Commits](https://github.com/astral-sh/setup-uv/compare/v4...v7)
-
-Updates `actions/upload-artifact` from 4 to 6 - [Release
-  notes](https://github.com/actions/upload-artifact/releases) -
-  [Commits](https://github.com/actions/upload-artifact/compare/v4...v6)
-
-Updates `actions/download-artifact` from 4 to 7 - [Release
-  notes](https://github.com/actions/download-artifact/releases) -
-  [Commits](https://github.com/actions/download-artifact/compare/v4...v7)
-
---- updated-dependencies: - dependency-name: actions/checkout dependency-version: '6'
-
-dependency-type: direct:production
-
-update-type: version-update:semver-major
-
-dependency-group: all-actions
-
-- dependency-name: actions/setup-python dependency-version: '6'
-
-- dependency-name: astral-sh/setup-uv dependency-version: '7'
-
-- dependency-name: actions/upload-artifact dependency-version: '6'
-
-- dependency-name: actions/download-artifact dependency-version: '7'
-
-dependency-group: all-actions ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-- **release**: Treat refactor commits as minor version bumps
-  ([`215275a`](https://github.com/IBM/docling-graph/commit/215275a90ed821fa66eadfbaed6efc59ec24a02c))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([#30](https://github.com/docling-project/docling-graph/pull/30),
+  [`e7eace5`](https://github.com/docling-project/docling-graph/commit/e7eace5eb73ef3cb2a4ddb155e1698710986b16b))
 
 ### Documentation
 
 - **deps**: Add MkDocs and documentation dependencies
-  ([`c4378d3`](https://github.com/IBM/docling-graph/commit/c4378d39b347aee266642c270f41fb9756e19d05))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`c4378d3`](https://github.com/docling-project/docling-graph/commit/c4378d39b347aee266642c270f41fb9756e19d05))
 
 - **readme**: Fix PyPI badge to include prereleases
-  ([`ca3b14f`](https://github.com/IBM/docling-graph/commit/ca3b14fa7f960348f2d3a257173843a7dc9f81ec))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`ca3b14f`](https://github.com/docling-project/docling-graph/commit/ca3b14fa7f960348f2d3a257173843a7dc9f81ec))
 
 - **readme**: Update documentation section with MkDocs links
-  ([`87e0990`](https://github.com/IBM/docling-graph/commit/87e09906718ac14b77dfd1a48c4161919efd6ab7))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`87e0990`](https://github.com/docling-project/docling-graph/commit/87e09906718ac14b77dfd1a48c4161919efd6ab7))
 
 - **repo**: Move community health files to .github and update links
-  ([`2ab0471`](https://github.com/IBM/docling-graph/commit/2ab04714f85bbe24f26c0b9ef931674ce22c90ee))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`2ab0471`](https://github.com/docling-project/docling-graph/commit/2ab04714f85bbe24f26c0b9ef931674ce22c90ee))
 
 ### Refactoring
 
 - **core**: Remove document caching for stateless operation
-  ([#32](https://github.com/IBM/docling-graph/pull/32),
-  [`3cf8bd0`](https://github.com/IBM/docling-graph/commit/3cf8bd0cbe855b022ecb9a7b056468c8fcc98b17))
-
-**Core Modifications:** - Updated extractor interface to return `(models, document)` tuple instead
-  of caching - Removed all caching logic from DocumentProcessor (_last_document, _last_source,
-  properties) - Modified pipeline to use returned document directly - Updated both ManyToOneStrategy
-  and OneToOneStrategy
-
-**Key Benefits:** - Stateless architecture - no memory accumulation - Predictable memory usage -
-  released after each request - Pod-safe for Kubernetes deployments - No performance penalty -
-  document still available without re-conversion
-
-**Impact:** Users calling `extractor.extract()` directly must update: - Old: `models =
-  extractor.extract(source, template)` - New: `models, document = extractor.extract(source,
-  template)`
-
-The `run_pipeline()` API remains unchanged.
-
----------
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([#32](https://github.com/docling-project/docling-graph/pull/32),
+  [`3cf8bd0`](https://github.com/docling-project/docling-graph/commit/3cf8bd0cbe855b022ecb9a7b056468c8fcc98b17))
 
 
 ## v0.2.5 (2026-01-21)
@@ -337,9 +452,7 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Bug Fixes
 
 - **ci**: Disable attestations for TestPyPI to prevent conflict
-  ([`2f2d79b`](https://github.com/IBM/docling-graph/commit/2f2d79bc44e9419453332be0b7bf02adf8be6aa4))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`2f2d79b`](https://github.com/docling-project/docling-graph/commit/2f2d79bc44e9419453332be0b7bf02adf8be6aa4))
 
 
 ## v0.2.4 (2026-01-21)
@@ -347,9 +460,7 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Bug Fixes
 
 - **ci**: Disable attestations for TestPyPI to prevent conflict
-  ([`0cb6022`](https://github.com/IBM/docling-graph/commit/0cb6022a7df5a113dc1399c8d78f293653443206))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`0cb6022`](https://github.com/docling-project/docling-graph/commit/0cb6022a7df5a113dc1399c8d78f293653443206))
 
 
 ## v0.2.3 (2026-01-21)
@@ -357,16 +468,12 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Bug Fixes
 
 - **ci**: Skip TestPyPI installation test due to dependency issues
-  ([`da001fd`](https://github.com/IBM/docling-graph/commit/da001fd8de88c0cc82f07ed1888f8e4945ad3498))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`da001fd`](https://github.com/docling-project/docling-graph/commit/da001fd8de88c0cc82f07ed1888f8e4945ad3498))
 
 ### Chores
 
 - **whitesource**: Update policies and scanning rules
-  ([`211d55e`](https://github.com/IBM/docling-graph/commit/211d55e6ead84c5b7a77750a3275802609a6154b))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`211d55e`](https://github.com/docling-project/docling-graph/commit/211d55e6ead84c5b7a77750a3275802609a6154b))
 
 
 ## v0.2.2 (2026-01-21)
@@ -374,160 +481,26 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Bug Fixes
 
 - **ci**: Add retry logic for TestPyPI package availability
-  ([`d9b9bd7`](https://github.com/IBM/docling-graph/commit/d9b9bd736bb9e81ed4ce91b5c380bf4b9d4549df))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`d9b9bd7`](https://github.com/docling-project/docling-graph/commit/d9b9bd736bb9e81ed4ce91b5c380bf4b9d4549df))
 
 - **ci**: Improve release workflow and commit message
-  ([`2ce1ac6`](https://github.com/IBM/docling-graph/commit/2ce1ac6f5c6082e29fb52636b0056dd7cec2c4dc))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`2ce1ac6`](https://github.com/docling-project/docling-graph/commit/2ce1ac6f5c6082e29fb52636b0056dd7cec2c4dc))
 
 ### Chores
 
 - **deps**: Clean up Dependabot commit message configuration
-  ([`1a4b46d`](https://github.com/IBM/docling-graph/commit/1a4b46df97d72fd83b108f7d7de30b1fc4c41306))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`1a4b46d`](https://github.com/docling-project/docling-graph/commit/1a4b46df97d72fd83b108f7d7de30b1fc4c41306))
 
 - **deps)(deps**: Bump the all-actions group across 1 directory with 7 updates
-  ([#29](https://github.com/IBM/docling-graph/pull/29),
-  [`0a26352`](https://github.com/IBM/docling-graph/commit/0a26352e656bacee444be753bb9786a24bfe49c7))
-
-Bumps the all-actions group with 7 updates in the / directory:
-
-| Package | From | To | | --- | --- | --- | |
-  [actions/checkout](https://github.com/actions/checkout) | `4` | `6` | |
-  [actions/setup-python](https://github.com/actions/setup-python) | `5` | `6` | |
-  [astral-sh/setup-uv](https://github.com/astral-sh/setup-uv) | `4` | `7` | |
-  [codecov/codecov-action](https://github.com/codecov/codecov-action) | `4` | `5` | |
-  [actions/upload-artifact](https://github.com/actions/upload-artifact) | `4` | `6` | |
-  [actions/labeler](https://github.com/actions/labeler) | `5` | `6` | |
-  [actions/download-artifact](https://github.com/actions/download-artifact) | `4` | `7` |
-
-Updates `actions/checkout` from 4 to 6 - [Release
-  notes](https://github.com/actions/checkout/releases) -
-  [Changelog](https://github.com/actions/checkout/blob/main/CHANGELOG.md) -
-  [Commits](https://github.com/actions/checkout/compare/v4...v6)
-
-Updates `actions/setup-python` from 5 to 6 - [Release
-  notes](https://github.com/actions/setup-python/releases) -
-  [Commits](https://github.com/actions/setup-python/compare/v5...v6)
-
-Updates `astral-sh/setup-uv` from 4 to 7 - [Release
-  notes](https://github.com/astral-sh/setup-uv/releases) -
-  [Commits](https://github.com/astral-sh/setup-uv/compare/v4...v7)
-
-Updates `codecov/codecov-action` from 4 to 5 - [Release
-  notes](https://github.com/codecov/codecov-action/releases) -
-  [Changelog](https://github.com/codecov/codecov-action/blob/main/CHANGELOG.md) -
-  [Commits](https://github.com/codecov/codecov-action/compare/v4...v5)
-
-Updates `actions/upload-artifact` from 4 to 6 - [Release
-  notes](https://github.com/actions/upload-artifact/releases) -
-  [Commits](https://github.com/actions/upload-artifact/compare/v4...v6)
-
-Updates `actions/labeler` from 5 to 6 - [Release notes](https://github.com/actions/labeler/releases)
-  - [Commits](https://github.com/actions/labeler/compare/v5...v6)
-
-Updates `actions/download-artifact` from 4 to 7 - [Release
-  notes](https://github.com/actions/download-artifact/releases) -
-  [Commits](https://github.com/actions/download-artifact/compare/v4...v7)
-
---- updated-dependencies: - dependency-name: actions/checkout dependency-version: '6'
-
-dependency-type: direct:production
-
-update-type: version-update:semver-major
-
-dependency-group: all-actions
-
-- dependency-name: actions/setup-python dependency-version: '6'
-
-- dependency-name: astral-sh/setup-uv dependency-version: '7'
-
-- dependency-name: codecov/codecov-action dependency-version: '5'
-
-- dependency-name: actions/upload-artifact dependency-version: '6'
-
-- dependency-name: actions/labeler dependency-version: '6'
-
-- dependency-name: actions/download-artifact dependency-version: '7'
-
-dependency-group: all-actions ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
+  ([#29](https://github.com/docling-project/docling-graph/pull/29),
+  [`0a26352`](https://github.com/docling-project/docling-graph/commit/0a26352e656bacee444be753bb9786a24bfe49c7))
 
 - **deps)(deps**: Bump the dev-dependencies group with 6 updates
-  ([#27](https://github.com/IBM/docling-graph/pull/27),
-  [`1bcdd58`](https://github.com/IBM/docling-graph/commit/1bcdd5850a1bed61ffb249cd1ac0761b5504e19c))
-
-Updates the requirements on [rich](https://github.com/Textualize/rich),
-  [pre-commit](https://github.com/pre-commit/pre-commit),
-  [types-setuptools](https://github.com/typeshed-internal/stub_uploader),
-  [pytest](https://github.com/pytest-dev/pytest), [ipykernel](https://github.com/ipython/ipykernel)
-  and [python-semantic-release](https://github.com/python-semantic-release/python-semantic-release)
-  to permit the latest version.
-
-Updates `rich` to 14.2.0 - [Release notes](https://github.com/Textualize/rich/releases) -
-  [Changelog](https://github.com/Textualize/rich/blob/master/CHANGELOG.md) -
-  [Commits](https://github.com/Textualize/rich/compare/v13.0.0...v14.2.0)
-
-Updates `pre-commit` to 4.5.1 - [Release notes](https://github.com/pre-commit/pre-commit/releases) -
-  [Changelog](https://github.com/pre-commit/pre-commit/blob/main/CHANGELOG.md) -
-  [Commits](https://github.com/pre-commit/pre-commit/compare/v3.7.0...v4.5.1)
-
-Updates `types-setuptools` to 80.9.0.20251223 -
-  [Commits](https://github.com/typeshed-internal/stub_uploader/commits)
-
-Updates `pytest` to 9.0.2 - [Release notes](https://github.com/pytest-dev/pytest/releases) -
-  [Changelog](https://github.com/pytest-dev/pytest/blob/main/CHANGELOG.rst) -
-  [Commits](https://github.com/pytest-dev/pytest/compare/8.3.0...9.0.2)
-
-Updates `ipykernel` to 7.1.0 - [Release notes](https://github.com/ipython/ipykernel/releases) -
-  [Changelog](https://github.com/ipython/ipykernel/blob/main/CHANGELOG.md) -
-  [Commits](https://github.com/ipython/ipykernel/compare/v6.29.0...v7.1.0)
-
-Updates `python-semantic-release` to 10.5.3 - [Release
-  notes](https://github.com/python-semantic-release/python-semantic-release/releases) -
-  [Changelog](https://github.com/python-semantic-release/python-semantic-release/blob/master/CHANGELOG.rst)
-  -
-  [Commits](https://github.com/python-semantic-release/python-semantic-release/compare/v7.32.0...v10.5.3)
-
---- updated-dependencies: - dependency-name: rich dependency-version: 14.2.0
-
-dependency-type: direct:production
-
-dependency-group: dev-dependencies
-
-- dependency-name: pre-commit dependency-version: 4.5.1
-
-dependency-type: direct:development
-
-- dependency-name: types-setuptools dependency-version: 80.9.0.20251223
-
-- dependency-name: pytest dependency-version: 9.0.2
-
-- dependency-name: ipykernel dependency-version: 7.1.0
-
-- dependency-name: python-semantic-release dependency-version: 10.5.3
-
-dependency-group: dev-dependencies ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
+  ([#27](https://github.com/docling-project/docling-graph/pull/27),
+  [`1bcdd58`](https://github.com/docling-project/docling-graph/commit/1bcdd5850a1bed61ffb249cd1ac0761b5504e19c))
 
 - **lint**: Update Ruff linter configuration
-  ([`c452d5d`](https://github.com/IBM/docling-graph/commit/c452d5df17e658bd8b28014bd38661329a200dad))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`c452d5d`](https://github.com/docling-project/docling-graph/commit/c452d5df17e658bd8b28014bd38661329a200dad))
 
 
 ## v0.2.1 (2026-01-21)
@@ -535,36 +508,24 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Bug Fixes
 
 - **ci**: Strip 'v' prefix from tag for TestPyPI installation
-  ([`2ddfb42`](https://github.com/IBM/docling-graph/commit/2ddfb420f23678d781d9e869c3afe8374cdccda5))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`2ddfb42`](https://github.com/docling-project/docling-graph/commit/2ddfb420f23678d781d9e869c3afe8374cdccda5))
 
 ### Chores
 
 - **docs**: Update code of conduct
-  ([`ff06127`](https://github.com/IBM/docling-graph/commit/ff0612709687c77c8f9d35b29c8ba243f8dd14a5))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`ff06127`](https://github.com/docling-project/docling-graph/commit/ff0612709687c77c8f9d35b29c8ba243f8dd14a5))
 
 - **docs**: Update contributing guidelines
-  ([`0d9061d`](https://github.com/IBM/docling-graph/commit/0d9061d8cc3c41bf04a4ae261d3b8d803510e762))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`0d9061d`](https://github.com/docling-project/docling-graph/commit/0d9061d8cc3c41bf04a4ae261d3b8d803510e762))
 
 - **docs**: Update governance
-  ([`797261a`](https://github.com/IBM/docling-graph/commit/797261ad1f254d78eaad35b8b8e8a11bf6739d78))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`797261a`](https://github.com/docling-project/docling-graph/commit/797261ad1f254d78eaad35b8b8e8a11bf6739d78))
 
 - **docs**: Update maintainers
-  ([`ddb40a7`](https://github.com/IBM/docling-graph/commit/ddb40a7003fc680a3df0eb853df1ea0bea942df9))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`ddb40a7`](https://github.com/docling-project/docling-graph/commit/ddb40a7003fc680a3df0eb853df1ea0bea942df9))
 
 - **docs**: Update maintainers
-  ([`02ff051`](https://github.com/IBM/docling-graph/commit/02ff05162e0996ad9a53d0bc944f736102301801))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
+  ([`02ff051`](https://github.com/docling-project/docling-graph/commit/02ff05162e0996ad9a53d0bc944f736102301801))
 
 
 ## v0.2.0 (2026-01-21)
@@ -572,616 +533,9 @@ Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
 ### Features
 
 - Configure automated semantic versioning
-  ([`bdace4c`](https://github.com/IBM/docling-graph/commit/bdace4c318b5f8362ce04d9a6bb199c74f846815))
+  ([`bdace4c`](https://github.com/docling-project/docling-graph/commit/bdace4c318b5f8362ce04d9a6bb199c74f846815))
 
 
 ## v0.1.0 (2026-01-21)
 
-### Bug Fixes
-
-- Correct semantic-release configuration
-  ([`a8736a4`](https://github.com/IBM/docling-graph/commit/a8736a4fdda26fb9015a598aa351193e5fcff18f))
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
-- **converter**: Add debuf for local one to one pipeline
-  ([`dae7588`](https://github.com/IBM/docling-graph/commit/dae758812342a41b6a591aa8394de2e2a24642ef))
-
-- **core**: Add init scripts to fix imports issues
-  ([`c5d77cc`](https://github.com/IBM/docling-graph/commit/c5d77cc5ec27437b115a8374593a8a65d2e4160f))
-
-- **dependencies**: Reverted uv syntax to support old versions
-  ([`c0f40ac`](https://github.com/IBM/docling-graph/commit/c0f40ac6afa4d44f60822e26f9b7d7dd723798a2))
-
-- **doc-proc**: Misleading log message, pipeline supports english and french
-  ([`01d6746`](https://github.com/IBM/docling-graph/commit/01d674664cb0bda102eff5547c4ccb0fb948355a))
-
-- **docs**: Add pytest badge for test status indication
-  ([`be807ba`](https://github.com/IBM/docling-graph/commit/be807ba267e5252652246fa226c6d1706f4525fe))
-
-- **docs**: Add pytest badge for test status indication
-  ([`71addff`](https://github.com/IBM/docling-graph/commit/71addffd333ed27ffdf42d2ae58a1fc676c8bf49))
-
-- **docs**: Correct flowchart node configuration in README
-  ([`c5ae224`](https://github.com/IBM/docling-graph/commit/c5ae22422bd16c5f4cc91ecf039e15d73179f760))
-
-- **docs**: Update links following repository migration
-  ([`fbb89c3`](https://github.com/IBM/docling-graph/commit/fbb89c395ead8ba2442c771d192a8fbecfd2472f))
-
-- **examples**: Resolve Ruff linting errors in Pydantic templates
-  ([`f1578f4`](https://github.com/IBM/docling-graph/commit/f1578f4c0d02d5a9ddf901313200de04ccd4186c))
-
-- **graph-converter**: Taking into account is_entity=false
-  ([`e8024f1`](https://github.com/IBM/docling-graph/commit/e8024f154f292a6e68e7b573160164cda6f90b25))
-
-- **id_registry**: Refine fingerprint generation to prevent hash collisions
-  ([`b78d779`](https://github.com/IBM/docling-graph/commit/b78d779e44059cf4231c95f39389c286c06d23b1))
-
-- **mock**: Update extract methods to return proper lists instead of Mock objects
-  ([`a62c087`](https://github.com/IBM/docling-graph/commit/a62c0870cd52659d1353e71aa83270f13eb3ddc6))
-
-- **notebook**: Improve markdown report formatting and display
-  ([`2fa1d39`](https://github.com/IBM/docling-graph/commit/2fa1d399edf773c4315fba8e9998f024cc7655f6))
-
-- **notebook**: Update execution counts and adjust PNG visualization width
-  ([`d702aa8`](https://github.com/IBM/docling-graph/commit/d702aa880448d2be240d117f51f9ad1c0db86b31))
-
-- **pipeline**: Add required pipeline fixes following graph api refactoring
-  ([`0b9ecca`](https://github.com/IBM/docling-graph/commit/0b9eccaac6e7debed668af3ff4e56573eb84c29a))
-
-- **pipeline**: Avoid reconverting when document already converted
-  ([`69b365e`](https://github.com/IBM/docling-graph/commit/69b365e121dd89e5afd1c69ce52ee8db794b5208))
-
-- **pipeline**: Better output management
-  ([`b698709`](https://github.com/IBM/docling-graph/commit/b698709d2af7491d751224a8a42a56a2285cc115))
-
-- **setup**: Correct optional dependencies and lazy import handling based on inference site
-  ([`8d59ceb`](https://github.com/IBM/docling-graph/commit/8d59ceb7cf4fc2c87b287c336eb6b02bf6f6d746))
-
-- **templates**: Use converter id generation instead of relying on llm extraction
-  ([`6a95e48`](https://github.com/IBM/docling-graph/commit/6a95e48594f7495f669732bfc6ecf28db67dd5da))
-
-- **tests**: Adjust test assertion for merging empty list to expect None
-  ([`4e6b51f`](https://github.com/IBM/docling-graph/commit/4e6b51f8f53f2534554628963ca28d8bc27205c5))
-
-- **tests**: Update import paths for extractors to core module
-  ([`cf7660c`](https://github.com/IBM/docling-graph/commit/cf7660c3a76a4816bb4c1525bd98aff4249a0aa2))
-
-- **tests**: Update incorrect import paths in test files
-  ([`7bab57a`](https://github.com/IBM/docling-graph/commit/7bab57ab2ab6054cf69ae9614c59d79e6d81d9ae))
-
-- **types**: Resolve MyPy errors for imports, hints, and base class init
-  ([`a19ca27`](https://github.com/IBM/docling-graph/commit/a19ca27d17f7770f00741c16d9096ba4bfb8af37))
-
-- **visualizer**: Udpate essential columns for tooltip display using cosmograph
-  ([`eade954`](https://github.com/IBM/docling-graph/commit/eade954dd09844f657341c0e59e5e683fb146767))
-
-- **visualizers**: Update default output path for CosmoGraph visualization
-  ([`69e9c0e`](https://github.com/IBM/docling-graph/commit/69e9c0e1cc2f16b29940f4c667dc79cb4682deea))
-
-- **watsonx**: Fix json parsing post watsonx api call
-  ([`b036044`](https://github.com/IBM/docling-graph/commit/b036044836e133168c7dd93415a101ef6a0fed33))
-
-### Chores
-
-- **attributes**: Workaround GitHub Linguist misclassification
-  ([`03749a1`](https://github.com/IBM/docling-graph/commit/03749a1b5d3ef4ec0de43e0440f7bdad2905d4f8))
-
-- **cli**: Support llm-consolidation and use-chunking flags
-  ([`6ac5dae`](https://github.com/IBM/docling-graph/commit/6ac5dae1eb3d08af74449a274ded552599f43778))
-
-- **config**: Stop tracking personal config from root
-  ([`e8b265c`](https://github.com/IBM/docling-graph/commit/e8b265c4e5839a5607244674ebf0f4531ae3f550))
-
-- **core**: Fix ruff linter errors
-  ([`43acc4e`](https://github.com/IBM/docling-graph/commit/43acc4ec921fdb998d78e437faaa37fc59a9e70a))
-
-- **core**: Fix type incompatibility based on mypy validation
-  ([`63a3713`](https://github.com/IBM/docling-graph/commit/63a371380ae00cb0932717c0015f98dd9a8c7698))
-
-- **dependencies**: Clean up and update dependencies
-  ([`d0eef47`](https://github.com/IBM/docling-graph/commit/d0eef478cc5e81e9da1c3d9c6498cdb3e6fb03ff))
-
-- **dependencies**: Clean up and update dependencies
-  ([`adf4252`](https://github.com/IBM/docling-graph/commit/adf4252d579ecb58898e35054554527752aff941))
-
-- **deps**: Bump aiohttp from 3.13.2 to 3.13.3 ([#21](https://github.com/IBM/docling-graph/pull/21),
-  [`7e7e678`](https://github.com/IBM/docling-graph/commit/7e7e678829e5fb59cba27eb13a6123e4f7ea7932))
-
---- updated-dependencies: - dependency-name: aiohttp dependency-version: 3.13.3
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
-
-- **deps**: Bump cbor2 from 5.7.1 to 5.8.0 ([#22](https://github.com/IBM/docling-graph/pull/22),
-  [`4f74dc9`](https://github.com/IBM/docling-graph/commit/4f74dc9f7cdb02b4abd719f8a0e9b038f4dfbbae))
-
-Bumps [cbor2](https://github.com/agronholm/cbor2) from 5.7.1 to 5.8.0. - [Release
-  notes](https://github.com/agronholm/cbor2/releases) -
-  [Commits](https://github.com/agronholm/cbor2/compare/5.7.1...5.8.0)
-
---- updated-dependencies: - dependency-name: cbor2 dependency-version: 5.8.0
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
-
-- **deps**: Bump filelock from 3.20.0 to 3.20.3
-  ([#19](https://github.com/IBM/docling-graph/pull/19),
-  [`3435653`](https://github.com/IBM/docling-graph/commit/3435653f66b4b297f1f55192df704928fff52ae8))
-
-Bumps [filelock](https://github.com/tox-dev/py-filelock) from 3.20.0 to 3.20.3. - [Release
-  notes](https://github.com/tox-dev/py-filelock/releases) -
-  [Changelog](https://github.com/tox-dev/filelock/blob/main/docs/changelog.rst) -
-  [Commits](https://github.com/tox-dev/py-filelock/compare/3.20.0...3.20.3)
-
---- updated-dependencies: - dependency-name: filelock dependency-version: 3.20.3
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
-
-- **deps**: Bump mlx from 0.29.3 to 0.29.4 ([#24](https://github.com/IBM/docling-graph/pull/24),
-  [`de5b8db`](https://github.com/IBM/docling-graph/commit/de5b8db35b9cd0506ec93182ef80b7f0ba36151a))
-
-Bumps [mlx](https://github.com/ml-explore/mlx) from 0.29.3 to 0.29.4. - [Release
-  notes](https://github.com/ml-explore/mlx/releases) -
-  [Commits](https://github.com/ml-explore/mlx/compare/v0.29.3...v0.29.4)
-
---- updated-dependencies: - dependency-name: mlx dependency-version: 0.29.4
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
-
-- **deps**: Bump pyasn1 from 0.6.1 to 0.6.2 ([#16](https://github.com/IBM/docling-graph/pull/16),
-  [`005f736`](https://github.com/IBM/docling-graph/commit/005f736cd98a8fa537d2e195d5ba51fde9526aee))
-
-Bumps [pyasn1](https://github.com/pyasn1/pyasn1) from 0.6.1 to 0.6.2. - [Release
-  notes](https://github.com/pyasn1/pyasn1/releases) -
-  [Changelog](https://github.com/pyasn1/pyasn1/blob/main/CHANGES.rst) -
-  [Commits](https://github.com/pyasn1/pyasn1/compare/v0.6.1...v0.6.2)
-
---- updated-dependencies: - dependency-name: pyasn1 dependency-version: 0.6.2
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-- **deps**: Bump ray from 2.51.1 to 2.52.1 ([#23](https://github.com/IBM/docling-graph/pull/23),
-  [`3da0ece`](https://github.com/IBM/docling-graph/commit/3da0ecea2176585a51b2a4276a7ef6edcfbb266f))
-
-Bumps [ray](https://github.com/ray-project/ray) from 2.51.1 to 2.52.1. - [Release
-  notes](https://github.com/ray-project/ray/releases) -
-  [Commits](https://github.com/ray-project/ray/compare/ray-2.51.1...ray-2.52.1)
-
---- updated-dependencies: - dependency-name: ray dependency-version: 2.52.1
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
-
-- **deps**: Bump urllib3 from 2.5.0 to 2.6.3 ([#17](https://github.com/IBM/docling-graph/pull/17),
-  [`6454c29`](https://github.com/IBM/docling-graph/commit/6454c29940db618aa61998e11802f20a102b66cf))
-
-Bumps [urllib3](https://github.com/urllib3/urllib3) from 2.5.0 to 2.6.3. - [Release
-  notes](https://github.com/urllib3/urllib3/releases) -
-  [Changelog](https://github.com/urllib3/urllib3/blob/main/CHANGES.rst) -
-  [Commits](https://github.com/urllib3/urllib3/compare/2.5.0...2.6.3)
-
---- updated-dependencies: - dependency-name: urllib3 dependency-version: 2.6.3
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-- **deps**: Bump virtualenv from 20.35.4 to 20.36.1
-  ([#20](https://github.com/IBM/docling-graph/pull/20),
-  [`61678e9`](https://github.com/IBM/docling-graph/commit/61678e9fde19d364745f757a44e5ee2a1cc0cdaa))
-
-Bumps [virtualenv](https://github.com/pypa/virtualenv) from 20.35.4 to 20.36.1. - [Release
-  notes](https://github.com/pypa/virtualenv/releases) -
-  [Changelog](https://github.com/pypa/virtualenv/blob/main/docs/changelog.rst) -
-  [Commits](https://github.com/pypa/virtualenv/compare/20.35.4...20.36.1)
-
---- updated-dependencies: - dependency-name: virtualenv dependency-version: 20.36.1
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
-
-- **deps**: Bump vllm from 0.11.0 to 0.12.0 ([#18](https://github.com/IBM/docling-graph/pull/18),
-  [`9eda941`](https://github.com/IBM/docling-graph/commit/9eda941f83a74c9c746be2b8641911ac5c9c834d))
-
-Bumps [vllm](https://github.com/vllm-project/vllm) from 0.11.0 to 0.12.0. - [Release
-  notes](https://github.com/vllm-project/vllm/releases) -
-  [Changelog](https://github.com/vllm-project/vllm/blob/main/RELEASE.md) -
-  [Commits](https://github.com/vllm-project/vllm/compare/v0.11.0...v0.12.0)
-
---- updated-dependencies: - dependency-name: vllm dependency-version: 0.12.0
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
-
-- **deps**: Bump vllm from 0.12.0 to 0.14.0 ([#25](https://github.com/IBM/docling-graph/pull/25),
-  [`69e6484`](https://github.com/IBM/docling-graph/commit/69e64843b5c2c438a24ada096aaf43e780acd78b))
-
-Bumps [vllm](https://github.com/vllm-project/vllm) from 0.12.0 to 0.14.0. - [Release
-  notes](https://github.com/vllm-project/vllm/releases) -
-  [Changelog](https://github.com/vllm-project/vllm/blob/main/RELEASE.md) -
-  [Commits](https://github.com/vllm-project/vllm/compare/v0.12.0...v0.14.0)
-
---- updated-dependencies: - dependency-name: vllm dependency-version: 0.14.0
-
-dependency-type: indirect ...
-
-Signed-off-by: dependabot[bot] <support@github.com>
-
-Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
-
-Co-authored-by: Ayoub El Bouchtili <Ayoub.elbouchtili@fr.ibm.com>
-
-- **deps**: Optimize dependabot groups
-  ([`d707009`](https://github.com/IBM/docling-graph/commit/d707009302799d80830cd28f9472276c034b0150))
-
-Updates the Dependabot configuration to reduce PR noise and consolidate dependency bumps.
-
-Changes: - created a catch-all group for 'github-actions' to bundle all CI/CD updates into a single
-  weekly PR. - added 'ipykernel', 'python-semantic-release', and 'rich' to the 'dev-dependencies'
-  pip group to prevent them from spawning individual PRs.
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
-- **doc**: Add project logo to README
-  ([`a71f4da`](https://github.com/IBM/docling-graph/commit/a71f4dad6471446fc29037c571dade8d9394e7e9))
-
-- **doc**: Add project logo to README
-  ([`23f092b`](https://github.com/IBM/docling-graph/commit/23f092bb3ac51c6c3c765e8c7a8d28ac9ffb9493))
-
-- **doc**: Add project logo to README
-  ([`683c18a`](https://github.com/IBM/docling-graph/commit/683c18a77b1c86dcc3de62d45fdb096c00ef4bd8))
-
-- **doc**: Update backend and pipeline settings in README
-  ([`4441668`](https://github.com/IBM/docling-graph/commit/4441668c60f95037ad109819164f05bc41a22096))
-
-- **doc**: Update README badges
-  ([`bb06a64`](https://github.com/IBM/docling-graph/commit/bb06a64ef6560121bacc78108a335de723660b0a))
-
-- **doc**: Update README badges
-  ([`2cefd81`](https://github.com/IBM/docling-graph/commit/2cefd810d031e1494543fa409ae38b049a75d064))
-
-- **doc**: Update README badges
-  ([`2c0fc3b`](https://github.com/IBM/docling-graph/commit/2c0fc3b57913998e676181e193cd8331274021ef))
-
-- **doc**: Update todo list
-  ([`34eb703`](https://github.com/IBM/docling-graph/commit/34eb7031be569740f6d4368589333eed7da6d23a))
-
-- **doc**: Update todo list
-  ([`287a606`](https://github.com/IBM/docling-graph/commit/287a606e27f75c803f2216fbfecbbbad450482c7))
-
-- **docs**: Add guide for installing torch with GPU support
-  ([`9b7186c`](https://github.com/IBM/docling-graph/commit/9b7186c3967a5f581b611834444204edea2d5311))
-
-- **docs**: Add license
-  ([`f3f2b14`](https://github.com/IBM/docling-graph/commit/f3f2b140b48c35df40cfffcc62b2d9206693c76f))
-
-- **docs**: Add Maintainers
-  ([`f91b064`](https://github.com/IBM/docling-graph/commit/f91b0643d2eb9adda67fe6cff8c79744a114cfe2))
-
-- **docs**: Add Maintainers
-  ([`92d54ec`](https://github.com/IBM/docling-graph/commit/92d54ec00b823e293d97bffd7e3135ab34ccc377))
-
-- **docs**: Add test suite setup and usage documentation
-  ([`a0145ec`](https://github.com/IBM/docling-graph/commit/a0145ec4cb2b7f353b25a3da52e69a209e6528aa))
-
-- **docs**: Add Windows CMD and PowerShell alternatives for setting API keys
-  ([`e0f355a`](https://github.com/IBM/docling-graph/commit/e0f355aba9901cdfe37530652fe4449c92767571))
-
-- **docs**: Add workflow diagram for Docling Graph
-  ([`f2e0ffa`](https://github.com/IBM/docling-graph/commit/f2e0ffa3d6fe36daee21652b8b231f5bba0b11f8))
-
-- **docs**: Add workflow diagram for Docling Graph
-  ([`222c3d0`](https://github.com/IBM/docling-graph/commit/222c3d0feb9e8452d5e10fddc4978ebf5a97a3b3))
-
-- **docs**: Add workflow diagram for Docling Graph
-  ([`57fa68a`](https://github.com/IBM/docling-graph/commit/57fa68a0e4d9f1e302276a38dc9f446b79b06d03))
-
-- **docs**: Remove deprecated content
-  ([`46ff1d8`](https://github.com/IBM/docling-graph/commit/46ff1d8a78f047fc8a8881627a0fe4c139d7cce6))
-
-- **docs**: Reorganize dir structure for clarity
-  ([`d49898e`](https://github.com/IBM/docling-graph/commit/d49898e9c57ec2178c21b66aa4747dce0efb7d6e))
-
-- **docs**: Samples
-  ([`f81ff58`](https://github.com/IBM/docling-graph/commit/f81ff58c8e49a582ccd21493eee55c84f75bd4ae))
-
-- **docs**: Simplify and shorten README content
-  ([`971988a`](https://github.com/IBM/docling-graph/commit/971988a4f26faaf14abccb03500aedf3afd5b3c3))
-
-- **docs**: Update badges and acknowledgments
-  ([`b30a492`](https://github.com/IBM/docling-graph/commit/b30a492bbf4232f3ae09dabca314ca0a4e625b6e))
-
-- **docs**: Update key capabilities
-  ([`9b4eaf4`](https://github.com/IBM/docling-graph/commit/9b4eaf4a9562f611cc18da3bd3c95230214ef627))
-
-- **docs**: Update key capabilities
-  ([`16fc8ae`](https://github.com/IBM/docling-graph/commit/16fc8ae45d69fb9fc10ae539cb3aa48dae11dd15))
-
-- **docs**: Update list of upcomming features
-  ([`598e880`](https://github.com/IBM/docling-graph/commit/598e88090c3b27936ac6e5f0b70e69286bbf3067))
-
-- **docs**: Update next steps in README
-  ([`5d0763e`](https://github.com/IBM/docling-graph/commit/5d0763ece0f4984f1b6f0bf0062de27d905415e4))
-
-- **docs**: Update README with CosmoGraph visualization details and CLI commands
-  ([`44baf72`](https://github.com/IBM/docling-graph/commit/44baf724416865cac48a434f85233ecff4540c01))
-
-- **docs**: Update roadmap and R&D directions
-  ([`54be027`](https://github.com/IBM/docling-graph/commit/54be02732e653490f339d884c38f16c1e0631353))
-
-- **docs**: Update sections with numbered headings for better organization
-  ([`a56a73a`](https://github.com/IBM/docling-graph/commit/a56a73ac11828ee976eb2d72054c5238ce1857e5))
-
-- **docs**: Update setup section
-  ([`7a708f4`](https://github.com/IBM/docling-graph/commit/7a708f410876643f0a72a5d909c5ded038e5735d))
-
-- **docs**: Update upcoming features in README
-  ([`3ab7ce2`](https://github.com/IBM/docling-graph/commit/3ab7ce23c44cb942a45c14c555db14b2157295fd))
-
-- **docs**: Updated docling graph workflow
-  ([`583fce2`](https://github.com/IBM/docling-graph/commit/583fce23ac054306e75c0839668c307106166cf7))
-
-- **examples**: Add cosmograph for battery research
-  ([`2998007`](https://github.com/IBM/docling-graph/commit/29980070458e9fa31babe78464b3f678363964d1))
-
-- **examples**: Provide sample scripts showcasing core features
-  ([`b05283b`](https://github.com/IBM/docling-graph/commit/b05283b6606c91ecac7072f1d876a1f4e20f1efc))
-
-- **examples**: Update interactive graphs examples
-  ([`c2dcf31`](https://github.com/IBM/docling-graph/commit/c2dcf3166cf34f8aeb2ce889a122bec9ede49450))
-
-- **examples**: Update Pydantic templates creation guide
-  ([`625f246`](https://github.com/IBM/docling-graph/commit/625f246eee7d6301247815f6fe2f692b0233f412))
-
-- **gitignore**: Update to include data and outputs directories while preserving .gitkeep files
-  ([`37feca1`](https://github.com/IBM/docling-graph/commit/37feca19977cf24d6ef4fd1918479919f505f73b))
-
-- **mirror**: Migrated repo to internal IBM organization
-  ([`e61feae`](https://github.com/IBM/docling-graph/commit/e61feae4d5151c13f2332133376fb4aef574927c))
-
-- **notebooks**: Sync execution logic with refactored module structure
-  ([`4c9aa7c`](https://github.com/IBM/docling-graph/commit/4c9aa7ca981f60af29651777280f721e86cfeae9))
-
-- **pre-commit**: Fix linter and typing errors
-  ([`aabc35c`](https://github.com/IBM/docling-graph/commit/aabc35c85d9b76e4540d0542230251d13d7ee45e))
-
-- **project**: Add initial boilerplate for Docling-Graph
-  ([`8d88b73`](https://github.com/IBM/docling-graph/commit/8d88b73520d4b2ff23aae9533103856c5c06f567))
-
-- Set up project structure with templates, notebooks, converters, and visualizations - Provide
-  initial boilerplate for code files and examples - Add README with project overview, core features,
-  workflow, and setup instructions
-
-- **tests**: Update tests for core modules
-  ([`baccb8f`](https://github.com/IBM/docling-graph/commit/baccb8fa9f2055ee9faa1a002ac452cc0ef5fcdc))
-
-- **tests**: Update tests for llm clients
-  ([`bdfada7`](https://github.com/IBM/docling-graph/commit/bdfada723886ee3474abab46cc4947b896e82a6d))
-
-### Continuous Integration
-
-- Bootstrap GitHub Actions (tests, lint, DCO)
-  ([`203bc5b`](https://github.com/IBM/docling-graph/commit/203bc5bec79a835b6a98dcc79297f0e988d0a798))
-
-- GitHub Actions for tests and pre-commit checks - DCO sign-off verificationDependabot + PR
-  auto-labeling - Security scanning and release workflow docs
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
-### Features
-
-- Automation setup ([#28](https://github.com/IBM/docling-graph/pull/28),
-  [`b404401`](https://github.com/IBM/docling-graph/commit/b4044013e07ddbb36f7f5e81a52483af1200efe0))
-
-* feat: add complete automation setup
-
-Configure semantic versioning with python-semantic-release
-
-Add automated changelog generation
-
-Set up GitHub Pages documentation with MkDocs
-
-Add TestPyPI staging to release workflow
-
-Create automated release notes generation
-
-Add comprehensive documentation
-
-Signed-off-by: Ayoub EL BOUCHTILI <ayoub.elbouchtili@fr.ibm.com>
-
-* docs: minor updates to documentation
-
-* chore: resolve Ruff linter warnings and errors
-
-- **chunker**: New strategy for chunking - dependant of max_new_tokens and context_size
-  ([`4f25dc4`](https://github.com/IBM/docling-graph/commit/4f25dc4790dbc96d0bc4e76e66e9b067861443b4))
-
-- **cli**: Add argument for docling pipeline configuration
-  ([`42e3016`](https://github.com/IBM/docling-graph/commit/42e3016068c25c650960fc0bbb9a0fd1df65a4f3))
-
-- **cli**: Add inspect command for visualizing graph data in browser
-  ([`93e2b6d`](https://github.com/IBM/docling-graph/commit/93e2b6d71af19f6bbd3f489d8e6025fde17160b0))
-
-- **cli**: Enhance init command, streamline extraction process and improve template merging
-  ([`c6f8a5b`](https://github.com/IBM/docling-graph/commit/c6f8a5bb404f67cad590985b816dd41d3056b827))
-
-- **core**: Refactor module structure and add base configuration and models for graph conversion
-  ([`401846b`](https://github.com/IBM/docling-graph/commit/401846bc803f0c32d456d5c529172bbbd51bef71))
-
-- **docs**: Update README to include Docling Graph workflow and mermaid flowchart
-  ([`3d2bc79`](https://github.com/IBM/docling-graph/commit/3d2bc79a26470c47554017817232a9bba4af6107))
-
-- **examples**: Add Pydantic template for Battery Slurry Ontology
-  ([`1a7678f`](https://github.com/IBM/docling-graph/commit/1a7678fa06c3bf59e1fa60e611d0dabe9e52bfd0))
-
-- **examples**: Update examples for pydantic templates, data and outputs
-  ([`827a096`](https://github.com/IBM/docling-graph/commit/827a096ac1fb1bab335ee1e2de0f754b4486a8ea))
-
-- **exporters**: Add export for docling artifacts
-  ([`ad8e559`](https://github.com/IBM/docling-graph/commit/ad8e559740a2954c2cc1f98d42c45c6994a0edd9))
-
-- **exporters**: Enable json format export by default
-  ([`bfa9f5b`](https://github.com/IBM/docling-graph/commit/bfa9f5b04daf397b20218dfeb37c45901db94bc8))
-
-- **exporters**: Enable json format export by default
-  ([`8ec6030`](https://github.com/IBM/docling-graph/commit/8ec6030e121be012f2cc2962f1a63037ecac2614))
-
-- **graph**: Add advanced and robust graph generation logic
-  ([`ed881e5`](https://github.com/IBM/docling-graph/commit/ed881e570bd93c23581f23834f3a2b26c156a208))
-
-- **graph**: Add export to csv and cypher formats
-  ([`6eebdd6`](https://github.com/IBM/docling-graph/commit/6eebdd63737eb06225f757ae5205023e94fb327b))
-
-- **graph**: Automatic node deduplication
-  ([`ac65140`](https://github.com/IBM/docling-graph/commit/ac651406ef6a8e24ceb0952368e9de66640f553f))
-
-- **graph**: Enhance graph validation and serialization features
-  ([`8919aff`](https://github.com/IBM/docling-graph/commit/8919affe32427c06087dc3bf114c353c4cb6429a))
-
-- **init**: Add interactive wizard for config setup
-  ([`b884e73`](https://github.com/IBM/docling-graph/commit/b884e7389155a54788bf9cbfc525fc916d5482e8))
-
-- **llm_backend**: Add pydantic model consolidation via llm
-  ([`3f1bab2`](https://github.com/IBM/docling-graph/commit/3f1bab2f7138a74dca1376a8c4db51ebb948d838))
-
-- **llm_clients**: Add support for local inference with vLLM
-  ([`8ccd6ba`](https://github.com/IBM/docling-graph/commit/8ccd6baadc23918a2485a7ba8c69df961269ed53))
-
-- **notebooks**: Update notebooks following graph moule refactor
-  ([`a1ea119`](https://github.com/IBM/docling-graph/commit/a1ea11999f3d51150cee1a4a489b842655c48bb1))
-
-- **notebooks**: Update notebooks following graph moule refactor
-  ([`56c8175`](https://github.com/IBM/docling-graph/commit/56c817517b7ac5960ccd0451781b5b68eb4e62a8))
-
-- **pipeline**: Introduce type-safe configuration class and support config injection from Python
-  ([`2e72221`](https://github.com/IBM/docling-graph/commit/2e72221158a14509d562f3c4ad9e685f6623636d))
-
-- **templates**: Add insurance models
-  ([`b2e738f`](https://github.com/IBM/docling-graph/commit/b2e738fe6b2fa0d6db10cabe8e2a9a1f0be54e52))
-
-- **templates**: Add templates for llm extraction
-  ([`80506a2`](https://github.com/IBM/docling-graph/commit/80506a26813df0a77bb7e9011bbfaff8d9c41ac7))
-
-- **templates**: Improve model design and validation rules
-  ([`04f3c64`](https://github.com/IBM/docling-graph/commit/04f3c64c14f172903b57035519590b300b73661a))
-
-- **templates**: Update ID card Pydantic template
-  ([`49e0bff`](https://github.com/IBM/docling-graph/commit/49e0bff472ecf259d900f2a5b030fa9adcc7f5bc))
-
-- Modify the ID card Pydantic model to include new fields and validations - Ensure compatibility
-  with extraction and graph conversion workflow
-
-- **tests**: Add tests suite for docling graph module
-  ([`05c8ea3`](https://github.com/IBM/docling-graph/commit/05c8ea3895918a369bcbc10beddad395202e7377))
-
-- **tests**: Extend test suite to cover entire code base
-  ([`583eba2`](https://github.com/IBM/docling-graph/commit/583eba23a70bd0a922ab4459b2d1f769bd4298e4))
-
-- **visualizer**: Add fit_view_delay parameter for improved visualization
-  ([`2cf81a6`](https://github.com/IBM/docling-graph/commit/2cf81a6c2093058574cd436997d53155494240a0))
-
-- **visualizers**: Add cosmograph alternative for html graph generation
-  ([`30fcabe`](https://github.com/IBM/docling-graph/commit/30fcabeb5de347cd2b5badaa2a3d6d0580a94559))
-
-- **visualizers**: Implement cosmograph-based graph generation
-  ([`d226293`](https://github.com/IBM/docling-graph/commit/d22629303d62b3c513f4b07cfce9c62a2ec33cbc))
-
-- **visualizers**: Replace cosmograph graph generation with cytoscape
-  ([`60fd642`](https://github.com/IBM/docling-graph/commit/60fd6423ab0b51aa841b2fcfe8b4547c9b6a1c89))
-
-- **visualizers**: Replace cosmograph graph generation with cytoscape
-  ([`34d125e`](https://github.com/IBM/docling-graph/commit/34d125e0d3be4ddcb5fb76bda1346a211d609291))
-
-- **watsonx**: Implement watsonx llms api
-  ([`2dcfe4d`](https://github.com/IBM/docling-graph/commit/2dcfe4d70d05f7eadeb001479bf1487fed17098a))
-
-- **watsonx**: Move example to right path
-  ([`37a03e4`](https://github.com/IBM/docling-graph/commit/37a03e4129f83e3141768e890f7bb4d4187ca690))
-
-- **watsonx**: Update readme
-  ([`6d97d76`](https://github.com/IBM/docling-graph/commit/6d97d76dc6df419a5275c373097dd56f31557be5))
-
-### Refactoring
-
-- Add cli and update project design
-  ([`742e43a`](https://github.com/IBM/docling-graph/commit/742e43ad8b724a5bbd00275be5ded594f99c2454))
-
-- **cli**: Major structure update for cli and configuration handling
-  ([`a4836df`](https://github.com/IBM/docling-graph/commit/a4836df82f6423c852b311dadfbb6cb8944287bc))
-
-- **cli**: Major structure update for cli and configuration handling
-  ([`44b086b`](https://github.com/IBM/docling-graph/commit/44b086bf71ad64275601d59ae3e4a8bd9088e837))
-
-- **cli**: Reduce redundancy and streamline initialization process
-  ([`2f86b4f`](https://github.com/IBM/docling-graph/commit/2f86b4f63fc50343b0c18cc6fa2ef01d7b355578))
-
-- **converter**: Enhance GraphConverter for stateless and thread-safe operations
-  ([`97b2bb4`](https://github.com/IBM/docling-graph/commit/97b2bb4ed6eb2b1b31af739f7e7d28f91fb3130b))
-
-- **core**: Relocate files to improve module structure
-  ([`4666c57`](https://github.com/IBM/docling-graph/commit/4666c57fef30f7523459ac548a4316e1bf2984f8))
-
-- **core**: Unify date serialization logic with shared utility
-  ([`96dee50`](https://github.com/IBM/docling-graph/commit/96dee50456fcf17a232b1f562cef78a782ddaa1e))
-
-- **graph**: Add modular structure with clear separation of concerns
-  ([`b66f61f`](https://github.com/IBM/docling-graph/commit/b66f61f3178c82cd77db2dd887d12410e0054ffb))
-
-- **graph**: Add protocol-based interfaces
-  ([`e70a80c`](https://github.com/IBM/docling-graph/commit/e70a80c7f75948f621b05e49d129962f06010376))
-
-- **graph**: Major stability and logic upgrade for graph generation and pydantic models
-  ([`daf74ab`](https://github.com/IBM/docling-graph/commit/daf74ab4b23884dbfe3889a6844d8ba3631354f5))
-
-- **llm_clients**: Enhance client implementations with structured prompts and error handling
-  ([`b25713d`](https://github.com/IBM/docling-graph/commit/b25713df453912a6e9accc8c0945a6486d33a46c))
-
-- **pipeline**: Extraction backends and strategies
-  ([`b555edd`](https://github.com/IBM/docling-graph/commit/b555eddac1d36726923d1bc4484257a8e4b5cb27))
-
-- **tests**: Overhaul test suite structure and organization
-  ([`64c4f59`](https://github.com/IBM/docling-graph/commit/64c4f59578b0f4e14eb22b816226d227047a98c6))
+- Initial Release

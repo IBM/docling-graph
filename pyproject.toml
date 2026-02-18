@@ -234,7 +234,12 @@ minor_tags = ["feat"]
 patch_tags = ["fix", "perf", "refactor"]
 
 [tool.semantic_release.changelog]
-exclude_commit_patterns = []
+# Update mode: insert new release after insertion_flag (see CHANGELOG.md).
+mode = "update"
+insertion_flag = "<!-- version list -->"
+exclude_commit_patterns = [
+  "chore\\(release\\):.*",  # exclude version-bump commits from changelog
+]
 
 [tool.semantic_release.changelog.default_templates]
 changelog_file = "CHANGELOG.md"

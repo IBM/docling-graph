@@ -68,6 +68,14 @@ jobs:
       url: https://pypi.org/p/docling-graph
     
     steps:
+      - name: Checkout at tag (for CHANGELOG)
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          sparse-checkout: |
+            CHANGELOG.md
+          sparse-checkout-cone-mode: false
+      
       - name: Download build artifacts
         uses: actions/download-artifact@v7
         with:
@@ -77,13 +85,32 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
       
+      - name: Create or update GitHub Release with notes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          # Extract this version's section from CHANGELOG.md (from ## TAG to next ##)
+          awk -v tag="$TAG" '
+            /^## / { if (capture) exit; if ($0 ~ "^## " tag " " || $0 ~ "^## " tag "\\(") capture=1 }
+            capture { print }
+          ' CHANGELOG.md > release_notes.md
+          if [ ! -s release_notes.md ]; then
+            echo "No changelog section for $TAG, using tag as title"
+            echo "## $TAG" > release_notes.md
+          fi
+          # Create release with notes, or update body if release already exists
+          if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release edit "$TAG" --notes-file release_notes.md --repo "${{ github.repository }}"
+          else
+            gh release create "$TAG" --notes-file release_notes.md --repo "${{ github.repository }}"
+          fi
+      
       - name: Upload artifacts to GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          # Semantic-release already created the GitHub release
-          # Just upload the distribution files to it (excluding .attestation files)
-          # Attestation files are kept on PyPI but filtered from GitHub releases for cleaner presentation
+          # Attach dist files (excluding .attestation); release already exists with notes from previous step
           find dist/ -type f ! -name '*.attestation' -exec gh release upload '${{ github.ref_name }}' {} --repo '${{ github.repository }}' --clobber \;
       
       - name: Summary
