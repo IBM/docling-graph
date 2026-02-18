@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v1.4.1 (2026-02-18)
+
+### Bug Fixes
+
+- **ci**: Ensure GitHub release gets notes and assets in Release workflow
+  ([`485b875`](https://github.com/docling-project/docling-graph/commit/485b87571214d2f284b23c1513e3a17dc2013c91))
+
+### Chores
+
+- **docs**: Refresh install steps and GitHub Pages content
+  ([`07e1136`](https://github.com/docling-project/docling-graph/commit/07e11362cc02a8031b8755c10c5ed385b6382d77))
+
+
 ## v1.4.0 (2026-02-18)
 
 ### Bug Fixes
