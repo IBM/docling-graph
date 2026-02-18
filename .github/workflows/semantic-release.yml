@@ -1,8 +1,7 @@
 name: Semantic Release
 
 # Run on push to main or manually via "Run workflow" (workflow_dispatch).
-# - Pre-release check computes the next version and shows changelog; no push.
-# - Release job runs only when there is a new version and uses a GitHub App token to push.
+# Uses a GitHub App token to push the version-bump commit and tag to protected main.
 #
 # Minor/patch: feat → minor, fix/perf/refactor → patch.
 # Major (1.x → 2.0): create tag manually: git tag -a v2.0.0 -m "..." && git push origin v2.0.0
@@ -17,43 +16,8 @@ permissions:
   id-token: write
 
 jobs:
-  pre-release-check:
-    name: Pre-release check
-    runs-on: ubuntu-latest
-    outputs:
-      TARGET_TAG_V: ${{ steps.version_check.outputs.TRGT_VERSION }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-          cache-dependency-glob: "uv.lock"
-      - name: Install dependencies
-        run: uv sync --dev
-      - name: Check version of potential release
-        id: version_check
-        run: |
-          NEXT=$(uv run semantic-release version --print 2>/dev/null || true)
-          LAST=$(uv run semantic-release version --print-last-released 2>/dev/null || true)
-          if [ -n "$NEXT" ] && [ "$NEXT" != "$LAST" ]; then
-            echo "TRGT_VERSION=${NEXT}" >> "$GITHUB_OUTPUT"
-          fi
-          echo "Next version: ${NEXT:-none}, Last released: ${LAST:-none}"
-      - name: Check notes of potential release
-        if: steps.version_check.outputs.TRGT_VERSION != ''
-        run: uv run semantic-release changelog --unreleased
-
   release:
     name: Release
-    needs: pre-release-check
-    if: needs.pre-release-check.outputs.TARGET_TAG_V != ''
     environment: auto-release
     runs-on: ubuntu-latest
     concurrency: release
