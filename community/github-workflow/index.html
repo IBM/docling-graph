@@ -4078,6 +4078,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#semantic-release-cd-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Semantic Release (CD workflow)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4596,6 +4607,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#semantic-release-cd-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Semantic Release (CD workflow)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5074,6 +5096,14 @@
 <li>Publishes to PyPI</li>
 <li>Creates GitHub release</li>
 <li>Updates documentation</li>
+</ol>
+<h3 id="semantic-release-cd-workflow">Semantic Release (CD workflow)<a class="headerlink" href="#semantic-release-cd-workflow" title="Permanent link">&para;</a></h3>
+<p>Releases are driven by the <strong>Semantic Release</strong> workflow (push to <code>main</code> or <strong>Actions → Run workflow</strong>). It uses a <strong>GitHub App</strong> so the release job can push to protected <code>main</code>.</p>
+<p><strong>Maintainer setup:</strong></p>
+<ol>
+<li><strong>GitHub App</strong> – Create or reuse an app with repo contents permission. In the repo (or org): set <strong>variable</strong> <code>CI_APP_ID</code> and <strong>secret</strong> <code>CI_PRIVATE_KEY</code> (app private key PEM). In branch protection for <code>main</code>, allow that app to bypass “Require a pull request”.</li>
+<li><strong>Environment</strong> – Ensure the <strong>auto-release</strong> environment exists (<strong>Settings → Environments</strong>). You can add protection or required reviewers there.</li>
+<li><strong>Manual-only</strong> – To run releases only from the UI, remove the <code>push: branches: [main]</code> trigger from <code>.github/workflows/semantic-release.yml</code>.</li>
 </ol>
 <hr />
 <h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
