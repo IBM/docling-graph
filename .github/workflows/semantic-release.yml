@@ -54,8 +54,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          uv run semantic-release version --skip-build
-      
+          # Use --no-push so we can add DCO sign-off and push in one step.
+          # Pushing from the workflow requires the repo to allow the release
+          # actor to bypass branch protection (see README or repo rules).
+          uv run semantic-release version --skip-build --no-push
+
+      - name: Add DCO sign-off to release commit
+        if: success()
+        run: |
+          # If semantic-release created a release commit, add Signed-off-by so
+          # the commit satisfies DCO when pushed to a protected main.
+          if git log -1 --pretty=format:%s | grep -q '^chore(release):'; then
+            TAG=$(git describe --exact-match --tags HEAD)
+            git commit --amend --no-edit -s
+            git tag -f "$TAG"  # move tag to amended commit
+          fi
+
       - name: Push changes
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
