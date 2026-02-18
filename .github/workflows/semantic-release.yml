@@ -66,6 +66,7 @@ jobs:
         run: |
           git fetch "$REMOTE" main
           if ! git merge-base --is-ancestor FETCH_HEAD HEAD 2>/dev/null; then
+            git reset --hard HEAD
             git rebase FETCH_HEAD
             TAG=$(git describe --exact-match --tags HEAD 2>/dev/null) && git tag -f "$TAG"
           fi

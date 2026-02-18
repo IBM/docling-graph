@@ -34,33 +34,33 @@ This toolkit supports two extraction paths: **local VLM extraction** via Docling
 
 ## Key Capabilities
 
-- **✍🏻 Input formats** - [Docling](https://docling-project.github.io/docling/usage/supported_formats/)’s supported inputs: PDF, images, markdown, Office, HTML, and more.
+- **✍🏻 Input formats:** [Docling](https://docling-project.github.io/docling/usage/supported_formats/)’s supported inputs: PDF, images, markdown, Office, HTML, and more.
 
-- **🧠 Extraction** - [VLM](docs/fundamentals/pipeline-configuration/backend-selection.md) or [LLM](docs/fundamentals/pipeline-configuration/backend-selection.md), chunking and processing modes.
+- **🧠 Extraction:** [LLM](docs/fundamentals/pipeline-configuration/backend-selection.md) or [VLM](docs/fundamentals/pipeline-configuration/backend-selection.md) backends, with [chunking](docs/fundamentals/extraction-process/chunking-strategies.md) and [processing modes](docs/fundamentals/pipeline-configuration/processing-modes.md).
 
-- **💎 Graphs** - Pydantic → [NetworkX](docs/fundamentals/graph-management/graph-conversion.md) directed graphs with stable IDs and edge metadata.
+- **💎 Graphs:** Pydantic → [NetworkX](docs/fundamentals/graph-management/graph-conversion.md) directed graphs with stable IDs and edge metadata.
 
-- **📦 Export** - [CSV](docs/fundamentals/graph-management/export-formats.md#csv-export), [Cypher](docs/fundamentals/graph-management/export-formats.md#cypher-export), and other KG-friendly formats.
+- **📦 Export:** [CSV](docs/fundamentals/graph-management/export-formats.md#csv-export), [Cypher](docs/fundamentals/graph-management/export-formats.md#cypher-export), and other KG-friendly formats.
 
-- **🔍 Visualization** - [Interactive HTML](docs/fundamentals/graph-management/visualization.md) and Markdown reports.
+- **🔍 Visualization:** [Interactive HTML](docs/fundamentals/graph-management/visualization.md) and Markdown reports.
 
 ### Latest Changes
 
-- **🪜 Multi-pass extraction** - [Delta](docs/fundamentals/extraction-process/delta-extraction.md) and [staged](docs/fundamentals/extraction-process/staged-extraction.md) contracts (experimental).
+- **🪜 Multi-pass extraction:** [Delta](docs/fundamentals/extraction-process/delta-extraction.md) and [staged](docs/fundamentals/extraction-process/staged-extraction.md) contracts (experimental).
 
-- **📐 Structured extraction** - LLM output is schema-enforced by default; see [CLI](docs/usage/cli/convert-command.md#structured-output-mode) and [API](docs/usage/api/llm-model-config.md) to disable.
+- **📐 Structured extraction:** LLM output is schema-enforced by default; see [CLI](docs/usage/cli/convert-command.md#structured-output-mode) and [API](docs/usage/api/llm-model-config.md) to disable.
 
-- **✨ LiteLLM** - Single [interface](docs/reference/llm-clients.md) for vLLM, OpenAI, Mistral, WatsonX, and more.
+- **✨ LiteLLM:** Single [interface](docs/reference/llm-clients.md) for vLLM, OpenAI, Mistral, WatsonX, and more.
 
-- **🐛 Trace capture** - [Debug exports](docs/usage/advanced/trace-data-debugging.md) for extraction and fallback diagnostics.
+- **🐛 Trace capture:** [Debug exports](docs/usage/advanced/trace-data-debugging.md) for extraction and fallback diagnostics.
 
 ### Coming Soon
 
-* 🧩 **Interactive Template Builder** - Guided workflows for building Pydantic templates.
+* 🧩 **Interactive Template Builder:** Guided workflows for building Pydantic templates.
 
-* 🧲 **Ontology-Based Templates** - Match content to the best Pydantic template using semantic similarity.
+* 🧲 **Ontology-Based Templates:** Match content to the best Pydantic template using semantic similarity.
 
-* 💾 **Graph Database Integration** - Export data straight into `Neo4j`, `ArangoDB`, and similar databases.
+* 💾 **Graph Database Integration:** Export data straight into `Neo4j`, `ArangoDB`, and similar databases.
 
 
 
