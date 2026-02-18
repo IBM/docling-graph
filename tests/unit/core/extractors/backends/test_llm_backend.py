@@ -995,3 +995,133 @@ class TestStagedPromptRetries:
         backend.cleanup()
         mock_llm_client.cleanup.assert_called_once()
         # Exception was caught so no crash; del self.client is not reached when cleanup raises
+
+
+class TestDirectExtractionTraceAndDiagnostics:
+    """Direct extraction path: trace_data, last_call_diagnostics merge, sparse fallback, truncation retry, gleaning."""
+
+    @patch("docling_graph.core.extractors.contracts.direct.get_extraction_prompt")
+    def test_direct_extraction_with_trace_data_and_client_diagnostics(
+        self, mock_get_prompt, mock_llm_client
+    ):
+        """Direct path: success with trace_data set and client last_call_diagnostics merged (837-866)."""
+        backend = LlmBackend(
+            llm_client=mock_llm_client,
+            extraction_contract="direct",
+            structured_output=True,
+        )
+        backend.trace_data = MagicMock()
+        mock_get_prompt.return_value = {"system": "s", "user": "u"}
+        mock_llm_client.get_json_response.return_value = {"name": "A", "age": 1}
+        mock_llm_client.last_call_diagnostics = {
+            "provider": "openai",
+            "model": "gpt-4",
+            "structured_attempted": True,
+        }
+        result = backend.extract_from_markdown(markdown="doc", template=MockTemplate, context="doc")
+        assert result is not None
+        assert result.name == "A"
+        assert backend.last_call_diagnostics.get("provider") == "openai"
+        assert backend.last_call_diagnostics.get("model") == "gpt-4"
+        assert backend.last_call_diagnostics.get("structured_attempted") is True
+
+    @patch("docling_graph.core.extractors.contracts.direct.get_extraction_prompt")
+    def test_direct_extraction_client_error_emits_trace_and_captures_raw(
+        self, mock_get_prompt, mock_llm_client
+    ):
+        """Direct path: ClientError triggers emit and primary_diag/raw_value branches (728-733, 737-755, 750-760)."""
+        backend = LlmBackend(
+            llm_client=mock_llm_client,
+            extraction_contract="direct",
+            structured_output=True,
+        )
+        backend.trace_data = MagicMock()
+        mock_get_prompt.side_effect = [
+            {"system": "s", "user": "u"},
+            {"system": "s", "user": "legacy"},
+        ]
+        mock_llm_client.get_json_response.side_effect = [
+            ClientError("structured failed"),
+            {"name": "B", "age": 2},
+        ]
+        mock_llm_client.last_call_diagnostics = {"raw_response": '{"name":"B","age":2}'}
+        result = backend.extract_from_markdown(markdown="doc", template=MockTemplate, context="doc")
+        assert result is not None
+        backend.trace_data.emit.assert_called()
+        call_args_list = [c[0][0] for c in backend.trace_data.emit.call_args_list]
+        assert "structured_output_fallback_triggered" in call_args_list
+
+    @patch("docling_graph.core.extractors.contracts.direct.get_extraction_prompt")
+    def test_direct_extraction_sparse_fallback_emits_trace(self, mock_get_prompt, mock_llm_client):
+        """Direct path: sparse structured result triggers trace emit and legacy retry (791-827)."""
+        backend = LlmBackend(
+            llm_client=mock_llm_client,
+            extraction_contract="direct",
+            structured_output=True,
+            structured_sparse_check=True,
+        )
+        backend.trace_data = MagicMock()
+        mock_get_prompt.side_effect = [
+            {"system": "s", "user": "compact"},
+            {"system": "s", "user": "legacy"},
+        ]
+        sparse = {"f1": "only"}
+        rich = {"f1": "a", "f2": "b", "f3": "c", "f4": "d", "f5": "e"}
+        mock_llm_client.get_json_response.side_effect = [sparse, rich]
+        mock_llm_client.last_call_diagnostics = {}
+        markdown = "x" * 1200
+        result = backend.extract_from_markdown(
+            markdown=markdown, template=LargeTemplate, context="doc"
+        )
+        assert result is not None
+        emit_calls = [c[0][0] for c in backend.trace_data.emit.call_args_list]
+        assert "structured_output_fallback_triggered" in emit_calls
+        # Second call args should include reason SparseStructuredOutput
+        for call in backend.trace_data.emit.call_args_list:
+            if len(call[0]) >= 3 and isinstance(call[0][2], dict):
+                if call[0][2].get("reason") == "SparseStructuredOutput":
+                    break
+        else:
+            pytest.fail("Expected emit with reason SparseStructuredOutput")
+
+    def test_call_prompt_truncation_retry_uses_details_max_tokens(self, mock_llm_client):
+        """When _get_staged_call_max_tokens returns None, context_max from details['max_tokens'] (1074-1078)."""
+        backend = LlmBackend(
+            llm_client=mock_llm_client,
+            extraction_contract="staged",
+            staged_config={"retry_on_truncation": True},
+        )
+        # Context that does not contain catalog_id_pass or fill_call_ so _get_staged_call_max_tokens returns None
+        context = "custom_context_xyz"
+        details = {"truncated": True, "max_tokens": 512}
+        mock_llm_client.get_json_response.side_effect = [
+            ClientError("truncated", details=details),
+            {"id": "ok"},
+        ]
+        out = backend._call_prompt({"system": "s", "user": "u"}, "{}", context)
+        assert out == {"id": "ok"}
+        assert mock_llm_client.get_json_response.call_count == 2
+
+    @patch("docling_graph.core.extractors.backends.llm_backend.run_gleaning_pass_direct")
+    @patch("docling_graph.core.extractors.contracts.direct.get_extraction_prompt")
+    def test_direct_extraction_gleaning_pass_invoked(
+        self, mock_get_prompt, mock_gleaning, mock_llm_client
+    ):
+        """Gleaning block (871+) runs when gleaning_enabled and full-doc direct extraction."""
+        backend = LlmBackend(
+            llm_client=mock_llm_client,
+            extraction_contract="direct",
+            staged_config={"gleaning_enabled": True, "gleaning_max_passes": 1},
+        )
+        mock_get_prompt.return_value = {"system": "s", "user": "u"}
+        mock_llm_client.get_json_response.side_effect = [
+            {"name": "Pre", "age": 10},
+            {"name": "Pre", "age": 10, "description": "Gleaned desc"},
+        ]
+        mock_gleaning.return_value = {"name": "Pre", "age": 10, "description": "Gleaned desc"}
+        result = backend.extract_from_markdown(
+            markdown="Full doc content.", template=MockTemplate, context="doc"
+        )
+        assert result is not None
+        mock_gleaning.assert_called_once()
+        assert result.name == "Pre" and result.age == 10

@@ -194,6 +194,43 @@ def test_catalog_scalar_component_with_edge_label_adds_edge():
     assert any(e.target_path == "headquarters" for e in catalog.edges)
 
 
+def test_catalog_build_node_catalog_else_branch_component_list_no_edge_label():
+    """Else branch (253-264): list field of component without edge_label; traverse, no edge appended."""
+
+    class Note(BaseModel):
+        model_config = ConfigDict(is_entity=False)
+        text: str = ""
+
+    class Doc(BaseModel):
+        model_config = ConfigDict(graph_id_fields=["doc_id"])
+        doc_id: str = ""
+        notes: list[Note] = Field(default_factory=list)  # no edge_label
+
+    catalog = build_node_catalog(Doc)
+    assert len(catalog.nodes) >= 1
+    assert any(n.path == "" for n in catalog.nodes)
+    edge_targets = [e.target_path for e in catalog.edges]
+    assert "notes[]" not in edge_targets
+
+
+def test_catalog_build_node_catalog_else_branch_component_scalar_no_edge_label():
+    """Else branch (266-274): scalar component field without edge_label; traverse, no edge appended."""
+
+    class Meta(BaseModel):
+        model_config = ConfigDict(is_entity=False)
+        version: str = ""
+
+    class Doc(BaseModel):
+        model_config = ConfigDict(graph_id_fields=["doc_id"])
+        doc_id: str = ""
+        meta: Meta | None = None  # scalar component, no edge_label
+
+    catalog = build_node_catalog(Doc)
+    assert len(catalog.nodes) >= 1
+    edge_targets = [e.target_path for e in catalog.edges]
+    assert "meta" not in edge_targets
+
+
 def test_catalog_collects_field_aliases() -> None:
     class Person(BaseModel):
         model_config = ConfigDict(graph_id_fields=["name"])
