@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.4.2 (2026-02-18)
+
+### Bug Fixes
+
+- **ci**: Reset working tree before rebase in semantic-release push step
+  ([`e31c29b`](https://github.com/docling-project/docling-graph/commit/e31c29b3d120d0ae25c4c427bf9e8d733edc4783))
+
+
 ## v1.4.1 (2026-02-18)
 
 ### Bug Fixes
