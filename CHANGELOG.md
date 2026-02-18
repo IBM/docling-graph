@@ -2,6 +2,35 @@
 
 <!-- version list -->
 
+## v1.4.4 (2026-02-18)
+
+### Bug Fixes
+
+- **staged**: Canonicalize IDs, improve parent lookup and node discovery
+  ([`a551d38`](https://github.com/docling-project/docling-graph/commit/a551d38c2af2ed4f6a353de8f51f03ecc3ac5a92))
+
+### Documentation
+
+- **staged**: Document many-to-many behavior for nested list paths
+  ([`876c943`](https://github.com/docling-project/docling-graph/commit/876c94391eb8597156b5b31fc7b026ec3dee558b))
+
+### Refactoring
+
+- **staged**: Apply ruff formatting to staged backend ops test
+  ([`b83a20c`](https://github.com/docling-project/docling-graph/commit/b83a20cdc3d3ad517691c5d26939cd5445143b3d))
+
+- **staged**: Support nested paths with parent-aware dedup, and shared fill reuse
+  ([`f210be9`](https://github.com/docling-project/docling-graph/commit/f210be9286058997014f1b81e9c3d0263dc959d6))
+
+### Testing
+
+- **staged**: Add coverage for backend_ops and orchestrator quality gates
+  ([`eba5445`](https://github.com/docling-project/docling-graph/commit/eba5445f39bd7eb979536f68e869663fe1432b26))
+
+- **staged**: Cover list-under-list dedup, merge, and fill reuse semantics
+  ([`34e59ce`](https://github.com/docling-project/docling-graph/commit/34e59ce555a4f99f5856398c62a9e99cd9c79df2))
+
+
 ## v1.4.3 (2026-02-18)
 
 ### Bug Fixes
