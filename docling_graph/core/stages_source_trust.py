@@ -159,7 +159,9 @@ class SourceTrustStage(PipelineStage):
             return context
         logger.info("Verifying source document: %s", path.name)
         block = self._verify(path)
-        context.metadata["source_trust"] = block
+        if context.input_metadata is None:
+            context.input_metadata = {}
+        context.input_metadata["source_trust"] = block
         auth = block.get("authenticity") or {}
         band = auth.get("risk_band")
         if band:
