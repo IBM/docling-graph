@@ -244,6 +244,8 @@ module = [
     "tiktoken.*",
     "google.*",
     "rapidfuzz",
+    "rdflib.*",
+    "linkml_runtime.*",
 ]
 ignore_missing_imports = true
 
